@@ -13,5 +13,5 @@
 - `SCENES.md`에 그 편의 장면과 새로 쓴 연출을 추가하고 커밋·푸시한다.
 
 ## 폴더
-- `ep1-isfp/`, `ep2-istj/` — 코드 백업(woongif_reels_template.tar.gz)을 받으면 채운다.
-- `ep3-istp/`, `ep4-estp/` — 최종 영상 + 장면 미리보기.
+- `ep1-isfp/` ~ `ep4-estp/` — 최종 영상 + 장면 미리보기(contact_sheet.jpg, 2초 간격).
+- 1·2편 코드 백업(woongif_reels_template.tar.gz)을 받으면 해당 폴더에 코드도 넣는다.
