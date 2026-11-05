@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>웅이프 만약에 신청소</title>
+<meta name="description" content="웅이프 '만약에' 릴스 — 다음 MBTI 신청하고, 보고 싶은 만약에 세상을 제안해 주세요">
+<meta property="og:title" content="웅이프 만약에 신청소">
+<meta property="og:description" content="다음 편 MBTI 신청 · 만약에 아이디어 내기">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f6f1ff; --card:#ffffff; --ink:#2b2440; --sub:#7a7290; --line:#e7e0f5;
+  --lav:#b9a6ff; --lav-d:#7b61ff; --peach:#ffc9b5; --mint:#bfeedd; --sky:#bfe0ff; --butter:#fff0a8;
+  --shadow:0 6px 0 #e3d9fb;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,system-ui,sans-serif}
+body{min-height:100vh;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+header{padding:28px 0 10px;position:relative;overflow:hidden}
+.blob{position:absolute;border-radius:28% 72% 60% 40%/40% 35% 65% 60%;opacity:.7;z-index:0}
+.b1{width:140px;height:120px;background:var(--peach);right:-30px;top:6px;transform:rotate(18deg)}
+.b2{width:90px;height:80px;background:var(--mint);right:70px;top:60px;transform:rotate(-12deg)}
+header .in{position:relative;z-index:1}
+.tag{display:inline-block;background:var(--ink);color:#fff;font-weight:700;font-size:12px;padding:5px 10px;border-radius:99px;letter-spacing:.02em}
+h1{font-size:30px;line-height:1.15;margin:12px 0 6px;font-weight:900;letter-spacing:-.03em}
+h1 em{font-style:normal;background:linear-gradient(transparent 58%,var(--butter) 58%)}
+.lead{color:var(--sub);font-size:14px;margin:0;line-height:1.5}
+
+.tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;padding:14px 0 12px}
+.tab{flex:1;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:12px 0;font:inherit;font-weight:800;font-size:15px;color:var(--ink);box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .08s}
+.tab[aria-selected="true"]{background:var(--lav)}
+.tab:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.sec-t{font-size:13px;font-weight:800;color:var(--sub);margin:0 0 10px;letter-spacing:.02em}
+
+/* 다음 편 후보 */
+.podium{display:flex;flex-direction:column;gap:8px}
+.pod{display:flex;align-items:center;gap:10px}
+.pod .rk{width:26px;font-weight:900;font-size:18px;text-align:center}
+.pod .nm{width:54px;font-weight:900;font-size:16px}
+.bar{flex:1;height:14px;background:#f1ecfb;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--lav);transition:width .5s}
+.pod:nth-child(1) .bar i{background:var(--lav-d)}
+.pod .n{width:44px;text-align:right;font-weight:700;font-size:13px;color:var(--sub)}
+
+/* MBTI 그리드 */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.t{position:relative;border:none;border-radius:16px;padding:14px 0 10px;font:inherit;cursor:pointer;color:var(--ink);transition:transform .08s;box-shadow:0 4px 0 rgba(43,36,64,.12)}
+.t:active{transform:translateY(3px);box-shadow:none}
+.t b{display:block;font-size:16px;font-weight:900;letter-spacing:.02em}
+.t small{display:block;font-size:11px;font-weight:700;opacity:.7;margin-top:3px}
+.g-NT{background:#e4dcff}.g-NF{background:#d4f3e6}.g-SJ{background:#d8ebff}.g-SP{background:#fff1c2}
+.t.done{background:#efedf3;color:#a7a2b5;box-shadow:none}
+.t.making::after{content:"제작 중";position:absolute;top:-7px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;white-space:nowrap}
+.t.mine{outline:3px solid var(--lav-d);outline-offset:-3px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:12px;color:var(--sub)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--c)}
+.note{font-size:13px;color:var(--sub);margin:10px 0 0;line-height:1.5}
+.done-list{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:7px 11px;border-radius:99px;background:#f1ecfb;color:var(--ink);text-decoration:none}
+
+/* 아이디어 */
+.ask{display:flex;align-items:center;border:2px solid var(--ink);border-radius:16px;background:#fff;overflow:hidden}
+.ask span{padding:0 0 0 14px;font-weight:900;font-size:16px;white-space:nowrap}
+.ask input{flex:1;min-width:0;border:none;outline:none;font:inherit;font-size:16px;padding:14px 10px;background:transparent;color:var(--ink)}
+.row{display:flex;gap:8px;margin-top:8px}
+.row input{flex:1;min-width:0;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:15px;padding:11px 12px;outline:none;background:#fff;color:var(--ink)}
+.row input:focus,.ask:focus-within{border-color:var(--lav-d)}
+.btn{border:2px solid var(--ink);background:var(--peach);color:var(--ink);font:inherit;font-weight:900;font-size:15px;padding:0 18px;border-radius:14px;box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.5}
+.count{font-size:12px;color:var(--sub);text-align:right;margin-top:6px}
+
+.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.f{flex:none;border:2px solid var(--line);background:#fff;border-radius:99px;padding:7px 12px;font:inherit;font-size:13px;font-weight:700;color:var(--sub);cursor:pointer}
+.f.on{border-color:var(--ink);color:var(--ink);background:var(--butter)}
+.sortbar{display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px}
+.sortbar h2{font-size:18px;margin:0;font-weight:900}
+.sort{display:flex;background:#ece5fb;border-radius:99px;padding:3px}
+.sort button{border:none;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--sub);padding:6px 12px;border-radius:99px;cursor:pointer}
+.sort button.on{background:#fff;color:var(--ink)}
+
+.idea{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:14px;margin-bottom:10px;box-shadow:0 4px 0 #e9e1fb}
+.idea .rk{width:24px;text-align:center;font-weight:900;font-size:17px;color:var(--lav-d)}
+.idea .body{flex:1;min-width:0}
+.idea .txt{font-weight:800;font-size:16px;line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+.idea .meta{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--sub);flex-wrap:wrap}
+.st{font-weight:800;font-size:11px;padding:3px 8px;border-radius:99px}
+.st-접수{background:#f1ecfb}.st-제작{background:var(--butter)}.st-공개{background:var(--sky)}.st-나옴{background:var(--mint)}
+.meta a{color:var(--lav-d);font-weight:800;text-decoration:none}
+.heart{flex:none;width:58px;border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 0 6px;font:inherit;cursor:pointer;text-align:center}
+.heart .h{font-size:20px;line-height:1;display:block;filter:grayscale(1);opacity:.5;transition:transform .15s}
+.heart .c{font-weight:800;font-size:13px;display:block;margin-top:3px}
+.heart.on{border-color:#ff8fa3;background:#fff0f3}
+.heart.on .h{filter:none;opacity:1}
+.heart.pop .h{transform:scale(1.35)}
+.empty{text-align:center;color:var(--sub);padding:30px 10px;font-size:14px;line-height:1.6}
+.more{display:block;width:100%;margin:6px 0 0;border:2px dashed var(--line);background:none;border-radius:14px;padding:12px;font:inherit;font-weight:700;color:var(--sub);cursor:pointer}
+
+/* 시트 & 토스트 */
+.dim{position:fixed;inset:0;background:rgba(43,36,64,.4);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.dim.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h3{margin:0 0 6px;font-size:22px;font-weight:900}
+.sheet p{margin:0 0 18px;color:var(--sub);font-size:14px;line-height:1.5}
+.sheet .big{font-size:44px;font-weight:900;letter-spacing:.03em;text-align:center;padding:16px;border-radius:18px;margin-bottom:14px}
+.sheet .acts{display:flex;gap:8px}
+.sheet .acts button{flex:1;padding:14px 0}
+.ghost{background:#fff !important}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:12px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:30;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:26px}
+footer a{color:var(--ink);font-weight:800}
+.skel{height:56px;border-radius:16px;background:linear-gradient(90deg,#f1ecfb,#faf7ff,#f1ecfb);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="in">
+      <span class="tag">@woong.if</span>
+      <h1>만약에<br><em>신청소</em></h1>
+      <p class="lead">다음 편에 나올 MBTI를 고르고,<br>보고 싶은 '만약에 세상'을 알려주세요.</p>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">🗳️ MBTI 신청</button>
+    <button class="tab" role="tab" id="tab-idea" aria-selected="false" data-tab="idea">💡 만약에 아이디어</button>
+  </nav>
+
+  <!-- MBTI -->
+  <section id="p-mbti">
+    <div class="card">
+      <p class="sec-t">🏆 다음 편 후보</p>
+      <div class="podium" id="podium"><div class="skel"></div></div>
+      <p class="note">가장 많이 신청된 유형부터 만들어요.</p>
+    </div>
+
+    <div class="card">
+      <p class="sec-t">보고 싶은 유형을 눌러주세요 · 하루 1번</p>
+      <div class="grid" id="grid"></div>
+      <div class="legend">
+        <span style="--c:#e4dcff">분석가 NT</span><span style="--c:#d4f3e6">외교관 NF</span>
+        <span style="--c:#d8ebff">관리자 SJ</span><span style="--c:#fff1c2">탐험가 SP</span>
+      </div>
+      <p class="note" id="mbti-mine"></p>
+    </div>
+
+    <div class="card" id="done-card" hidden>
+      <p class="sec-t">🎬 이미 나온 편</p>
+      <div class="done-list" id="done-list"></div>
+    </div>
+  </section>
+
+  <!-- 아이디어 -->
+  <section id="p-idea" hidden>
+    <div class="card">
+      <p class="sec-t">✍️ 이런 세상, 보고 싶다</p>
+      <form id="idea-form" autocomplete="off">
+        <label class="ask"><span>만약</span><input id="idea-text" maxlength="36" placeholder="온 세상이 고양이라면?" enterkeyhint="send"></label>
+        <div class="row">
+          <input id="idea-author" maxlength="30" placeholder="인스타 아이디 (선택)">
+          <button class="btn" id="idea-btn">내기</button>
+        </div>
+        <p class="count"><span id="len">0</span>/36 · 확인 후 목록에 올라가요</p>
+      </form>
+    </div>
+
+    <div class="sortbar">
+      <h2>모인 상상</h2>
+      <div class="sort"><button data-sort="top" class="on">인기순</button><button data-sort="new">최신순</button></div>
+    </div>
+    <div class="filters" id="filters">
+      <button class="f on" data-stage="">전체</button>
+      <button class="f" data-stage="접수">접수</button>
+      <button class="f" data-stage="제작 중">제작 중</button>
+      <button class="f" data-stage="공개 예정">공개 예정</button>
+      <button class="f" data-stage="나옴">나온 상상</button>
+    </div>
+    <div id="ideas"><div class="skel"></div></div>
+  </section>
+
+  <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a> 에서</footer>
+</div>
+
+<div class="dim" id="dim">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="big" id="s-big"></div>
+    <h3 id="s-title"></h3>
+    <p id="s-desc"></p>
+    <div class="acts">
+      <button class="btn ghost" id="s-no">취소</button>
+      <button class="btn" id="s-yes" style="background:var(--lav)">신청할게요</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// 기기 식별용 랜덤 ID (개인정보 아님)
+let voter;
+try {
+  voter = localStorage.getItem("wf_voter");
+  if (!voter) { voter = crypto.randomUUID(); localStorage.setItem("wf_voter", voter); }
+} catch { voter = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); }
+
+const NICK = {ISTJ:"청렴결백 논리주의자",ISFJ:"용감한 수호자",INFJ:"선의의 옹호자",INTJ:"용의주도한 전략가",
+  ISTP:"만능 재주꾼",ISFP:"호기심 많은 예술가",INFP:"열정적인 중재자",INTP:"논리적인 사색가",
+  ESTP:"모험을 즐기는 사업가",ESFP:"자유로운 연예인",ENFP:"재기발랄한 활동가",ENTP:"뜨거운 변론가",
+  ESTJ:"엄격한 관리자",ESFJ:"사교적인 외교관",ENFJ:"정의로운 사회운동가",ENTJ:"대담한 통솔자"};
+const group = (t) => t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
+async function api(path, opt={}){
+  const ctrl = new AbortController(); const tm = setTimeout(()=>ctrl.abort(), 10000);
+  try{
+    const r = await fetch("/api/"+path, {...opt, signal:ctrl.signal, headers:{"content-type":"application/json"}});
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.error || "잠시 후 다시 시도해 주세요");
+    return d;
+  } catch(e){ throw new Error(e.name==="AbortError" ? "연결이 느려요. 다시 시도해 주세요" : e.message); }
+  finally{ clearTimeout(tm); }
+}
+
+// ---------- 탭 ----------
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===name));
+  $("#p-mbti").hidden = name!=="mbti"; $("#p-idea").hidden = name!=="idea";
+  if(name==="idea" && !ideasLoaded) loadIdeas();
+  try{ history.replaceState(null,"", name==="idea" ? "#idea" : "#"); }catch{}
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+// ---------- MBTI ----------
+let mbti = null;
+async function loadMbti(){
+  try{ mbti = await api("mbti?voter="+encodeURIComponent(voter)); renderMbti(); }
+  catch(e){ $("#podium").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function renderMbti(){
+  const open = mbti.types.filter(t=>t.status!=="done");
+  const ranked = [...open].sort((a,b)=>b.votes-a.votes);
+  const max = Math.max(1, ...ranked.map(t=>t.votes));
+  const top = ranked.filter(t=>t.votes>0).slice(0,5);
+  $("#podium").innerHTML = top.length ? top.map((t,i)=>`
+    <div class="pod"><span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span><span class="nm">${t.type}</span>
+    <span class="bar"><i style="width:${Math.round(t.votes/max*100)}%"></i></span><span class="n">${t.votes}표</span></div>`).join("")
+    : `<p class="empty" style="padding:10px">아직 신청이 없어요. 첫 신청의 주인공이 되어주세요!</p>`;
+
+  $("#grid").innerHTML = mbti.types.map(t=>{
+    const cls = ["t", "g-"+group(t.type), t.status==="done"?"done":"", t.status==="making"?"making":"", mbti.todayVote===t.type?"mine":""].join(" ");
+    const sub = t.status==="done" ? (t.episode? t.episode+"편 나옴" : "나옴") : t.votes+"표";
+    return `<button class="${cls}" data-t="${t.type}"><b>${t.type}</b><small>${sub}</small></button>`;
+  }).join("");
+  $("#grid").querySelectorAll(".t").forEach(b=>b.onclick=()=>pick(b.dataset.t));
+
+  $("#mbti-mine").textContent = mbti.todayVote ? `오늘은 ${mbti.todayVote}에 신청했어요. 내일 또 신청할 수 있어요!` : "";
+
+  const done = mbti.types.filter(t=>t.status==="done").sort((a,b)=>(a.episode||99)-(b.episode||99));
+  $("#done-card").hidden = !done.length;
+  $("#done-list").innerHTML = done.map(t=> t.link
+    ? `<a class="chip" href="${esc(t.link)}" target="_blank" rel="noopener">${t.episode?t.episode+"편 ":""}${t.type} ▶</a>`
+    : `<span class="chip">${t.episode?t.episode+"편 ":""}${t.type}</span>`).join("");
+}
+let picking = null;
+function pick(type){
+  const t = mbti.types.find(x=>x.type===type);
+  if(t.status==="done"){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
+  if(mbti.todayVote){ toast("오늘은 이미 신청했어요. 내일 또 만나요!"); return; }
+  picking = type;
+  $("#s-big").textContent = type; $("#s-big").className = "big g-"+group(type);
+  $("#s-title").textContent = `온 세상이 ${type}라면?`;
+  $("#s-desc").textContent = `${NICK[type]} · 지금 ${t.votes}표. 하루에 한 번만 신청할 수 있어요.`;
+  $("#dim").classList.add("show");
+}
+$("#s-no").onclick = ()=>$("#dim").classList.remove("show");
+$("#dim").onclick = (e)=>{ if(e.target.id==="dim") $("#dim").classList.remove("show"); };
+$("#s-yes").onclick = async ()=>{
+  const btn=$("#s-yes"); btn.disabled=true;
+  try{
+    await api("mbti/vote",{method:"POST",body:JSON.stringify({type:picking,voter})});
+    $("#dim").classList.remove("show"); toast(`${picking} 신청 완료! 🎉`);
+    await loadMbti();
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled=false; }
+};
+
+// ---------- 아이디어 ----------
+let ideas = [], ideasLoaded = false, sort = "top", stage = "", shown = 30;
+async function loadIdeas(){
+  try{
+    const d = await api(`ideas?sort=${sort}&voter=${encodeURIComponent(voter)}`);
+    ideas = d.ideas; ideasLoaded = true; renderIdeas();
+  }catch(e){ $("#ideas").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function renderIdeas(){
+  const list = stage ? ideas.filter(i=>i.stage===stage) : ideas;
+  if(!list.length){ $("#ideas").innerHTML = `<p class="empty">${stage?"여기엔 아직 없어요.":"아직 모인 상상이 없어요.<br>첫 번째 아이디어를 내주세요!"}</p>`; return; }
+  $("#ideas").innerHTML = list.slice(0,shown).map((i,n)=>`
+    <div class="idea">
+      <span class="rk">${sort==="top"&&!stage? n+1 : "·"}</span>
+      <div class="body">
+        <div class="txt">${esc(i.text)}</div>
+        <div class="meta">
+          <span class="st st-${esc(i.stage.split(" ")[0])}">${esc(i.stage)}</span>
+          ${i.author?`<span>@${esc(i.author)}</span>`:""}
+          ${i.link?`<a href="${esc(i.link)}" target="_blank" rel="noopener">영상 보기 ▶</a>`:""}
+        </div>
+      </div>
+      <button class="heart ${i.liked?"on":""}" data-id="${i.id}" aria-label="공감"><span class="h">❤️</span><span class="c">${i.hearts}</span></button>
+    </div>`).join("") + (list.length>shown ? `<button class="more" id="more">더 보기 (${list.length-shown})</button>` : "");
+  $("#ideas").querySelectorAll(".heart").forEach(b=>b.onclick=()=>heart(b));
+  const m=$("#more"); if(m) m.onclick=()=>{ shown+=30; renderIdeas(); };
+}
+async function heart(b){
+  const id = Number(b.dataset.id); const it = ideas.find(x=>x.id===id);
+  if(b._busy) return; b._busy = true;
+  // 먼저 화면에 반영
+  it.liked = !it.liked; it.hearts += it.liked?1:-1;
+  b.classList.toggle("on", it.liked); b.querySelector(".c").textContent = it.hearts;
+  if(it.liked){ b.classList.add("pop"); setTimeout(()=>b.classList.remove("pop"),180); }
+  try{
+    const r = await api(`ideas/${id}/heart`,{method:"POST",body:JSON.stringify({voter})});
+    it.liked=r.liked; it.hearts=r.hearts;
+  }catch(e){ it.liked=!it.liked; it.hearts += it.liked?1:-1; toast(e.message); }
+  b.classList.toggle("on", it.liked); b.querySelector(".c").textContent = it.hearts; b._busy=false;
+}
+document.querySelectorAll(".sort button").forEach(b=>b.onclick=()=>{
+  sort=b.dataset.sort; shown=30;
+  document.querySelectorAll(".sort button").forEach(x=>x.classList.toggle("on",x===b)); loadIdeas();
+});
+document.querySelectorAll(".f").forEach(b=>b.onclick=()=>{
+  stage=b.dataset.stage; shown=30;
+  document.querySelectorAll(".f").forEach(x=>x.classList.toggle("on",x===b)); renderIdeas();
+});
+$("#idea-text").oninput = (e)=>$("#len").textContent = e.target.value.length;
+$("#idea-form").onsubmit = async (e)=>{
+  e.preventDefault();
+  let raw = $("#idea-text").value.trim().replace(/^만약\s*/,"");
+  if(raw.length<2){ toast("어떤 세상인지 적어주세요!"); return; }
+  const btn=$("#idea-btn"); btn.disabled=true;
+  try{
+    await api("ideas",{method:"POST",body:JSON.stringify({text:"만약 "+raw, author:$("#idea-author").value.trim(), voter})});
+    $("#idea-text").value=""; $("#len").textContent="0";
+    toast("접수 완료! 확인 후 목록에 올라가요 ✨");
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled=false; }
+};
+
+showTab(location.hash==="#idea" ? "idea" : "mbti");
+loadMbti();
+</script>
+</body>
+</html>
