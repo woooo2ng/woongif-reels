@@ -141,9 +141,13 @@ footer a{color:var(--ink);font-weight:800}
 .barline .n{font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
-.vote{background:#fff !important}
-.vote.liked{background:#ffe4ea !important;border-color:#ff7a93;box-shadow:0 3px 0 #ff7a93;padding:6px 0;line-height:1.2}
-.vote.liked small{display:block;font-size:10px;font-weight:700;color:#d45470}
+.heart-only{flex:none;width:44px;text-align:center;line-height:1}
+.heart-only i{display:block;font-style:normal;font-size:26px}
+.heart-only b{display:block;font-size:13px;font-weight:800;color:var(--sub);margin-top:3px}
+.heart-only:not(.on) i{opacity:.55}
+.heart-only.on i{animation:pop .25s ease-out}
+.heart-only.on b{color:#e0456a}
+@keyframes pop{50%{transform:scale(1.35)}}
 .vote.off{background:#f1ecfb;border-color:#d9d0ef;color:#a69dbf;box-shadow:none;font-size:12px}
 .rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
 .rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
@@ -455,13 +459,12 @@ function rankHTML(list, titleFn, empty, liked=[], start=0, max=null){
   max = max || Math.max(1, ...list.map(i=>i.votes));
   if(start===0 && !arguments[5]) list = list.slice(0,5);
   return list.map((it,j)=>{ const i = start+j;
-    const btn = liked.includes(it.key) ? `<span class="vote liked">❤️ 좋아요<small>오늘 누름</small></span>`
-      : `<span class="vote">🤍 좋아요</span>`;
+    const btn = `<span class="heart-only${liked.includes(it.key)?" on":""}" aria-label="좋아요"><i>${liked.includes(it.key)?"❤️":"🤍"}</i><b>${it.votes}</b></span>`;
     return `
     <div class="rankrow tap" role="button" tabindex="0" data-key="${esc(it.key)}">
       <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
       <div class="body"><div class="ttl">${titleFn(it)}</div>
-        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div><span class="n">❤️ ${it.votes}</span></div></div>
+        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div></div>
       ${btn}
     </div>`;}).join("");
 }
