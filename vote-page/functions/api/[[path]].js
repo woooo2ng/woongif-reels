@@ -450,6 +450,24 @@ export async function onRequest({ request, env, params }) {
       ]);
       return json({ ok: true, key });
     }
+    // 궁합·상황 글 완전 삭제 (하트 기록까지)
+    if (path === "admin/combo/delete" && method === "POST") {
+      if (!["pair", "situation"].includes(body.kind)) return err("값이 이상해요");
+      const key = String(body.key || "").slice(0, 60);
+      if (!key.includes("|")) return err("값이 이상해요");
+      await db.batch([
+        db.prepare("DELETE FROM likes WHERE kind=? AND key=?").bind(body.kind, key),
+        db.prepare("DELETE FROM like_counts WHERE kind=? AND key=?").bind(body.kind, key),
+        db.prepare("DELETE FROM combo_status WHERE kind=? AND key=?").bind(body.kind, key),
+      ]);
+      // 사용자가 쓴 상황인데 더 이상 쓰는 곳이 없으면 상황 문장도 지움
+      if (body.kind === "situation") {
+        const sid = Number(key.split("|")[1]);
+        const used = await db.prepare("SELECT 1 x FROM like_counts WHERE kind='situation' AND key LIKE ?").bind("%|" + sid).first();
+        if (!used) await db.prepare("DELETE FROM situations WHERE id=? AND by_user=1").bind(sid).run();
+      }
+      return json({ ok: true });
+    }
     if (path === "admin/combo" && method === "POST") {
       if (!["pair", "situation"].includes(body.kind) || ![...MBTI_STATUS, "hidden"].includes(body.status)) return err("값이 이상해요");
       const key = String(body.key || "").slice(0, 40);
