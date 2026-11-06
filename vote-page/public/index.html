@@ -604,7 +604,7 @@ function renderPair(){
   const who = couple ? ["남자","여자"] : pSel.custom ? ["앞 사람","뒤 사람"] : ["",""];
   $("#pa-who").textContent = who[0]; $("#pb-who").textContent = who[1];
   $("#pa-who").className = "who"+(couple?" who-m":""); $("#pb-who").className = "who"+(couple?" who-f":"");
-  $("#rel-hint").textContent = couple ? "💘 커플은 앞이 남자, 뒤가 여자예요" : pSel.custom ? "앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 앞이 엄마, 뒤가 아들" : "";
+  $("#rel-hint").textContent = couple ? "" : pSel.custom ? "앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 앞이 엄마, 뒤가 아들" : "";
   $("#rel-hint").hidden = !$("#rel-hint").textContent;
   for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||(couple?(k==="a"?"남자 ?":"여자 ?"):"?"); el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
   renderPairPrev();
