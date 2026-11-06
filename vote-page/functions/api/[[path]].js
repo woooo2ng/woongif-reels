@@ -17,7 +17,8 @@ const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck",
 
 const RELS = ["커플", "친구", "직장 동료"];
 // 커플·친구·직장 동료는 순서 상관없음, 직접 입력(엄마와 아들 등)은 순서대로
-const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).join("|") + "|" + rel;
+// 친구·직장 동료는 순서 상관없음 / 커플(앞 남자·뒤 여자)과 직접 입력은 순서대로
+const pairKey = (a, b, rel) => (rel === "친구" || rel === "직장 동료" ? [a, b].sort() : [a, b]).join("|") + "|" + rel;
 
 // 궁합/상황 투표판: 표 수 + 상태를 합쳐서 반환
 async function comboBoard(db, kind, voter, all) {

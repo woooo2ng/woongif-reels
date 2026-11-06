@@ -174,6 +174,11 @@ footer .contact a{font-weight:700;color:var(--sub)}
 .making-chip.today{background:#e0456a}
 .making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:6px;vertical-align:3px;letter-spacing:0;white-space:nowrap}
 .builder{display:flex;align-items:center;gap:8px;justify-content:center}
+.slotw{flex:1;max-width:140px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.slotw .slot{width:100%;max-width:none}
+.who{font-size:13px;font-weight:800;color:var(--sub);min-height:16px}
+.who.who-m{color:#3b82f6}.who.who-f{color:#e0456a}
+.sx{font-size:.62em;font-weight:800;color:var(--sub);margin-left:2px;vertical-align:1px}
 .slot{flex:1;max-width:140px;border:2px dashed #cfc3f3;background:#faf8ff;border-radius:18px;padding:16px 0;font:inherit;font-size:22px;font-weight:900;color:#b7acd6;cursor:pointer}
 .slot.filled{border-style:solid;border-color:var(--ink);color:var(--ink)}
 .slot.g-NT{background:#e4dcff}.slot.g-NF{background:#d4f3e6}.slot.g-SJ{background:#d8ebff}.slot.g-SP{background:#fff1c2}
@@ -229,13 +234,13 @@ footer .contact a{font-weight:700;color:var(--sub)}
       <div class="card">
         <p class="sec-t">✍️ 새 궁합 신청 · 온 세상 ○○이 전부 이 조합이라면?</p>
         <div class="builder">
-          <button class="slot" id="pa">?</button><span class="x">×</span><button class="slot" id="pb">?</button>
+          <div class="slotw"><button class="slot" id="pa">?</button><small class="who" id="pa-who"></small></div><span class="x">×</span><div class="slotw"><button class="slot" id="pb">?</button><small class="who" id="pb-who"></small></div>
         </div>
         <div class="chips" id="rels" style="justify-content:center"></div>
         <div class="row" id="rel-custom-row" hidden>
           <input id="rel-custom" maxlength="12" placeholder="예: 엄마와 아들, 선생님과 학생">
         </div>
-        <p class="note" id="rel-hint" hidden>앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 첫 번째가 엄마, 두 번째가 아들</p>
+        <p class="note" id="rel-hint"></p>
         <div class="preview" id="pair-prev"></div>
         <div class="row" style="margin:0 0 10px"><input class="insta" id="pair-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
         <button class="btn wide" id="pair-go" style="background:var(--lav)">이 궁합 신청</button>
@@ -574,7 +579,10 @@ let pair = null; const pSel = {a:null, b:null, rel:"커플", custom:false};
 // 받침 있으면 '이', 없으면 '가'
 const iga = (w)=>{ const c=w.trim().slice(-1).charCodeAt(0); return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28) ? "이" : "가"; };
 const relPhrase = (rel)=>`온 세상 ${rel}${iga(rel)} 전부`;
-const pairTitle = (a,b,rel)=>`${relPhrase(rel)} ${a} × ${b}라면?`;
+// 커플은 앞이 남자, 뒤가 여자
+const pairNames = (a,b,rel)=> rel==="커플" ? `${a}(남자) × ${b}(여자)` : `${a} × ${b}`;
+const pairNamesHTML = (a,b,rel)=> rel==="커플" ? `${a}<span class="sx">(남자)</span> × ${b}<span class="sx">(여자)</span>` : `${a} × ${b}`;
+const pairTitle = (a,b,rel)=>`${relPhrase(rel)} ${pairNames(a,b,rel)}라면?`;
 const curRel = ()=> pSel.custom ? $("#rel-custom").value.trim() : pSel.rel;
 async function loadPair(){
   try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
@@ -582,7 +590,7 @@ async function loadPair(){
 }
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking];
-  renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.a} × ${it.b}${badge(it.status)}`,
+  renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${pairNamesHTML(it.a,it.b,it.rel)}${badge(it.status)}`,
     "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
   $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
     + `<button class="pick ${pSel.custom?"on":""}" data-r="">✏️ 직접 입력</button>`;
@@ -590,12 +598,19 @@ function renderPair(){
     pSel.custom = !b.dataset.r; if(b.dataset.r) pSel.rel=b.dataset.r;
     renderPair(); if(pSel.custom) $("#rel-custom").focus();
   });
-  $("#rel-custom-row").hidden = !pSel.custom; $("#rel-hint").hidden = !pSel.custom;
-  for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||"?"; el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
+  $("#rel-custom-row").hidden = !pSel.custom;
+  // 고르기 전부터 앞·뒤가 누구인지 보이게
+  const couple = !pSel.custom && pSel.rel==="커플";
+  const who = couple ? ["남자","여자"] : pSel.custom ? ["앞 사람","뒤 사람"] : ["",""];
+  $("#pa-who").textContent = who[0]; $("#pb-who").textContent = who[1];
+  $("#pa-who").className = "who"+(couple?" who-m":""); $("#pb-who").className = "who"+(couple?" who-f":"");
+  $("#rel-hint").textContent = couple ? "💘 커플은 앞이 남자, 뒤가 여자예요" : pSel.custom ? "앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 앞이 엄마, 뒤가 아들" : "";
+  $("#rel-hint").hidden = !$("#rel-hint").textContent;
+  for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||(couple?(k==="a"?"남자 ?":"여자 ?"):"?"); el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
   renderPairPrev();
   $("#pair-mine").textContent = "";
   $("#pair-done-card").hidden = !pair.done.length;
-  $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${it.a}×${it.b}`);
+  $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${pairNames(it.a,it.b,it.rel)}`);
 }
 function renderPairPrev(){
   const rel = curRel(), ok = pSel.a && pSel.b && rel.length>=2;
@@ -603,8 +618,8 @@ function renderPairPrev(){
   $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,rel) : (pSel.a&&pSel.b ? "관계를 적어주세요" : "두 유형을 골라주세요");
 }
 $("#rel-custom").oninput = renderPairPrev;
-$("#pa").onclick = ()=>typePicker("첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
-$("#pb").onclick = ()=>typePicker("두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
+$("#pa").onclick = ()=>typePicker(!pSel.custom&&pSel.rel==="커플" ? "남자 MBTI" : "첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
+$("#pb").onclick = ()=>typePicker(!pSel.custom&&pSel.rel==="커플" ? "여자 MBTI" : "두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
 $("#pair-go").onclick = ()=>{
   if(instaBad("#pair-author")){ toast(INSTA_MSG); return; }
   if(!pSel.a || !pSel.b){ toast("두 유형을 골라주세요!"); return; }

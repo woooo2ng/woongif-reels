@@ -69,7 +69,7 @@ table.st tr.now td{background:#fffbe6}
     <h2>궁합 직접 넣기</h2>
     <div class="card"><form id="addpair" style="margin:0">
       <div class="row" style="margin:0"><select id="ap-a"></select><b>×</b><select id="ap-b"></select>
-        <input id="ap-rel" list="rels" placeholder="관계 (커플·친구·직장 동료·엄마와 아들…)" maxlength="12" style="flex:1"></div>
+        <input id="ap-rel" list="rels" placeholder="관계 (커플=앞 남자·뒤 여자, 친구, 엄마와 아들…)" maxlength="12" style="flex:1"></div>
       <datalist id="rels"><option>커플</option><option>친구</option><option>직장 동료</option></datalist>
       <div class="row"><input id="ap-author" placeholder="인스타 아이디 (선택)" style="flex:1"><button class="pri">넣기</button></div>
     </form></div>
@@ -192,7 +192,7 @@ async function loadCombo(){
     <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
     <button data-cs="${kind}:${esc(it.key)}">저장</button><button class="no" data-cdel="${kind}:${esc(it.key)}" data-label="${esc(label)}">삭제</button></div></div>`;
   const all=(b)=>[...b.making,...b.ranking,...b.done,...(b.hidden||[])];
-  $("#pairadm").innerHTML = all(pair).map(it=>row("pair",it,`온 세상 ${it.rel} 전부 ${it.a} × ${it.b}${it.author?" · @"+it.author:""}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
+  $("#pairadm").innerHTML = all(pair).map(it=>row("pair",it,`온 세상 ${it.rel} 전부 ${it.rel==="커플"?`${it.a}(남자) × ${it.b}(여자)`:`${it.a} × ${it.b}`}${it.author?" · @"+it.author:""}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
   $("#sitadm").innerHTML = all(sit).map(it=>row("situation",it,`온 세상이 ${it.type}인데 ${it.text}${it.author?" · @"+it.author:""}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
   document.querySelectorAll("[data-cs]").forEach(b=>b.onclick=async()=>{
     const [kind,key]=[b.dataset.cs.split(":")[0], b.dataset.cs.slice(b.dataset.cs.indexOf(":")+1)];
