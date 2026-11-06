@@ -40,7 +40,7 @@ async function comboBoard(db, kind, voter, all) {
   if (!all) items.splice(0, items.length, ...items.filter((i) => i.status !== "hidden"));
   items.sort((x, y) => y.votes - x.votes);
   const out = {
-    ranking: items.filter((i) => i.status === "open").slice(0, all ? 200 : 10),
+    ranking: items.filter((i) => i.status === "open").slice(0, all ? 300 : 100),
     making: items.filter((i) => i.status === "making"),
     done: items.filter((i) => i.status === "done"),
     todayVote: mine?.key || null,
@@ -247,7 +247,7 @@ export async function onRequest({ request, env, params }) {
     } catch {
       return err("오늘은 이미 신청했어요. 내일 또 해주세요!");
     }
-    return json({ ok: true });
+    return json({ ok: true, key });
   }
 
   // ---------- 관리자 API ----------
