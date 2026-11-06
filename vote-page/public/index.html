@@ -141,8 +141,9 @@ footer a{color:var(--ink);font-weight:800}
 .barline .n{font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
-.vote.voted{background:var(--mint);box-shadow:none;transform:none;padding:6px 0;line-height:1.2}
-.vote.voted small{display:block;font-size:10px;font-weight:700;color:#4d8f78}
+.vote{background:#fff !important}
+.vote.liked{background:#ffe4ea !important;border-color:#ff7a93;box-shadow:0 3px 0 #ff7a93;padding:6px 0;line-height:1.2}
+.vote.liked small{display:block;font-size:10px;font-weight:700;color:#d45470}
 .vote.off{background:#f1ecfb;border-color:#d9d0ef;color:#a69dbf;box-shadow:none;font-size:12px}
 .rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
 .rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
@@ -171,12 +172,12 @@ footer a{color:var(--ink);font-weight:800}
     <div class="in">
       <span class="tag">@woong.if</span>
       <h1>만약에<br><em>신청소</em></h1>
-      <p class="lead">다음 편에 나올 MBTI를 고르고,<br>보고 싶은 '만약에 세상'을 알려주세요.</p>
+      <p class="lead">보고 싶은 편에 ❤️를 눌러주세요.<br>같은 글은 하루 한 번, 내일 또 누를 수 있어요.</p>
     </div>
   </header>
 
   <nav class="tabs" role="tablist">
-    <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">🗳️ 다음 편 투표</button>
+    <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">❤️ 다음 편 고르기</button>
     <button class="tab" role="tab" id="tab-idea" aria-selected="false" data-tab="idea">💡 만약에 아이디어</button>
   </nav>
 
@@ -191,7 +192,7 @@ footer a{color:var(--ink);font-weight:800}
     <!-- 궁합편 -->
     <div id="m-pair" hidden>
       <div class="card">
-        <p class="sec-t">🏆 인기 궁합 TOP 3 · 눌러서 같이 투표</p>
+        <p class="sec-t">🏆 인기 궁합 TOP 3 · 보고 싶으면 ❤️</p>
         <div id="pair-rank"><div class="skel"></div></div>
       </div>
       <div class="card" id="pair-rest-card" hidden>
@@ -218,7 +219,7 @@ footer a{color:var(--ink);font-weight:800}
     <!-- 상황편 -->
     <div id="m-sit" hidden>
       <div class="card">
-        <p class="sec-t">🏆 인기 상황 TOP 3 · 눌러서 같이 투표</p>
+        <p class="sec-t">🏆 인기 상황 TOP 3 · 보고 싶으면 ❤️</p>
         <div id="sit-rank"><div class="skel"></div></div>
       </div>
       <div class="card" id="sit-rest-card" hidden>
@@ -239,13 +240,13 @@ footer a{color:var(--ink);font-weight:800}
 
     <div id="m-world">
     <div class="card">
-      <p class="sec-t">🏆 다음 편 후보 · 눌러서 같이 투표</p>
+      <p class="sec-t">🏆 다음 편 후보 · 보고 싶으면 ❤️</p>
       <div id="podium"><div class="skel"></div></div>
-      <p class="note">가장 많이 신청된 유형부터 만들어요.</p>
+      <p class="note">❤️가 가장 많이 쌓인 유형부터 만들어요.</p>
     </div>
 
     <div class="card">
-      <p class="sec-t">보고 싶은 유형을 눌러주세요 · 하루 1번</p>
+      <p class="sec-t">보고 싶은 유형에 ❤️ · 여러 개 OK</p>
       <div class="grid" id="grid"></div>
       <div class="legend">
         <span style="--c:#e4dcff">분석가 NT</span><span style="--c:#d4f3e6">외교관 NF</span>
@@ -353,26 +354,31 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab
 // ---------- MBTI ----------
 let mbti = null;
 async function loadMbti(){
-  try{ mbti = await api("mbti?voter="+encodeURIComponent(voter)); renderMbti(); }
+  try{
+    mbti = await api("mbti?voter="+encodeURIComponent(voter));
+    mbti.order = [...mbti.types].sort((a,b)=>b.votes-a.votes).map(t=>t.type);
+    renderMbti();
+  }
   catch(e){ $("#podium").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
 function renderMbti(){
   const open = mbti.types.filter(t=>t.status!=="done");
-  const ranked = [...open].sort((a,b)=>b.votes-a.votes);
+  // 순서는 불러올 때만 정렬 (좋아요 누를 때마다 줄이 튀지 않게)
+  const ranked = [...open].sort((a,b)=>mbti.order.indexOf(a.type)-mbti.order.indexOf(b.type));
   const max = Math.max(1, ...ranked.map(t=>t.votes));
   const top = ranked.filter(t=>t.votes>0).slice(0,5);
   $("#podium").innerHTML = rankHTML(top.map(t=>({...t, key:t.type})), (it)=>`<small>온 세상이</small>${it.type}라면?`,
-    "아직 신청이 없어요. 첫 신청의 주인공이 되어주세요!", mbti.todayVote);
+    "아직 좋아요가 없어요. 아래에서 보고 싶은 유형을 눌러주세요!", mbti.todayLikes);
   $("#podium").querySelectorAll(".rankrow.tap").forEach(b=>b.onclick=()=>pick(b.dataset.key));
 
   $("#grid").innerHTML = mbti.types.map(t=>{
-    const cls = ["t", "g-"+group(t.type), t.status==="done"?"done":"", t.status==="making"?"making":"", mbti.todayVote===t.type?"mine":""].join(" ");
-    const sub = t.status==="done" ? (t.episode? t.episode+"편 나옴" : "나옴") : t.votes+"표";
+    const cls = ["t", "g-"+group(t.type), t.status==="done"?"done":"", t.status==="making"?"making":"", mbti.todayLikes.includes(t.type)?"mine":""].join(" ");
+    const sub = t.status==="done" ? (t.episode? t.episode+"편 나옴" : "나옴") : (mbti.todayLikes.includes(t.type)?"❤️ ":"🤍 ")+t.votes;
     return `<button class="${cls}" data-t="${t.type}"><b>${t.type}</b><small>${sub}</small></button>`;
   }).join("");
   $("#grid").querySelectorAll(".t").forEach(b=>b.onclick=()=>pick(b.dataset.t));
 
-  $("#mbti-mine").textContent = mbti.todayVote ? `오늘은 ${mbti.todayVote}에 투표했어요. ${mbti.todayVote}를 다시 누르면 취소할 수 있어요.` : "";
+  $("#mbti-mine").textContent = mbti.todayLikes.length ? `오늘 ${mbti.todayLikes.join(", ")}에 좋아요! 다시 누르면 취소, 내일 또 누를 수 있어요.` : "";
 
   const done = mbti.types.filter(t=>t.status==="done").sort((a,b)=>(a.episode||99)-(b.episode||99));
   $("#done-card").hidden = !done.length;
@@ -400,23 +406,26 @@ $("#s-yes").onclick = async ()=>{
   finally{ btn.disabled=false; }
 };
 
-function pick(type){
-  const t = mbti.types.find(x=>x.type===type);
-  if(t.status==="done"){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
-  if(mbti.todayVote===type){ cancelVote("mbti", `온 세상이 ${type}`, loadMbti); return; }
-  if(mbti.todayVote){ toast(ALREADY); return; }
-  confirmSheet({ big:type, bigClass:"g-"+group(type), title:`온 세상이 ${type}라면?`,
-    desc:`${NICK[type]} · 지금 ${t.votes}표. 하루에 한 번만 신청할 수 있어요.`,
-    yes: async ()=>{ await api("mbti/vote",{method:"POST",body:JSON.stringify({type,voter})}); toast(`${type} 신청 완료! 🎉`); await loadMbti(); } });
+// 좋아요: 같은 글은 하루 1번, 다시 누르면 오늘 것 취소
+let likeBusy = false;
+async function like(kind, body, board, items, rerender){
+  if(likeBusy) return; likeBusy = true;
+  try{
+    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter})});
+    for(const it of items) if((it.key||it.type)===r.key) it.votes = r.votes;
+    board.todayLikes = r.liked ? [...new Set([...board.todayLikes, r.key])] : board.todayLikes.filter(k=>k!==r.key);
+    if(!r.liked) toast("좋아요를 취소했어요");
+    rerender();
+    return r;
+  }catch(e){ toast(e.message); }
+  finally{ likeBusy = false; }
 }
 
-// 투표 취소: 오늘 한 표를 지우고 다시 고를 수 있게
-function cancelVote(kind, label, reload){
-  confirmSheet({ big:"투표 취소", bigClass:"", title:`${label} 투표를 취소할까요?`,
-    desc:"취소하면 오늘 다른 데에 다시 투표할 수 있어요.", yesLabel:"투표 취소", danger:true,
-    yes: async ()=>{ await api(kind+"/unvote",{method:"POST",body:JSON.stringify({voter})}); toast("취소했어요. 다시 골라주세요!"); await reload(); } });
+function pick(type){
+  const t = mbti.types.find(x=>x.type===type);
+  if(t.status==="done" && !mbti.todayLikes.includes(type)){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
+  like("mbti", {type}, mbti, mbti.types, renderMbti);
 }
-const ALREADY = "오늘은 이미 투표했어요. ✓ 투표함을 누르면 취소하고 바꿀 수 있어요";
 
 // ---------- 투표 모드 ----------
 let mode = "world";
@@ -441,18 +450,18 @@ $("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
 $("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
 
 const relCls = (r)=>r.split(" ")[0];
-function rankHTML(list, titleFn, empty, today, start=0, max=null){
+function rankHTML(list, titleFn, empty, liked=[], start=0, max=null){
   if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
   max = max || Math.max(1, ...list.map(i=>i.votes));
   if(start===0 && !arguments[5]) list = list.slice(0,5);
   return list.map((it,j)=>{ const i = start+j;
-    const btn = today===it.key ? `<span class="vote voted">✓ 투표함<small>눌러서 취소</small></span>`
-      : today ? `<span class="vote off">오늘 완료</span>` : `<span class="vote">🗳️ 투표</span>`;
+    const btn = liked.includes(it.key) ? `<span class="vote liked">❤️ 좋아요<small>오늘 누름</small></span>`
+      : `<span class="vote">🤍 좋아요</span>`;
     return `
     <div class="rankrow tap" role="button" tabindex="0" data-key="${esc(it.key)}">
       <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
       <div class="body"><div class="ttl">${titleFn(it)}</div>
-        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div><span class="n">${it.votes}표</span></div></div>
+        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div><span class="n">❤️ ${it.votes}</span></div></div>
       ${btn}
     </div>`;}).join("");
 }
@@ -497,7 +506,7 @@ async function loadPair(){
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
   renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}`,
-    "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayVote, (it)=>votePair(it.a, it.b, it.rel, it.key));
+    "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
   $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
     + `<button class="pick ${pSel.custom?"on":""}" data-r="">✏️ 직접 입력</button>`;
   $("#rels").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
@@ -507,7 +516,7 @@ function renderPair(){
   $("#rel-custom-row").hidden = !pSel.custom; $("#rel-hint").hidden = !pSel.custom;
   for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||"?"; el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
   renderPairPrev();
-  $("#pair-mine").textContent = pair.todayVote ? `오늘은 ${pair.todayVote.split("|")[2]} ${pair.todayVote.split("|").slice(0,2).join(" × ")}에 투표했어요. 위에서 ✓ 투표함을 누르면 취소하고 바꿀 수 있어요.` : "";
+  $("#pair-mine").textContent = "이미 있는 궁합이면 그 궁합에 좋아요가 눌려요.";
   $("#pair-done-card").hidden = !pair.done.length;
   $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${it.a}×${it.b}`);
 }
@@ -522,13 +531,16 @@ $("#pb").onclick = ()=>typePicker("두 번째 유형", (t)=>{ pSel.b=t; renderPa
 $("#pair-go").onclick = ()=>{
   if(!pSel.a || !pSel.b){ toast("두 유형을 골라주세요!"); return; }
   const rel = curRel(); if(rel.length<2){ toast("관계를 적어주세요!"); return; }
-  votePair(pSel.a, pSel.b, rel);
+  newCombo("pair", {a:pSel.a, b:pSel.b, rel}, loadPair, "궁합 신청 완료! 💞");
 };
-function votePair(a,b,rel,key){
-  if(key && pair.todayVote===key){ cancelVote("pair", pairTitle(a,b,rel).replace(/라면\?$/,""), loadPair); return; }
-  if(pair.todayVote){ toast(ALREADY); return; }
-  confirmSheet({ big:`${a} × ${b}`, bigClass:"g-NF", title:pairTitle(a,b,rel), desc:"궁합편은 하루에 한 번 신청할 수 있어요.",
-    yes: async ()=>{ const r = await api("pair/vote",{method:"POST",body:JSON.stringify({a,b,rel,voter})}); flashKey = r.key; toast("궁합 신청 완료! 💞"); await loadPair(); } });
+const pairItems = ()=>[...pair.making, ...pair.ranking, ...pair.done];
+function likePair(a,b,rel){ like("pair", {a,b,rel}, pair, pairItems(), renderPair); }
+// 새 궁합/상황 신청 = 좋아요 1개 (이미 눌렀으면 그대로) → 목록에서 반짝
+async function newCombo(kind, body, reload, msg){
+  try{
+    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter, onlyOn:true})});
+    flashKey = r.key; toast(msg); await reload();
+  }catch(e){ toast(e.message); }
 }
 
 // ---------- 상황편 ----------
@@ -541,7 +553,7 @@ async function loadSit(){
 function renderSit(){
   const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
   renderBoard("sit", top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}<small>온 세상이 ${it.type}인데</small>${esc(it.text)}`,
-    "아직 신청이 없어요. 아래에서 첫 상황을 골라주세요!", sit.todayVote, (it)=>voteSit(it.type, it.sid, it.text, it.key));
+    "아직 신청이 없어요. 아래에서 첫 상황을 골라주세요!", sit.todayLikes, (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
   $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
   $("#sits").innerHTML = sit.situations.length
     ? sit.situations.map(s=>`<button class="pick ${sSel.sid===s.id?"on":""}" data-id="${s.id}">${esc(s.text)}</button>`).join("")
@@ -551,7 +563,7 @@ function renderSit(){
   const ok = sSel.type && s;
   $("#sit-prev").className = "preview"+(ok?"":" empty-p");
   $("#sit-prev").textContent = ok ? sitTitle(sSel.type, s.text) : "MBTI와 상황을 골라주세요";
-  $("#sit-mine").textContent = sit.todayVote ? "오늘은 이미 투표했어요. 위에서 ✓ 투표함을 누르면 취소하고 바꿀 수 있어요." : "";
+  $("#sit-mine").textContent = "";
   $("#sit-done-card").hidden = !sit.done.length;
   $("#sit-done").innerHTML = doneHTML(sit.done, (it)=>`${it.type} · ${it.text}`);
 }
@@ -559,14 +571,8 @@ $("#st").onclick = ()=>typePicker("어떤 세상?", (t)=>{ sSel.type=t; renderSi
 $("#sit-go").onclick = ()=>{
   const s = sit && sit.situations.find(x=>x.id===sSel.sid);
   if(!sSel.type || !s){ toast("MBTI와 상황을 골라주세요!"); return; }
-  voteSit(sSel.type, s.id, s.text);
+  newCombo("situation", {type:sSel.type, sid:s.id}, loadSit, "상황 신청 완료! 🎬");
 };
-function voteSit(type, sid, text, key){
-  if(key && sit.todayVote===key){ cancelVote("situation", sitTitle(type,text).replace(/\?$/,""), loadSit); return; }
-  if(sit.todayVote){ toast(ALREADY); return; }
-  confirmSheet({ big:type, bigClass:"g-"+group(type), title:sitTitle(type,text), desc:"상황편은 하루에 한 번 신청할 수 있어요.",
-    yes: async ()=>{ const r = await api("situation/vote",{method:"POST",body:JSON.stringify({type,sid,voter})}); flashKey = r.key; toast("상황 신청 완료! 🎬"); await loadSit(); } });
-}
 
 // ---------- 아이디어 ----------
 let ideas = [], ideasLoaded = false, sort = "top", stage = "", shown = 30;
