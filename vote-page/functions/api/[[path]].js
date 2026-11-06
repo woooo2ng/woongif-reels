@@ -19,14 +19,14 @@ const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).joi
 // 궁합/상황 투표판: 표 수 + 상태를 합쳐서 반환
 async function comboBoard(db, kind, voter, all) {
   const [counts, status, mine, sits] = await Promise.all([
-    db.prepare("SELECT key, n FROM like_counts WHERE kind=? AND n>0").bind(kind).all(),
+    db.prepare("SELECT key, n, first_at FROM like_counts WHERE kind=? AND n>0").bind(kind).all(),
     db.prepare("SELECT key, status, link, author FROM combo_status WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key FROM likes WHERE kind=? AND voter=? AND day=?").bind(kind, voter, kstDay()).all(),
     kind === "situation" ? db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY id").all() : null,
   ]);
   const sitMap = sits ? Object.fromEntries(sits.results.map((s) => [s.id, s])) : {};
   const map = new Map();
-  for (const r of counts.results) map.set(r.key, { key: r.key, votes: r.n, status: "open", link: null });
+  for (const r of counts.results) map.set(r.key, { key: r.key, votes: r.n, created: r.first_at || 0, status: "open", link: null });
   for (const r of status.results) {
     const it = map.get(r.key) || { key: r.key, votes: 0 };
     map.set(r.key, { ...it, status: r.status, link: r.link, author: all ? (r.author || null) : maskInsta(r.author) });
@@ -70,8 +70,8 @@ async function toggleLike(db, kind, key, voter, ip, onlyOn) {
     const ins = await db.prepare("INSERT OR IGNORE INTO likes (kind, key, voter, day, ip, created_at) VALUES (?,?,?,?,?,?)")
       .bind(kind, key, voter, day, ip, Date.now()).run();
     if (ins.meta.changes)
-      await db.prepare(`INSERT INTO like_counts (kind, key, n) VALUES (?,?,1)
-        ON CONFLICT(kind, key) DO UPDATE SET n=n+1`).bind(kind, key).run();
+      await db.prepare(`INSERT INTO like_counts (kind, key, n, first_at) VALUES (?,?,1,?)
+        ON CONFLICT(kind, key) DO UPDATE SET n=n+1`).bind(kind, key, Date.now()).run();
     liked = true;
   }
   const c = await db.prepare("SELECT n FROM like_counts WHERE kind=? AND key=?").bind(kind, key).first();
@@ -89,7 +89,7 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS likes_ip ON likes(kind, ip, day)`),
     // 하트 수 집계 (순위 볼 때마다 전체를 세지 않도록 → 무료 한도 아끼기)
     db.prepare(`CREATE TABLE IF NOT EXISTS like_counts (
-      kind TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(kind, key))`),
+      kind TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, first_at INTEGER, PRIMARY KEY(kind, key))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS mbti_status (
       type TEXT PRIMARY KEY, status TEXT NOT NULL DEFAULT 'open', episode INTEGER, link TEXT)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS ideas (

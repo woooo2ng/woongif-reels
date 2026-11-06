@@ -141,6 +141,7 @@ footer a{color:var(--ink);font-weight:800}
 .barline .n{font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.resthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .by{font-size:12px;font-weight:700;color:var(--sub);margin-top:5px}
 .heart-only{flex:none;width:44px;text-align:center;line-height:1}
 .heart-only i{display:block;font-style:normal;font-size:26px}
@@ -201,7 +202,8 @@ footer a{color:var(--ink);font-weight:800}
         <div id="pair-rank"><div class="skel"></div></div>
       </div>
       <div class="card" id="pair-rest-card" hidden>
-        <p class="sec-t">💬 다른 궁합 <span id="pair-rest-n"></span></p>
+        <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 궁합 <span id="pair-rest-n"></span></p>
+          <div class="sort" data-rsort="pair"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
         <div id="pair-rest"></div>
       </div>
       <div class="card">
@@ -229,7 +231,8 @@ footer a{color:var(--ink);font-weight:800}
         <div id="sit-rank"><div class="skel"></div></div>
       </div>
       <div class="card" id="sit-rest-card" hidden>
-        <p class="sec-t">💬 다른 상황 <span id="sit-rest-n"></span></p>
+        <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 상황 <span id="sit-rest-n"></span></p>
+          <div class="sort" data-rsort="sit"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
         <div id="sit-rest"></div>
       </div>
       <div class="card">
@@ -286,7 +289,7 @@ footer a{color:var(--ink);font-weight:800}
 
     <div class="sortbar">
       <h2>모인 상상</h2>
-      <div class="sort"><button data-sort="top" class="on">인기순</button><button data-sort="new">최신순</button></div>
+      <div class="sort" id="idea-sort"><button data-sort="top" class="on">인기순</button><button data-sort="new">최신순</button></div>
     </div>
     <div class="filters" id="filters">
       <button class="f on" data-stage="">전체</button>
@@ -468,7 +471,7 @@ $("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
 $("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
 
 const relCls = (r)=>r.split(" ")[0];
-function rankHTML(list, titleFn, empty, liked=[], start=0, max=null){
+function rankHTML(list, titleFn, empty, liked=[], start=0, max=null, noRank=false){
   if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
   max = max || Math.max(1, ...list.map(i=>i.votes));
   if(start===0 && !arguments[5]) list = list.slice(0,5);
@@ -476,7 +479,7 @@ function rankHTML(list, titleFn, empty, liked=[], start=0, max=null){
     const btn = `<span class="heart-only${liked.includes(it.key)?" on":""}" aria-label="좋아요"><i>${liked.includes(it.key)?"❤️":"🤍"}</i><b>${it.votes}</b></span>`;
     return `
     <div class="rankrow tap" role="button" tabindex="0" data-key="${esc(it.key)}">
-      <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
+      <span class="rk">${noRank ? "·" : (["🥇","🥈","🥉"][i]||i+1)}</span>
       <div class="body"><div class="ttl">${titleFn(it)}</div>
         <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div>${it.author?`<div class="by">신청 @${esc(it.author)}</div>`:""}</div>
       ${btn}
@@ -490,18 +493,24 @@ function doneHTML(list, label){
 
 // TOP 3 + 나머지 목록 (방금 신청한 줄은 반짝)
 const shownRest = {pair:10, sit:10}; let flashKey = null;
+const restSort = {pair:"top", sit:"top"};
 function renderBoard(pre, top, titleFn, empty, today, onTap){
   const max = Math.max(1, ...top.map(i=>i.votes));
-  const rest = top.slice(3);
+  const byNew = restSort[pre]==="new";
+  const rest = byNew ? top.slice(3).sort((a,b)=>(b.created||0)-(a.created||0)) : top.slice(3);
   const fi = flashKey ? rest.findIndex(x=>x.key===flashKey) : -1;
   if(fi >= shownRest[pre]) shownRest[pre] = fi+1;
   $(`#${pre}-rank`).innerHTML = rankHTML(top.slice(0,3), titleFn, empty, today, 0, max);
   $(`#${pre}-rest-card`).hidden = !rest.length;
   $(`#${pre}-rest-n`).textContent = rest.length ? `(${rest.length})` : "";
-  $(`#${pre}-rest`).innerHTML = rest.length ? rankHTML(rest.slice(0,shownRest[pre]), titleFn, "", today, 3, max)
+  $(`#${pre}-rest`).innerHTML = rest.length ? rankHTML(rest.slice(0,shownRest[pre]), titleFn, "", today, 3, max, byNew)
     + (rest.length>shownRest[pre] ? `<button class="more" data-more="${pre}">더 보기 (${rest.length-shownRest[pre]})</button>` : "") : "";
   document.querySelectorAll(`#${pre}-rank .rankrow.tap, #${pre}-rest .rankrow.tap`).forEach(b=>b.onclick=()=>onTap(top.find(x=>x.key===b.dataset.key)));
   const m = document.querySelector(`[data-more="${pre}"]`); if(m) m.onclick=()=>{ shownRest[pre]+=10; renderBoard(pre, top, titleFn, empty, today, onTap); };
+  document.querySelectorAll(`[data-rsort="${pre}"] button`).forEach(b=>{
+    b.classList.toggle("on", b.dataset.v===restSort[pre]);
+    b.onclick=()=>{ restSort[pre]=b.dataset.v; shownRest[pre]=10; renderBoard(pre, top, titleFn, empty, today, onTap); };
+  });
   if(flashKey){
     const row = [...document.querySelectorAll(`#${pre}-rank .rankrow, #${pre}-rest .rankrow`)].find(r=>r.dataset.key===flashKey);
     if(row){ row.classList.add("flash"); row.scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(()=>row.classList.remove("flash"), 2200); }
@@ -636,9 +645,9 @@ async function heart(b){
   }catch(e){ it.liked=!it.liked; it.hearts += it.liked?1:-1; toast(e.message); }
   b.classList.toggle("on", it.liked); b.querySelector(".c").textContent = it.hearts; b._busy=false;
 }
-document.querySelectorAll(".sort button").forEach(b=>b.onclick=()=>{
+document.querySelectorAll("#idea-sort button").forEach(b=>b.onclick=()=>{
   sort=b.dataset.sort; shown=30;
-  document.querySelectorAll(".sort button").forEach(x=>x.classList.toggle("on",x===b)); loadIdeas();
+  document.querySelectorAll("#idea-sort button").forEach(x=>x.classList.toggle("on",x===b)); loadIdeas();
 });
 document.querySelectorAll(".f").forEach(b=>b.onclick=()=>{
   stage=b.dataset.stage; shown=30;
