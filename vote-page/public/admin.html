@@ -48,11 +48,8 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
   </div>
 
   <section id="s-combo" hidden>
-    <h2>상황 보기 · 사용자 상황</h2>
-    <p class="sub">보기 = 신청 칸에 버튼으로 보이는 예시. 사용자가 직접 쓴 상황은 순위에만 보여요. "숨기기"하면 순위에서도 빠지고 신청도 막혀요.</p>
-    <div class="card"><form id="sitf" class="row" style="margin:0">
-      <input id="sit-text" placeholder="좀비가 나타난다면" style="flex:1" maxlength="30">
-      <button class="pri">추가</button></form></div>
+    <h2>사용자가 쓴 상황</h2>
+    <p class="sub">이상한 상황은 "숨기기" → 순위에서 빠지고 그 문장으로는 신청도 막혀요.</p>
     <div id="sitlist"></div>
     <h2>궁합편 순위</h2><div id="pairadm"></div>
     <h2>상황편 순위</h2><div id="sitadm"></div>
@@ -102,11 +99,8 @@ async function load(){ await Promise.all([loadIdeas(), loadMbti(), loadCombo()])
 async function loadCombo(){
   const [{situations}, pair, sit] = await Promise.all([api("admin/situations"), api("pair?all=1"), api("situation?all=1")]);
   $("#sitlist").innerHTML = situations.length ? situations.map(s=>`<div class="card row" style="margin-top:0;justify-content:space-between">
-    <span class="txt" style="${s.active?"":"opacity:.4"}">${s.by_user?'<span class="sub">사용자 · </span>':""}${esc(s.text)}</span>
-    <span class="row" style="margin:0">${s.by_user?`<button class="ok" data-sug="${s.id}">보기로 올리기</button>`:`<button data-unsug="${s.id}">보기에서 빼기</button>`}
-    <button data-sit="${s.id}" data-on="${s.active?0:1}">${s.active?"숨기기":"다시 보이기"}</button></span></div>`).join("") : `<p class="empty">상황 후보를 추가해 주세요</p>`;
-  document.querySelectorAll("[data-sug],[data-unsug]").forEach(b=>b.onclick=async()=>{
-    try{ await api("admin/situations/update",{id:Number(b.dataset.sug||b.dataset.unsug),suggest:!!b.dataset.sug}); loadCombo(); }catch(e){ toast(e.message); } });
+    <span class="txt" style="${s.active?"":"opacity:.4"}">${esc(s.text)}</span>
+    <span class="row" style="margin:0"><button data-sit="${s.id}" data-on="${s.active?0:1}">${s.active?"숨기기":"다시 보이기"}</button></span></div>`).join("") : `<p class="empty">아직 없어요</p>`;
   document.querySelectorAll("[data-sit]").forEach(b=>b.onclick=async()=>{
     try{ await api("admin/situations/update",{id:Number(b.dataset.sit),active:b.dataset.on==="1"}); loadCombo(); }catch(e){ toast(e.message); } });
   const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <span class="sub">${it.votes}표</span></div>
@@ -124,8 +118,7 @@ async function loadCombo(){
     try{ await api("admin/combo",{kind,key,status,link}); toast("저장했어요"); loadCombo(); }catch(e){ toast(e.message); }
   });
 }
-$("#sitf").onsubmit=async(e)=>{e.preventDefault(); const t=$("#sit-text").value.trim(); if(!t) return;
-  try{ await api("admin/situations/add",{text:t}); $("#sit-text").value=""; toast("추가했어요"); loadCombo(); }catch(er){ toast(er.message); } };
+
 async function loadIdeas(){
   const {ideas}=await api("admin/ideas");
   const p=ideas.filter(i=>i.approved===0), l=ideas.filter(i=>i.approved===1), r=ideas.filter(i=>i.approved===-1);

@@ -235,14 +235,13 @@ footer a{color:var(--ink);font-weight:800}
       <div class="card">
         <p class="sec-t">✍️ 새 상황 신청 · 온 세상이 ○○인데…</p>
         <div class="builder"><button class="slot" id="st" style="max-width:200px">MBTI ?</button></div>
-        <div class="sitlist" id="sits"></div>
-        <div class="row" id="sit-custom-row" hidden>
-          <input id="sit-custom" maxlength="30" placeholder="예: 로또 1등에 당첨된다면">
+        <div class="row" style="margin-top:12px">
+          <input id="sit-custom" maxlength="30" placeholder="어떤 상황? 예: 좀비가 나타난다면">
         </div>
+        <p class="note" style="margin-top:6px">예시) 좀비가 나타난다면 · 단체 여행을 간다면 · 깡패끼리 싸움이 난다면 · 학교에 시험이 사라진다면</p>
         <div class="preview" id="sit-prev"></div>
         <div class="row" style="margin:0 0 10px"><input class="insta" id="sit-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
         <button class="btn wide" id="sit-go" style="background:var(--lav)">이 상황 신청</button>
-        <p class="note">원하는 상황이 없으면 ✏️ 직접 입력으로 써주세요.</p>
         <p class="note" id="sit-mine"></p>
       </div>
       <div class="card" id="sit-done-card" hidden><p class="sec-t">🎬 이미 나온 상황편</p><div class="done-list" id="sit-done"></div></div>
@@ -566,7 +565,7 @@ async function newCombo(kind, body, reload, msg){
 }
 
 // ---------- 상황편 ----------
-let sit = null; const sSel = {type:null, sid:null, custom:false};
+let sit = null; const sSel = {type:null};
 const sitTitle = (t,text)=>`온 세상이 ${t}인데 ${text}?`;
 async function loadSit(){
   try{ sit = await api("situation?voter="+encodeURIComponent(voter)); renderSit(); }
@@ -575,44 +574,27 @@ async function loadSit(){
 function renderSit(){
   const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
   renderBoard("sit", top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}<small>온 세상이 ${it.type}인데</small>${esc(it.text)}`,
-    "아직 신청이 없어요. 아래에서 첫 상황을 골라주세요!", sit.todayLikes, (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
+    "아직 신청이 없어요. 아래에서 첫 상황을 적어주세요!", sit.todayLikes, (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
   $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
-  if(!sit.situations.length) sSel.custom = true;   // 보기가 없으면 바로 직접 입력
-  $("#sits").innerHTML = sit.situations.map(s=>`<button class="pick ${!sSel.custom&&sSel.sid===s.id?"on":""}" data-id="${s.id}">${esc(s.text)}</button>`).join("")
-    + `<button class="pick ${sSel.custom?"on":""}" data-id="">✏️ 직접 입력</button>`;
-  $("#sits").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
-    sSel.custom = !b.dataset.id; if(b.dataset.id) sSel.sid=Number(b.dataset.id);
-    renderSit(); if(sSel.custom) $("#sit-custom").focus();
-  });
-  $("#sit-custom-row").hidden = !sSel.custom;
   renderSitPrev();
   $("#sit-mine").textContent = "";
   $("#sit-done-card").hidden = !sit.done.length;
   $("#sit-done").innerHTML = doneHTML(sit.done, (it)=>`${it.type} · ${it.text}`);
 }
 const sitCustomText = ()=> $("#sit-custom").value.trim().replace(/^온\s*세상이\s*\S+?인데\s*/,"").replace(/[?？]+$/,"");
-function curSitText(){
-  if(sSel.custom) return sitCustomText();
-  const s = sit && sit.situations.find(x=>x.id===sSel.sid); return s ? s.text : "";
-}
+const curSitText = sitCustomText;
 function renderSitPrev(){
   const text = curSitText(), ok = sSel.type && text.length>=2;
   $("#sit-prev").className = "preview"+(ok?"":" empty-p");
-  $("#sit-prev").textContent = ok ? sitTitle(sSel.type, text) : (sSel.type ? (sSel.custom?"상황을 적어주세요":"상황을 골라주세요") : "MBTI와 상황을 골라주세요");
+  $("#sit-prev").textContent = ok ? sitTitle(sSel.type, text) : (sSel.type ? "상황을 적어주세요" : "MBTI를 고르고 상황을 적어주세요");
 }
 $("#sit-custom").oninput = renderSitPrev;
 $("#st").onclick = ()=>typePicker("어떤 세상?", (t)=>{ sSel.type=t; renderSit(); });
 $("#sit-go").onclick = ()=>{
   if(instaBad("#sit-author")){ toast(INSTA_MSG); return; }
   if(!sSel.type){ toast("MBTI를 골라주세요!"); return; }
-  if(sSel.custom){
-    const text = sitCustomText(); if(text.length<2){ toast("상황을 적어주세요!"); return; }
-    newCombo("situation", {type:sSel.type, text, author:instaVal("#sit-author")}, async()=>{ $("#sit-custom").value=""; await loadSit(); }, "상황 신청 완료! 🎬");
-  } else {
-    const s = sit && sit.situations.find(x=>x.id===sSel.sid);
-    if(!s){ toast("상황을 골라주세요!"); return; }
-    newCombo("situation", {type:sSel.type, sid:s.id, author:instaVal("#sit-author")}, loadSit, "상황 신청 완료! 🎬");
-  }
+  const text = sitCustomText(); if(text.length<2){ toast("상황을 적어주세요!"); return; }
+  newCombo("situation", {type:sSel.type, text, author:instaVal("#sit-author")}, async()=>{ $("#sit-custom").value=""; renderSitPrev(); await loadSit(); }, "상황 신청 완료! 🎬");
 };
 
 // ---------- 아이디어 ----------
