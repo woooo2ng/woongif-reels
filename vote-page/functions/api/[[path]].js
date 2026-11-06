@@ -7,7 +7,9 @@ const MBTI = [
 ];
 const STAGES = ["접수", "제작 중", "공개 예정", "나옴"];
 const MBTI_STATUS = ["open", "making", "today", "done"];   // today = 오늘 공개
-const DAILY_IP_LIKES = 150;  // 같은 와이파이(학교·카페)에서 하루 좋아요 상한 (종류별)
+const DAILY_IP_LIKES = 150;
+const SAME_ITEM_PER_IP = 3;   // 같은 글은 같은 인터넷(IP)에서 하루 3번까지 (시크릿 창·기록 삭제 중복 막기)
+const SAME_ITEM_MSG = "이 글은 오늘 이 인터넷에서 이미 여러 번 눌렸어요. 내일 다시 눌러주세요!";  // 같은 와이파이(학교·카페)에서 하루 좋아요 상한 (종류별)
 const DAILY_IP_IDEAS = 5;
 const DAILY_IP_SITUATIONS = 10;
 const DAILY_IP_SCENES = 10;
@@ -68,6 +70,8 @@ async function toggleLike(db, kind, key, voter, ip, onlyOn) {
   } else {
     const n = await db.prepare("SELECT COUNT(*) n FROM likes WHERE kind=? AND ip=? AND day=?").bind(kind, ip, day).first();
     if (n.n >= DAILY_IP_LIKES) return { error: "오늘은 이 네트워크에서 좋아요가 너무 많아요. 내일 다시!" };
+    const same = await db.prepare("SELECT COUNT(*) n FROM likes WHERE kind=? AND key=? AND ip=? AND day=?").bind(kind, key, ip, day).first();
+    if (same.n >= SAME_ITEM_PER_IP) return { error: SAME_ITEM_MSG };
     const ins = await db.prepare("INSERT OR IGNORE INTO likes (kind, key, voter, day, ip, created_at) VALUES (?,?,?,?,?,?)")
       .bind(kind, key, voter, day, ip, Date.now()).run();
     if (ins.meta.changes)
@@ -88,6 +92,7 @@ async function setup(db) {
       kind TEXT NOT NULL, key TEXT NOT NULL, voter TEXT NOT NULL, day TEXT NOT NULL,
       ip TEXT, created_at INTEGER, PRIMARY KEY(kind, key, voter, day))`),
     db.prepare(`CREATE INDEX IF NOT EXISTS likes_ip ON likes(kind, ip, day)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS likes_item_ip ON likes(kind, key, ip, day)`),
     // 하트 수 집계 (순위 볼 때마다 전체를 세지 않도록 → 무료 한도 아끼기)
     db.prepare(`CREATE TABLE IF NOT EXISTS like_counts (
       kind TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, first_at INTEGER, PRIMARY KEY(kind, key))`),
@@ -99,7 +104,8 @@ async function setup(db) {
       link TEXT, hearts INTEGER NOT NULL DEFAULT 0, ip TEXT, voter TEXT, created_at INTEGER)`),
     // 아이디어 하트도 같은 글은 하루 1번
     db.prepare(`CREATE TABLE IF NOT EXISTS idea_likes (
-      idea_id INTEGER NOT NULL, voter TEXT NOT NULL, day TEXT NOT NULL, PRIMARY KEY(idea_id, voter, day))`),
+      idea_id INTEGER NOT NULL, voter TEXT NOT NULL, day TEXT NOT NULL, ip TEXT, PRIMARY KEY(idea_id, voter, day))`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS idea_likes_ip ON idea_likes(idea_id, ip, day)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS combo_status (
       kind TEXT NOT NULL, key TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open', link TEXT,
       author TEXT, PRIMARY KEY(kind, key))`),
@@ -246,7 +252,10 @@ export async function onRequest({ request, env, params }) {
         db.prepare("UPDATE ideas SET hearts=MAX(hearts-1,0) WHERE id=?").bind(id),
       ]);
     } else {
-      const ins = await db.prepare("INSERT OR IGNORE INTO idea_likes (idea_id, voter, day) VALUES (?,?,?)").bind(id, body.voter, day).run();
+      const ip = await ipHash(request, salt);
+      const same = await db.prepare("SELECT COUNT(*) n FROM idea_likes WHERE idea_id=? AND ip=? AND day=?").bind(id, ip, day).first();
+      if (same.n >= SAME_ITEM_PER_IP) return err(SAME_ITEM_MSG);
+      const ins = await db.prepare("INSERT OR IGNORE INTO idea_likes (idea_id, voter, day, ip) VALUES (?,?,?,?)").bind(id, body.voter, day, ip).run();
       if (ins.meta.changes) await db.prepare("UPDATE ideas SET hearts=hearts+1 WHERE id=?").bind(id).run();
     }
     const r = await db.prepare("SELECT hearts FROM ideas WHERE id=?").bind(id).first();
