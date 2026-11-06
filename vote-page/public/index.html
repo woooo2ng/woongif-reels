@@ -119,6 +119,38 @@ footer a{color:var(--ink);font-weight:800}
 .skel{height:56px;border-radius:16px;background:linear-gradient(90deg,#f1ecfb,#faf7ff,#f1ecfb);background-size:200% 100%;animation:sk 1.2s infinite}
 @keyframes sk{to{background-position:-200% 0}}
 [hidden]{display:none !important}
+
+/* 투표 모드 */
+.modes{display:flex;background:#ece5fb;border-radius:16px;padding:4px;margin-bottom:14px}
+.modes button{flex:1;border:none;background:none;font:inherit;font-size:14px;font-weight:800;color:var(--sub);padding:10px 0;border-radius:12px;cursor:pointer}
+.modes button.on{background:#fff;color:var(--ink);box-shadow:0 2px 0 #ddd3f7}
+.rankrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.rankrow:first-child{border-top:none;padding-top:2px}
+.rankrow .rk{width:26px;font-weight:900;font-size:17px;text-align:center;flex:none}
+.rankrow .body{flex:1;min-width:0}
+.rankrow .ttl{font-weight:900;font-size:15px;line-height:1.35;word-break:keep-all}
+.rankrow .ttl small{display:block;font-weight:700;font-size:12px;color:var(--sub)}
+.rankrow .bar{height:8px;margin-top:6px}
+.plus{flex:none;border:2px solid var(--ink);background:#fff;border-radius:12px;padding:6px 0;width:56px;font:inherit;font-weight:900;font-size:13px;cursor:pointer;line-height:1.2}
+.plus span{display:block;font-size:11px;color:var(--sub);font-weight:700}
+.rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
+.rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
+.making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;margin-right:4px;vertical-align:2px}
+.builder{display:flex;align-items:center;gap:8px;justify-content:center}
+.slot{flex:1;max-width:140px;border:2px dashed #cfc3f3;background:#faf8ff;border-radius:18px;padding:16px 0;font:inherit;font-size:22px;font-weight:900;color:#b7acd6;cursor:pointer}
+.slot.filled{border-style:solid;border-color:var(--ink);color:var(--ink)}
+.slot.g-NT{background:#e4dcff}.slot.g-NF{background:#d4f3e6}.slot.g-SJ{background:#d8ebff}.slot.g-SP{background:#fff1c2}
+.x{font-size:22px;font-weight:900;color:var(--sub)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pick{border:2px solid var(--line);background:#fff;border-radius:99px;padding:8px 13px;font:inherit;font-size:14px;font-weight:800;color:var(--sub);cursor:pointer}
+.pick.on{border-color:var(--ink);color:var(--ink);background:var(--butter)}
+.sitlist{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.sitlist .pick{border-radius:14px;text-align:left;padding:11px 14px}
+.preview{margin:14px 0 10px;padding:14px;border-radius:16px;background:#f6f1ff;text-align:center;font-weight:900;font-size:17px;line-height:1.4;word-break:keep-all;min-height:54px}
+.preview.empty-p{color:#b7acd6;font-weight:700;font-size:14px}
+.wide{width:100%;padding:14px 0}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.tgrid .t{padding:14px 0}
 </style>
 </head>
 <body>
@@ -133,12 +165,56 @@ footer a{color:var(--ink);font-weight:800}
   </header>
 
   <nav class="tabs" role="tablist">
-    <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">🗳️ MBTI 신청</button>
+    <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">🗳️ 다음 편 투표</button>
     <button class="tab" role="tab" id="tab-idea" aria-selected="false" data-tab="idea">💡 만약에 아이디어</button>
   </nav>
 
-  <!-- MBTI -->
+  <!-- 투표 -->
   <section id="p-mbti">
+    <div class="modes" id="modes">
+      <button data-mode="world" class="on">🌍 온 세상</button>
+      <button data-mode="pair">💞 궁합편</button>
+      <button data-mode="sit">🎬 상황편</button>
+    </div>
+
+    <!-- 궁합편 -->
+    <div id="m-pair" hidden>
+      <div class="card">
+        <p class="sec-t">🏆 인기 궁합</p>
+        <div id="pair-rank"><div class="skel"></div></div>
+      </div>
+      <div class="card">
+        <p class="sec-t">보고 싶은 궁합 만들기 · 하루 1번</p>
+        <div class="builder">
+          <button class="slot" id="pa">?</button><span class="x">×</span><button class="slot" id="pb">?</button>
+        </div>
+        <div class="chips" id="rels" style="justify-content:center"></div>
+        <div class="preview" id="pair-prev"></div>
+        <button class="btn wide" id="pair-go" style="background:var(--lav)">이 궁합 신청</button>
+        <p class="note" id="pair-mine"></p>
+      </div>
+      <div class="card" id="pair-done-card" hidden><p class="sec-t">🎬 이미 나온 궁합편</p><div class="done-list" id="pair-done"></div></div>
+    </div>
+
+    <!-- 상황편 -->
+    <div id="m-sit" hidden>
+      <div class="card">
+        <p class="sec-t">🏆 인기 상황</p>
+        <div id="sit-rank"><div class="skel"></div></div>
+      </div>
+      <div class="card">
+        <p class="sec-t">온 세상이 ○○인데… · 하루 1번</p>
+        <div class="builder"><button class="slot" id="st" style="max-width:200px">MBTI ?</button></div>
+        <div class="sitlist" id="sits"></div>
+        <div class="preview" id="sit-prev"></div>
+        <button class="btn wide" id="sit-go" style="background:var(--lav)">이 상황 신청</button>
+        <p class="note">보고 싶은 상황이 없으면 💡 아이디어 탭에 내주세요. 인기 많은 건 여기 후보로 올라와요.</p>
+        <p class="note" id="sit-mine"></p>
+      </div>
+      <div class="card" id="sit-done-card" hidden><p class="sec-t">🎬 이미 나온 상황편</p><div class="done-list" id="sit-done"></div></div>
+    </div>
+
+    <div id="m-world">
     <div class="card">
       <p class="sec-t">🏆 다음 편 후보</p>
       <div class="podium" id="podium"><div class="skel"></div></div>
@@ -158,6 +234,7 @@ footer a{color:var(--ink);font-weight:800}
     <div class="card" id="done-card" hidden>
       <p class="sec-t">🎬 이미 나온 편</p>
       <div class="done-list" id="done-list"></div>
+    </div>
     </div>
   </section>
 
@@ -201,6 +278,13 @@ footer a{color:var(--ink);font-weight:800}
       <button class="btn ghost" id="s-no">취소</button>
       <button class="btn" id="s-yes" style="background:var(--lav)">신청할게요</button>
     </div>
+  </div>
+</div>
+<div class="dim" id="tdim">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h3 id="tp-title">MBTI 고르기</h3>
+    <div class="tgrid" id="tgrid"></div>
+    <div class="acts" style="margin-top:14px"><button class="btn ghost" id="tp-close">닫기</button></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -274,28 +358,145 @@ function renderMbti(){
     ? `<a class="chip" href="${esc(t.link)}" target="_blank" rel="noopener">${t.episode?t.episode+"편 ":""}${t.type} ▶</a>`
     : `<span class="chip">${t.episode?t.episode+"편 ":""}${t.type}</span>`).join("");
 }
-let picking = null;
-function pick(type){
-  const t = mbti.types.find(x=>x.type===type);
-  if(t.status==="done"){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
-  if(mbti.todayVote){ toast("오늘은 이미 신청했어요. 내일 또 만나요!"); return; }
-  picking = type;
-  $("#s-big").textContent = type; $("#s-big").className = "big g-"+group(type);
-  $("#s-title").textContent = `온 세상이 ${type}라면?`;
-  $("#s-desc").textContent = `${NICK[type]} · 지금 ${t.votes}표. 하루에 한 번만 신청할 수 있어요.`;
-  $("#dim").classList.add("show");
+// 공통 확인 시트
+let onYes = null;
+function confirmSheet({big, bigClass, title, desc, yes}){
+  $("#s-big").textContent = big; $("#s-big").className = "big " + (bigClass||"");
+  $("#s-big").style.fontSize = big.length > 6 ? "30px" : "";
+  $("#s-title").textContent = title; $("#s-desc").textContent = desc;
+  onYes = yes; $("#dim").classList.add("show");
 }
 $("#s-no").onclick = ()=>$("#dim").classList.remove("show");
 $("#dim").onclick = (e)=>{ if(e.target.id==="dim") $("#dim").classList.remove("show"); };
 $("#s-yes").onclick = async ()=>{
   const btn=$("#s-yes"); btn.disabled=true;
-  try{
-    await api("mbti/vote",{method:"POST",body:JSON.stringify({type:picking,voter})});
-    $("#dim").classList.remove("show"); toast(`${picking} 신청 완료! 🎉`);
-    await loadMbti();
-  }catch(e){ toast(e.message); }
+  try{ await onYes(); $("#dim").classList.remove("show"); }
+  catch(e){ toast(e.message); }
   finally{ btn.disabled=false; }
 };
+
+function pick(type){
+  const t = mbti.types.find(x=>x.type===type);
+  if(t.status==="done"){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
+  if(mbti.todayVote){ toast("오늘은 이미 신청했어요. 내일 또 만나요!"); return; }
+  confirmSheet({ big:type, bigClass:"g-"+group(type), title:`온 세상이 ${type}라면?`,
+    desc:`${NICK[type]} · 지금 ${t.votes}표. 하루에 한 번만 신청할 수 있어요.`,
+    yes: async ()=>{ await api("mbti/vote",{method:"POST",body:JSON.stringify({type,voter})}); toast(`${type} 신청 완료! 🎉`); await loadMbti(); } });
+}
+
+// ---------- 투표 모드 ----------
+let mode = "world";
+function showMode(m){
+  mode = m;
+  document.querySelectorAll("#modes button").forEach(b=>b.classList.toggle("on", b.dataset.mode===m));
+  $("#m-world").hidden = m!=="world"; $("#m-pair").hidden = m!=="pair"; $("#m-sit").hidden = m!=="sit";
+  if(m==="pair" && !pair) loadPair();
+  if(m==="sit" && !sit) loadSit();
+}
+document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>showMode(b.dataset.mode));
+
+// MBTI 고르기 시트
+let onType = null;
+function typePicker(title, cb){
+  $("#tp-title").textContent = title; onType = cb;
+  $("#tgrid").innerHTML = Object.keys(NICK).map(t=>`<button class="t g-${group(t)}" data-t="${t}"><b>${t}</b></button>`).join("");
+  $("#tgrid").querySelectorAll(".t").forEach(b=>b.onclick=()=>{ $("#tdim").classList.remove("show"); onType(b.dataset.t); });
+  $("#tdim").classList.add("show");
+}
+$("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
+$("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
+
+const relCls = (r)=>r.split(" ")[0];
+function rankHTML(list, titleFn, empty){
+  if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
+  const max = Math.max(1, ...list.map(i=>i.votes));
+  return list.slice(0,5).map((it,i)=>`
+    <div class="rankrow">
+      <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
+      <div class="body"><div class="ttl">${titleFn(it)}</div><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div>
+      <button class="plus" data-key="${esc(it.key)}">+1<span>${it.votes}표</span></button>
+    </div>`).join("");
+}
+function doneHTML(list, label){
+  return list.map(it=> it.link
+    ? `<a class="chip" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(label(it))} ▶</a>`
+    : `<span class="chip">${esc(label(it))}</span>`).join("");
+}
+
+// ---------- 궁합편 ----------
+let pair = null; const pSel = {a:null, b:null, rel:"커플"};
+const pairTitle = (a,b,rel)=>`${a} × ${b} ${rel==="커플"?"커플이":rel==="친구"?"친구라":"직장 동료라"}면?`;
+async function loadPair(){
+  try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
+  catch(e){ $("#pair-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function renderPair(){
+  const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
+  $("#pair-rank").innerHTML = rankHTML(top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}<span class="rel ${relCls(it.rel)}">${it.rel}</span>`,
+    "아직 신청이 없어요. 첫 궁합을 만들어 주세요!");
+  $("#pair-rank").querySelectorAll(".plus").forEach(b=>b.onclick=()=>{
+    const it = top.find(x=>x.key===b.dataset.key); votePair(it.a, it.b, it.rel);
+  });
+  $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("");
+  $("#rels").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{ pSel.rel=b.dataset.r; renderPair(); });
+  for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||"?"; el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
+  const ok = pSel.a && pSel.b;
+  $("#pair-prev").className = "preview"+(ok?"":" empty-p");
+  $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,pSel.rel) : "두 유형을 골라주세요";
+  $("#pair-mine").textContent = pair.todayVote ? `오늘은 ${pair.todayVote.split("|").slice(0,2).join(" × ")} ${pair.todayVote.split("|")[2]}에 신청했어요. 내일 또!` : "";
+  $("#pair-done-card").hidden = !pair.done.length;
+  $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.a}×${it.b} ${it.rel}`);
+}
+$("#pa").onclick = ()=>typePicker("첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
+$("#pb").onclick = ()=>typePicker("두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
+$("#pair-go").onclick = ()=>{
+  if(!pSel.a || !pSel.b){ toast("두 유형을 골라주세요!"); return; }
+  votePair(pSel.a, pSel.b, pSel.rel);
+};
+function votePair(a,b,rel){
+  if(pair.todayVote){ toast("궁합편은 오늘 이미 신청했어요. 내일 또!"); return; }
+  confirmSheet({ big:`${a} × ${b}`, bigClass:"g-NF", title:pairTitle(a,b,rel), desc:"궁합편은 하루에 한 번 신청할 수 있어요.",
+    yes: async ()=>{ await api("pair/vote",{method:"POST",body:JSON.stringify({a,b,rel,voter})}); toast("궁합 신청 완료! 💞"); await loadPair(); } });
+}
+
+// ---------- 상황편 ----------
+let sit = null; const sSel = {type:null, sid:null};
+const sitTitle = (t,text)=>`온 세상이 ${t}인데 ${text}?`;
+async function loadSit(){
+  try{ sit = await api("situation?voter="+encodeURIComponent(voter)); renderSit(); }
+  catch(e){ $("#sit-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function renderSit(){
+  const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
+  $("#sit-rank").innerHTML = rankHTML(top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}<small>온 세상이 ${it.type}인데</small>${esc(it.text)}`,
+    "아직 신청이 없어요. 첫 상황을 골라주세요!");
+  $("#sit-rank").querySelectorAll(".plus").forEach(b=>b.onclick=()=>{
+    const it = top.find(x=>x.key===b.dataset.key); voteSit(it.type, it.sid, it.text);
+  });
+  $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
+  $("#sits").innerHTML = sit.situations.length
+    ? sit.situations.map(s=>`<button class="pick ${sSel.sid===s.id?"on":""}" data-id="${s.id}">${esc(s.text)}</button>`).join("")
+    : `<p class="empty" style="padding:8px">상황 후보를 준비 중이에요!</p>`;
+  $("#sits").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{ sSel.sid=Number(b.dataset.id); renderSit(); });
+  const s = sit.situations.find(x=>x.id===sSel.sid);
+  const ok = sSel.type && s;
+  $("#sit-prev").className = "preview"+(ok?"":" empty-p");
+  $("#sit-prev").textContent = ok ? sitTitle(sSel.type, s.text) : "MBTI와 상황을 골라주세요";
+  $("#sit-mine").textContent = sit.todayVote ? "상황편은 오늘 이미 신청했어요. 내일 또!" : "";
+  $("#sit-done-card").hidden = !sit.done.length;
+  $("#sit-done").innerHTML = doneHTML(sit.done, (it)=>`${it.type} · ${it.text}`);
+}
+$("#st").onclick = ()=>typePicker("어떤 세상?", (t)=>{ sSel.type=t; renderSit(); });
+$("#sit-go").onclick = ()=>{
+  const s = sit && sit.situations.find(x=>x.id===sSel.sid);
+  if(!sSel.type || !s){ toast("MBTI와 상황을 골라주세요!"); return; }
+  voteSit(sSel.type, s.id, s.text);
+};
+function voteSit(type, sid, text){
+  if(sit.todayVote){ toast("상황편은 오늘 이미 신청했어요. 내일 또!"); return; }
+  confirmSheet({ big:type, bigClass:"g-"+group(type), title:sitTitle(type,text), desc:"상황편은 하루에 한 번 신청할 수 있어요.",
+    yes: async ()=>{ await api("situation/vote",{method:"POST",body:JSON.stringify({type,sid,voter})}); toast("상황 신청 완료! 🎬"); await loadSit(); } });
+}
 
 // ---------- 아이디어 ----------
 let ideas = [], ideasLoaded = false, sort = "top", stage = "", shown = 30;
@@ -359,7 +560,10 @@ $("#idea-form").onsubmit = async (e)=>{
   finally{ btn.disabled=false; }
 };
 
-showTab(location.hash==="#idea" ? "idea" : "mbti");
+const startHash = location.hash;
+showTab(startHash==="#idea" ? "idea" : "mbti");
+if(startHash==="#pair") showMode("pair");
+if(startHash==="#sit") showMode("sit");
 loadMbti();
 </script>
 </body>

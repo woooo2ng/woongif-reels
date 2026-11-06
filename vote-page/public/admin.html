@@ -23,7 +23,8 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
 .mb{display:grid;grid-template-columns:52px 1fr 54px;gap:6px;align-items:center;margin-bottom:6px}
 .mb b{font-weight:900}
 .mb .lk{grid-column:2/4}
-.tabs{display:flex;gap:6px}
+.tabs{display:flex;gap:6px;overflow-x:auto}
+.tabs button{white-space:nowrap;flex:none}
 .tabs button[aria-selected="true"]{background:#fff0a8}
 .empty{color:#7a7290;padding:8px}
 #login{max-width:320px;margin:80px auto;text-align:center}
@@ -41,9 +42,21 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
   <h1>신청소 관리 <a href="/" style="font-size:13px">페이지 보기 →</a></h1>
   <div class="tabs">
     <button data-t="pending" aria-selected="true">대기 중<span id="pc"></span></button>
-    <button data-t="live">공개 아이디어</button>
+    <button data-t="live">공개</button>
     <button data-t="mbti">MBTI</button>
+    <button data-t="combo">궁합·상황</button>
   </div>
+
+  <section id="s-combo" hidden>
+    <h2>상황 후보</h2>
+    <p class="sub">"온 세상이 ○○인데 ___?" 의 뒷부분만 적어요. 예: 좀비가 나타난다면</p>
+    <div class="card"><form id="sitf" class="row" style="margin:0">
+      <input id="sit-text" placeholder="좀비가 나타난다면" style="flex:1" maxlength="30">
+      <button class="pri">추가</button></form></div>
+    <div id="sitlist"></div>
+    <h2>궁합편 순위</h2><div id="pairadm"></div>
+    <h2>상황편 순위</h2><div id="sitadm"></div>
+  </section>
 
   <section id="s-pending"><h2>승인 대기</h2><div id="pending"></div></section>
 
@@ -81,10 +94,35 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["pending","live","mbti"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["pending","live","mbti","combo"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadIdeas(), loadMbti()]); }
+async function load(){ await Promise.all([loadIdeas(), loadMbti(), loadCombo()]); }
+
+async function loadCombo(){
+  const [{situations}, pair, sit] = await Promise.all([api("admin/situations"), api("pair?all=1"), api("situation?all=1")]);
+  $("#sitlist").innerHTML = situations.length ? situations.map(s=>`<div class="card row" style="margin-top:0;justify-content:space-between">
+    <span class="txt" style="${s.active?"":"opacity:.4"}">${esc(s.text)}</span>
+    <button data-sit="${s.id}" data-on="${s.active?0:1}">${s.active?"숨기기":"다시 보이기"}</button></div>`).join("") : `<p class="empty">상황 후보를 추가해 주세요</p>`;
+  document.querySelectorAll("[data-sit]").forEach(b=>b.onclick=async()=>{
+    try{ await api("admin/situations/update",{id:Number(b.dataset.sit),active:b.dataset.on==="1"}); loadCombo(); }catch(e){ toast(e.message); } });
+  const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <span class="sub">${it.votes}표</span></div>
+    <div class="row"><select data-ck="${esc(it.key)}" data-kind="${kind}">
+      <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option></select>
+    <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
+    <button data-cs="${kind}:${esc(it.key)}">저장</button></div></div>`;
+  const all=(b)=>[...b.making,...b.ranking,...b.done];
+  $("#pairadm").innerHTML = all(pair).map(it=>row("pair",it,`${it.a} × ${it.b} ${it.rel}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
+  $("#sitadm").innerHTML = all(sit).map(it=>row("situation",it,`온 세상이 ${it.type}인데 ${it.text}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
+  document.querySelectorAll("[data-cs]").forEach(b=>b.onclick=async()=>{
+    const [kind,key]=[b.dataset.cs.split(":")[0], b.dataset.cs.slice(b.dataset.cs.indexOf(":")+1)];
+    const status=document.querySelector(`select[data-kind="${kind}"][data-ck="${CSS.escape(key)}"]`).value;
+    const link=document.querySelector(`[data-cl="${CSS.escape(kind+":"+key)}"]`).value;
+    try{ await api("admin/combo",{kind,key,status,link}); toast("저장했어요"); loadCombo(); }catch(e){ toast(e.message); }
+  });
+}
+$("#sitf").onsubmit=async(e)=>{e.preventDefault(); const t=$("#sit-text").value.trim(); if(!t) return;
+  try{ await api("admin/situations/add",{text:t}); $("#sit-text").value=""; toast("추가했어요"); loadCombo(); }catch(er){ toast(er.message); } };
 async function loadIdeas(){
   const {ideas}=await api("admin/ideas");
   const p=ideas.filter(i=>i.approved===0), l=ideas.filter(i=>i.approved===1), r=ideas.filter(i=>i.approved===-1);
