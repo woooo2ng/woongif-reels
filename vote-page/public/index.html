@@ -271,12 +271,11 @@ footer a{color:var(--ink);font-weight:800}
 
     <div class="card secret">
       <p class="sec-t">🤫 장면 제보 · 운영자만 봐요</p>
-      <p class="note" style="margin:0 0 12px">"우리 유형은 진짜 이래" 싶은 장면을 몰래 알려주세요. 영상에 나올 수도 있어요 👀</p>
+      <p class="note" style="margin:0 0 12px">"우리 유형은 진짜 이래" 싶은 장면을 알려주세요. 영상에 나올 수도 있어요 👀</p>
       <div class="builder"><button class="slot" id="sc-type" style="max-width:200px">MBTI ?</button></div>
       <textarea id="sc-text" maxlength="80" rows="2" placeholder="예: 온 세상 사람들이 출근 전에 이불 속에 누워 있는 장면"></textarea>
       <div class="row" style="margin:8px 0 10px"><input class="insta" id="sc-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
-      <button class="btn wide" id="sc-go" style="background:var(--mint)">몰래 보내기</button>
-      <p class="note" style="margin-top:8px">🔒 다른 사람에게는 보이지 않아요.</p>
+      <button class="btn wide" id="sc-go" style="background:var(--mint)">보내기</button>
     </div>
 
     <div class="card" id="done-card" hidden>
@@ -475,7 +474,7 @@ $("#sc-go").onclick = async ()=>{
   const btn=$("#sc-go"); btn.disabled=true;
   try{
     await api("scenes",{method:"POST",body:JSON.stringify({type:scType, text, author:instaVal("#sc-author"), voter})});
-    $("#sc-text").value=""; toast("몰래 보냈어요! 고마워요 🤫");
+    $("#sc-text").value=""; toast("보냈어요! 고마워요 🙌");
   }catch(e){ toast(e.message); }
   finally{ btn.disabled=false; }
 };
