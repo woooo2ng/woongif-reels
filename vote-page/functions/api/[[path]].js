@@ -19,7 +19,7 @@ const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).joi
 // 궁합/상황 투표판: 표 수 + 상태를 합쳐서 반환
 async function comboBoard(db, kind, voter, all) {
   const [counts, status, mine, sits] = await Promise.all([
-    db.prepare("SELECT key, COUNT(*) n FROM likes WHERE kind=? GROUP BY key").bind(kind).all(),
+    db.prepare("SELECT key, n FROM like_counts WHERE kind=? AND n>0").bind(kind).all(),
     db.prepare("SELECT key, status, link, author FROM combo_status WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key FROM likes WHERE kind=? AND voter=? AND day=?").bind(kind, voter, kstDay()).all(),
     kind === "situation" ? db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY id").all() : null,
@@ -59,17 +59,23 @@ async function toggleLike(db, kind, key, voter, ip, onlyOn) {
   let liked;
   if (had && onlyOn) liked = true;
   else if (had) {
-    await db.prepare("DELETE FROM likes WHERE kind=? AND key=? AND voter=? AND day=?").bind(kind, key, voter, day).run();
+    await db.batch([
+      db.prepare("DELETE FROM likes WHERE kind=? AND key=? AND voter=? AND day=?").bind(kind, key, voter, day),
+      db.prepare("UPDATE like_counts SET n=MAX(n-1,0) WHERE kind=? AND key=?").bind(kind, key),
+    ]);
     liked = false;
   } else {
     const n = await db.prepare("SELECT COUNT(*) n FROM likes WHERE kind=? AND ip=? AND day=?").bind(kind, ip, day).first();
     if (n.n >= DAILY_IP_LIKES) return { error: "오늘은 이 네트워크에서 좋아요가 너무 많아요. 내일 다시!" };
-    await db.prepare("INSERT OR IGNORE INTO likes (kind, key, voter, day, ip, created_at) VALUES (?,?,?,?,?,?)")
+    const ins = await db.prepare("INSERT OR IGNORE INTO likes (kind, key, voter, day, ip, created_at) VALUES (?,?,?,?,?,?)")
       .bind(kind, key, voter, day, ip, Date.now()).run();
+    if (ins.meta.changes)
+      await db.prepare(`INSERT INTO like_counts (kind, key, n) VALUES (?,?,1)
+        ON CONFLICT(kind, key) DO UPDATE SET n=n+1`).bind(kind, key).run();
     liked = true;
   }
-  const c = await db.prepare("SELECT COUNT(*) n FROM likes WHERE kind=? AND key=?").bind(kind, key).first();
-  return { liked, votes: c.n, key };
+  const c = await db.prepare("SELECT n FROM like_counts WHERE kind=? AND key=?").bind(kind, key).first();
+  return { liked, votes: c?.n || 0, key };
 }
 
 let ready = false;
@@ -81,6 +87,9 @@ async function setup(db) {
       kind TEXT NOT NULL, key TEXT NOT NULL, voter TEXT NOT NULL, day TEXT NOT NULL,
       ip TEXT, created_at INTEGER, PRIMARY KEY(kind, key, voter, day))`),
     db.prepare(`CREATE INDEX IF NOT EXISTS likes_ip ON likes(kind, ip, day)`),
+    // 하트 수 집계 (순위 볼 때마다 전체를 세지 않도록 → 무료 한도 아끼기)
+    db.prepare(`CREATE TABLE IF NOT EXISTS like_counts (
+      kind TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(kind, key))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS mbti_status (
       type TEXT PRIMARY KEY, status TEXT NOT NULL DEFAULT 'open', episode INTEGER, link TEXT)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS ideas (
@@ -96,6 +105,11 @@ async function setup(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS situations (
       id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER,
       by_user INTEGER NOT NULL DEFAULT 0, ip TEXT)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS situations_text ON situations(text)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS situations_ip ON situations(ip, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS ideas_text ON ideas(text)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS ideas_ip ON ideas(ip, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS ideas_list ON ideas(approved, hearts)`),
   ]);
   ready = true;
 }
@@ -156,7 +170,7 @@ export async function onRequest({ request, env, params }) {
   if (path === "mbti" && method === "GET") {
     const voter = url.searchParams.get("voter") || "";
     const [counts, status, mine] = await Promise.all([
-      db.prepare("SELECT key type, COUNT(*) n FROM likes WHERE kind='mbti' GROUP BY key").all(),
+      db.prepare("SELECT key type, n FROM like_counts WHERE kind='mbti'").all(),
       db.prepare("SELECT type, status, episode, link FROM mbti_status").all(),
       db.prepare("SELECT key type FROM likes WHERE kind='mbti' AND voter=? AND day=?").bind(voter, kstDay()).all(),
     ]);
@@ -289,7 +303,7 @@ export async function onRequest({ request, env, params }) {
     if (st && st.status === "done" && !had) return err("이미 나온 편이에요!");
     // 새로 신청(onlyNew)인데 이미 올라온 조합이면 좋아요 없이 알려만 줌
     if (body.onlyNew) {
-      const exists = await db.prepare("SELECT 1 x FROM likes WHERE kind=? AND key=? LIMIT 1").bind(kind, key).first()
+      const exists = await db.prepare("SELECT 1 x FROM like_counts WHERE kind=? AND key=?").bind(kind, key).first()
         || await db.prepare("SELECT 1 x FROM combo_status WHERE kind=? AND key=?").bind(kind, key).first();
       if (exists) return json({ exists: true, key });
     }
