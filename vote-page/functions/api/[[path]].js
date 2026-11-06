@@ -280,11 +280,17 @@ export async function onRequest({ request, env, params }) {
     if (st && st.status === "hidden") return err("신청할 수 없는 조합이에요");
     const had = await db.prepare("SELECT 1 x FROM likes WHERE kind=? AND key=? AND voter=? AND day=?").bind(kind, key, body.voter, kstDay()).first();
     if (st && st.status === "done" && !had) return err("이미 나온 편이에요!");
-    const r = await toggleLike(db, kind, key, body.voter, await ipHash(request, salt), !!body.onlyOn);
+    // 새로 신청(onlyNew)인데 이미 올라온 조합이면 좋아요 없이 알려만 줌
+    if (body.onlyNew) {
+      const exists = await db.prepare("SELECT 1 x FROM likes WHERE kind=? AND key=? LIMIT 1").bind(kind, key).first()
+        || await db.prepare("SELECT 1 x FROM combo_status WHERE kind=? AND key=?").bind(kind, key).first();
+      if (exists) return json({ exists: true, key });
+    }
+    const r = await toggleLike(db, kind, key, body.voter, await ipHash(request, salt), !!body.onlyOn || !!body.onlyNew);
     if (r.error) return err(r.error);
     // 처음 신청한 사람의 인스타 아이디만 남김 (선택)
     const author = cleanInsta(body.author);
-    if (body.onlyOn && author && !BAD.some((w) => author.toLowerCase().includes(w))) {
+    if ((body.onlyOn || body.onlyNew) && author && !BAD.some((w) => author.toLowerCase().includes(w))) {
       await db.prepare(`INSERT INTO combo_status (kind, key, author) VALUES (?,?,?)
         ON CONFLICT(kind, key) DO UPDATE SET author=COALESCE(combo_status.author, excluded.author)`).bind(kind, key, author).run();
     }

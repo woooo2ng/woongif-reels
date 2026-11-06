@@ -242,7 +242,7 @@ footer a{color:var(--ink);font-weight:800}
         <div class="preview" id="sit-prev"></div>
         <div class="row" style="margin:0 0 10px"><input class="insta" id="sit-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
         <button class="btn wide" id="sit-go" style="background:var(--lav)">이 상황 신청</button>
-        <p class="note">원하는 상황이 없으면 ✏️ 직접 입력으로 써주세요. 이미 누가 쓴 상황이면 거기에 ❤️가 더해져요.</p>
+        <p class="note">원하는 상황이 없으면 ✏️ 직접 입력으로 써주세요.</p>
         <p class="note" id="sit-mine"></p>
       </div>
       <div class="card" id="sit-done-card" hidden><p class="sec-t">🎬 이미 나온 상황편</p><div class="done-list" id="sit-done"></div></div>
@@ -535,7 +535,7 @@ function renderPair(){
   $("#rel-custom-row").hidden = !pSel.custom; $("#rel-hint").hidden = !pSel.custom;
   for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||"?"; el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
   renderPairPrev();
-  $("#pair-mine").textContent = "이미 있는 궁합이면 그 궁합에 좋아요가 눌려요.";
+  $("#pair-mine").textContent = "";
   $("#pair-done-card").hidden = !pair.done.length;
   $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${it.a}×${it.b}`);
 }
@@ -558,8 +558,10 @@ function likePair(a,b,rel){ like("pair", {a,b,rel}, pair, pairItems(), renderPai
 // 새 궁합/상황 신청 = 좋아요 1개 (이미 눌렀으면 그대로) → 목록에서 반짝
 async function newCombo(kind, body, reload, msg){
   try{
-    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter, onlyOn:true})});
-    flashKey = r.key; toast(msg); await reload();
+    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter, onlyNew:true})});
+    flashKey = r.key;
+    if(r.exists){ toast(kind==="pair" ? "이미 올라온 궁합이에요! 위에서 ❤️를 눌러주세요" : "이미 올라온 상황이에요! 위에서 ❤️를 눌러주세요"); await reload(); return; }
+    toast(msg); await reload();
   }catch(e){ toast(e.message); }
 }
 
