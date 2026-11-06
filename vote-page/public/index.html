@@ -153,7 +153,7 @@ footer a{color:var(--ink);font-weight:800}
 .vote.off{background:#f1ecfb;border-color:#d9d0ef;color:#a69dbf;box-shadow:none;font-size:12px}
 .rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
 .rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
-.making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;margin-right:4px;vertical-align:2px}
+.making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:6px;vertical-align:3px;letter-spacing:0;white-space:nowrap}
 .builder{display:flex;align-items:center;gap:8px;justify-content:center}
 .slot{flex:1;max-width:140px;border:2px dashed #cfc3f3;background:#faf8ff;border-radius:18px;padding:16px 0;font:inherit;font-size:22px;font-weight:900;color:#b7acd6;cursor:pointer}
 .slot.filled{border-style:solid;border-color:var(--ink);color:var(--ink)}
@@ -388,7 +388,7 @@ function renderMbti(){
   const ranked = [...open].sort((a,b)=>mbti.order.indexOf(a.type)-mbti.order.indexOf(b.type));
   const max = Math.max(1, ...ranked.map(t=>t.votes));
   const top = ranked.filter(t=>t.votes>0).slice(0,5);
-  $("#podium").innerHTML = rankHTML(top.map(t=>({...t, key:t.type})), (it)=>`<small>온 세상이</small>${it.type}라면?`,
+  $("#podium").innerHTML = rankHTML(top.map(t=>({...t, key:t.type})), (it)=>`<small>온 세상이</small>${it.type}라면?${it.status==="making"?MAKING:""}`,
     "아직 좋아요가 없어요. 아래에서 보고 싶은 유형을 눌러주세요!", mbti.todayLikes);
   $("#podium").querySelectorAll(".rankrow.tap").forEach(b=>b.onclick=()=>pick(b.dataset.key));
 
@@ -471,6 +471,7 @@ $("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
 $("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
 
 const relCls = (r)=>r.split(" ")[0];
+const MAKING = '<span class="making-chip">🎬 제작 중</span>';
 function rankHTML(list, titleFn, empty, liked=[], start=0, max=null, noRank=false){
   if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
   max = max || Math.max(1, ...list.map(i=>i.votes));
@@ -531,7 +532,7 @@ async function loadPair(){
 }
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
-  renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}`,
+  renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.a} × ${it.b}${it.making?MAKING:""}`,
     "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
   $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
     + `<button class="pick ${pSel.custom?"on":""}" data-r="">✏️ 직접 입력</button>`;
@@ -581,7 +582,7 @@ async function loadSit(){
 }
 function renderSit(){
   const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
-  renderBoard("sit", top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}<small>온 세상이 ${it.type}인데</small>${esc(it.text)}`,
+  renderBoard("sit", top, (it)=>`<small>온 세상이 ${it.type}인데</small>${esc(it.text)}${it.making?MAKING:""}`,
     "아직 신청이 없어요. 아래에서 첫 상황을 적어주세요!", sit.todayLikes, (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
   $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
   renderSitPrev();
