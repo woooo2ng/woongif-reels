@@ -24,7 +24,7 @@
    - Bindings → Add → D1 database → 변수 이름 `DB`, 데이터베이스 `woongif-vote`
    - Variables and Secrets → Add → `ADMIN_PASSWORD` (Secret) = 관리자 비밀번호
 4. **다시 배포**: Deployments → 최신 배포 ⋯ → Retry deployment (바인딩은 재배포 후 적용)
-5. `/admin.html` 들어가서 MBTI 탭에 나온 편(1 ISFP, 2 ISTJ, 3 ISTP, 4 ESTP = 나옴, INTP = 제작 중) 저장
+5. `/admin.html` 들어가서 MBTI 탭에 나온 편(1 ISFP, 2 ISTJ, 3 ISTP, 4 ESTP = 나옴, INTP = 오늘 공개 → 올린 뒤 나옴(5편)) 저장
 
 이후엔 `main`에 push 하면 자동 배포.
 

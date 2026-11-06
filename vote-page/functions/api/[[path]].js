@@ -6,7 +6,7 @@ const MBTI = [
   "ESTP","ESFP","ENFP","ENTP","ESTJ","ESFJ","ENFJ","ENTJ",
 ];
 const STAGES = ["접수", "제작 중", "공개 예정", "나옴"];
-const MBTI_STATUS = ["open", "making", "done"];
+const MBTI_STATUS = ["open", "making", "today", "done"];   // today = 오늘 공개
 const DAILY_IP_LIKES = 150;  // 같은 와이파이(학교·카페)에서 하루 좋아요 상한 (종류별)
 const DAILY_IP_IDEAS = 5;
 const DAILY_IP_SITUATIONS = 10;
@@ -43,7 +43,7 @@ async function comboBoard(db, kind, voter, all) {
   items.sort((x, y) => y.votes - x.votes);
   const out = {
     ranking: items.filter((i) => i.status === "open").slice(0, all ? 300 : 100),
-    making: items.filter((i) => i.status === "making"),
+    making: items.filter((i) => i.status === "making" || i.status === "today"),
     done: items.filter((i) => i.status === "done"),
     todayLikes: mine.results.map((r) => r.key),
   };

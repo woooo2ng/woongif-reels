@@ -75,7 +75,7 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
 
   <section id="s-mbti" hidden>
     <h2>MBTI 상태</h2>
-    <p class="sub">나옴 = 투표 막히고 '나온 편'에 표시 · 제작 중 = 투표는 되고 배지 표시</p>
+    <p class="sub">나옴 = 하트 막히고 '나온 편'에 표시 · 제작 중 / 오늘 공개 = 하트는 되고 배지 표시</p>
     <div class="card" id="mbti"></div>
   </section>
 </div>
@@ -131,7 +131,7 @@ async function loadCombo(){
     try{ await api("admin/situations/update",{id:Number(b.dataset.sit),active:b.dataset.on==="1"}); loadCombo(); }catch(e){ toast(e.message); } });
   const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <span class="sub">${it.votes}표</span></div>
     <div class="row"><select data-ck="${esc(it.key)}" data-kind="${kind}">
-      <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option><option value="hidden" ${it.status==="hidden"?"selected":""}>숨김 (이상한 입력)</option></select>
+      <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="today" ${it.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option><option value="hidden" ${it.status==="hidden"?"selected":""}>숨김 (이상한 입력)</option></select>
     <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
     <button data-cs="${kind}:${esc(it.key)}">저장</button></div></div>`;
   const all=(b)=>[...b.making,...b.ranking,...b.done,...(b.hidden||[])];
@@ -180,7 +180,7 @@ async function loadMbti(){
   const {types}=await api("mbti");
   $("#mbti").innerHTML=types.map(t=>`<div class="mb"><b>${t.type}</b>
     <select data-ms="${t.type}"><option value="open" ${t.status==="open"?"selected":""}>신청 받는 중 (${t.votes}표)</option>
-    <option value="making" ${t.status==="making"?"selected":""}>제작 중</option><option value="done" ${t.status==="done"?"selected":""}>나옴</option></select>
+    <option value="making" ${t.status==="making"?"selected":""}>제작 중</option><option value="today" ${t.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${t.status==="done"?"selected":""}>나옴</option></select>
     <input data-me="${t.type}" placeholder="편" inputmode="numeric" value="${t.episode||""}">
     <input class="lk" data-ml="${t.type}" placeholder="릴스 링크 (선택)" value="${esc(t.link||"")}"></div>`).join("")+`<button class="pri" id="msave" style="width:100%;margin-top:6px">MBTI 상태 저장</button>`;
   $("#msave").onclick=async()=>{
