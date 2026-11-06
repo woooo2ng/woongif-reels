@@ -20,7 +20,7 @@ const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).joi
 // 궁합/상황 투표판: 표 수 + 상태를 합쳐서 반환
 async function comboBoard(db, kind, voter, all) {
   const [counts, status, mine, sits] = await Promise.all([
-    db.prepare("SELECT key, n, first_at FROM like_counts WHERE kind=? AND n>0").bind(kind).all(),
+    db.prepare("SELECT key, n, first_at FROM like_counts WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key, status, link, author FROM combo_status WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key FROM likes WHERE kind=? AND voter=? AND day=?").bind(kind, voter, kstDay()).all(),
     kind === "situation" ? db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY id").all() : null,
@@ -365,6 +365,36 @@ export async function onRequest({ request, env, params }) {
       if (typeof body.text === "string" && clean(body.text, 30))
         await db.prepare("UPDATE situations SET text=? WHERE id=?").bind(clean(body.text, 30), id).run();
       return json({ ok: true });
+    }
+    // 관리자가 궁합·상황 직접 넣기 (하트 0개로 시작)
+    if (path === "admin/combo/add" && method === "POST") {
+      let key;
+      if (body.kind === "pair") {
+        const a = String(body.a || "").toUpperCase(), b = String(body.b || "").toUpperCase();
+        const rel = clean(body.rel, 12).replace(/\|/g, "");
+        if (!MBTI.includes(a) || !MBTI.includes(b)) return err("MBTI 두 개를 골라주세요");
+        if (rel.length < 2) return err("관계를 적어주세요");
+        key = pairKey(a, b, rel);
+      } else if (body.kind === "situation") {
+        const t = String(body.type || "").toUpperCase();
+        const text = cleanSituation(body.text);
+        if (!MBTI.includes(t)) return err("MBTI를 골라주세요");
+        if (text.length < 2) return err("상황을 적어주세요");
+        let s0 = await db.prepare("SELECT id FROM situations WHERE text=?").bind(text).first();
+        if (!s0) {
+          const r = await db.prepare("INSERT INTO situations (text, created_at, by_user) VALUES (?,?,0)").bind(text, Date.now()).run();
+          s0 = { id: r.meta.last_row_id };
+        } else await db.prepare("UPDATE situations SET active=1 WHERE id=?").bind(s0.id).run();
+        key = `${t}|${s0.id}`;
+      } else return err("값이 이상해요");
+      const has = await db.prepare("SELECT 1 x FROM like_counts WHERE kind=? AND key=?").bind(body.kind, key).first();
+      if (has) return err("이미 올라와 있어요");
+      await db.batch([
+        db.prepare("INSERT INTO like_counts (kind, key, n, first_at) VALUES (?,?,0,?)").bind(body.kind, key, Date.now()),
+        db.prepare(`INSERT INTO combo_status (kind, key, status, author) VALUES (?,?,'open',?)
+          ON CONFLICT(kind, key) DO UPDATE SET author=COALESCE(combo_status.author, excluded.author)`).bind(body.kind, key, cleanInsta(body.author) || null),
+      ]);
+      return json({ ok: true, key });
     }
     if (path === "admin/combo" && method === "POST") {
       if (!["pair", "situation"].includes(body.kind) || ![...MBTI_STATUS, "hidden"].includes(body.status)) return err("값이 이상해요");

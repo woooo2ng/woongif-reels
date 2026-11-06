@@ -55,7 +55,19 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
   </section>
 
   <section id="s-combo" hidden>
-    <h2>사용자가 쓴 상황</h2>
+    <h2>궁합 직접 넣기</h2>
+    <div class="card"><form id="addpair" style="margin:0">
+      <div class="row" style="margin:0"><select id="ap-a"></select><b>×</b><select id="ap-b"></select>
+        <input id="ap-rel" list="rels" placeholder="관계 (커플·친구·직장 동료·엄마와 아들…)" maxlength="12" style="flex:1"></div>
+      <datalist id="rels"><option>커플</option><option>친구</option><option>직장 동료</option></datalist>
+      <div class="row"><input id="ap-author" placeholder="인스타 아이디 (선택)" style="flex:1"><button class="pri">넣기</button></div>
+    </form></div>
+    <h2>상황 직접 넣기</h2>
+    <div class="card"><form id="addsit" style="margin:0">
+      <div class="row" style="margin:0"><select id="as-t"></select><input id="as-text" placeholder="상황 (예: 좀비가 나타난다면)" maxlength="30" style="flex:1"></div>
+      <div class="row"><input id="as-author" placeholder="인스타 아이디 (선택)" style="flex:1"><button class="pri">넣기</button></div>
+    </form></div>
+    <h2>상황 목록</h2>
     <p class="sub">이상한 상황은 "숨기기" → 순위에서 빠지고 그 문장으로는 신청도 막혀요.</p>
     <div id="sitlist"></div>
     <h2>궁합편 순위</h2><div id="pairadm"></div>
@@ -122,6 +134,14 @@ function renderScenes(){
   document.querySelectorAll("[data-scd]").forEach(b=>b.onclick=async()=>{ if(!confirm("삭제할까요?")) return; try{ await api("admin/scenes/update",{id:Number(b.dataset.scd),delete:true}); loadScenes(); }catch(e){ toast(e.message); } });
 }
 
+const MBTIS=["ISTJ","ISFJ","INFJ","INTJ","ISTP","ISFP","INFP","INTP","ESTP","ESFP","ENFP","ENTP","ESTJ","ESFJ","ENFJ","ENTJ"];
+["#ap-a","#ap-b","#as-t"].forEach(id=>$(id).innerHTML=MBTIS.map(t=>`<option>${t}</option>`).join(""));
+$("#addpair").onsubmit=async(e)=>{ e.preventDefault();
+  try{ await api("admin/combo/add",{kind:"pair",a:$("#ap-a").value,b:$("#ap-b").value,rel:$("#ap-rel").value,author:$("#ap-author").value});
+    $("#ap-rel").value=""; toast("넣었어요"); loadCombo(); }catch(er){ toast(er.message); } };
+$("#addsit").onsubmit=async(e)=>{ e.preventDefault();
+  try{ await api("admin/combo/add",{kind:"situation",type:$("#as-t").value,text:$("#as-text").value,author:$("#as-author").value});
+    $("#as-text").value=""; toast("넣었어요"); loadCombo(); }catch(er){ toast(er.message); } };
 async function loadCombo(){
   const [{situations}, pair, sit] = await Promise.all([api("admin/situations"), api("pair?all=1"), api("situation?all=1")]);
   $("#sitlist").innerHTML = situations.length ? situations.map(s=>`<div class="card row" style="margin-top:0;justify-content:space-between">

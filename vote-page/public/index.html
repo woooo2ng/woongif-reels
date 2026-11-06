@@ -3,10 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>웅이프 만약에 신청소</title>
-<meta name="description" content="웅이프 '만약에' 릴스 — 다음 MBTI 신청하고, 보고 싶은 만약에 세상을 제안해 주세요">
-<meta property="og:title" content="웅이프 만약에 신청소">
-<meta property="og:description" content="다음 편 MBTI 신청 · 만약에 아이디어 내기">
+<title>만약에 신청소 · @woong.if</title>
+<meta name="description" content="@woong.if '만약에' 릴스 — 다음 편 MBTI·궁합·상황에 ❤️를 누르고, 보고 싶은 만약에 세상을 알려주세요">
+<meta property="og:title" content="만약에 신청소 · @woong.if">
+<meta property="og:description" content="다음 편 MBTI · 궁합 · 상황에 ❤️를 눌러주세요">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
@@ -568,7 +574,7 @@ async function loadPair(){
   catch(e){ $("#pair-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
 function renderPair(){
-  const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
+  const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking];
   renderBoard("pair", top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.a} × ${it.b}${badge(it.status)}`,
     "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
   $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
@@ -618,7 +624,7 @@ async function loadSit(){
   catch(e){ $("#sit-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
 function renderSit(){
-  const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
+  const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking];
   renderBoard("sit", top, (it)=>`<small>온 세상이 ${it.type}인데</small>${esc(it.text)}${badge(it.status)}`,
     "아직 신청이 없어요. 아래에서 첫 상황을 적어주세요!", sit.todayLikes, (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
   $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
