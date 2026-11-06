@@ -239,8 +239,8 @@ export async function onRequest({ request, env, params }) {
     const since = Date.now() - 24 * 3600e3;
     const n = await db.prepare("SELECT COUNT(*) n FROM ideas WHERE ip=? AND created_at>?").bind(ip, since).first();
     if (n.n >= DAILY_IP_IDEAS) return err("하루에 5개까지 낼 수 있어요");
-    const dup = await db.prepare("SELECT id FROM ideas WHERE text=?").bind(text).first();
-    if (dup) return err("이미 누가 낸 아이디어예요! 목록에서 하트를 눌러주세요");
+    const dup = await db.prepare("SELECT id, approved FROM ideas WHERE text=?").bind(text).first();
+    if (dup) return err(dup.approved === 1 ? "이미 올라온 아이디어예요! 목록에서 하트를 눌러주세요" : "이미 접수된 아이디어예요. 확인 후 올라가요!");
     await db.prepare("INSERT INTO ideas (text, author, ip, voter, created_at) VALUES (?,?,?,?,?)")
       .bind(text, author || null, ip, body.voter, Date.now()).run();
     return json({ ok: true });
