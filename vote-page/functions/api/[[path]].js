@@ -20,7 +20,7 @@ const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).joi
 async function comboBoard(db, kind, voter, all) {
   const [counts, status, mine, sits] = await Promise.all([
     db.prepare("SELECT key, COUNT(*) n FROM likes WHERE kind=? GROUP BY key").bind(kind).all(),
-    db.prepare("SELECT key, status, link FROM combo_status WHERE kind=?").bind(kind).all(),
+    db.prepare("SELECT key, status, link, author FROM combo_status WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key FROM likes WHERE kind=? AND voter=? AND day=?").bind(kind, voter, kstDay()).all(),
     kind === "situation" ? db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY id").all() : null,
   ]);
@@ -29,7 +29,7 @@ async function comboBoard(db, kind, voter, all) {
   for (const r of counts.results) map.set(r.key, { key: r.key, votes: r.n, status: "open", link: null });
   for (const r of status.results) {
     const it = map.get(r.key) || { key: r.key, votes: 0 };
-    map.set(r.key, { ...it, status: r.status, link: r.link });
+    map.set(r.key, { ...it, status: r.status, link: r.link, author: r.author || null });
   }
   const items = [...map.values()].map((it) => {
     const p = it.key.split("|");
@@ -92,7 +92,7 @@ async function setup(db) {
       idea_id INTEGER NOT NULL, voter TEXT NOT NULL, day TEXT NOT NULL, PRIMARY KEY(idea_id, voter, day))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS combo_status (
       kind TEXT NOT NULL, key TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open', link TEXT,
-      PRIMARY KEY(kind, key))`),
+      author TEXT, PRIMARY KEY(kind, key))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS situations (
       id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER,
       by_user INTEGER NOT NULL DEFAULT 0, ip TEXT)`),
@@ -124,6 +124,11 @@ function clean(s, max) {
 // "온 세상이 INFP인데 좀비가 나타난다면?" → "좀비가 나타난다면"
 function cleanSituation(t) {
   return clean(t, 40).replace(/^온\s*세상이\s*\S+?(인데|이면|라면)\s*/, "").replace(/[?？!]+$/, "").trim().slice(0, 30);
+}
+// 인스타 아이디: 영문·숫자·._ 만, @ 떼고 30자
+function cleanInsta(s) {
+  const v = String(s ?? "").trim().replace(/^@+/, "");
+  return /^[A-Za-z0-9._]{1,30}$/.test(v) ? v : "";
 }
 function isAdmin(req, env) {
   const key = req.headers.get("x-admin-key");
@@ -183,7 +188,7 @@ export async function onRequest({ request, env, params }) {
 
   if (path === "ideas" && method === "POST") {
     const text = clean(body.text, 40);
-    const author = clean(body.author, 30).replace(/^@/, "");
+    const author = cleanInsta(body.author);
     if (text.length < 2) return err("아이디어를 적어주세요");
     if (!validVoter(body.voter)) return err("다시 시도해 주세요");
     const low = (text + author).toLowerCase().replace(/\s/g, "");
@@ -276,7 +281,14 @@ export async function onRequest({ request, env, params }) {
     const had = await db.prepare("SELECT 1 x FROM likes WHERE kind=? AND key=? AND voter=? AND day=?").bind(kind, key, body.voter, kstDay()).first();
     if (st && st.status === "done" && !had) return err("이미 나온 편이에요!");
     const r = await toggleLike(db, kind, key, body.voter, await ipHash(request, salt), !!body.onlyOn);
-    return r.error ? err(r.error) : json(r);
+    if (r.error) return err(r.error);
+    // 처음 신청한 사람의 인스타 아이디만 남김 (선택)
+    const author = cleanInsta(body.author);
+    if (body.onlyOn && author && !BAD.some((w) => author.toLowerCase().includes(w))) {
+      await db.prepare(`INSERT INTO combo_status (kind, key, author) VALUES (?,?,?)
+        ON CONFLICT(kind, key) DO UPDATE SET author=COALESCE(combo_status.author, excluded.author)`).bind(kind, key, author).run();
+    }
+    return json(r);
   }
 
   // ---------- 관리자 API ----------

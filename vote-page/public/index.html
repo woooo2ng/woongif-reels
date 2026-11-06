@@ -141,6 +141,7 @@ footer a{color:var(--ink);font-weight:800}
 .barline .n{font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.by{font-size:12px;font-weight:700;color:var(--sub);margin-top:5px}
 .heart-only{flex:none;width:44px;text-align:center;line-height:1}
 .heart-only i{display:block;font-style:normal;font-size:26px}
 .heart-only b{display:block;font-size:13px;font-weight:800;color:var(--sub);margin-top:3px}
@@ -214,6 +215,7 @@ footer a{color:var(--ink);font-weight:800}
         </div>
         <p class="note" id="rel-hint" hidden>앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 첫 번째가 엄마, 두 번째가 아들</p>
         <div class="preview" id="pair-prev"></div>
+        <div class="row" style="margin:0 0 10px"><input class="insta" id="pair-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
         <button class="btn wide" id="pair-go" style="background:var(--lav)">이 궁합 신청</button>
         <p class="note" id="pair-mine"></p>
       </div>
@@ -238,6 +240,7 @@ footer a{color:var(--ink);font-weight:800}
           <input id="sit-custom" maxlength="30" placeholder="예: 로또 1등에 당첨된다면">
         </div>
         <div class="preview" id="sit-prev"></div>
+        <div class="row" style="margin:0 0 10px"><input class="insta" id="sit-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
         <button class="btn wide" id="sit-go" style="background:var(--lav)">이 상황 신청</button>
         <p class="note">원하는 상황이 없으면 ✏️ 직접 입력으로 써주세요. 이미 누가 쓴 상황이면 거기에 ❤️가 더해져요.</p>
         <p class="note" id="sit-mine"></p>
@@ -276,7 +279,7 @@ footer a{color:var(--ink);font-weight:800}
       <form id="idea-form" autocomplete="off">
         <label class="ask"><span>만약</span><input id="idea-text" maxlength="36" placeholder="온 세상이 고양이라면?" enterkeyhint="send"></label>
         <div class="row">
-          <input id="idea-author" maxlength="30" placeholder="인스타 아이디 (선택)">
+          <input class="insta" id="idea-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off">
           <button class="btn" id="idea-btn">내기</button>
         </div>
         <p class="count"><span id="len">0</span>/36 · 확인 후 목록에 올라가요</p>
@@ -348,6 +351,16 @@ async function api(path, opt={}){
   } catch(e){ throw new Error(e.name==="AbortError" ? "연결이 느려요. 다시 시도해 주세요" : e.message); }
   finally{ clearTimeout(tm); }
 }
+
+// 인스타 아이디: 한 번 쓰면 다른 칸에도 채워둠
+const instaVal = (id)=> $(id).value.trim().replace(/^@+/,"");
+const instaBad = (id)=>{ const v = instaVal(id); return v && !/^[A-Za-z0-9._]{1,30}$/.test(v); };
+const INSTA_MSG = "인스타 아이디는 영문·숫자·마침표(.)·밑줄(_)만 쓸 수 있어요";
+try{ const saved = localStorage.getItem("wf_insta"); if(saved) document.querySelectorAll(".insta").forEach(i=>i.value=saved); }catch{}
+document.querySelectorAll(".insta").forEach(i=>i.addEventListener("change",()=>{
+  const v=i.value.trim(); document.querySelectorAll(".insta").forEach(x=>x.value=v);
+  try{ localStorage.setItem("wf_insta", v); }catch{}
+}));
 
 // ---------- 탭 ----------
 function showTab(name){
@@ -467,7 +480,7 @@ function rankHTML(list, titleFn, empty, liked=[], start=0, max=null){
     <div class="rankrow tap" role="button" tabindex="0" data-key="${esc(it.key)}">
       <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
       <div class="body"><div class="ttl">${titleFn(it)}</div>
-        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div></div>
+        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div>${it.author?`<div class="by">신청 @${esc(it.author)}</div>`:""}</div>
       ${btn}
     </div>`;}).join("");
 }
@@ -535,9 +548,10 @@ $("#rel-custom").oninput = renderPairPrev;
 $("#pa").onclick = ()=>typePicker("첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
 $("#pb").onclick = ()=>typePicker("두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
 $("#pair-go").onclick = ()=>{
+  if(instaBad("#pair-author")){ toast(INSTA_MSG); return; }
   if(!pSel.a || !pSel.b){ toast("두 유형을 골라주세요!"); return; }
   const rel = curRel(); if(rel.length<2){ toast("관계를 적어주세요!"); return; }
-  newCombo("pair", {a:pSel.a, b:pSel.b, rel}, loadPair, "궁합 신청 완료! 💞");
+  newCombo("pair", {a:pSel.a, b:pSel.b, rel, author:instaVal("#pair-author")}, loadPair, "궁합 신청 완료! 💞");
 };
 const pairItems = ()=>[...pair.making, ...pair.ranking, ...pair.done];
 function likePair(a,b,rel){ like("pair", {a,b,rel}, pair, pairItems(), renderPair); }
@@ -587,14 +601,15 @@ function renderSitPrev(){
 $("#sit-custom").oninput = renderSitPrev;
 $("#st").onclick = ()=>typePicker("어떤 세상?", (t)=>{ sSel.type=t; renderSit(); });
 $("#sit-go").onclick = ()=>{
+  if(instaBad("#sit-author")){ toast(INSTA_MSG); return; }
   if(!sSel.type){ toast("MBTI를 골라주세요!"); return; }
   if(sSel.custom){
     const text = sitCustomText(); if(text.length<2){ toast("상황을 적어주세요!"); return; }
-    newCombo("situation", {type:sSel.type, text}, async()=>{ $("#sit-custom").value=""; await loadSit(); }, "상황 신청 완료! 🎬");
+    newCombo("situation", {type:sSel.type, text, author:instaVal("#sit-author")}, async()=>{ $("#sit-custom").value=""; await loadSit(); }, "상황 신청 완료! 🎬");
   } else {
     const s = sit && sit.situations.find(x=>x.id===sSel.sid);
     if(!s){ toast("상황을 골라주세요!"); return; }
-    newCombo("situation", {type:sSel.type, sid:s.id}, loadSit, "상황 신청 완료! 🎬");
+    newCombo("situation", {type:sSel.type, sid:s.id, author:instaVal("#sit-author")}, loadSit, "상황 신청 완료! 🎬");
   }
 };
 
@@ -649,11 +664,12 @@ document.querySelectorAll(".f").forEach(b=>b.onclick=()=>{
 $("#idea-text").oninput = (e)=>$("#len").textContent = e.target.value.length;
 $("#idea-form").onsubmit = async (e)=>{
   e.preventDefault();
+  if(instaBad("#idea-author")){ toast(INSTA_MSG); return; }
   let raw = $("#idea-text").value.trim().replace(/^만약\s*/,"");
   if(raw.length<2){ toast("어떤 세상인지 적어주세요!"); return; }
   const btn=$("#idea-btn"); btn.disabled=true;
   try{
-    await api("ideas",{method:"POST",body:JSON.stringify({text:"만약 "+raw, author:$("#idea-author").value.trim(), voter})});
+    await api("ideas",{method:"POST",body:JSON.stringify({text:"만약 "+raw, author:instaVal("#idea-author"), voter})});
     $("#idea-text").value=""; $("#len").textContent="0";
     toast("접수 완료! 확인 후 목록에 올라가요 ✨");
   }catch(e){ toast(e.message); }
