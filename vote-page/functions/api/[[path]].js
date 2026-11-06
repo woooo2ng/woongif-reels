@@ -9,6 +9,7 @@ const STAGES = ["접수", "제작 중", "공개 예정", "나옴"];
 const MBTI_STATUS = ["open", "making", "done"];
 const DAILY_IP_LIKES = 150;  // 같은 와이파이(학교·카페)에서 하루 좋아요 상한 (종류별)
 const DAILY_IP_IDEAS = 5;
+const DAILY_IP_SITUATIONS = 10;
 const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck","섹스","자살"];
 
 const RELS = ["커플", "친구", "직장 동료"];
@@ -21,7 +22,7 @@ async function comboBoard(db, kind, voter, all) {
     db.prepare("SELECT key, COUNT(*) n FROM likes WHERE kind=? GROUP BY key").bind(kind).all(),
     db.prepare("SELECT key, status, link FROM combo_status WHERE kind=?").bind(kind).all(),
     db.prepare("SELECT key FROM likes WHERE kind=? AND voter=? AND day=?").bind(kind, voter, kstDay()).all(),
-    kind === "situation" ? db.prepare("SELECT id, text, active FROM situations ORDER BY id").all() : null,
+    kind === "situation" ? db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY id").all() : null,
   ]);
   const sitMap = sits ? Object.fromEntries(sits.results.map((s) => [s.id, s])) : {};
   const map = new Map();
@@ -47,7 +48,7 @@ async function comboBoard(db, kind, voter, all) {
   };
   if (all) out.hidden = hidden;
   if (kind === "pair") out.rels = RELS;
-  else out.situations = sits.results.filter((s) => s.active).map(({ id, text }) => ({ id, text }));
+  else out.situations = sits.results.filter((s) => s.active && !s.by_user).map(({ id, text }) => ({ id, text }));
   return out;
 }
 
@@ -93,7 +94,8 @@ async function setup(db) {
       kind TEXT NOT NULL, key TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open', link TEXT,
       PRIMARY KEY(kind, key))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS situations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER)`),
+      id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER,
+      by_user INTEGER NOT NULL DEFAULT 0, ip TEXT)`),
   ]);
   ready = true;
 }
@@ -118,6 +120,10 @@ function validVoter(v) {
 }
 function clean(s, max) {
   return String(s ?? "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+// "온 세상이 INFP인데 좀비가 나타난다면?" → "좀비가 나타난다면"
+function cleanSituation(t) {
+  return clean(t, 40).replace(/^온\s*세상이\s*\S+?(인데|이면|라면)\s*/, "").replace(/[?？!]+$/, "").trim().slice(0, 30);
 }
 function isAdmin(req, env) {
   const key = req.headers.get("x-admin-key");
@@ -240,9 +246,30 @@ export async function onRequest({ request, env, params }) {
     } else {
       const t = String(body.type || "").toUpperCase();
       if (!MBTI.includes(t)) return err("MBTI를 골라주세요");
-      const s = await db.prepare("SELECT id FROM situations WHERE id=? AND active=1").bind(Number(body.sid)).first();
-      if (!s) return err("상황을 골라주세요");
-      key = `${t}|${s.id}`;
+      let sid;
+      if (typeof body.text === "string") {
+        // 직접 입력한 상황: 같은 문장이 있으면 그걸 쓰고, 없으면 새로 만듦
+        const text = cleanSituation(body.text);
+        if (text.length < 2) return err("상황을 적어주세요");
+        const low = text.toLowerCase().replace(/\s/g, "");
+        if (BAD.some((w) => low.includes(w))) return err("조금만 순한 말로 부탁해요 🙏");
+        if (/https?:|www\.|\.com/i.test(text)) return err("링크는 넣을 수 없어요");
+        const found = await db.prepare("SELECT id, active FROM situations WHERE text=?").bind(text).first();
+        if (found && !found.active) return err("신청할 수 없는 상황이에요");
+        if (found) sid = found.id;
+        else {
+          const ip = await ipHash(request, salt);
+          const n = await db.prepare("SELECT COUNT(*) n FROM situations WHERE ip=? AND created_at>?").bind(ip, Date.now() - 24 * 3600e3).first();
+          if (n.n >= DAILY_IP_SITUATIONS) return err("새 상황은 하루에 10개까지 만들 수 있어요");
+          const r = await db.prepare("INSERT INTO situations (text, created_at, by_user, ip) VALUES (?,?,1,?)").bind(text, Date.now(), ip).run();
+          sid = r.meta.last_row_id;
+        }
+      } else {
+        const s = await db.prepare("SELECT id FROM situations WHERE id=? AND active=1").bind(Number(body.sid)).first();
+        if (!s) return err("상황을 골라주세요");
+        sid = s.id;
+      }
+      key = `${t}|${sid}`;
     }
     const st = await db.prepare("SELECT status FROM combo_status WHERE kind=? AND key=?").bind(kind, key).first();
     if (st && st.status === "hidden") return err("신청할 수 없는 조합이에요");
@@ -257,17 +284,21 @@ export async function onRequest({ request, env, params }) {
     if (!isAdmin(request, env)) return err("비밀번호가 틀렸어요", 401);
 
     if (path === "admin/situations" && method === "GET") {
-      const r = await db.prepare("SELECT id, text, active FROM situations ORDER BY active DESC, id DESC").all();
+      const r = await db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY by_user ASC, active DESC, id DESC").all();
       return json({ situations: r.results });
     }
     if (path === "admin/situations/add" && method === "POST") {
-      const text = clean(body.text, 30).replace(/^(온\s*세상이\s*\S+인데\s*)/, "").replace(/\?$/, "");
+      const text = cleanSituation(body.text);
       if (text.length < 2) return err("상황을 적어주세요");
-      await db.prepare("INSERT INTO situations (text, created_at) VALUES (?,?)").bind(text, Date.now()).run();
+      const found = await db.prepare("SELECT id FROM situations WHERE text=?").bind(text).first();
+      if (found) await db.prepare("UPDATE situations SET by_user=0, active=1 WHERE id=?").bind(found.id).run();
+      else await db.prepare("INSERT INTO situations (text, created_at) VALUES (?,?)").bind(text, Date.now()).run();
       return json({ ok: true });
     }
     if (path === "admin/situations/update" && method === "POST") {
       const id = Number(body.id);
+      if (typeof body.suggest === "boolean")
+        await db.prepare("UPDATE situations SET by_user=? WHERE id=?").bind(body.suggest ? 0 : 1, id).run();
       if (typeof body.active === "boolean")
         await db.prepare("UPDATE situations SET active=? WHERE id=?").bind(body.active ? 1 : 0, id).run();
       if (typeof body.text === "string" && clean(body.text, 30))
