@@ -273,7 +273,7 @@ footer a{color:var(--ink);font-weight:800}
       <p class="sec-t">🤫 장면 제보 · 운영자만 봐요</p>
       <p class="note" style="margin:0 0 12px">"우리 유형은 진짜 이래" 싶은 장면을 알려주세요. 영상에 나올 수도 있어요 👀</p>
       <div class="builder"><button class="slot" id="sc-type" style="max-width:200px">MBTI ?</button></div>
-      <textarea id="sc-text" maxlength="80" rows="2" placeholder="예: 온 세상 사람들이 출근 전에 이불 속에 누워 있는 장면"></textarea>
+      <textarea id="sc-text" maxlength="80" rows="2" placeholder="예: 온 세상 ISFP 사람들이 출근 전에 이불 속에 누워 있는 장면"></textarea>
       <div class="row" style="margin:8px 0 10px"><input class="insta" id="sc-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
       <button class="btn wide" id="sc-go" style="background:var(--mint)">보내기</button>
     </div>
@@ -464,7 +464,6 @@ function pick(type){
 let scType = null;
 $("#sc-type").onclick = ()=>typePicker("어떤 유형의 장면?", (t)=>{
   scType = t; $("#sc-type").textContent = t; $("#sc-type").className = "slot filled g-"+group(t);
-  $("#sc-text").placeholder = `예: 온 세상 ${t}들이 ${t==="ISFP"?"출근 전에 이불 속에 누워 있는 장면":"이럴 때 다 똑같이 하는 장면"}`;
 });
 $("#sc-go").onclick = async ()=>{
   if(instaBad("#sc-author")){ toast(INSTA_MSG); return; }
