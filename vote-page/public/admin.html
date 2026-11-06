@@ -29,6 +29,16 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
 .empty{color:#7a7290;padding:8px}
 #login{max-width:320px;margin:80px auto;text-align:center}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#2b2440;color:#fff;padding:10px 16px;border-radius:12px;display:none}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 3px 0 #e3d9fb}
+.kpi span{display:block;font-size:12px;color:#7a7290;font-weight:700}
+.kpi b{font-size:28px;font-weight:900;margin-right:6px}
+.kpi small{font-size:12px;font-weight:800}
+table.st{width:100%;border-collapse:collapse;font-size:13px}
+table.st th{text-align:left;color:#7a7290;font-weight:700;padding:4px 6px;white-space:nowrap}
+table.st td{padding:6px;border-top:1px solid #efe9fb;white-space:nowrap}
+table.st tr.now td{background:#fffbe6}
+.sbar{height:8px;background:#f1ecfb;border-radius:99px;overflow:hidden}.sbar i{display:block;height:100%;background:#b9a6ff}
 .badge{display:inline-block;background:#ff8fa3;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;margin-left:4px}
 </style>
 </head>
@@ -41,7 +51,8 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
 <div class="wrap" id="app" hidden>
   <h1>신청소 관리 <a href="/" style="font-size:13px">페이지 보기 →</a></h1>
   <div class="tabs">
-    <button data-t="pending" aria-selected="true">대기 중<span id="pc"></span></button>
+    <button data-t="stats" aria-selected="true">📊 통계</button>
+    <button data-t="pending">대기 중<span id="pc"></span></button>
     <button data-t="live">공개</button>
     <button data-t="mbti">MBTI</button>
     <button data-t="combo">궁합·상황</button>
@@ -74,7 +85,15 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
     <h2>상황편 순위</h2><div id="sitadm"></div>
   </section>
 
-  <section id="s-pending"><h2>승인 대기</h2><div id="pending"></div></section>
+  <section id="s-stats">
+    <h2>오늘 <span class="sub" id="st-day"></span> <button id="st-reload" style="font-size:12px;padding:3px 8px;margin-left:6px">새로고침</button></h2>
+    <div class="kpis" id="kpis"></div>
+    <h2>최근 14일</h2>
+    <div class="card" style="overflow-x:auto"><table class="st" id="st-table"></table></div>
+    <h2>오늘 많이 눌린 것</h2>
+    <div id="st-top"></div>
+  </section>
+  <section id="s-pending" hidden><h2>승인 대기</h2><div id="pending"></div></section>
 
   <section id="s-live" hidden>
     <h2>직접 추가 (바로 공개)</h2>
@@ -110,10 +129,28 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["pending","live","mbti","combo","scenes"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["stats","pending","live","mbti","combo","scenes"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadIdeas(), loadMbti(), loadCombo(), loadScenes()]); }
+async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes()]); }
+
+async function loadStats(){
+  const d = await api("admin/stats");
+  const t = d.days[d.days.length-1], y = d.days[d.days.length-2];
+  $("#st-day").textContent = d.today;
+  const diff=(a,b)=>{ if(b===undefined) return ""; const x=a-b; return x? `<small style="color:${x>0?"#2f9e6e":"#d4546f"}">${x>0?"▲":"▼"}${Math.abs(x)}</small>` : `<small>–</small>`; };
+  const kpi=(label,v,pv)=>`<div class="kpi"><span>${label}</span><b>${v}</b>${diff(v,pv)}</div>`;
+  const posts=(x)=>x.newPair+x.newSituation+x.newIdea+x.newScene;
+  $("#kpis").innerHTML = kpi("방문자",t.visitors,y?.visitors)+kpi("페이지 열람",t.views,y?.views)+kpi("하트",t.hearts,y?.hearts)+kpi("새 글",posts(t),y&&posts(y))
+    + `<p class="sub" style="grid-column:1/-1;margin:2px 0 0">새 글 = 궁합 ${t.newPair} · 상황 ${t.newSituation} · 아이디어 ${t.newIdea} · 장면 제보 ${t.newScene} &nbsp;|&nbsp; 하트 = 온 세상 ${t.mbti} · 궁합 ${t.pair} · 상황 ${t.situation} · 아이디어 ${t.idea}</p>`;
+  const max = Math.max(1, ...d.days.map(x=>x.visitors));
+  $("#st-table").innerHTML = `<tr><th>날짜</th><th>방문자</th><th></th><th>열람</th><th>하트</th><th>새 글</th></tr>` +
+    [...d.days].reverse().map(x=>`<tr${x.day===d.today?' class="now"':""}><td>${x.day.slice(5).replace("-","/")}</td><td><b>${x.visitors}</b></td>
+      <td style="width:40%"><div class="sbar"><i style="width:${Math.round(x.visitors/max*100)}%"></i></div></td><td>${x.views}</td><td>${x.hearts}</td><td>${posts(x)}</td></tr>`).join("");
+  const box=(title,list)=>`<div class="card"><div class="txt" style="margin-bottom:6px">${title}</div>${list.length?list.map((r,i)=>`<div class="row" style="margin:4px 0;justify-content:space-between"><span>${i+1}. ${esc(r.label)}</span><b>❤️ ${r.n}</b></div>`).join(""):'<p class="empty" style="padding:0">아직 없어요</p>'}</div>`;
+  $("#st-top").innerHTML = box("🌍 온 세상", d.top.mbti) + box("💞 궁합", d.top.pair) + box("🎬 상황", d.top.situation);
+}
+$("#st-reload").onclick = ()=>loadStats().catch(e=>toast(e.message));
 
 let scenes = [], scFilter = "";
 async function loadScenes(){ ({scenes} = await api("admin/scenes")); renderScenes(); }

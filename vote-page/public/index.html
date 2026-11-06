@@ -153,6 +153,12 @@ footer .contact a{font-weight:700;color:var(--sub)}
 .secret{background:linear-gradient(180deg,#fff, #f4fbf8)}
 .secret textarea{display:block;width:100%;margin-top:12px;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:16px;padding:12px;resize:none;outline:none;background:#fff;color:var(--ink);line-height:1.5}
 .secret textarea:focus{border-color:var(--lav-d)}
+.pk{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px 12px 12px 14px;margin:12px 0 0;box-shadow:0 4px 0 var(--ink);animation:up .25s ease-out}
+.pk .tx{flex:1;min-width:0;font-size:14px;font-weight:700;line-height:1.45;word-break:keep-all}
+.pk .tx b{font-weight:900}
+.pk.done{background:#eafaf3}.pk.today{background:#ffeef2}.pk.making{background:#fff8d6}
+.pk a{flex:none;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:13px;padding:8px 10px;border-radius:10px}
+.pk .x{flex:none;border:none;background:none;font-size:18px;color:var(--sub);cursor:pointer;padding:4px}
 .by{font-size:12px;font-weight:700;color:var(--sub);margin-top:5px}
 .heart-only{flex:none;width:44px;text-align:center;line-height:1}
 .heart-only i{display:block;font-style:normal;font-size:26px}
@@ -195,6 +201,7 @@ footer .contact a{font-weight:700;color:var(--sub)}
     </div>
   </header>
 
+  <div id="picked"></div>
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-mbti" aria-selected="true" data-tab="mbti">🧠 만약에 MBTI</button>
     <button class="tab" role="tab" id="tab-idea" aria-selected="false" data-tab="idea">💡 만약에 아이디어</button>
@@ -711,6 +718,37 @@ $("#idea-form").onsubmit = async (e)=>{
   }catch(e){ toast(e.message); }
   finally{ btn.disabled=false; }
 };
+
+// ---------- 방문 기록 + "내가 누른 게 뽑혔어요" ----------
+api("visit",{method:"POST",body:JSON.stringify({voter})}).catch(()=>{});
+let seenPicked = {};
+try{ seenPicked = JSON.parse(localStorage.getItem("wf_picked")||"{}"); }catch{}
+function pickedLabel(p){
+  if(p.kind==="mbti") return `온 세상이 ${p.type}라면?`;
+  if(p.kind==="pair") return pairTitle(p.a, p.b, p.rel);
+  return sitTitle(p.type, p.text);
+}
+async function loadPicked(){
+  try{
+    const {picked} = await api("mine?voter="+encodeURIComponent(voter));
+    const order = {done:0, today:1, making:2};
+    const show = picked.filter(p=>seenPicked[p.kind+"|"+p.key]!==p.status).sort((a,b)=>order[a.status]-order[b.status]).slice(0,3);
+    const what = {mbti:"유형", pair:"궁합", situation:"상황"};
+    $("#picked").innerHTML = show.map(p=>{
+      const msg = p.status==="done" ? "영상으로 나왔어요! 🎉" : p.status==="today" ? "오늘 공개돼요! 📢" : "제작에 들어갔어요! 🎬";
+      return `<div class="pk ${p.status}" data-k="${esc(p.kind+"|"+p.key)}" data-s="${p.status}">
+        <div class="tx">❤️ 누른 ${what[p.kind]}이 ${msg}<br><b>${esc(pickedLabel(p))}</b></div>
+        ${p.link?`<a href="${esc(p.link)}" target="_blank" rel="noopener">보러 가기</a>`:""}
+        <button class="x" aria-label="닫기">✕</button></div>`;
+    }).join("");
+    $("#picked").querySelectorAll(".pk").forEach(el=>{
+      const close=()=>{ seenPicked[el.dataset.k]=el.dataset.s; try{ localStorage.setItem("wf_picked", JSON.stringify(seenPicked)); }catch{} el.remove(); };
+      el.querySelector(".x").onclick = close;
+      const a = el.querySelector("a"); if(a) a.addEventListener("click", close);
+    });
+  }catch{}
+}
+loadPicked();
 
 const startHash = location.hash;
 showTab(startHash==="#idea" ? "idea" : "mbti");

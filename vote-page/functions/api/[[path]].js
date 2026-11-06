@@ -93,6 +93,11 @@ async function setup(db) {
       ip TEXT, created_at INTEGER, PRIMARY KEY(kind, key, voter, day))`),
     db.prepare(`CREATE INDEX IF NOT EXISTS likes_ip ON likes(kind, ip, day)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS likes_item_ip ON likes(kind, key, ip, day)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS likes_voter ON likes(voter)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS likes_day ON likes(day)`),
+    // 방문 기록: 하루에 기기당 1줄 (방문자 수) + 하루 열람 수
+    db.prepare(`CREATE TABLE IF NOT EXISTS visits (day TEXT NOT NULL, voter TEXT NOT NULL, PRIMARY KEY(day, voter))`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS daily_views (day TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)`),
     // 하트 수 집계 (순위 볼 때마다 전체를 세지 않도록 → 무료 한도 아끼기)
     db.prepare(`CREATE TABLE IF NOT EXISTS like_counts (
       kind TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, first_at INTEGER, PRIMARY KEY(kind, key))`),
@@ -260,6 +265,43 @@ export async function onRequest({ request, env, params }) {
     }
     const r = await db.prepare("SELECT hearts FROM ideas WHERE id=?").bind(id).first();
     return json({ liked: !had, hearts: r.hearts });
+  }
+
+  // ---------- 방문 기록 ----------
+  if (path === "visit" && method === "POST") {
+    const day = kstDay();
+    const ops = [db.prepare(`INSERT INTO daily_views (day, n) VALUES (?,1) ON CONFLICT(day) DO UPDATE SET n=n+1`).bind(day)];
+    if (validVoter(body.voter)) ops.push(db.prepare("INSERT OR IGNORE INTO visits (day, voter) VALUES (?,?)").bind(day, body.voter));
+    await db.batch(ops);
+    return json({ ok: true });
+  }
+
+  // ---------- 내가 ❤️ 누른 것 중 뽑힌 것 (제작 중 · 오늘 공개 · 나옴) ----------
+  if (path === "mine" && method === "GET") {
+    const voter = url.searchParams.get("voter") || "";
+    if (!validVoter(voter)) return json({ picked: [] });
+    const [liked, ms, cs, sits] = await Promise.all([
+      db.prepare("SELECT DISTINCT kind, key FROM likes WHERE voter=? LIMIT 500").bind(voter).all(),
+      db.prepare("SELECT type, status, episode, link FROM mbti_status WHERE status IN ('making','today','done')").all(),
+      db.prepare("SELECT kind, key, status, link FROM combo_status WHERE status IN ('making','today','done')").all(),
+      db.prepare("SELECT id, text FROM situations").all(),
+    ]);
+    const st = new Map();
+    for (const r of ms.results) st.set("mbti|" + r.type, r);
+    for (const r of cs.results) st.set(r.kind + "|" + r.key, r);
+    const sitText = Object.fromEntries(sits.results.map((x) => [x.id, x.text]));
+    const picked = [];
+    for (const l of liked.results) {
+      const r = st.get(l.kind + "|" + l.key);
+      if (!r) continue;
+      const p = l.key.split("|");
+      const item = { kind: l.kind, key: l.key, status: r.status, link: r.link || null };
+      if (l.kind === "mbti") item.type = l.key;
+      else if (l.kind === "pair") Object.assign(item, { a: p[0], b: p[1], rel: p[2] });
+      else Object.assign(item, { type: p[0], text: sitText[p[1]] || "" });
+      picked.push(item);
+    }
+    return json({ picked });
   }
 
   // ---------- 장면 제보 (비공개) ----------
@@ -466,6 +508,46 @@ export async function onRequest({ request, env, params }) {
       if (body.delete) await db.prepare("DELETE FROM scenes WHERE id=?").bind(id).run();
       else await db.prepare("UPDATE scenes SET checked=? WHERE id=?").bind(body.checked ? 1 : 0, id).run();
       return json({ ok: true });
+    }
+    // 통계: 오늘 요약 + 최근 14일 + 오늘 많이 눌린 것
+    if (path === "admin/stats" && method === "GET") {
+      const today = kstDay();
+      const since = new Date(Date.now() + 9 * 3600e3 - 13 * 86400e3).toISOString().slice(0, 10);
+      const sinceMs = Date.parse(since + "T00:00:00+09:00");
+      const kday = (col) => `date((${col}/1000)+32400,'unixepoch')`;
+      const [vis, views, hearts, ihearts, posts, ideas, scenes, topToday, sits] = await Promise.all([
+        db.prepare("SELECT day, COUNT(*) n FROM visits WHERE day>=? GROUP BY day").bind(since).all(),
+        db.prepare("SELECT day, n FROM daily_views WHERE day>=?").bind(since).all(),
+        db.prepare("SELECT day, kind, COUNT(*) n FROM likes WHERE day>=? GROUP BY day, kind").bind(since).all(),
+        db.prepare("SELECT day, COUNT(*) n FROM idea_likes WHERE day>=? GROUP BY day").bind(since).all(),
+        db.prepare(`SELECT ${kday("first_at")} day, kind, COUNT(*) n FROM like_counts WHERE kind IN ('pair','situation') AND first_at>=? GROUP BY day, kind`).bind(sinceMs).all(),
+        db.prepare(`SELECT ${kday("created_at")} day, COUNT(*) n FROM ideas WHERE created_at>=? GROUP BY day`).bind(sinceMs).all(),
+        db.prepare(`SELECT ${kday("created_at")} day, COUNT(*) n FROM scenes WHERE created_at>=? GROUP BY day`).bind(sinceMs).all(),
+        db.prepare("SELECT kind, key, COUNT(*) n FROM likes WHERE day=? GROUP BY kind, key ORDER BY n DESC LIMIT 30").bind(today).all(),
+        db.prepare("SELECT id, text FROM situations").all(),
+      ]);
+      const days = [];
+      for (let i = 13; i >= 0; i--) days.push(new Date(Date.now() + 9 * 3600e3 - i * 86400e3).toISOString().slice(0, 10));
+      const blank = () => ({ visitors: 0, views: 0, hearts: 0, mbti: 0, pair: 0, situation: 0, idea: 0, newPair: 0, newSituation: 0, newIdea: 0, newScene: 0 });
+      const byDay = Object.fromEntries(days.map((d) => [d, blank()]));
+      const add = (d, k, n) => { if (byDay[d]) byDay[d][k] += n; };
+      vis.results.forEach((r) => add(r.day, "visitors", r.n));
+      views.results.forEach((r) => add(r.day, "views", r.n));
+      hearts.results.forEach((r) => { add(r.day, "hearts", r.n); add(r.day, r.kind, r.n); });
+      ihearts.results.forEach((r) => { add(r.day, "hearts", r.n); add(r.day, "idea", r.n); });
+      posts.results.forEach((r) => add(r.day, r.kind === "pair" ? "newPair" : "newSituation", r.n));
+      ideas.results.forEach((r) => add(r.day, "newIdea", r.n));
+      scenes.results.forEach((r) => add(r.day, "newScene", r.n));
+      const sitText = Object.fromEntries(sits.results.map((x) => [x.id, x.text]));
+      const label = (kind, key) => {
+        const p = key.split("|");
+        if (kind === "mbti") return `온 세상이 ${key}`;
+        if (kind === "pair") return `${p[2]} ${p[0]} × ${p[1]}`;
+        return `${p[0]} · ${sitText[p[1]] || ""}`;
+      };
+      const top = { mbti: [], pair: [], situation: [] };
+      topToday.results.forEach((r) => { if (top[r.kind] && top[r.kind].length < 5) top[r.kind].push({ label: label(r.kind, r.key), n: r.n }); });
+      return json({ today, days: days.map((d) => ({ day: d, ...byDay[d] })), top });
     }
     if (path === "admin/check") return json({ ok: true });
   }
