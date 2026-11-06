@@ -12,7 +12,8 @@ const DAILY_IP_IDEAS = 5;
 const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck","섹스","자살"];
 
 const RELS = ["커플", "친구", "직장 동료"];
-const pairKey = (a, b, rel) => [a, b].sort().join("|") + "|" + rel;
+// 커플·친구·직장 동료는 순서 상관없음, 직접 입력(엄마와 아들 등)은 순서대로
+const pairKey = (a, b, rel) => (RELS.includes(rel) ? [a, b].sort() : [a, b]).join("|") + "|" + rel;
 
 // 궁합/상황 투표판: 표 수 + 상태를 합쳐서 반환
 async function comboBoard(db, kind, voter, all) {
@@ -35,6 +36,8 @@ async function comboBoard(db, kind, voter, all) {
     const s = sitMap[p[1]];
     return { ...it, type: p[0], sid: Number(p[1]), text: s?.text || "(지운 상황)", active: !!s?.active };
   }).filter((it) => kind === "pair" || all || it.active || it.status !== "open");
+  const hidden = items.filter((i) => i.status === "hidden");
+  if (!all) items.splice(0, items.length, ...items.filter((i) => i.status !== "hidden"));
   items.sort((x, y) => y.votes - x.votes);
   const out = {
     ranking: items.filter((i) => i.status === "open").slice(0, all ? 200 : 10),
@@ -42,6 +45,7 @@ async function comboBoard(db, kind, voter, all) {
     done: items.filter((i) => i.status === "done"),
     todayVote: mine?.key || null,
   };
+  if (all) out.hidden = hidden;
   if (kind === "pair") out.rels = RELS;
   else out.situations = sits.results.filter((s) => s.active).map(({ id, text }) => ({ id, text }));
   return out;
@@ -215,8 +219,14 @@ export async function onRequest({ request, env, params }) {
     if (kind === "pair") {
       const a = String(body.a || "").toUpperCase(), b = String(body.b || "").toUpperCase();
       if (!MBTI.includes(a) || !MBTI.includes(b)) return err("MBTI 두 개를 골라주세요");
-      if (!RELS.includes(body.rel)) return err("관계를 골라주세요");
-      key = pairKey(a, b, body.rel);
+      const rel = clean(body.rel, 12).replace(/\|/g, "");
+      if (!RELS.includes(rel)) {
+        if (rel.length < 2) return err("관계를 골라주거나 적어주세요");
+        const low = rel.toLowerCase().replace(/\s/g, "");
+        if (BAD.some((w) => low.includes(w))) return err("조금만 순한 말로 부탁해요 🙏");
+        if (/https?:|www\.|\.com/i.test(rel)) return err("링크는 넣을 수 없어요");
+      }
+      key = pairKey(a, b, rel);
     } else {
       const t = String(body.type || "").toUpperCase();
       if (!MBTI.includes(t)) return err("MBTI를 골라주세요");
@@ -226,6 +236,7 @@ export async function onRequest({ request, env, params }) {
     }
     const st = await db.prepare("SELECT status FROM combo_status WHERE kind=? AND key=?").bind(kind, key).first();
     if (st && st.status === "done") return err("이미 나온 편이에요!");
+    if (st && st.status === "hidden") return err("신청할 수 없는 조합이에요");
     const ip = await ipHash(request, salt);
     const day = kstDay();
     const ipCount = await db.prepare("SELECT COUNT(*) n FROM combo_votes WHERE kind=? AND ip=? AND day=?").bind(kind, ip, day).first();
@@ -262,7 +273,7 @@ export async function onRequest({ request, env, params }) {
       return json({ ok: true });
     }
     if (path === "admin/combo" && method === "POST") {
-      if (!["pair", "situation"].includes(body.kind) || !MBTI_STATUS.includes(body.status)) return err("값이 이상해요");
+      if (!["pair", "situation"].includes(body.kind) || ![...MBTI_STATUS, "hidden"].includes(body.status)) return err("값이 이상해요");
       const key = String(body.key || "").slice(0, 40);
       if (!key.includes("|")) return err("값이 이상해요");
       await db.prepare(

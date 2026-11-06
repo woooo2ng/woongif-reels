@@ -184,11 +184,15 @@ footer a{color:var(--ink);font-weight:800}
         <div id="pair-rank"><div class="skel"></div></div>
       </div>
       <div class="card">
-        <p class="sec-t">보고 싶은 궁합 만들기 · 하루 1번</p>
+        <p class="sec-t">온 세상 ○○이 전부 이 조합이라면? · 하루 1번</p>
         <div class="builder">
           <button class="slot" id="pa">?</button><span class="x">×</span><button class="slot" id="pb">?</button>
         </div>
         <div class="chips" id="rels" style="justify-content:center"></div>
+        <div class="row" id="rel-custom-row" hidden>
+          <input id="rel-custom" maxlength="12" placeholder="예: 엄마와 아들, 선생님과 학생">
+        </div>
+        <p class="note" id="rel-hint" hidden>앞 유형이 앞 사람이에요. 예) 엄마와 아들 → 첫 번째가 엄마, 두 번째가 아들</p>
         <div class="preview" id="pair-prev"></div>
         <button class="btn wide" id="pair-go" style="background:var(--lav)">이 궁합 신청</button>
         <p class="note" id="pair-mine"></p>
@@ -424,34 +428,48 @@ function doneHTML(list, label){
 }
 
 // ---------- 궁합편 ----------
-let pair = null; const pSel = {a:null, b:null, rel:"커플"};
-const pairTitle = (a,b,rel)=>`${a} × ${b} ${rel==="커플"?"커플이":rel==="친구"?"친구라":"직장 동료라"}면?`;
+let pair = null; const pSel = {a:null, b:null, rel:"커플", custom:false};
+// 받침 있으면 '이', 없으면 '가'
+const iga = (w)=>{ const c=w.trim().slice(-1).charCodeAt(0); return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28) ? "이" : "가"; };
+const relPhrase = (rel)=>`온 세상 ${rel}${iga(rel)} 전부`;
+const pairTitle = (a,b,rel)=>`${relPhrase(rel)} ${a} × ${b}라면?`;
+const curRel = ()=> pSel.custom ? $("#rel-custom").value.trim() : pSel.rel;
 async function loadPair(){
   try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
   catch(e){ $("#pair-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
-  $("#pair-rank").innerHTML = rankHTML(top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}<span class="rel ${relCls(it.rel)}">${it.rel}</span>`,
+  $("#pair-rank").innerHTML = rankHTML(top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}`,
     "아직 신청이 없어요. 첫 궁합을 만들어 주세요!");
   $("#pair-rank").querySelectorAll(".plus").forEach(b=>b.onclick=()=>{
     const it = top.find(x=>x.key===b.dataset.key); votePair(it.a, it.b, it.rel);
   });
-  $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("");
-  $("#rels").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{ pSel.rel=b.dataset.r; renderPair(); });
+  $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
+    + `<button class="pick ${pSel.custom?"on":""}" data-r="">✏️ 직접 입력</button>`;
+  $("#rels").querySelectorAll(".pick").forEach(b=>b.onclick=()=>{
+    pSel.custom = !b.dataset.r; if(b.dataset.r) pSel.rel=b.dataset.r;
+    renderPair(); if(pSel.custom) $("#rel-custom").focus();
+  });
+  $("#rel-custom-row").hidden = !pSel.custom; $("#rel-hint").hidden = !pSel.custom;
   for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||"?"; el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
-  const ok = pSel.a && pSel.b;
-  $("#pair-prev").className = "preview"+(ok?"":" empty-p");
-  $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,pSel.rel) : "두 유형을 골라주세요";
-  $("#pair-mine").textContent = pair.todayVote ? `오늘은 ${pair.todayVote.split("|").slice(0,2).join(" × ")} ${pair.todayVote.split("|")[2]}에 신청했어요. 내일 또!` : "";
+  renderPairPrev();
+  $("#pair-mine").textContent = pair.todayVote ? `오늘은 ${pair.todayVote.split("|")[2]} ${pair.todayVote.split("|").slice(0,2).join(" × ")}에 신청했어요. 내일 또!` : "";
   $("#pair-done-card").hidden = !pair.done.length;
-  $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.a}×${it.b} ${it.rel}`);
+  $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${it.a}×${it.b}`);
 }
+function renderPairPrev(){
+  const rel = curRel(), ok = pSel.a && pSel.b && rel.length>=2;
+  $("#pair-prev").className = "preview"+(ok?"":" empty-p");
+  $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,rel) : (pSel.a&&pSel.b ? "관계를 적어주세요" : "두 유형을 골라주세요");
+}
+$("#rel-custom").oninput = renderPairPrev;
 $("#pa").onclick = ()=>typePicker("첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
 $("#pb").onclick = ()=>typePicker("두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
 $("#pair-go").onclick = ()=>{
   if(!pSel.a || !pSel.b){ toast("두 유형을 골라주세요!"); return; }
-  votePair(pSel.a, pSel.b, pSel.rel);
+  const rel = curRel(); if(rel.length<2){ toast("관계를 적어주세요!"); return; }
+  votePair(pSel.a, pSel.b, rel);
 };
 function votePair(a,b,rel){
   if(pair.todayVote){ toast("궁합편은 오늘 이미 신청했어요. 내일 또!"); return; }
