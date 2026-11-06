@@ -29,7 +29,7 @@ async function comboBoard(db, kind, voter, all) {
   for (const r of counts.results) map.set(r.key, { key: r.key, votes: r.n, status: "open", link: null });
   for (const r of status.results) {
     const it = map.get(r.key) || { key: r.key, votes: 0 };
-    map.set(r.key, { ...it, status: r.status, link: r.link, author: r.author || null });
+    map.set(r.key, { ...it, status: r.status, link: r.link, author: all ? (r.author || null) : maskInsta(r.author) });
   }
   const items = [...map.values()].map((it) => {
     const p = it.key.split("|");
@@ -130,6 +130,13 @@ function cleanInsta(s) {
   const v = String(s ?? "").trim().replace(/^@+/, "");
   return /^[A-Za-z0-9._]{1,30}$/.test(v) ? v : "";
 }
+// 공개용 아이디 가리기: woong.if → wo***f (길이도 안 드러나게 별은 항상 3개)
+function maskInsta(v) {
+  if (!v) return null;
+  if (v.length <= 2) return v[0] + "*";
+  if (v.length <= 4) return v.slice(0, 2) + "***";
+  return v.slice(0, 2) + "***" + v.slice(-1);
+}
 function isAdmin(req, env) {
   const key = req.headers.get("x-admin-key");
   return !!env.ADMIN_PASSWORD && key === env.ADMIN_PASSWORD;
@@ -183,7 +190,7 @@ export async function onRequest({ request, env, params }) {
       db.prepare("SELECT idea_id FROM idea_likes WHERE voter=? AND day=?").bind(voter, kstDay()).all(),
     ]);
     const liked = new Set(mine.results.map((r) => r.idea_id));
-    return json({ ideas: list.results.map((r) => ({ ...r, liked: liked.has(r.id) })) });
+    return json({ ideas: list.results.map((r) => ({ ...r, author: maskInsta(r.author), liked: liked.has(r.id) })) });
   }
 
   if (path === "ideas" && method === "POST") {
@@ -229,7 +236,7 @@ export async function onRequest({ request, env, params }) {
   // ---------- 궁합편 · 상황편 ----------
   if ((path === "pair" || path === "situation") && method === "GET") {
     const voter = url.searchParams.get("voter") || "";
-    const all = url.searchParams.get("all") === "1";
+    const all = url.searchParams.get("all") === "1" && isAdmin(request, env);
     return json(await comboBoard(db, path, voter, all));
   }
 
