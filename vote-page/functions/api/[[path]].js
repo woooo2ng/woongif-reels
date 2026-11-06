@@ -212,6 +212,17 @@ export async function onRequest({ request, env, params }) {
     return json(await comboBoard(db, path, voter, all));
   }
 
+  // 오늘 투표 취소 → 다시 투표 가능
+  if (["mbti/unvote", "pair/unvote", "situation/unvote"].includes(path) && method === "POST") {
+    if (!validVoter(body.voter)) return err("다시 시도해 주세요");
+    const kind = path.split("/")[0];
+    const r = kind === "mbti"
+      ? await db.prepare("DELETE FROM mbti_votes WHERE voter=? AND day=?").bind(body.voter, kstDay()).run()
+      : await db.prepare("DELETE FROM combo_votes WHERE kind=? AND voter=? AND day=?").bind(kind, body.voter, kstDay()).run();
+    if (!r.meta.changes) return err("오늘 투표한 게 없어요");
+    return json({ ok: true });
+  }
+
   if ((path === "pair/vote" || path === "situation/vote") && method === "POST") {
     const kind = path.split("/")[0];
     if (!validVoter(body.voter)) return err("다시 시도해 주세요");
