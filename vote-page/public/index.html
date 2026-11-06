@@ -131,8 +131,15 @@ footer a{color:var(--ink);font-weight:800}
 .rankrow .ttl{font-weight:900;font-size:15px;line-height:1.35;word-break:keep-all}
 .rankrow .ttl small{display:block;font-weight:700;font-size:12px;color:var(--sub)}
 .rankrow .bar{height:8px;margin-top:6px}
-.plus{flex:none;border:2px solid var(--ink);background:#fff;border-radius:12px;padding:6px 0;width:56px;font:inherit;font-weight:900;font-size:13px;cursor:pointer;line-height:1.2}
-.plus span{display:block;font-size:11px;color:var(--sub);font-weight:700}
+.rankrow.tap{cursor:pointer;border-radius:14px;margin:0 -8px;padding-left:8px;padding-right:8px;transition:background .1s}
+.rankrow.tap:active{background:#f6f1ff}
+.barline{display:flex;align-items:center;gap:8px;margin-top:6px}
+.barline .bar{flex:1;margin:0}
+.barline .n{font-size:12px;font-weight:800;color:var(--sub);white-space:nowrap}
+.vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
+.vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.vote.voted{background:var(--mint);box-shadow:none;transform:none}
+.vote.off{background:#f1ecfb;border-color:#d9d0ef;color:#a69dbf;box-shadow:none;font-size:12px}
 .rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
 .rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
 .making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;margin-right:4px;vertical-align:2px}
@@ -180,7 +187,7 @@ footer a{color:var(--ink);font-weight:800}
     <!-- 궁합편 -->
     <div id="m-pair" hidden>
       <div class="card">
-        <p class="sec-t">🏆 인기 궁합</p>
+        <p class="sec-t">🏆 인기 궁합 · 눌러서 같이 투표</p>
         <div id="pair-rank"><div class="skel"></div></div>
       </div>
       <div class="card">
@@ -203,7 +210,7 @@ footer a{color:var(--ink);font-weight:800}
     <!-- 상황편 -->
     <div id="m-sit" hidden>
       <div class="card">
-        <p class="sec-t">🏆 인기 상황</p>
+        <p class="sec-t">🏆 인기 상황 · 눌러서 같이 투표</p>
         <div id="sit-rank"><div class="skel"></div></div>
       </div>
       <div class="card">
@@ -220,8 +227,8 @@ footer a{color:var(--ink);font-weight:800}
 
     <div id="m-world">
     <div class="card">
-      <p class="sec-t">🏆 다음 편 후보</p>
-      <div class="podium" id="podium"><div class="skel"></div></div>
+      <p class="sec-t">🏆 다음 편 후보 · 눌러서 같이 투표</p>
+      <div id="podium"><div class="skel"></div></div>
       <p class="note">가장 많이 신청된 유형부터 만들어요.</p>
     </div>
 
@@ -342,10 +349,9 @@ function renderMbti(){
   const ranked = [...open].sort((a,b)=>b.votes-a.votes);
   const max = Math.max(1, ...ranked.map(t=>t.votes));
   const top = ranked.filter(t=>t.votes>0).slice(0,5);
-  $("#podium").innerHTML = top.length ? top.map((t,i)=>`
-    <div class="pod"><span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span><span class="nm">${t.type}</span>
-    <span class="bar"><i style="width:${Math.round(t.votes/max*100)}%"></i></span><span class="n">${t.votes}표</span></div>`).join("")
-    : `<p class="empty" style="padding:10px">아직 신청이 없어요. 첫 신청의 주인공이 되어주세요!</p>`;
+  $("#podium").innerHTML = rankHTML(top.map(t=>({...t, key:t.type})), (it)=>`<small>온 세상이</small>${it.type}라면?`,
+    "아직 신청이 없어요. 첫 신청의 주인공이 되어주세요!", mbti.todayVote);
+  $("#podium").querySelectorAll(".rankrow.tap").forEach(b=>b.onclick=()=>pick(b.dataset.key));
 
   $("#grid").innerHTML = mbti.types.map(t=>{
     const cls = ["t", "g-"+group(t.type), t.status==="done"?"done":"", t.status==="making"?"making":"", mbti.todayVote===t.type?"mine":""].join(" ");
@@ -411,15 +417,19 @@ $("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
 $("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
 
 const relCls = (r)=>r.split(" ")[0];
-function rankHTML(list, titleFn, empty){
+function rankHTML(list, titleFn, empty, today){
   if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
   const max = Math.max(1, ...list.map(i=>i.votes));
-  return list.slice(0,5).map((it,i)=>`
-    <div class="rankrow">
+  return list.slice(0,5).map((it,i)=>{
+    const btn = today===it.key ? `<span class="vote voted">✓ 투표함</span>`
+      : today ? `<span class="vote off">내일 또</span>` : `<span class="vote">🗳️ 투표</span>`;
+    return `
+    <div class="rankrow tap" role="button" tabindex="0" data-key="${esc(it.key)}">
       <span class="rk">${["🥇","🥈","🥉"][i]||i+1}</span>
-      <div class="body"><div class="ttl">${titleFn(it)}</div><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div></div>
-      <button class="plus" data-key="${esc(it.key)}">+1<span>${it.votes}표</span></button>
-    </div>`).join("");
+      <div class="body"><div class="ttl">${titleFn(it)}</div>
+        <div class="barline"><div class="bar"><i style="width:${Math.round(it.votes/max*100)}%"></i></div><span class="n">${it.votes}표</span></div></div>
+      ${btn}
+    </div>`;}).join("");
 }
 function doneHTML(list, label){
   return list.map(it=> it.link
@@ -441,8 +451,8 @@ async function loadPair(){
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking.filter(i=>i.votes>0)];
   $("#pair-rank").innerHTML = rankHTML(top, (it)=>`<small>${esc(relPhrase(it.rel))}</small>${it.making?'<span class="making-chip">제작 중</span>':""}${it.a} × ${it.b}`,
-    "아직 신청이 없어요. 첫 궁합을 만들어 주세요!");
-  $("#pair-rank").querySelectorAll(".plus").forEach(b=>b.onclick=()=>{
+    "아직 신청이 없어요. 첫 궁합을 만들어 주세요!", pair.todayVote);
+  $("#pair-rank").querySelectorAll(".rankrow.tap").forEach(b=>b.onclick=()=>{
     const it = top.find(x=>x.key===b.dataset.key); votePair(it.a, it.b, it.rel);
   });
   $("#rels").innerHTML = pair.rels.map(r=>`<button class="pick ${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r==="커플"?"💘 ":r==="친구"?"🤝 ":"💼 "}${r}</button>`).join("")
@@ -487,8 +497,8 @@ async function loadSit(){
 function renderSit(){
   const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking.filter(i=>i.votes>0)];
   $("#sit-rank").innerHTML = rankHTML(top, (it)=>`${it.making?'<span class="making-chip">제작 중</span>':""}<small>온 세상이 ${it.type}인데</small>${esc(it.text)}`,
-    "아직 신청이 없어요. 첫 상황을 골라주세요!");
-  $("#sit-rank").querySelectorAll(".plus").forEach(b=>b.onclick=()=>{
+    "아직 신청이 없어요. 첫 상황을 골라주세요!", sit.todayVote);
+  $("#sit-rank").querySelectorAll(".rankrow.tap").forEach(b=>b.onclick=()=>{
     const it = top.find(x=>x.key===b.dataset.key); voteSit(it.type, it.sid, it.text);
   });
   $("#st").textContent = sSel.type || "MBTI ?"; $("#st").className = "slot"+(sSel.type?" filled g-"+group(sSel.type):"");
