@@ -45,7 +45,14 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
     <button data-t="live">공개</button>
     <button data-t="mbti">MBTI</button>
     <button data-t="combo">궁합·상황</button>
+    <button data-t="scenes">장면 제보<span id="scn"></span></button>
   </div>
+
+  <section id="s-scenes" hidden>
+    <h2>장면 제보 <span class="sub">(나만 보임)</span></h2>
+    <div class="row" id="scf" style="margin:0 0 10px"></div>
+    <div id="scenes"></div>
+  </section>
 
   <section id="s-combo" hidden>
     <h2>사용자가 쓴 상황</h2>
@@ -91,10 +98,29 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["pending","live","mbti","combo"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["pending","live","mbti","combo","scenes"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadIdeas(), loadMbti(), loadCombo()]); }
+async function load(){ await Promise.all([loadIdeas(), loadMbti(), loadCombo(), loadScenes()]); }
+
+let scenes = [], scFilter = "";
+async function loadScenes(){ ({scenes} = await api("admin/scenes")); renderScenes(); }
+function renderScenes(){
+  const unread = scenes.filter(x=>!x.checked).length;
+  $("#scn").innerHTML = unread ? `<span class="badge">${unread}</span>` : "";
+  const types = [...new Set(scenes.map(x=>x.type))].sort();
+  $("#scf").innerHTML = [""].concat(types).map(t=>`<button data-scf="${t}" style="${scFilter===t?"background:#fff0a8":""}">${t||"전체"} ${t?`(${scenes.filter(x=>x.type===t).length})`:`(${scenes.length})`}</button>`).join("");
+  document.querySelectorAll("[data-scf]").forEach(b=>b.onclick=()=>{ scFilter=b.dataset.scf; renderScenes(); });
+  const list = scFilter ? scenes.filter(x=>x.type===scFilter) : scenes;
+  const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+  $("#scenes").innerHTML = list.length ? list.map(x=>`<div class="card" style="${x.checked?"opacity:.5":""}">
+    <div class="txt"><span style="background:#ece5fb;border-radius:6px;padding:1px 6px;margin-right:6px">${x.type}</span>${esc(x.text)}</div>
+    <div class="sub">${x.author?"@"+esc(x.author)+" · ":""}${when(x.created_at)}</div>
+    <div class="row"><button class="${x.checked?"":"ok"}" data-sck="${x.id}" data-v="${x.checked?0:1}">${x.checked?"안 읽음으로":"확인함"}</button>
+    <button class="no" data-scd="${x.id}">삭제</button></div></div>`).join("") : `<p class="empty">아직 제보가 없어요</p>`;
+  document.querySelectorAll("[data-sck]").forEach(b=>b.onclick=async()=>{ try{ await api("admin/scenes/update",{id:Number(b.dataset.sck),checked:b.dataset.v==="1"}); loadScenes(); }catch(e){ toast(e.message); } });
+  document.querySelectorAll("[data-scd]").forEach(b=>b.onclick=async()=>{ if(!confirm("삭제할까요?")) return; try{ await api("admin/scenes/update",{id:Number(b.dataset.scd),delete:true}); loadScenes(); }catch(e){ toast(e.message); } });
+}
 
 async function loadCombo(){
   const [{situations}, pair, sit] = await Promise.all([api("admin/situations"), api("pair?all=1"), api("situation?all=1")]);

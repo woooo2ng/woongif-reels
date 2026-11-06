@@ -142,6 +142,9 @@ footer a{color:var(--ink);font-weight:800}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .resthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.secret{background:linear-gradient(180deg,#fff, #f4fbf8)}
+.secret textarea{display:block;width:100%;margin-top:12px;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:15px;padding:12px;resize:none;outline:none;background:#fff;color:var(--ink);line-height:1.5}
+.secret textarea:focus{border-color:var(--lav-d)}
 .by{font-size:12px;font-weight:700;color:var(--sub);margin-top:5px}
 .heart-only{flex:none;width:44px;text-align:center;line-height:1}
 .heart-only i{display:block;font-style:normal;font-size:26px}
@@ -264,6 +267,16 @@ footer a{color:var(--ink);font-weight:800}
         <span style="--c:#d8ebff">관리자 SJ</span><span style="--c:#fff1c2">탐험가 SP</span>
       </div>
       <p class="note" id="mbti-mine"></p>
+    </div>
+
+    <div class="card secret">
+      <p class="sec-t">🤫 장면 제보 · 운영자만 봐요</p>
+      <p class="note" style="margin:0 0 12px">"우리 유형은 진짜 이래" 싶은 장면을 몰래 알려주세요. 영상에 나올 수도 있어요 👀</p>
+      <div class="builder"><button class="slot" id="sc-type" style="max-width:200px">MBTI ?</button></div>
+      <textarea id="sc-text" maxlength="80" rows="2" placeholder="예: 온 세상 사람들이 출근 전에 이불 속에 누워 있는 장면"></textarea>
+      <div class="row" style="margin:8px 0 10px"><input class="insta" id="sc-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
+      <button class="btn wide" id="sc-go" style="background:var(--mint)">몰래 보내기</button>
+      <p class="note" style="margin-top:8px">🔒 다른 사람에게는 보이지 않아요.</p>
     </div>
 
     <div class="card" id="done-card" hidden>
@@ -447,6 +460,25 @@ function pick(type){
   if(t.status==="done" && !mbti.todayLikes.includes(type)){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
   like("mbti", {type}, mbti, mbti.types, renderMbti);
 }
+
+// ---------- 장면 제보 (비공개) ----------
+let scType = null;
+$("#sc-type").onclick = ()=>typePicker("어떤 유형의 장면?", (t)=>{
+  scType = t; $("#sc-type").textContent = t; $("#sc-type").className = "slot filled g-"+group(t);
+  $("#sc-text").placeholder = `예: 온 세상 ${t}들이 ${t==="ISFP"?"출근 전에 이불 속에 누워 있는 장면":"이럴 때 다 똑같이 하는 장면"}`;
+});
+$("#sc-go").onclick = async ()=>{
+  if(instaBad("#sc-author")){ toast(INSTA_MSG); return; }
+  if(!scType){ toast("MBTI를 골라주세요!"); return; }
+  const text = $("#sc-text").value.trim();
+  if(text.length<4){ toast("어떤 장면인지 조금 더 적어주세요!"); return; }
+  const btn=$("#sc-go"); btn.disabled=true;
+  try{
+    await api("scenes",{method:"POST",body:JSON.stringify({type:scType, text, author:instaVal("#sc-author"), voter})});
+    $("#sc-text").value=""; toast("몰래 보냈어요! 고마워요 🤫");
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled=false; }
+};
 
 // ---------- 투표 모드 ----------
 let mode = "world";

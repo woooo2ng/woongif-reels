@@ -10,6 +10,7 @@ const MBTI_STATUS = ["open", "making", "done"];
 const DAILY_IP_LIKES = 150;  // 같은 와이파이(학교·카페)에서 하루 좋아요 상한 (종류별)
 const DAILY_IP_IDEAS = 5;
 const DAILY_IP_SITUATIONS = 10;
+const DAILY_IP_SCENES = 10;
 const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck","섹스","자살"];
 
 const RELS = ["커플", "친구", "직장 동료"];
@@ -105,6 +106,11 @@ async function setup(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS situations (
       id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER,
       by_user INTEGER NOT NULL DEFAULT 0, ip TEXT)`),
+    // 장면 제보: 운영자만 보는 비공개 글
+    db.prepare(`CREATE TABLE IF NOT EXISTS scenes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, text TEXT NOT NULL, author TEXT,
+      checked INTEGER NOT NULL DEFAULT 0, ip TEXT, voter TEXT, created_at INTEGER)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS scenes_ip ON scenes(ip, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS situations_text ON situations(text)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS situations_ip ON situations(ip, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_text ON ideas(text)`),
@@ -245,6 +251,22 @@ export async function onRequest({ request, env, params }) {
     }
     const r = await db.prepare("SELECT hearts FROM ideas WHERE id=?").bind(id).first();
     return json({ liked: !had, hearts: r.hearts });
+  }
+
+  // ---------- 장면 제보 (비공개) ----------
+  if (path === "scenes" && method === "POST") {
+    const type = String(body.type || "").toUpperCase();
+    if (!MBTI.includes(type)) return err("MBTI를 골라주세요");
+    if (!validVoter(body.voter)) return err("다시 시도해 주세요");
+    const text = clean(body.text, 80);
+    if (text.length < 4) return err("어떤 장면인지 조금 더 적어주세요");
+    if (/https?:|www\./i.test(text)) return err("링크는 넣을 수 없어요");
+    const ip = await ipHash(request, salt);
+    const n = await db.prepare("SELECT COUNT(*) n FROM scenes WHERE ip=? AND created_at>?").bind(ip, Date.now() - 24 * 3600e3).first();
+    if (n.n >= DAILY_IP_SCENES) return err("장면 제보는 하루에 10개까지예요. 고마워요!");
+    await db.prepare("INSERT INTO scenes (type, text, author, ip, voter, created_at) VALUES (?,?,?,?,?,?)")
+      .bind(type, text, cleanInsta(body.author) || null, ip, body.voter, Date.now()).run();
+    return json({ ok: true });
   }
 
   // ---------- 궁합편 · 상황편 ----------
@@ -394,6 +416,16 @@ export async function onRequest({ request, env, params }) {
         `INSERT INTO mbti_status (type, status, episode, link) VALUES (?,?,?,?)
          ON CONFLICT(type) DO UPDATE SET status=excluded.status, episode=excluded.episode, link=excluded.link`
       ).bind(type, body.status, Number(body.episode) || null, clean(body.link, 300) || null).run();
+      return json({ ok: true });
+    }
+    if (path === "admin/scenes" && method === "GET") {
+      const r = await db.prepare("SELECT id, type, text, author, checked, created_at FROM scenes ORDER BY created_at DESC LIMIT 1000").all();
+      return json({ scenes: r.results });
+    }
+    if (path === "admin/scenes/update" && method === "POST") {
+      const id = Number(body.id);
+      if (body.delete) await db.prepare("DELETE FROM scenes WHERE id=?").bind(id).run();
+      else await db.prepare("UPDATE scenes SET checked=? WHERE id=?").bind(body.checked ? 1 : 0, id).run();
       return json({ ok: true });
     }
     if (path === "admin/check") return json({ ok: true });
