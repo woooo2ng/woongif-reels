@@ -169,8 +169,11 @@ function maskInsta(v) {
   return v.slice(0, 2) + "***" + v.slice(-1);
 }
 function isAdmin(req, env) {
-  const key = req.headers.get("x-admin-key");
-  return !!env.ADMIN_PASSWORD && key === env.ADMIN_PASSWORD;
+  // 한글·특수문자 비밀번호도 되도록 인코딩해서 받음, 앞뒤 공백·줄바꿈은 무시
+  let key = req.headers.get("x-admin-key") || "";
+  try { key = decodeURIComponent(key); } catch {}
+  const pw = String(env.ADMIN_PASSWORD || "").trim();
+  return !!pw && key.trim() === pw;
 }
 
 export async function onRequest({ request, env, params }) {
