@@ -39,6 +39,7 @@ table.st th{text-align:left;color:#7a7290;font-weight:700;padding:4px 6px;white-
 table.st td{padding:6px;border-top:1px solid #efe9fb;white-space:nowrap}
 table.st tr.now td{background:#fffbe6}
 .sbar{height:8px;background:#f1ecfb;border-radius:99px;overflow:hidden}.sbar i{display:block;height:100%;background:#b9a6ff}
+.blk{background:#2b2440;color:#fff;border-color:#2b2440}
 .badge{display:inline-block;background:#ff8fa3;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;margin-left:4px}
 </style>
 </head>
@@ -57,7 +58,17 @@ table.st tr.now td{background:#fffbe6}
     <button data-t="mbti">MBTI</button>
     <button data-t="combo">궁합·상황</button>
     <button data-t="scenes">장면 제보<span id="scn"></span></button>
+    <button data-t="safe">🛡️ 차단·백업</button>
   </div>
+
+  <section id="s-safe" hidden>
+    <h2>백업</h2>
+    <div class="card"><p class="sub" style="margin:0 0 8px">하트, 궁합·상황, 아이디어, 장면 제보, 방문 기록까지 파일 하나로 내려받아요. 가끔 한 번씩 받아두면 안심이에요.</p>
+      <button class="pri" id="backup" style="width:100%">⬇️ 백업 내려받기</button></div>
+    <h2>차단 목록</h2>
+    <p class="sub">글 옆 🚫 차단을 누르면 그 글을 쓴 기기(영구)와 인터넷(7일)이 막혀요. 막힌 사람은 페이지는 볼 수 있지만 하트·글쓰기는 못 해요.</p>
+    <div id="blocks"></div>
+  </section>
 
   <section id="s-scenes" hidden>
     <h2>장면 제보 <span class="sub">(나만 보임)</span></h2>
@@ -129,10 +140,44 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["stats","pending","live","mbti","combo","scenes"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["stats","pending","live","mbti","combo","scenes","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes()]); }
+async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks()]); }
+
+// ---- 차단 ----
+function bindBlocks(){
+  document.querySelectorAll("[data-blk]").forEach(b=>b.onclick=async()=>{
+    const kind=b.dataset.blk;
+    if(!confirm("이 글을 쓴 사람을 차단할까요?\n(기기는 계속, 같은 인터넷은 7일 동안 하트·글쓰기가 막혀요)\n\n글은 그대로 남으니 필요하면 따로 삭제해 주세요.")) return;
+    try{
+      await api("admin/block", kind==="idea"||kind==="scene" ? {kind,id:Number(b.dataset.id)} : {kind,key:b.dataset.key,label:b.dataset.label});
+      toast("차단했어요"); loadBlocks();
+    }catch(e){ toast(e.message); }
+  });
+}
+async function loadBlocks(){
+  const {blocks}=await api("admin/blocks");
+  const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+  $("#blocks").innerHTML = blocks.length ? blocks.map(x=>`<div class="card" style="${x.active?"":"opacity:.45"}">
+    <div class="txt">${x.kind==="voter"?"📱 기기":"🌐 인터넷"} ${x.active?"":"(만료)"} <span class="sub">${when(x.created_at)}${x.until?" · "+when(x.until)+"까지":" · 계속"}</span></div>
+    <div class="sub">${esc(x.note||"")}</div>
+    <div class="row"><button data-unb="${x.kind}" data-v="${esc(x.value)}">차단 풀기</button></div></div>`).join("") : `<p class="empty">차단한 사람이 없어요</p>`;
+  document.querySelectorAll("[data-unb]").forEach(b=>b.onclick=async()=>{
+    try{ await api("admin/unblock",{kind:b.dataset.unb,value:b.dataset.v}); toast("차단을 풀었어요"); loadBlocks(); }catch(e){ toast(e.message); }
+  });
+}
+// ---- 백업 ----
+$("#backup").onclick=async()=>{
+  try{
+    const r=await fetch("/api/admin/export",{headers:{"x-admin-key":encodeURIComponent(key.trim())}});
+    if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d.error||"백업 실패"); }
+    const blob=await r.blob(); const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=`woongif-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    toast("백업 파일을 내려받았어요");
+  }catch(e){ toast(e.message); }
+};
 
 async function loadStats(){
   const d = await api("admin/stats");
@@ -166,7 +211,8 @@ function renderScenes(){
     <div class="txt"><span style="background:#ece5fb;border-radius:6px;padding:1px 6px;margin-right:6px">${x.type}</span>${esc(x.text)}</div>
     <div class="sub">${x.author?"@"+esc(x.author)+" · ":""}${when(x.created_at)}</div>
     <div class="row"><button class="${x.checked?"":"ok"}" data-sck="${x.id}" data-v="${x.checked?0:1}">${x.checked?"안 읽음으로":"확인함"}</button>
-    <button class="no" data-scd="${x.id}">삭제</button></div></div>`).join("") : `<p class="empty">아직 제보가 없어요</p>`;
+    <button class="no" data-scd="${x.id}">삭제</button><button class="blk" data-blk="scene" data-id="${x.id}">🚫 차단</button></div></div>`).join("") : `<p class="empty">아직 제보가 없어요</p>`;
+  bindBlocks();
   document.querySelectorAll("[data-sck]").forEach(b=>b.onclick=async()=>{ try{ await api("admin/scenes/update",{id:Number(b.dataset.sck),checked:b.dataset.v==="1"}); loadScenes(); }catch(e){ toast(e.message); } });
   document.querySelectorAll("[data-scd]").forEach(b=>b.onclick=async()=>{ if(!confirm("삭제할까요?")) return; try{ await api("admin/scenes/update",{id:Number(b.dataset.scd),delete:true}); loadScenes(); }catch(e){ toast(e.message); } });
 }
@@ -190,7 +236,7 @@ async function loadCombo(){
     <div class="row"><select data-ck="${esc(it.key)}" data-kind="${kind}">
       <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="today" ${it.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option><option value="hidden" ${it.status==="hidden"?"selected":""}>숨김 (이상한 입력)</option></select>
     <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
-    <button data-cs="${kind}:${esc(it.key)}">저장</button><button class="no" data-cdel="${kind}:${esc(it.key)}" data-label="${esc(label)}">삭제</button></div></div>`;
+    <button data-cs="${kind}:${esc(it.key)}">저장</button><button class="no" data-cdel="${kind}:${esc(it.key)}" data-label="${esc(label)}">삭제</button><button class="blk" data-blk="${kind}" data-key="${esc(it.key)}" data-label="${esc(label)}">🚫 차단</button></div></div>`;
   const all=(b)=>[...b.making,...b.ranking,...b.done,...(b.hidden||[])];
   $("#pairadm").innerHTML = all(pair).map(it=>row("pair",it,`온 세상 ${it.rel} 전부 ${it.rel==="커플"?`${it.a}(남자) × ${it.b}(여자)`:`${it.a} × ${it.b}`}${it.author?" · @"+it.author:""}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
   $("#sitadm").innerHTML = all(sit).map(it=>row("situation",it,`온 세상이 ${it.type}인데 ${it.text}${it.author?" · @"+it.author:""}`)).join("") || `<p class="empty">아직 신청이 없어요</p>`;
@@ -200,6 +246,7 @@ async function loadCombo(){
     const link=document.querySelector(`[data-cl="${CSS.escape(kind+":"+key)}"]`).value;
     try{ await api("admin/combo",{kind,key,status,link}); toast("저장했어요"); loadCombo(); }catch(e){ toast(e.message); }
   });
+  bindBlocks();
   document.querySelectorAll("[data-cdel]").forEach(b=>b.onclick=async()=>{
     const [kind,key]=[b.dataset.cdel.split(":")[0], b.dataset.cdel.slice(b.dataset.cdel.indexOf(":")+1)];
     if(!confirm(`"${b.dataset.label}"\n\n완전히 삭제할까요? 하트 기록도 같이 지워져요.`)) return;
@@ -215,15 +262,16 @@ async function loadIdeas(){
   $("#pending").innerHTML=p.length?p.map(i=>`<div class="card"><div class="txt">${esc(i.text)}</div>
     <div class="sub">${i.author?"@"+esc(i.author)+" · ":""}${when(i.created_at)}</div>
     <div class="row"><button class="ok" data-a="approve" data-id="${i.id}">승인</button><button class="no" data-a="reject" data-id="${i.id}">거절</button>
-    <button data-a="edit" data-id="${i.id}">고쳐서 승인</button><button class="no" data-a="del" data-id="${i.id}">삭제</button></div></div>`).join(""):`<p class="empty">대기 중인 아이디어가 없어요</p>`;
+    <button data-a="edit" data-id="${i.id}">고쳐서 승인</button><button class="no" data-a="del" data-id="${i.id}">삭제</button><button class="blk" data-blk="idea" data-id="${i.id}">🚫 차단</button></div></div>`).join(""):`<p class="empty">대기 중인 아이디어가 없어요</p>`;
   $("#live").innerHTML=l.length?l.map(i=>`<div class="card"><div class="txt">${esc(i.text)} <span class="sub">❤️ ${i.hearts}</span></div>
     <div class="sub">${i.author?"@"+esc(i.author):""}</div>
     <div class="row"><select data-stage="${i.id}">${STAGES.map(s=>`<option ${s===i.stage?"selected":""}>${s}</option>`).join("")}</select>
     <input data-link="${i.id}" placeholder="릴스 링크" value="${esc(i.link||"")}" style="flex:1">
-    <button data-a="save" data-id="${i.id}">저장</button><button class="no" data-a="hide" data-id="${i.id}">숨김</button><button class="no" data-a="del" data-id="${i.id}">삭제</button></div></div>`).join(""):`<p class="empty">없어요</p>`;
+    <button data-a="save" data-id="${i.id}">저장</button><button class="no" data-a="hide" data-id="${i.id}">숨김</button><button class="no" data-a="del" data-id="${i.id}">삭제</button><button class="blk" data-blk="idea" data-id="${i.id}">🚫 차단</button></div></div>`).join(""):`<p class="empty">없어요</p>`;
   $("#rejected").innerHTML=r.length?r.map(i=>`<div class="card"><div class="txt">${esc(i.text)}</div>
-    <div class="row"><button class="ok" data-a="approve" data-id="${i.id}">다시 승인</button><button class="no" data-a="del" data-id="${i.id}">완전 삭제</button></div></div>`).join(""):`<p class="empty">없어요</p>`;
+    <div class="row"><button class="ok" data-a="approve" data-id="${i.id}">다시 승인</button><button class="no" data-a="del" data-id="${i.id}">완전 삭제</button><button class="blk" data-blk="idea" data-id="${i.id}">🚫 차단</button></div></div>`).join(""):`<p class="empty">없어요</p>`;
   document.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>act(b.dataset.a,Number(b.dataset.id)));
+  bindBlocks();
 }
 async function act(a,id){
   try{

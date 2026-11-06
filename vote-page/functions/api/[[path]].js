@@ -13,6 +13,7 @@ const SAME_ITEM_MSG = "이 글은 오늘 이 인터넷에서 이미 여러 번 �
 const DAILY_IP_IDEAS = 5;
 const DAILY_IP_SITUATIONS = 10;
 const DAILY_IP_SCENES = 10;
+const ADMIN_MAX_FAILS = 5;     // 관리자 비밀번호 15분에 5번 틀리면 잠금
 const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck","섹스","자살"];
 
 const RELS = ["커플", "친구", "직장 동료"];
@@ -118,6 +119,12 @@ async function setup(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS situations (
       id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER,
       by_user INTEGER NOT NULL DEFAULT 0, ip TEXT)`),
+    // 차단 목록: voter(기기, 영구) / ip(7일)
+    db.prepare(`CREATE TABLE IF NOT EXISTS blocks (
+      kind TEXT NOT NULL, value TEXT NOT NULL, until INTEGER, note TEXT, created_at INTEGER, PRIMARY KEY(kind, value))`),
+    // 관리자 비밀번호 틀림 기록 (IP별)
+    db.prepare(`CREATE TABLE IF NOT EXISTS admin_fails (ip TEXT NOT NULL, ts INTEGER NOT NULL)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS admin_fails_ip ON admin_fails(ip, ts)`),
     // 장면 제보: 운영자만 보는 비공개 글
     db.prepare(`CREATE TABLE IF NOT EXISTS scenes (
       id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, text TEXT NOT NULL, author TEXT,
@@ -186,6 +193,15 @@ export async function onRequest({ request, env, params }) {
   const body = method === "POST" ? await request.json().catch(() => ({})) : {};
   const url = new URL(request.url);
   const salt = env.ADMIN_PASSWORD || "woongif";
+
+  // 차단된 기기·인터넷은 글쓰기·하트 막기 (보기는 가능)
+  if (method === "POST" && !path.startsWith("admin/") && path !== "visit") {
+    const ip = await ipHash(request, salt);
+    const b = await db.prepare(
+      "SELECT 1 x FROM blocks WHERE (kind='voter' AND value=?) OR (kind='ip' AND value=? AND (until IS NULL OR until>?)) LIMIT 1"
+    ).bind(String(body.voter || "-"), ip, Date.now()).first();
+    if (b) return err("이용이 제한됐어요. 문의는 페이지 아래 메일로 해주세요.", 403);
+  }
 
   // ---------- 공개 API ----------
   if (path === "mbti" && method === "GET") {
@@ -397,7 +413,57 @@ export async function onRequest({ request, env, params }) {
 
   // ---------- 관리자 API ----------
   if (path.startsWith("admin/")) {
-    if (!isAdmin(request, env)) return err("비밀번호가 틀렸어요", 401);
+    // 15분 안에 5번 틀리면 잠깐 막기
+    const aip = await ipHash(request, salt);
+    const since = Date.now() - 15 * 60e3;
+    const fails = await db.prepare("SELECT COUNT(*) n FROM admin_fails WHERE ip=? AND ts>?").bind(aip, since).first();
+    if (fails.n >= ADMIN_MAX_FAILS) return err("비밀번호를 여러 번 틀려서 15분 동안 막혔어요", 429);
+    if (!isAdmin(request, env)) {
+      await db.prepare("INSERT INTO admin_fails (ip, ts) VALUES (?,?)").bind(aip, Date.now()).run();
+      const left = ADMIN_MAX_FAILS - fails.n - 1;
+      return err(left > 0 ? `비밀번호가 틀렸어요 (${left}번 더 틀리면 15분 동안 막혀요)` : "비밀번호를 여러 번 틀려서 15분 동안 막혔어요", 401);
+    }
+    if (fails.n) await db.prepare("DELETE FROM admin_fails WHERE ip=?").bind(aip).run();
+
+    // ---- 차단 ----
+    if (path === "admin/block" && method === "POST") {
+      // 글 하나를 기준으로 그 글을 쓴 기기·인터넷을 찾아서 차단
+      let who = null, note = "";
+      if (body.kind === "idea") {
+        who = await db.prepare("SELECT voter, ip, text FROM ideas WHERE id=?").bind(Number(body.id)).first();
+        note = who?.text || "";
+      } else if (body.kind === "scene") {
+        who = await db.prepare("SELECT voter, ip, type || ' · ' || text AS text FROM scenes WHERE id=?").bind(Number(body.id)).first();
+        note = who?.text || "";
+      } else if (body.kind === "pair" || body.kind === "situation") {
+        who = await db.prepare("SELECT voter, ip FROM likes WHERE kind=? AND key=? ORDER BY created_at ASC LIMIT 1").bind(body.kind, String(body.key || "")).first();
+        note = String(body.label || body.key || "");
+      }
+      if (!who || (!who.voter && !who.ip)) return err("누가 썼는지 찾을 수 없어요");
+      const now = Date.now(), ops = [];
+      if (who.voter) ops.push(db.prepare("INSERT OR REPLACE INTO blocks (kind, value, until, note, created_at) VALUES ('voter',?,NULL,?,?)").bind(who.voter, note.slice(0, 80), now));
+      if (who.ip) ops.push(db.prepare("INSERT OR REPLACE INTO blocks (kind, value, until, note, created_at) VALUES ('ip',?,?,?,?)").bind(who.ip, now + 7 * 86400e3, note.slice(0, 80), now));
+      await db.batch(ops);
+      return json({ ok: true });
+    }
+    if (path === "admin/blocks" && method === "GET") {
+      const r = await db.prepare("SELECT kind, value, until, note, created_at FROM blocks ORDER BY created_at DESC LIMIT 300").all();
+      return json({ blocks: r.results.map((b) => ({ ...b, active: !b.until || b.until > Date.now() })) });
+    }
+    if (path === "admin/unblock" && method === "POST") {
+      await db.prepare("DELETE FROM blocks WHERE kind=? AND value=?").bind(String(body.kind), String(body.value)).run();
+      return json({ ok: true });
+    }
+
+    // ---- 백업 ----
+    if (path === "admin/export" && method === "GET") {
+      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks"];
+      const out = { exported_at: new Date().toISOString(), tables: {} };
+      for (const t of tables) out.tables[t] = (await db.prepare(`SELECT * FROM ${t}`).all()).results;
+      return new Response(JSON.stringify(out), {
+        headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+      });
+    }
 
     if (path === "admin/situations" && method === "GET") {
       const r = await db.prepare("SELECT id, text, active, by_user FROM situations ORDER BY by_user ASC, active DESC, id DESC").all();
