@@ -382,8 +382,20 @@ S[7]=()=>{
   const tv=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.7,0.08),lamb(0x22222a));tv.position.set(0.4,2.4,-1.25);scene.add(tv);
   const door=new THREE.Mesh(new THREE.PlaneGeometry(1.1,2.2),basic(0xfff6c8));door.position.set(2.2,1.1,-1.28);scene.add(door);
   const dg=glowSprite('rgba(255,245,200,1)',3.2);dg.position.set(2.2,1.2,-1.0);scene.add(dg);
-  const dl=labelSprite('현관 →',{bg:'#ffd84d',fg:'#3a2a00',fs:56,size:0.0042});dl.position.set(2.2,2.55,-1.1);scene.add(dl);
-  const mat=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.03,0.7),lamb(0x9a6a4a));mat.position.set(2.2,0.015,-0.75);scene.add(mat);
+  const dl=labelSprite('현관',{bg:'#ffd84d',fg:'#3a2a00',fs:56,size:0.0042});dl.position.set(2.2,2.85,-1.1);scene.add(dl);
+  // 현관: 문틀 + 열린 현관문 + 타일 바닥 + 신발장 + 신발
+  const fr=lamb(0x5a3a26);
+  for(const x of[1.6,2.8]){const p=new THREE.Mesh(new THREE.BoxGeometry(0.14,2.45,0.22),fr);p.position.set(x,1.22,-1.22);scene.add(p)}
+  const lint=new THREE.Mesh(new THREE.BoxGeometry(1.34,0.16,0.22),fr);lint.position.set(2.2,2.5,-1.22);scene.add(lint);
+  const hinge=new THREE.Group();hinge.position.set(2.73,0,-1.2);scene.add(hinge);
+  const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.05,2.3,0.07),lamb(0x9a6440));leaf.position.set(-0.53,1.16,0);hinge.add(leaf);
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,6),lamb(0xffd84d));knob.position.set(-0.95,1.1,0.06);hinge.add(knob);
+  hinge.rotation.y=-1.15;
+  const tile=new THREE.Mesh(new THREE.BoxGeometry(2.3,0.1,1.3),lamb(0x9aa0aa));tile.position.set(2.25,0.05,-0.7);scene.add(tile);
+  for(let k=0;k<4;k++){const g=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.002,1.3),basic(0x80868f));g.position.set(1.4+k*0.57,0.101,-0.7);scene.add(g)}
+  const rack=new THREE.Mesh(new THREE.BoxGeometry(0.55,1.3,0.45),lamb(0xf3eee6));rack.position.set(3.45,0.65,-1.05);scene.add(rack);
+  for(let k=0;k<3;k++){const sh=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.02,0.4),lamb(0xd8d0c4));sh.position.set(3.45,0.35+k*0.35,-0.82);scene.add(sh)}
+  for(const [x,z,c] of [[1.75,-0.3,0xff8fc8],[1.9,-0.35,0xff8fc8],[3.0,-0.45,0x33384a],[3.15,-0.4,0x33384a]]){const sh=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.1,0.3),lamb(c));sh.position.set(x,0.15,z);scene.add(sh)}
   const SX=-1.0;
   const sofa=new THREE.Group();
   const seat=new THREE.Mesh(new THREE.BoxGeometry(2.1,0.45,0.8),lamb(0x8c9ad8));seat.position.y=0.32;sofa.add(seat);
@@ -405,7 +417,7 @@ S[7]=()=>{
   const hs=sprinkleHearts(scene,4,r,{x:1.65,w:0.9,z:0.1,size:0.003});
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   const ch=chip('');ch.style.fontSize='48px';
-  const SAD=1.7,UP=2.7,DASH=3.0,GONE=3.5,CUT=4.75,JOY=5.75;let ebs='',ibs='';
+  const SAD=1.7,UP=2.7,DASH=3.0,GONE=3.5,CUT=4.75,JOY=5.35;let ebs='',ibs='';
   const zoom=textSprite('슝~',90,'#ffffff',0.005);scene.add(zoom);
   const lines=[];for(let k=0;k<4;k++){const l=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.03,0.03),basic(0xffffff));scene.add(l);lines.push(l)}
   function setE(x){if(ebs!==x){setBubble(eb,x,{...EB,fs:64,size:0.0045});ebs=x}}
@@ -427,11 +439,11 @@ S[7]=()=>{
       else{const w=ease((t-SAD)/(CUT-SAD));E.position.set(SX+1.9+w*1.3,0,0.45-w*0.5);E.rotation.y=Math.PI/2+0.4;walkPose(E,t*5,0.25);eu.head.rotation.x=0.4;
         setE('…알겠어');scaleBubble(eb,pop((t-SAD-0.1)/0.2))}
     }else{
-      I.visible=true;I.rotation.set(0,-Math.PI/2-0.55,0);I.position.set(2.25,0,-0.7);standPose(I);iu.arms[1].rotation.x=-0.35;
+      I.visible=true;I.rotation.set(0,-Math.PI/2-0.55,0);I.position.set(2.25,0.1,-0.75);standPose(I);iu.arms[1].rotation.x=-0.35;
       coat.visible=true;bag.visible=true;shoes.forEach(s=>s.visible=true);cush.visible=false;
-      setI('가자.');ib.position.set(2.6,2.05,-0.4);scaleBubble(ib,pop((t-CUT-0.35)/0.2));
+      setI('가자.');ib.position.set(2.75,2.1,-0.3);scaleBubble(ib,pop((t-CUT-0.15)/0.18));
       standPose(E);E.position.set(1.05,0,-0.05);E.rotation.y=Math.PI/2+0.25;
-      if(t<JOY){eu.head.rotation.x=0.35;setE('…?!');scaleBubble(eb,pop((t-CUT-0.1)/0.2))}
+      if(t<JOY){eu.head.rotation.x=0.35;setE('…?!');scaleBubble(eb,pop((t-CUT-0.05)/0.15))}
       else{eu.head.rotation.x=0;armUp(E,0,1);armUp(E,1,1);E.position.y=Math.abs(Math.sin((t-JOY)*7))*0.25;setE('꺄!! 가자!!');scaleBubble(eb,pop((t-JOY)/0.2))}
     }
     // 먹구름
@@ -440,10 +452,10 @@ S[7]=()=>{
     drops.forEach(q=>{const lt=(t*1.8+q.ph)%1;q.d.visible=ck>0.3;q.d.position.set(hp.x+q.x,hp.y+0.55-lt*0.6,hp.z)});
     petals.forEach(q=>{const lt=t-JOY;q.p.visible=lt>0;q.p.position.set(q.x+Math.sin(lt*2+q.ph)*0.3,q.y0-lt*q.v,0.6);q.p.rotation.set(lt*3+q.ph,lt*2,lt)});
     updHearts(hs,t,JOY+0.1,1.2,1.0);
-    dl.visible=t<CUT;ch.textContent=t<UP?'토요일 AM 11:00 · 벚꽃 시즌':t<CUT?'ENFP 시무룩 감지 · ISTP 출동':'끌려간 거리 0m · 스스로 나감';chipPop(ch,t,0);
+    dl.visible=true;ch.textContent=t<UP?'토요일 AM 11:00 · 벚꽃 시즌':t<CUT?'ENFP 시무룩 감지 · ISTP 출동':'끌려간 거리 0m · 스스로 나감';chipPop(ch,t,0);
     if(t>=CUT){const k=pop((t-CUT)/0.3);ch.style.transform=`translateX(-50%) scale(${0.8+0.2*k})`}
     if(t<CUT){cam.position.set(0.5,2.6,10.2-t*0.12);cam.lookAt(0.5,0.85,0)}
-    else{cam.position.set(1.1,2.3,7.8-(t-CUT)*0.15);cam.lookAt(1.6,1.05,-0.3)}
+    else{cam.position.set(0.9,2.4,8.0-(t-CUT)*0.15);cam.lookAt(1.9,1.25,-0.5)}
     caption(7,t);renderer.render(scene,cam);
   };
 };

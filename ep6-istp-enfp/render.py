@@ -9,7 +9,7 @@ VOICE = [3.318,5.407,6.609,6.922,6.113,5.956,3.971,6.348,7.001,4.441]
 LEAD, TAIL = 0.25, 0.45
 DURS = [v + LEAD + TAIL for v in VOICE]
 DURS[-1] += 0.3
-EXTRA = {6: 2.0, 7: 2.5}
+EXTRA = {6: 2.0, 7: 0.2}
 for k, e in EXTRA.items(): DURS[k] += e
 ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
 scenes = [int(x) for x in sys.argv[1].split(',')]
