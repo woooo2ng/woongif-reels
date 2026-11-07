@@ -5,7 +5,7 @@ try:
     srv=http.server.ThreadingHTTPServer(('127.0.0.1',8124),functools.partial(http.server.SimpleHTTPRequestHandler,directory=os.getcwd()));threading.Thread(target=srv.serve_forever,daemon=True).start()
 except OSError: pass
 http.server.SimpleHTTPRequestHandler.log_message=lambda *a:None
-VOICE = [3.318,5.407,6.609,6.922,6.113,5.956,3.971,6.348,7.001,4.441]
+VOICE = [3.318,5.407,6.609,6.922,6.113,5.956,4.362,6.348,7.001,4.441]
 ARGS=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']
 pairs=[tuple(map(float,x.split(':'))) for x in sys.argv[1].split(',')]
 with sync_playwright() as p:
