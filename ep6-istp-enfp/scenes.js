@@ -330,17 +330,17 @@ S[6]=()=>{
   const hs=sprinkleHearts(scene,7,r,{x:1.0,w:1.2,z:0.6,size:0.0035});
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   const ch=chip('');ch.style.fontSize='48px';
-  const OUT=1.9,BACK=5.0;let ibs='',ebs='';
+  const OUT=1.7,BACK=3.9;let ibs='',ebs='';
   function setI(txt){if(ibs!==txt){setBubble(ib,txt,{...IB,fs:62,size:0.004});ibs=txt}}
   function setE(txt){if(ebs!==txt){setBubble(eb,txt,{...EB,fs:62,size:0.004});ebs=txt}}
   function clawAt(t0,t,grab){const k=t-t0;if(k<0||k>1.0)return null;const d=k<0.4?ease(k/0.4):k<0.6?1:1-ease((k-0.6)/0.4);return {d,closed:k>0.45,grab:grab&&k>0.5}}
   return t=>{
     // claw
     let st=null;
-    if(t<OUT)st=clawAt(0.15,t,false);else if(t<BACK){st=clawAt(2.2,t,false)||clawAt(3.15,t,false)||clawAt(4.0,t,true)}
+    if(t<OUT)st=clawAt(0.15,t,false);else if(t<BACK){st=clawAt(1.85,t,false)||clawAt(2.8,t,true)}
     const d=st?st.d:0;claw.position.set(MX+0.05,2.25-d*0.85,-0.25);
     prongs.forEach((p,k)=>{p.parent.rotation.x=0;p.rotation.x=st&&st.closed?-0.35:0.35});
-    const got=t>4.5;
+    const got=t>3.3;
     if(got&&t<BACK+0.15){target.position.set(MX+0.05,claw.position.y-0.32,-0.25)}
     if(t>=BACK+0.15){target.position.set(0,0,0);if(target.parent!==I.userData.arms[1]){I.userData.arms[1].add(target);target.position.set(0,-0.72,0.18)}}
     // ENFP
@@ -349,7 +349,7 @@ S[6]=()=>{
       if(t>1.05){setE('아 또 실패ㅠ');scaleBubble(eb,pop((t-1.05)/0.2));eu.head.rotation.x=0.3}else scaleBubble(eb,0)}
     else if(t<BACK){E.visible=false}
     else{E.visible=true;const w=ease((t-BACK)/0.35);E.position.set(2.9-1.1*w,0,0.6);E.rotation.y=-Math.PI/2+0.4;walkPose(E,t*10,0.5*(1-w));
-      if(t>BACK+0.35){setE('헐 대박!!');eb.position.y=2.7;scaleBubble(eb,pop((t-BACK-0.35)/0.2));armUp(E,0,1);armUp(E,1,1);E.position.y=Math.abs(Math.sin((t-BACK)*8))*0.2}else scaleBubble(eb,0)}
+      if(t>BACK+0.2){setE('헐 대박!!');eb.position.y=2.7;scaleBubble(eb,pop((t-BACK-0.35)/0.2));armUp(E,0,1);armUp(E,1,1);E.position.y=Math.abs(Math.sin((t-BACK)*8))*0.2}else scaleBubble(eb,0)}
     // ISTP
     const iu=I.userData;standPose(I);
     if(t<OUT){I.position.set(1.7,0,0.75);I.rotation.y=-Math.PI/2-0.5;iu.arms[0].rotation.x=-1.25;iu.arms[1].rotation.x=-1.25;iu.arms[0].rotation.z=0.75;iu.arms[1].rotation.z=-0.75;
@@ -357,7 +357,7 @@ S[6]=()=>{
     else if(t<BACK){I.position.set(0.6,0,0.35);I.rotation.y=-Math.PI/2-0.35;iu.arms[1].rotation.x=-1.3+Math.sin(t*20)*0.08;iu.head.rotation.x=0.15;
       setI(got?'…!':'…');scaleBubble(ib,pop((t-OUT-0.15)/0.2))}
     else{I.position.set(0.6,0,0.35);I.rotation.y=-0.2;iu.arms[1].rotation.x=-1.5;iu.head.rotation.y=-0.5;
-      if(t>BACK+0.35){setI('그냥 됐어');scaleBubble(ib,pop((t-BACK-0.35)/0.2))}else scaleBubble(ib,0)}
+      if(t>BACK+0.2){setI('그냥 됐어');scaleBubble(ib,pop((t-BACK-0.35)/0.2))}else scaleBubble(ib,0)}
     updHearts(hs,t,BACK+0.4,2.0,1.6);
     const money=t<OUT?0:Math.min(23000,Math.round(1000+22000*clamp01((t-OUT)/(BACK-OUT-0.3)))/1000|0)*1000;
     ch.textContent=t<OUT?'인형 뽑기 · ENFP 7번째 실패':t<BACK?`ENFP 화장실 간 사이 · ISTP ${money.toLocaleString()}원째`:'ISTP 쓴 돈 23,000원 · "그냥 됐어"';
