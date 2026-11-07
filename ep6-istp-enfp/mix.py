@@ -1,6 +1,6 @@
 import subprocess
 V=[3.318,5.407,6.609,6.922,6.113,5.956,3.971,6.348,7.001,4.441]
-EXTRA={6:2.0}
+EXTRA={6:2.0,7:2.5}
 n=[round((v+0.7+(0.3 if i==len(V)-1 else 0)+EXTRA.get(i,0))*30) for i,v in enumerate(V)]
 starts=[];acc=0
 for k in n: starts.append(acc/30); acc+=k

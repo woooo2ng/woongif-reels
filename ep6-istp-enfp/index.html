@@ -590,25 +590,33 @@ S[7]=()=>{
   const hs=sprinkleHearts(scene,4,r,{x:1.65,w:0.9,z:0.1,size:0.003});
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   const ch=chip('');ch.style.fontSize='48px';
-  const SAD=1.55,CUT=3.0,JOY=3.9;let ebs='',ibs='';
+  const SAD=1.7,UP=2.7,DASH=3.0,GONE=3.5,CUT=4.75,JOY=5.75;let ebs='',ibs='';
+  const zoom=textSprite('슝~',90,'#ffffff',0.005);scene.add(zoom);
+  const lines=[];for(let k=0;k<4;k++){const l=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.03,0.03),basic(0xffffff));scene.add(l);lines.push(l)}
   function setE(x){if(ebs!==x){setBubble(eb,x,{...EB,fs:64,size:0.0045});ebs=x}}
   function setI(x){if(ibs!==x){setBubble(ib,x,{...IB,fs:66,size:0.0045});ibs=x}}
   return t=>{
     const iu=I.userData,eu=E.userData;
+    zoom.visible=false;lines.forEach(l=>l.visible=false);
     if(t<CUT){
-      I.rotation.set(0,0,Math.PI/2);I.position.set(SX+1.0,0.58,0.25);iu.arms[0].rotation.x=-1.3;iu.arms[1].rotation.x=-1.3;iu.legs.forEach(l=>{l.rotation.set(0,0,0)});
-      coat.visible=false;bag.visible=false;shoes.forEach(s=>s.visible=false);cush.visible=true;
-      setI('굳이?');ib.position.set(SX-0.5,1.45,0.4);scaleBubble(ib,pop((t-0.85)/0.2));
+      coat.visible=false;bag.visible=false;shoes.forEach(s=>s.visible=false);
+      if(t<UP){I.visible=true;I.rotation.set(0,0,Math.PI/2);I.position.set(SX+1.0,0.58,0.25);iu.arms[0].rotation.x=-1.3;iu.arms[1].rotation.x=-1.3;iu.legs.forEach(l=>{l.rotation.set(0,0,0)});cush.visible=true;
+        if(t<SAD+0.4){setI('굳이?');scaleBubble(ib,pop((t-0.85)/0.2))}else{setI('…!');scaleBubble(ib,pop((t-SAD-0.4)/0.2))}
+        ib.position.set(SX-0.5,1.45,0.4)}
+      else if(t<DASH){I.visible=true;cush.visible=false;I.rotation.set(0,Math.PI/2,0);I.position.set(SX+0.6,0,0.5);standPose(I);const k=ease((t-UP)/0.25);I.position.y=0.2*(1-k);scaleBubble(ib,0)}
+      else if(t<GONE){I.visible=true;cush.visible=false;const k=(t-DASH)/(GONE-DASH);I.rotation.set(0,Math.PI/2,0);I.position.set(SX+0.6+k*5.2,0,1.3);walkPose(I,t*22,0.9);scaleBubble(ib,0);
+        zoom.visible=true;zoom.position.set(I.position.x-0.6,2.1,1.3);lines.forEach((l,n)=>{l.visible=true;l.position.set(I.position.x-0.8-n*0.15,0.6+n*0.35,1.3)})}
+      else{I.visible=false;scaleBubble(ib,0)}
       standPose(E);
       if(t<SAD){E.position.set(SX+1.9,0,0.45);E.rotation.y=-Math.PI/2+0.3;setE('벚꽃 보러 갈래?');scaleBubble(eb,pop((t-0.15)/0.22));armUp(E,0,pop((t-0.15)/0.2)*0.6)}
-      else{const w=ease((t-SAD)/(CUT-SAD));E.position.set(SX+1.9+w*1.3,0,0.45-w*0.5);E.rotation.y=Math.PI/2+0.4;walkPose(E,t*6,0.3);eu.head.rotation.x=0.35;
+      else{const w=ease((t-SAD)/(CUT-SAD));E.position.set(SX+1.9+w*1.3,0,0.45-w*0.5);E.rotation.y=Math.PI/2+0.4;walkPose(E,t*5,0.25);eu.head.rotation.x=0.4;
         setE('…알겠어');scaleBubble(eb,pop((t-SAD-0.1)/0.2))}
     }else{
-      I.rotation.set(0,-Math.PI/2-0.55,0);I.position.set(2.25,0,-0.7);standPose(I);iu.arms[1].rotation.x=-0.35;
+      I.visible=true;I.rotation.set(0,-Math.PI/2-0.55,0);I.position.set(2.25,0,-0.7);standPose(I);iu.arms[1].rotation.x=-0.35;
       coat.visible=true;bag.visible=true;shoes.forEach(s=>s.visible=true);cush.visible=false;
-      setI('가자.');ib.position.set(2.6,2.05,-0.4);scaleBubble(ib,pop((t-CUT-0.25)/0.2));
+      setI('가자.');ib.position.set(2.6,2.05,-0.4);scaleBubble(ib,pop((t-CUT-0.35)/0.2));
       standPose(E);E.position.set(1.05,0,-0.05);E.rotation.y=Math.PI/2+0.25;
-      if(t<JOY){eu.head.rotation.x=0.35;setE('…?!');scaleBubble(eb,pop((t-CUT-0.05)/0.2))}
+      if(t<JOY){eu.head.rotation.x=0.35;setE('…?!');scaleBubble(eb,pop((t-CUT-0.1)/0.2))}
       else{eu.head.rotation.x=0;armUp(E,0,1);armUp(E,1,1);E.position.y=Math.abs(Math.sin((t-JOY)*7))*0.25;setE('꺄!! 가자!!');scaleBubble(eb,pop((t-JOY)/0.2))}
     }
     // 먹구름
@@ -617,7 +625,7 @@ S[7]=()=>{
     drops.forEach(q=>{const lt=(t*1.8+q.ph)%1;q.d.visible=ck>0.3;q.d.position.set(hp.x+q.x,hp.y+0.55-lt*0.6,hp.z)});
     petals.forEach(q=>{const lt=t-JOY;q.p.visible=lt>0;q.p.position.set(q.x+Math.sin(lt*2+q.ph)*0.3,q.y0-lt*q.v,0.6);q.p.rotation.set(lt*3+q.ph,lt*2,lt)});
     updHearts(hs,t,JOY+0.1,1.2,1.0);
-    dl.visible=t<CUT;ch.textContent=t<CUT?'토요일 AM 11:00 · 벚꽃 시즌':'끌려간 거리 0m · 스스로 나감';chipPop(ch,t,0);
+    dl.visible=t<CUT;ch.textContent=t<UP?'토요일 AM 11:00 · 벚꽃 시즌':t<CUT?'ENFP 시무룩 감지 · ISTP 출동':'끌려간 거리 0m · 스스로 나감';chipPop(ch,t,0);
     if(t>=CUT){const k=pop((t-CUT)/0.3);ch.style.transform=`translateX(-50%) scale(${0.8+0.2*k})`}
     if(t<CUT){cam.position.set(0.5,2.6,10.2-t*0.12);cam.lookAt(0.5,0.85,0)}
     else{cam.position.set(1.1,2.3,7.8-(t-CUT)*0.15);cam.lookAt(1.6,1.05,-0.3)}
