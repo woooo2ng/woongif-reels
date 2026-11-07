@@ -416,7 +416,7 @@ S[4]=()=>{
   const Q=1.6,ANS=3.1,BOOM=3.5;let ibs='';
   return t=>{
     scaleBubble(eb,pop((t-0.25)/0.22)*(t<BOOM?1:0));
-    const txt=t<ANS?'음…':'…살 쪘어?';if(txt!==ibs){setBubble(ib,txt,{...IB,fs:66,size:0.0042});ibs=txt}
+    const txt=t<ANS?'음…':'…머리 감았어?';if(txt!==ibs){setBubble(ib,txt,{...IB,fs:66,size:0.0042});ibs=txt}
     scaleBubble(ib,t<ANS?pop((t-Q)/0.2):pop((t-ANS)/0.2));
     const iu=I.userData;iu.head.rotation.z=t<ANS&&t>Q?Math.sin(t*3)*0.15:0;iu.arms[1].rotation.x=t<ANS&&t>Q?-2.3:-0.9;
     const boom=t>BOOM;const bk=pop((t-BOOM)/0.2);
