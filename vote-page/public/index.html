@@ -245,7 +245,7 @@ footer .contact a{font-weight:700;color:var(--sub)}
         <div class="rfilter" id="pair-filter"></div><div id="pair-rest" class="compact"></div>
       </div>
       <div class="card">
-        <p class="sec-t">✍️ 새 궁합 신청 · 온 세상 ○○이 전부 이 조합이라면?</p>
+        <p class="sec-t">✍️ 새 궁합 신청 · 두 유형이 이런 사이라면?</p>
         <div class="builder">
           <div class="slotw"><button class="slot" id="pa">?</button><small class="who" id="pa-who"></small></div><span class="x">×</span><div class="slotw"><button class="slot" id="pb">?</button><small class="who" id="pb-who"></small></div>
         </div>
@@ -619,11 +619,13 @@ function renderBoard(pre, top, titleFn, empty, today, onTap){
 let pair = null; const pSel = {a:null, b:null, rel:"커플", custom:false};
 // 받침 있으면 '이', 없으면 '가'
 const iga = (w)=>{ const c=w.trim().slice(-1).charCodeAt(0); return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28) ? "이" : "가"; };
-const relPhrase = (rel)=>`온 세상 ${rel}${iga(rel)} 전부`;
+const relPhrase = (rel)=>rel;
+// 받침 있거나 '커플'이면 '이라면', 아니면 '라면'
+const irami = (w)=>{ const c=w.trim().slice(-1).charCodeAt(0); return (w==="커플" || (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)) ? "이라면" : "라면"; };
 // 커플은 앞이 남자, 뒤가 여자
 const pairNames = (a,b,rel)=> rel==="커플" ? `${a}(남자) × ${b}(여자)` : `${a} × ${b}`;
 const pairNamesHTML = (a,b,rel)=> rel==="커플" ? `${a}<span class="sx">(남자)</span> × ${b}<span class="sx">(여자)</span>` : `${a} × ${b}`;
-const pairTitle = (a,b,rel)=>`${relPhrase(rel)} ${pairNames(a,b,rel)}라면?`;
+const pairTitle = (a,b,rel)=>`${pairNames(a,b,rel)} ${rel}${irami(rel)}?`;
 const curRel = ()=> pSel.custom ? $("#rel-custom").value.trim() : pSel.rel;
 async function loadPair(){
   try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
