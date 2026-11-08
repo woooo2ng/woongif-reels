@@ -13,5 +13,5 @@ filt.append(''.join(f'[a{i}]' for i in range(len(V)))+f'amix=inputs={len(V)}:nor
 subprocess.run(['ffmpeg','-y','-loglevel','error',*inputs,'-filter_complex',';'.join(filt),'-map','[out]','-ac','2','-c:a','aac','-b:a','192k','-ar','48000','voice.m4a'],check=True)
 open('list.txt','w').write(''.join(f"file 'out/scene_{i}.mp4'\n" for i in range(len(V))))
 subprocess.run(['ffmpeg','-y','-loglevel','error','-f','concat','-safe','0','-i','list.txt','-c','copy','video.mp4'],check=True)
-subprocess.run(['ffmpeg','-y','-loglevel','error','-i','video.mp4','-i','voice.m4a','-map','0:v','-map','1:a','-c:v','copy','-c:a','copy','-shortest','-movflags','+faststart','woongif_006_ISTPxENFP.mp4'],check=True)
+subprocess.run(['ffmpeg','-y','-loglevel','error','-i','video.mp4','-i','voice.m4a','-map','0:v','-map','1:a','-c:v','copy','-c:a','copy','-shortest','-movflags','+faststart','woongif_007_ISTPxENFP.mp4'],check=True)
 print('T',T)

@@ -65,7 +65,7 @@ S[0]=()=>{
   const eb=[];for(let i=0;i<3;i++){const b=makeBubble(LINES[i],{...EB,fs:64,size:0.0034});b.position.set(-0.25+(i-1)*0.35,1.75+i*0.42,0);E.add(b);eb.push(b)}
   const ib=makeBubble('응',{...IB,fs:64,size:0.0034});ib.position.y=1.75;I.add(ib);
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
-  ui.innerHTML=`<div class="tag">#006 궁합편</div><div class="title1 out" style="font-size:140px;top:330px;letter-spacing:-4px"><span style="color:${C_I}">ISTP</span>×<span style="color:${C_E}">ENFP</span></div><div class="title2 out" style="font-size:150px;top:500px;color:#fff">커플이라면?</div>`;
+  ui.innerHTML=`<div class="tag">#007 궁합편</div><div class="title1 out" style="font-size:140px;top:330px;letter-spacing:-4px"><span style="color:${C_I}">ISTP</span>×<span style="color:${C_E}">ENFP</span></div><div class="title2 out" style="font-size:150px;top:500px;color:#fff">커플이라면?</div>`;
   const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2');
   const ch=chip('대화 비율 ENFP 99 : ISTP 1',700);ch.style.fontSize='46px';
   let lk=-1;
