@@ -136,7 +136,23 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_ip ON ideas(ip, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_list ON ideas(approved, hearts)`),
   ]);
+  // '오늘 공개'로 바꾼 날짜 (다음 날이면 자동으로 '나옴')
+  for (const t of ["mbti_status", "combo_status"]) {
+    try { await db.prepare(`ALTER TABLE ${t} ADD COLUMN status_day TEXT`).run(); } catch (e) { /* 이미 있음 */ }
+  }
   ready = true;
+}
+
+// '오늘 공개'는 그날까지만 → 다음 날부터 '나옴'
+let rolledDay = "";
+async function rollToday(db) {
+  const d = kstDay();
+  if (rolledDay === d) return;
+  await db.batch([
+    db.prepare("UPDATE mbti_status SET status='done' WHERE status='today' AND (status_day IS NULL OR status_day < ?)").bind(d),
+    db.prepare("UPDATE combo_status SET status='done' WHERE status='today' AND (status_day IS NULL OR status_day < ?)").bind(d),
+  ]);
+  rolledDay = d;
 }
 
 const json = (data, status = 200) =>
@@ -188,6 +204,7 @@ export async function onRequest({ request, env, params }) {
   if (!env.DB) return err("D1 데이터베이스(DB) 바인딩이 없어요", 500);
   const db = env.DB;
   await setup(db);
+  await rollToday(db);
   const path = (params.path || []).join("/");
   const method = request.method;
   const body = method === "POST" ? await request.json().catch(() => ({})) : {};
@@ -540,9 +557,10 @@ export async function onRequest({ request, env, params }) {
       const key = String(body.key || "").slice(0, 40);
       if (!key.includes("|")) return err("값이 이상해요");
       await db.prepare(
-        `INSERT INTO combo_status (kind, key, status, link) VALUES (?,?,?,?)
-         ON CONFLICT(kind, key) DO UPDATE SET status=excluded.status, link=excluded.link`
-      ).bind(body.kind, key, body.status, clean(body.link, 300) || null).run();
+        `INSERT INTO combo_status (kind, key, status, link, status_day) VALUES (?,?,?,?,?)
+         ON CONFLICT(kind, key) DO UPDATE SET status=excluded.status, link=excluded.link,
+           status_day=CASE WHEN combo_status.status='today' AND excluded.status='today' THEN combo_status.status_day ELSE excluded.status_day END`
+      ).bind(body.kind, key, body.status, clean(body.link, 300) || null, kstDay()).run();
       return json({ ok: true });
     }
 
@@ -582,9 +600,10 @@ export async function onRequest({ request, env, params }) {
       const type = String(body.type || "").toUpperCase();
       if (!MBTI.includes(type) || !MBTI_STATUS.includes(body.status)) return err("값이 이상해요");
       await db.prepare(
-        `INSERT INTO mbti_status (type, status, episode, link) VALUES (?,?,?,?)
-         ON CONFLICT(type) DO UPDATE SET status=excluded.status, episode=excluded.episode, link=excluded.link`
-      ).bind(type, body.status, Number(body.episode) || null, clean(body.link, 300) || null).run();
+        `INSERT INTO mbti_status (type, status, episode, link, status_day) VALUES (?,?,?,?,?)
+         ON CONFLICT(type) DO UPDATE SET status=excluded.status, episode=excluded.episode, link=excluded.link,
+           status_day=CASE WHEN mbti_status.status='today' AND excluded.status='today' THEN mbti_status.status_day ELSE excluded.status_day END`
+      ).bind(type, body.status, Number(body.episode) || null, clean(body.link, 300) || null, kstDay()).run();
       return json({ ok: true });
     }
     if (path === "admin/scenes" && method === "GET") {
