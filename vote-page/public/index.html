@@ -150,6 +150,19 @@ footer .contact a{font-weight:700;color:var(--sub)}
 .vote{flex:none;width:92px;text-align:center;border:2px solid var(--ink);background:var(--lav);border-radius:12px;padding:9px 12px;font:inherit;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--ink);cursor:pointer;white-space:nowrap;color:var(--ink)}
 .vote:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .resthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rfilter{display:flex;gap:6px;overflow-x:auto;margin:0 -2px 8px;padding:2px;scrollbar-width:none}
+.rfilter::-webkit-scrollbar{display:none}
+.rfilter button{flex:none;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:13px;font-weight:700;color:var(--sub);padding:6px 10px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.rfilter button.on{border-color:var(--lav-d);background:#f3edff;color:var(--ink)}
+.compact .rankrow{padding:7px 0;gap:8px}
+.compact .rankrow:first-child{padding-top:2px}
+.compact .rankrow .rk{font-size:13px;width:20px;color:var(--sub)}
+.compact .rankrow .ttl{font-size:14px;line-height:1.3}
+.compact .rankrow .ttl small{display:inline;font-size:12px;margin-right:4px}
+.compact .barline{display:none}
+.compact .by{margin-top:2px;font-size:11px}
+.compact .heart-only i{font-size:20px}
+.compact .heart-only b{font-size:12px;margin-top:2px}
 .secret{background:linear-gradient(180deg,#fff, #f4fbf8)}
 .secret textarea{display:block;width:100%;margin-top:12px;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:16px;padding:12px;resize:none;outline:none;background:#fff;color:var(--ink);line-height:1.5}
 .secret textarea:focus{border-color:var(--lav-d)}
@@ -229,7 +242,7 @@ footer .contact a{font-weight:700;color:var(--sub)}
       <div class="card" id="pair-rest-card" hidden>
         <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 궁합 <span id="pair-rest-n"></span></p>
           <div class="sort" data-rsort="pair"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
-        <div id="pair-rest"></div>
+        <div class="rfilter" id="pair-filter"></div><div id="pair-rest" class="compact"></div>
       </div>
       <div class="card">
         <p class="sec-t">✍️ 새 궁합 신청 · 온 세상 ○○이 전부 이 조합이라면?</p>
@@ -258,7 +271,7 @@ footer .contact a{font-weight:700;color:var(--sub)}
       <div class="card" id="sit-rest-card" hidden>
         <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 상황 <span id="sit-rest-n"></span></p>
           <div class="sort" data-rsort="sit"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
-        <div id="sit-rest"></div>
+        <div class="rfilter" id="sit-filter"></div><div id="sit-rest" class="compact"></div>
       </div>
       <div class="card">
         <p class="sec-t">✍️ 새 상황 신청 · 온 세상이 ○○인데…</p>
@@ -550,17 +563,45 @@ function doneHTML(list, label){
 // TOP 3 + 나머지 목록 (방금 신청한 줄은 반짝)
 const shownRest = {pair:10, sit:10}; let flashKey = null;
 const restSort = {pair:"top", sit:"top"};
+// 다른 목록 거르기: MBTI(둘 중 하나라도) + 궁합은 관계
+const restFilter = {pair:{type:null, rel:null}, sit:{type:null, rel:null}};
+const BASE_RELS = ["커플","친구","직장 동료"];
+function filterRest(pre, list){
+  const f = restFilter[pre];
+  return list.filter(it=>{
+    if(f.type && !(pre==="pair" ? (it.a===f.type||it.b===f.type) : it.type===f.type)) return false;
+    if(f.rel && (f.rel==="기타" ? BASE_RELS.includes(it.rel) : it.rel!==f.rel)) return false;
+    return true;
+  });
+}
+function renderFilter(pre, redraw){
+  const f = restFilter[pre];
+  const rels = pre==="pair" ? ["커플","친구","직장 동료","기타"] : [];
+  $(`#${pre}-filter`).innerHTML =
+    `<button data-f="type" class="${f.type?"on":""}">${f.type ? f.type+" 들어간 것 ✕" : "🔍 MBTI"}</button>`
+    + rels.map(r=>`<button data-r="${r}" class="${f.rel===r?"on":""}">${r}</button>`).join("");
+  $(`#${pre}-filter [data-f=type]`).onclick = ()=>{
+    if(f.type){ f.type=null; shownRest[pre]=10; redraw(); return; }
+    typePicker("이 유형이 들어간 것만", (t)=>{ f.type=t; shownRest[pre]=10; redraw(); });
+  };
+  $(`#${pre}-filter`).querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ f.rel = f.rel===b.dataset.r ? null : b.dataset.r; shownRest[pre]=10; redraw(); });
+}
 function renderBoard(pre, top, titleFn, empty, today, onTap){
   const max = Math.max(1, ...top.map(i=>i.votes));
   const byNew = restSort[pre]==="new";
-  const rest = byNew ? top.slice(3).sort((a,b)=>(b.created||0)-(a.created||0)) : top.slice(3);
+  const allRest = top.slice(3);
+  if(flashKey && allRest.some(x=>x.key===flashKey)) restFilter[pre] = {type:null, rel:null};
+  const filtered = filterRest(pre, allRest);
+  const rest = byNew ? filtered.sort((a,b)=>(b.created||0)-(a.created||0)) : filtered;
   const fi = flashKey ? rest.findIndex(x=>x.key===flashKey) : -1;
   if(fi >= shownRest[pre]) shownRest[pre] = fi+1;
   $(`#${pre}-rank`).innerHTML = rankHTML(top.slice(0,3), titleFn, empty, today, 0, max);
-  $(`#${pre}-rest-card`).hidden = !rest.length;
-  $(`#${pre}-rest-n`).textContent = rest.length ? `(${rest.length})` : "";
-  $(`#${pre}-rest`).innerHTML = rest.length ? rankHTML(rest.slice(0,shownRest[pre]), titleFn, "", today, 3, max, byNew)
-    + (rest.length>shownRest[pre] ? `<button class="more" data-more="${pre}">더 보기 (${rest.length-shownRest[pre]})</button>` : "") : "";
+  $(`#${pre}-rest-card`).hidden = !allRest.length;
+  $(`#${pre}-rest-n`).textContent = allRest.length ? `(${rest.length===allRest.length ? allRest.length : rest.length+"/"+allRest.length})` : "";
+  renderFilter(pre, ()=>renderBoard(pre, top, titleFn, empty, today, onTap));
+  $(`#${pre}-rest`).innerHTML = rest.length ? rankHTML(rest.slice(0,shownRest[pre]), titleFn, "", today, 3, max, byNew || rest.length!==allRest.length)
+    + (rest.length>shownRest[pre] ? `<button class="more" data-more="${pre}">더 보기 (${rest.length-shownRest[pre]})</button>` : "")
+    : `<p class="empty" style="padding:10px">조건에 맞는 글이 없어요</p>`;
   document.querySelectorAll(`#${pre}-rank .rankrow.tap, #${pre}-rest .rankrow.tap`).forEach(b=>b.onclick=()=>onTap(top.find(x=>x.key===b.dataset.key)));
   const m = document.querySelector(`[data-more="${pre}"]`); if(m) m.onclick=()=>{ shownRest[pre]+=10; renderBoard(pre, top, titleFn, empty, today, onTap); };
   document.querySelectorAll(`[data-rsort="${pre}"] button`).forEach(b=>{
