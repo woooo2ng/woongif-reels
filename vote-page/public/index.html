@@ -183,7 +183,7 @@ footer .contact a{font-weight:700;color:var(--sub)}
 .vote.off{background:#f1ecfb;border-color:#d9d0ef;color:#a69dbf;box-shadow:none;font-size:12px}
 .rel{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:99px;background:#ffe1ea;vertical-align:2px;margin-left:4px}
 .rel.친구{background:var(--mint)}.rel.직장{background:var(--sky)}
-.t.today::after{content:"오늘 공개";background:#e0456a}
+.t.today::after{content:"오늘 공개됨";background:#e0456a}
 .making-chip.today{background:#e0456a}
 .making-chip{display:inline-block;background:var(--ink);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:6px;vertical-align:3px;letter-spacing:0;white-space:nowrap}
 .builder{display:flex;align-items:center;gap:8px;justify-content:center}
@@ -550,7 +550,7 @@ $("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove
 
 const relCls = (r)=>r.split(" ")[0];
 const MAKING = '<span class="making-chip">🎬 제작 중</span>';
-const TODAY = '<span class="making-chip today">📢 오늘 공개</span>';
+const TODAY = '<span class="making-chip today">🎉 오늘 공개됨</span>';
 const badge = (st)=> st==="today" ? TODAY : st==="making" ? MAKING : "";
 function rankHTML(list, titleFn, empty, liked=[], start=0, max=null, noRank=false){
   if(!list.length) return `<p class="empty" style="padding:10px">${empty}</p>`;
@@ -816,7 +816,7 @@ async function loadPicked(){
     const show = picked.filter(p=>seenPicked[p.kind+"|"+p.key]!==p.status).sort((a,b)=>order[a.status]-order[b.status]).slice(0,3);
     const what = {mbti:"유형", pair:"궁합", situation:"상황"};
     $("#picked").innerHTML = show.map(p=>{
-      const msg = p.status==="done" ? "영상으로 나왔어요! 🎉" : p.status==="today" ? "오늘 공개돼요! 📢" : "제작에 들어갔어요! 🎬";
+      const msg = p.status==="done" ? "영상으로 나왔어요! 🎉" : p.status==="today" ? "오늘 공개됐어요! 🎉 인스타에서 확인해 보세요" : "제작에 들어갔어요! 🎬";
       return `<div class="pk ${p.status}" data-k="${esc(p.kind+"|"+p.key)}" data-s="${p.status}">
         <div class="tx">❤️ 누른 ${what[p.kind]}이 ${msg}<br><b>${esc(pickedLabel(p))}</b></div>
         ${p.link?`<a href="${esc(p.link)}" target="_blank" rel="noopener">보러 가기</a>`:""}
