@@ -20,9 +20,10 @@ button{border:2px solid #2b2440;background:#fff;border-radius:10px;padding:7px 1
 .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .txt{font-weight:800}
 .sub{color:#7a7290;font-size:12px;margin-top:2px}
-.mb{display:grid;grid-template-columns:52px 1fr 54px;gap:6px;align-items:center;margin-bottom:6px}
+.mb{display:grid;grid-template-columns:64px 1fr 54px;gap:6px;align-items:center;margin-bottom:6px}
 .mb b{font-weight:900}
 .mb .lk{grid-column:2/4}
+.hn{white-space:nowrap;padding-left:4px;padding-right:4px;font-size:13px}
 .tabs{display:flex;gap:6px;overflow-x:auto}
 .tabs button{white-space:nowrap;flex:none}
 .tabs button[aria-selected="true"]{background:#fff0a8}
@@ -146,6 +147,16 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
 async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks()]); }
 
 // ---- 차단 ----
+// ❤️ 숫자 누르면 하트 수 바꾸기
+document.addEventListener("click", async (e)=>{
+  const b = e.target.closest("[data-hn]"); if(!b) return;
+  const v = prompt(`${b.dataset.label}\n\n하트 수를 몇으로 할까요? (지금 ${b.dataset.n})`, b.dataset.n);
+  if(v===null || v.trim()==="" || v.trim()===b.dataset.n) return;
+  const kind = b.dataset.hn, body = kind==="idea" ? {kind, id:Number(b.dataset.key), n:Number(v)} : {kind, key:b.dataset.key, n:Number(v)};
+  try{ await api("admin/hearts", body); toast("하트 수를 바꿨어요");
+    if(kind==="mbti") loadMbti(); else if(kind==="idea") loadIdeas(); else loadCombo();
+  }catch(er){ toast(er.message); }
+});
 function bindBlocks(){
   document.querySelectorAll("[data-blk]").forEach(b=>b.onclick=async()=>{
     const kind=b.dataset.blk;
@@ -232,7 +243,7 @@ async function loadCombo(){
     <span class="row" style="margin:0"><button data-sit="${s.id}" data-on="${s.active?0:1}">${s.active?"숨기기":"다시 보이기"}</button></span></div>`).join("") : `<p class="empty">아직 없어요</p>`;
   document.querySelectorAll("[data-sit]").forEach(b=>b.onclick=async()=>{
     try{ await api("admin/situations/update",{id:Number(b.dataset.sit),active:b.dataset.on==="1"}); loadCombo(); }catch(e){ toast(e.message); } });
-  const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <span class="sub">${it.votes}표</span></div>
+  const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <button class="hn" data-hn="${kind}" data-key="${esc(it.key)}" data-n="${it.votes}" data-label="${esc(label)}">❤️ ${it.votes}</button></div>
     <div class="row"><select data-ck="${esc(it.key)}" data-kind="${kind}">
       <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="today" ${it.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option><option value="hidden" ${it.status==="hidden"?"selected":""}>숨김 (이상한 입력)</option></select>
     <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
@@ -263,7 +274,7 @@ async function loadIdeas(){
     <div class="sub">${i.author?"@"+esc(i.author)+" · ":""}${when(i.created_at)}</div>
     <div class="row"><button class="ok" data-a="approve" data-id="${i.id}">승인</button><button class="no" data-a="reject" data-id="${i.id}">거절</button>
     <button data-a="edit" data-id="${i.id}">고쳐서 승인</button><button class="no" data-a="del" data-id="${i.id}">삭제</button><button class="blk" data-blk="idea" data-id="${i.id}">🚫 차단</button></div></div>`).join(""):`<p class="empty">대기 중인 아이디어가 없어요</p>`;
-  $("#live").innerHTML=l.length?l.map(i=>`<div class="card"><div class="txt">${esc(i.text)} <span class="sub">❤️ ${i.hearts}</span></div>
+  $("#live").innerHTML=l.length?l.map(i=>`<div class="card"><div class="txt">${esc(i.text)} <button class="hn" data-hn="idea" data-key="${i.id}" data-n="${i.hearts}" data-label="${esc(i.text)}">❤️ ${i.hearts}</button></div>
     <div class="sub">${i.author?"@"+esc(i.author):""}</div>
     <div class="row"><select data-stage="${i.id}">${STAGES.map(s=>`<option ${s===i.stage?"selected":""}>${s}</option>`).join("")}</select>
     <input data-link="${i.id}" placeholder="릴스 링크" value="${esc(i.link||"")}" style="flex:1">
@@ -292,6 +303,7 @@ async function loadMbti(){
     <select data-ms="${t.type}"><option value="open" ${t.status==="open"?"selected":""}>신청 받는 중 (${t.votes}표)</option>
     <option value="making" ${t.status==="making"?"selected":""}>제작 중</option><option value="today" ${t.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${t.status==="done"?"selected":""}>나옴</option></select>
     <input data-me="${t.type}" placeholder="편" inputmode="numeric" value="${t.episode||""}">
+    <button class="hn" data-hn="mbti" data-key="${t.type}" data-n="${t.votes}" data-label="${t.type}">❤️ ${t.votes}</button>
     <input class="lk" data-ml="${t.type}" placeholder="릴스 링크 (선택)" value="${esc(t.link||"")}"></div>`).join("")+`<button class="pri" id="msave" style="width:100%;margin-top:6px">MBTI 상태 저장</button>`;
   $("#msave").onclick=async()=>{
     try{

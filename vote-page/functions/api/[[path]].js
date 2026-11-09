@@ -596,6 +596,21 @@ export async function onRequest({ request, env, params }) {
         .bind(text, clean(body.author, 30) || null, STAGES.includes(body.stage) ? body.stage : "접수", Date.now()).run();
       return json({ ok: true });
     }
+    // 하트 수 직접 정하기 (관리자)
+    if (path === "admin/hearts" && method === "POST") {
+      const n = Math.floor(Number(body.n));
+      if (!Number.isFinite(n) || n < 0 || n > 1000000) return err("0 이상 숫자로 적어주세요");
+      if (body.kind === "idea") {
+        await db.prepare("UPDATE ideas SET hearts=? WHERE id=?").bind(n, Number(body.id) || 0).run();
+        return json({ ok: true });
+      }
+      if (!["mbti", "pair", "situation"].includes(body.kind)) return err("값이 이상해요");
+      const key = String(body.key || "").slice(0, 60);
+      if (body.kind === "mbti" ? !MBTI.includes(key) : !key.includes("|")) return err("값이 이상해요");
+      await db.prepare(`INSERT INTO like_counts (kind, key, n, first_at) VALUES (?,?,?,?)
+        ON CONFLICT(kind, key) DO UPDATE SET n=excluded.n`).bind(body.kind, key, n, Date.now()).run();
+      return json({ ok: true });
+    }
     if (path === "admin/mbti" && method === "POST") {
       const type = String(body.type || "").toUpperCase();
       if (!MBTI.includes(type) || !MBTI_STATUS.includes(body.status)) return err("값이 이상해요");
