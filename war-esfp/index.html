@@ -137,7 +137,7 @@ const C_T='#c8ff4d';
 const CAPL={
  0:[[0,"오늘 우리는… 조국을 위해—"],[2.948,"온 세상이 ESFP인데, 전쟁이 난다면?"]],
  1:[[0,"장군님, 한 번만 다시요."],[1.85,"역광이에요."],[3.237,"…처음부터 간다."]],
- 2:[[2.605,"저기요! 저 나왔죠?"],[3.955,"그 사진 저도 보내 주세요!"],[6.122,"아 잘 나왔다… 아이디 뭐예요?"],[9.031,"첫 교전은, 맞팔이었습니다."]],
+ 2:[[3.605,"저기요! 저 나왔죠?"],[4.955,"그 사진 저도 보내 주세요!"],[7.122,"아 잘 나왔다… 아이디 뭐예요?"],[10.031,"첫 교전은, 맞팔이었습니다."]],
  3:[[0,"그날부터 전쟁은, 좋아요 수 싸움이 됐습니다."],[3.773,"질 수 없다. 전원, 각도 잡아!"]],
  4:[[0,"장군님! 적장이 라이브 켰습니다!"],[2.27,"별풍선 벌써 8천 개입니다!"],[4.425,"…우리도 켜."],[5.765,"좋아요 싸움은 곧, 별풍선 싸움이 됐습니다."],[9.945,"별풍선 1,000개."],[11.28,"장군님 무조건 이기세요."],[13.813,"감사합니다, ESFP짱 님~!"],[15.6,"L을 가져가~!"]],
  5:[[0,"저희…"],[1.23,"L 가져갈게요."],[2.69,"항복합니다."],[3.9,"…그럼 이제 스토리에 뭐 올려요?"],[6.8,"거절합니다."],[8.12,"인류 역사상 처음으로, 항복이 거절됐습니다."],[12.02,"전쟁이 끝나면, 올릴 게 없어지니까요."]],
@@ -261,9 +261,13 @@ function phoneMesh(col=0xbfe3ff){const g=new THREE.Group();const b=new THREE.Mes
   const rec=new THREE.Mesh(new THREE.CircleGeometry(0.02,10),basic(0xff3a3a));rec.position.set(-0.045,0.1,-0.019);rec.rotation.y=Math.PI;g.add(rec);
   g.userData.rec=rec;return g}
 // 한 손으로 폰을 들어 앞을 찍는 자세(폰 화면이 본인 쪽)
-function phoneUp(p,side=1,k=1,ph=null){const a=p.userData.arms[side];a.rotation.x=-2.25*k;a.rotation.z=(side?0.35:-0.35)*k;
+const _v=new THREE.Vector3();
+function phoneUp(p,side=1,k=1,ph=null){const a=p.userData.arms[side];a.rotation.x=-2.25*k;a.rotation.z=(side?0.12:-0.12)*k;
   if(!p.userData.phone){const ph=phoneMesh();p.userData.hip.add(ph);p.userData.phone=ph}
-  const P=p.userData.phone;P.visible=k>0.05;P.position.set((side?1:-1)*0.2,0.6+0.48*k,0.15+0.36*k);P.rotation.x=-0.15;}
+  const P=p.userData.phone;P.visible=k>0.05;P.rotation.set(-0.15,0,0);
+  // 손 위치에 폰을 붙인다
+  const hand=a.children[1];p.updateMatrixWorld(true);hand.getWorldPosition(_v);p.userData.hip.worldToLocal(_v);
+  P.position.set(_v.x,_v.y+0.13,_v.z+0.03);}
 function rifle(){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.1,0.85),lamb(0x3a3530));g.add(b);
   const st=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.17,0.26),lamb(0x6b4a2f));st.position.set(0,-0.05,-0.36);g.add(st);
   const mz=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.04,0.2),lamb(0x222222));mz.position.z=0.5;g.add(mz);return g}
@@ -405,7 +409,7 @@ S[2]=()=>{
   const ring=div('ring','',photo);
   const notif=div('notif','<div class="ic" style="background:#7c74b8">7번</div><div class="tx"><b>적 병사 7번</b>님이<br>회원님을 팔로우합니다</div><div class="bt">맞팔로우</div>');notif.style.opacity=0;
   const hearts=sprinkleHearts(scene,26,r,{x:0,w:12,z:-1.5,dz:6,col:'#ff8fb3'});
-  const TF=vt(1.75),TC=vt(0.55);let shot=false;
+  const TF=vt(2.75),TC=vt(1.55);let shot=false;
   function pose(t){
     const sel=t>=TF-0.02;
     allies.forEach((p,i)=>{if(p===hero)return;standPose(p);aim(p)});foes.forEach(p=>{if(p===F)return;standPose(p);aim(p)});
@@ -413,17 +417,17 @@ S[2]=()=>{
     else{noRifle(hero);standPose(hero);hero.rotation.y=0;phoneUp(hero,1,1);setFace(hero,true);
       noRifle(F);standPose(F);F.position.y=0;vSign(F,1,1);setFace(F,true)}
     // 대화 이후: 다 같이 폰
-    const all=clamp01((t-vt(8.805))/0.4);
+    const all=clamp01((t-vt(9.805))/0.4);
     if(all>0){allies.concat(foes).forEach((p,i)=>{if(p===hero||p===F)return;noRifle(p);standPose(p);phoneUp(p,i%2,all);setFace(p,true)})}
-    if(t>=vt(3.955)){F.position.y=0.15+Math.abs(Math.sin(t*6))*0.15;F.userData.arms[0].rotation.x=-2.9;F.userData.arms[0].rotation.z=-0.6+Math.sin(t*10)*0.3;phoneUp(F,1,clamp01((t-vt(3.955))/0.3))}
-    if(t>=vt(6.105)){hero.rotation.y=Math.PI;phoneUp(hero,1,1)}
+    if(t>=vt(4.955)){F.position.y=0.15+Math.abs(Math.sin(t*6))*0.15;F.userData.arms[0].rotation.x=-2.9;F.userData.arms[0].rotation.z=-0.6+Math.sin(t*10)*0.3;phoneUp(F,1,clamp01((t-vt(4.955))/0.3))}
+    if(t>=vt(7.105)){hero.rotation.y=Math.PI;phoneUp(hero,1,1)}
   }
   function camAt(t){
     if(t<TC){C.position.set(0,3.4,10.5);C.lookAt(0,1.0,-5)}
     else if(t<TF){const k=ease((t-TC)/(TF-TC));const sh=Math.sin(t*37)*0.006;C.position.set(300-0.25+k*0.15+sh,1.32+sh,2.9-k*1.0);C.lookAt(300-0.15,1.2,0)}
-    else if(t<vt(3.705)){C.position.set(-1.2,2.15,7.3);C.lookAt(0.1,1.85,1.5)}
-    else if(t<vt(8.805)){const k=ease((t-vt(3.705))/1.2);C.position.set(-1.6,2.6,6.8);C.lookAt(0.6,1.7,-6.7)}
-    else{const k=ease((t-vt(8.805))/1.5);C.position.set(-1.6+k*1.2,2.3+k*3.5,6.3+k*5);C.lookAt(0.5,1.0,-2)}
+    else if(t<vt(4.705)){C.position.set(-1.2,2.15,7.3);C.lookAt(0.1,1.85,1.5)}
+    else if(t<vt(9.805)){const k=ease((t-vt(4.705))/1.2);C.position.set(-1.6,2.6,6.8);C.lookAt(0.6,1.7,-6.7)}
+    else{const k=ease((t-vt(9.805))/1.5);C.position.set(-1.6+k*1.2,2.3+k*3.5,6.3+k*5);C.lookAt(0.5,1.0,-2)}
   }
   return t=>{
     if(!shot&&t>=TF){pose(TF);camAt(TF);renderer.render(scene,C);const cv=photo.querySelector('canvas');const cx=cv.getContext('2d');
@@ -434,17 +438,17 @@ S[2]=()=>{
       ring.style.left=(24+px*676/652-70)+'px';ring.style.top=(24+py*766/766-80)+'px';ring.style.width='140px';ring.style.height='150px';shot=true}
     pose(t);camAt(t);waveFlag(ff,t);
     flash.style.opacity=t>=TF?clamp01(1-(t-TF)/0.35):0;vig.style.opacity=t>=TC&&t<TF?1:0;bgEl.style.background=t>=TC&&t<TF?'linear-gradient(#7fb2e8,#cfe4f7)':'linear-gradient(#8ec5ff,#d6ecff 60%,#f1f8ff)';
-    const pin=pop((t-(TF+0.1))/0.35),pout=ease((t-vt(3.655))/0.35);
-    photo.style.opacity=t<TF+0.1?0:1-clamp01((t-vt(3.705))/0.3);photo.style.transform=`translate(${pout*230}px,${-pout*110}px) rotate(${-4+pout*10}deg) scale(${pin*(1-pout*0.62)})`;
-    ring.style.opacity=t>vt(2.605)?(Math.floor(t*4)%2?1:0.6):0;
-    scaleBubble(bF,t>vt(2.605)&&t<vt(6.005)?pop((t-vt(2.605))/0.3):0);if(t>=vt(3.955))setBubble(bF,'사진 보내 주세요!',{bg:'#e4e0ff',fg:'#2d2766',fs:64,size:0.0055});
-    nm.visible=t>vt(2.605);
+    const pin=pop((t-(TF+0.1))/0.35),pout=ease((t-vt(4.655))/0.35);
+    photo.style.opacity=t<TF+0.1?0:1-clamp01((t-vt(4.705))/0.3);photo.style.transform=`translate(${pout*230}px,${-pout*110}px) rotate(${-4+pout*10}deg) scale(${pin*(1-pout*0.62)})`;
+    ring.style.opacity=t>vt(3.605)?(Math.floor(t*4)%2?1:0.6):0;
+    scaleBubble(bF,t>vt(3.605)&&t<vt(7.005)?pop((t-vt(3.605))/0.3):0);if(t>=vt(4.955))setBubble(bF,'사진 보내 주세요!',{bg:'#e4e0ff',fg:'#2d2766',fs:64,size:0.0055});
+    nm.visible=t>vt(3.605);
     scaleBubble(bH,0);
-    notif.style.opacity=t>vt(7.605)&&t<vt(9.005)?1:0;notif.style.transform=`translateY(${(1-ease((t-vt(7.605))/0.3))*-200}px)`;
-    notif.querySelector('.bt').textContent=t>vt(8.305)?'맞팔로우 ✔':'맞팔로우';notif.querySelector('.bt').style.background=t>vt(8.305)?'#9aa3b5':'#3b82f6';
+    notif.style.opacity=t>vt(8.605)&&t<vt(10.005)?1:0;notif.style.transform=`translateY(${(1-ease((t-vt(8.605))/0.3))*-200}px)`;
+    notif.querySelector('.bt').textContent=t>vt(9.305)?'맞팔로우 ✔':'맞팔로우';notif.querySelector('.bt').style.background=t>vt(9.305)?'#9aa3b5':'#3b82f6';
     chipPop(chip1,t,0.1);if(t>=TC)chip1.style.opacity=0;
-    chipPop(chip2,t,vt(9.005));
-    updHearts(hearts,t,vt(9.005),1.6,2.4);
+    chipPop(chip2,t,vt(10.005));
+    updHearts(hearts,t,vt(10.005),1.6,2.4);
     caption(2,t);renderer.render(scene,C);
   };
 };
