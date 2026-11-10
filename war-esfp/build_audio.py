@@ -22,7 +22,7 @@ info=[]
 for si,lines in enumerate(SC):
     files=[];t=PRE.get(si,0);starts=[]
     for name,gap in lines:
-        f='trim/ding.wav' if name=='ding' else 'trim/shutter.wav' if name=='shutter' else trim(name, TTSFX if name=='t5' else '')
+        f='trim/ding.wav' if name=='ding' else 'trim/shutter.wav' if name=='shutter' else trim(name, TTSFX if name=='t5' else 'atrim=0:3.5,afade=t=out:st=3.38:d=0.12' if name=='j6' else '')
         t+=gap; starts.append([name,round(t,3),round(dur(f),3)]); files.append((f,t)); t+=dur(f)
     t+=POST.get(si,0)
     inputs=[];flt=[]

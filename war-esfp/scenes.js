@@ -385,24 +385,24 @@ S[5]=()=>{
     const k=ease((t-0.1)/vt(3.5));const ez=-6+k*5.4;e.position.set(0.5,0,ez);e.rotation.y=0;standPose(e);resetLegs(e);
     if(k<1)walkPose(e,t*9,0.5);
     const Lk=clamp01((t-vt(1.1))/0.3);e.userData.arms[1].rotation.x=-2.75*Lk;e.userData.arms[1].rotation.z=1.15*Lk;
-    if(!e.userData.L){const L=textSprite('L',90,'#c8ff4d',0.0045);e.userData.head.add(L);e.userData.L=L;L.position.set(0.02,0.55,0.32)}e.userData.L.visible=Lk>0.5&&t<vt(3.9);
-    if(t>=vt(3.9)&&t<vt(5.4)){vSign(e,1,1);vSign(e,0,1);e.userData.hip.position.y=0.8+Math.abs(Math.sin(t*8))*0.06;setFace(e,true)}else setFace(e,t<vt(3.9));
+    if(!e.userData.L){const L=textSprite('L',90,'#c8ff4d',0.0045);e.userData.head.add(L);e.userData.L=L;L.position.set(0.02,0.55,0.32)}e.userData.L.visible=Lk>0.5&&t<vt(3.6);
+    setFace(e,t<vt(3.9));
     // 백기: 적장 왼손 -> 장군 쪽 -> 다시 적장
-    const off=ease((t-vt(5.5))/0.5),back=ease((t-vt(8.3))/0.4);const fe=new THREE.Vector3(0.1,0.3,ez+0.45),fg=new THREE.Vector3(-0.5,0.3,0.85);
+    const off=ease((t-vt(3.96))/0.5),back=ease((t-vt(6.76))/0.4);const fe=new THREE.Vector3(0.1,0.3,ez+0.45),fg=new THREE.Vector3(-0.5,0.3,0.85);
     wf.position.copy(fe).lerp(fg,off*(1-back));wf.rotation.z=-0.1;
     e.userData.arms[0].rotation.x=-0.8;
     // 장군
     standPose(g);setFace(g,false);g.rotation.y=Math.PI*0.85;phoneUp(g,1,1);
-    if(t>vt(8.3)&&t<vt(9.2)){g.userData.arms[0].rotation.x=-1.3*(1-ease((t-vt(8.9))/0.3))}
-    if(t>vt(9.6)){g.rotation.y=Math.PI*0.85-ease((t-vt(9.6))/0.6)*Math.PI*0.6;setFace(g,true)}
-    scaleBubble(be,t>vt(3.9)&&t<vt(5.4)?pop((t-vt(3.9))/0.3):0);
-    scaleBubble(bg,t>vt(8.3)&&t<vt(9.6)?pop((t-vt(8.3))/0.3):0);
-    scaleBubble(bq,t>vt(9.9)?pop((t-vt(9.9))/0.3):0);
-    crowdA.concat(crowdB).forEach((p,i)=>{standPose(p);phoneUp(p,i%2,clamp01((t-vt(9.7)-i*0.04)/0.3));setFace(p,t>vt(9.7))});
+    if(t>vt(6.76)&&t<vt(7.66)){g.userData.arms[0].rotation.x=-1.3*(1-ease((t-vt(7.36))/0.3))}
+    if(t>vt(8.06)){g.rotation.y=Math.PI*0.85-ease((t-vt(8.06))/0.6)*Math.PI*0.6;setFace(g,true)}
+    scaleBubble(be,0);
+    scaleBubble(bg,t>vt(6.76)&&t<vt(8.06)?pop((t-vt(6.76))/0.3):0);
+    scaleBubble(bq,t>vt(8.36)?pop((t-vt(8.36))/0.3):0);
+    crowdA.concat(crowdB).forEach((p,i)=>{standPose(p);phoneUp(p,i%2,clamp01((t-vt(8.16)-i*0.04)/0.3));setFace(p,t>vt(8.16))});
     waveFlag(fa,t);waveFlag(fb,t+1);const pos=cloth.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i);pos.setZ(i,Math.sin(t*5+x*4)*0.06*(x+0.45))}pos.needsUpdate=true;
-    stamp.style.opacity=t>vt(8.5)?1:0;popEl(stamp,t,vt(8.5),'translateX(-50%) rotate(-10deg)');if(t>vt(9.6))stamp.style.opacity=0;
-    ch.style.opacity=t>vt(9.66)?1:0;chipPop(ch,t,vt(9.66));
-    const w=ease((t-vt(9.6))/2.5);
+    stamp.style.opacity=t>vt(6.96)?1:0;popEl(stamp,t,vt(6.96),'translateX(-50%) rotate(-10deg)');if(t>vt(8.06))stamp.style.opacity=0;
+    ch.style.opacity=t>vt(8.12)?1:0;chipPop(ch,t,vt(8.12));
+    const w=ease((t-vt(8.06))/2.5);
     C.position.set(3.4+w*1.2,2.9+w*3.6,7.6+w*5);C.lookAt(-0.6,1.6-w*0.4,-1.0-w*0.6);
     caption(5,t);renderer.render(scene,C);
   };
