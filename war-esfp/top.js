@@ -2,7 +2,7 @@
 const C_T='#c8ff4d';
 // [음성 기준 시작 초, 자막]
 const CAPL={
- 0:[[0,"오늘 우리는… 조국을 위해—"],[2.948,"온 세상이 ESFP인데, 전쟁이 난다면?"]],
+ 0:[[0,"오늘 우리는… 조국을 위해—"],[2.948,""]],
  1:[[0,"장군님, 한 번만 다시요."],[1.85,"역광이에요."],[3.237,"…처음부터 간다."]],
  2:[[3.605,"저기요! 저 나왔죠?"],[4.955,"그 사진 저도 보내 주세요!"],[7.122,"아 잘 나왔다… 아이디 뭐예요?"],[10.031,"첫 교전은, 맞팔이었습니다."]],
  3:[[0,"그날부터 전쟁은, 좋아요 수 싸움이 됐습니다."],[3.773,"질 수 없다. 전원, 각도 잡아!"]],
@@ -16,15 +16,16 @@ function caption(si,t){if(window.noCap)return;
   const L=CAPL[si];if(!L)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
   let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
-  if(idx<0){el.style.opacity=0;return}
+  if(idx<0||!L[idx][1]){el.style.opacity=0;return}
   if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=L[idx][1]}
   const st=LEAD+L[idx][0];
   const k=pop((t-st+0.05)/0.18);el.style.transform=`scale(${0.85+0.15*k})`;el.style.opacity=clamp01((t-st+0.1)/0.1);
 }
 const vt=x=>LEAD+x; // 음성 기준 초 -> 장면 시간
 {const st=document.createElement('style');st.textContent=`
-.title1{top:330px;font-size:104px;letter-spacing:-3px}
-.title2{top:470px;font-size:150px;letter-spacing:-5px}
+.tag{top:420px;font-size:60px}
+.title1{top:510px;font-size:112px;letter-spacing:-3px}
+.title2{top:660px;font-size:168px;letter-spacing:-5px}
 .notif{position:absolute;left:60px;right:60px;top:200px;background:rgba(255,255,255,.96);border-radius:36px;padding:22px 30px;display:flex;align-items:center;gap:22px;box-shadow:0 14px 40px rgba(0,0,0,.2);color:#222}
 .notif .ic{width:100px;height:100px;border-radius:24px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:30px}
 .notif .tx{font-size:42px;font-weight:700;line-height:1.3}
