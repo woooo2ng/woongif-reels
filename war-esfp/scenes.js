@@ -106,7 +106,7 @@ S[0]=()=>{
     troops.forEach(q=>{phoneUp(q.p,(q.c+q.row)%3?1:0,1);q.p.userData.phone.userData.rec.visible=Math.floor(t*2+q.ph*2)%2==0})
     armUp(g,1,clamp01((t-0.5)/0.4)*0.8);setFace(g,false);waveFlag(fl[0],t);waveFlag(fl[1],t+1);
     const k=ease((t-vt(2.0))/1.6);
-    C.position.set(0,3.0+k*2.0,-1.6+k*13.5);C.lookAt(0,2.75-k*0.6,-6);
+    C.position.set(0,3.0+k*2.0,-1.6+k*13.5);C.lookAt(0,2.75-k*0.05,-6);
     tag.style.transform=`translateX(-50%) scale(${pop((t-tt)/0.3)})`;tag.style.opacity=clamp01((t-tt)/0.08);
     t1.style.transform=`scale(${pop((t-tt-0.1)/0.35)})`;t1.style.opacity=clamp01((t-tt-0.1)/0.1);
     t2.style.transform=`scale(${pop((t-tt-0.35)/0.4)})`;t2.style.opacity=clamp01((t-tt-0.35)/0.1);
