@@ -243,8 +243,8 @@ async function loadCombo(){
     <span class="row" style="margin:0"><button data-sit="${s.id}" data-on="${s.active?0:1}">${s.active?"숨기기":"다시 보이기"}</button></span></div>`).join("") : `<p class="empty">아직 없어요</p>`;
   document.querySelectorAll("[data-sit]").forEach(b=>b.onclick=async()=>{
     try{ await api("admin/situations/update",{id:Number(b.dataset.sit),active:b.dataset.on==="1"}); loadCombo(); }catch(e){ toast(e.message); } });
-  const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)} <button class="hn" data-hn="${kind}" data-key="${esc(it.key)}" data-n="${it.votes}" data-label="${esc(label)}">❤️ ${it.votes}</button></div>
-    <div class="row"><select data-ck="${esc(it.key)}" data-kind="${kind}">
+  const row=(kind,it,label)=>`<div class="card"><div class="txt">${esc(label)}</div>
+    <div class="row"><button class="hn" data-hn="${kind}" data-key="${esc(it.key)}" data-n="${it.votes}" data-label="${esc(label)}">❤️ ${it.votes}</button><select data-ck="${esc(it.key)}" data-kind="${kind}">
       <option value="open" ${it.status==="open"?"selected":""}>신청 받는 중</option><option value="making" ${it.status==="making"?"selected":""}>제작 중</option><option value="today" ${it.status==="today"?"selected":""}>오늘 공개</option><option value="done" ${it.status==="done"?"selected":""}>나옴</option><option value="hidden" ${it.status==="hidden"?"selected":""}>숨김 (이상한 입력)</option></select>
     <input data-cl="${kind}:${esc(it.key)}" placeholder="릴스 링크" value="${esc(it.link||"")}" style="flex:1">
     <button data-cs="${kind}:${esc(it.key)}">저장</button><button class="no" data-cdel="${kind}:${esc(it.key)}" data-label="${esc(label)}">삭제</button><button class="blk" data-blk="${kind}" data-key="${esc(it.key)}" data-label="${esc(label)}">🚫 차단</button></div></div>`;
