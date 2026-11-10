@@ -49,7 +49,14 @@ function lPose(p,t,k=1,hop=true){// L을 가져가: 한 손 L 이마, 한 손 �
   if(!u.L){const L=textSprite('L',90,'#c8ff4d',0.0045);u.head.add(L);u.L=L;L.position.set(0.02,0.55,0.32)}u.L.visible=k>0.5;
   if(hop){const s=Math.sin(t*Math.PI*2*1.6);u.legs[0].rotation.z=-0.45*Math.max(0,s)*k;u.legs[1].rotation.z=0.45*Math.max(0,-s)*k;u.hip.position.y=0.8+Math.abs(s)*0.12*k;u.hip.position.x=s*0.12*k}
 }
-function resetLegs(p){const u=p.userData;u.legs.forEach(l=>{l.rotation.z=0;l.rotation.x=0});u.hip.position.x=0;u.hip.position.y=0.8;if(u.L)u.L.visible=false}
+function terminalPose(p,t,k=1){// 뒤돌아 엉덩이 흔들기 + 머리 쓸어올리기, 고개는 뒤를 돌아봄
+  const u=p.userData,w=Math.sin(t*Math.PI*2*2.2);
+  u.hip.position.x=w*0.09*k;u.hip.rotation.z=w*0.16*k;u.hip.rotation.x=-0.18*k;u.hip.position.y=0.78;
+  u.legs[0].rotation.x=0.2*k;u.legs[1].rotation.x=0.2*k;u.legs[0].rotation.z=-0.12*k;u.legs[1].rotation.z=0.12*k;
+  u.arms[1].rotation.x=-2.7*k;u.arms[1].rotation.z=(0.6+Math.sin(t*Math.PI*2*1.1)*0.5)*k;
+  u.arms[0].rotation.x=-0.5*k;u.arms[0].rotation.z=0.5*k;
+  u.head.rotation.y=0.9*k;u.head.rotation.z=-0.1*k}
+function resetLegs(p){const u=p.userData;u.legs.forEach(l=>{l.rotation.z=0;l.rotation.x=0});u.hip.position.x=0;u.hip.position.y=0.8;u.hip.rotation.set(0,0,0);u.head.rotation.set(0,0,0);if(u.L)u.L.visible=false}
 function sandbags(scene,x,z,w,rows=3,col=0xc9b48a){const g=new THREE.Group();const n=Math.round(w/0.62);
   for(let j=0;j<rows;j++)for(let i=0;i<n;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.28,0.42),lamb(j%2?col:0xbfa97e));b.position.set(-w/2+0.31+i*0.62+(j%2)*0.3,0.14+j*0.27,0);b.rotation.y=(i*7+j)%3*0.04-0.04;g.add(b)}
   g.position.set(x,0,z);scene.add(g);return g}
@@ -306,16 +313,16 @@ S[4]=()=>{
   for(let i=0;i<4;i++){toastsL.push(div('toast','',pL));toastsR.push(div('toast','',pR))}
   const alert=div('alert','<div class="s">★</div><div class="a">ESFP짱 님</div><div class="b">별풍선 1,000개!</div>',pR);alert.style.opacity=0;
   const rev=div('stamp','역전!');rev.style.top='420px';rev.style.fontSize='90px';rev.style.opacity=0;
-  const chat=div('chatbox','');const CH=['<b>참호러버</b>ㅋㅋㅋㅋㅋ','<b>폰병장</b>L을 가져가~~','<b>탱크맘</b>장군님 미쳤다','<b>국경지기</b>이게 전쟁이지','<b>보정왕</b>ㅋㅋㅋㅋㅋㅋ','<b>군화짱</b>클립 따감','<b>셀카각</b>L L L L'];
+  const chat=div('chatbox','');const CH=['<b>참호러버</b>ㅋㅋㅋㅋㅋ','<b>폰병장</b>터미널 ㄷㄷㄷ','<b>탱크맘</b>장군님 미쳤다','<b>국경지기</b>이게 전쟁이지','<b>보정왕</b>ㅋㅋㅋㅋㅋㅋ','<b>군화짱</b>클립 따감','<b>셀카각</b>장군님 허리 ㄷㄷ'];
   const pscr=div('pscr','<div class="in"><div class="live" style="left:24px;top:24px">LIVE</div><div style="position:absolute;left:24px;top:84px;font-size:36px;font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)">장군TV</div><div class="bar">로그인: <b>ESFP짱</b></div></div>');pscr.style.opacity=0;
   const ch=chip('같은 시각 · 적장 막사');ch.style.opacity=0;
   const stars=[];for(let i=0;i<24;i++){const s=textSprite('★',80,'#ffd84d',0.005);scene.add(s);stars.push({s,ph:r(),x:(r()-0.5)*4})}
-  const tSplit=vt(5.7),tDance=vt(13.8),tRev=vt(16.25),tDing=vt(9.37);
+  const tSplit=vt(5.7),tDance=vt(13.8),tRev=vt(17.0),tDing=vt(9.37);
   const cntR=t=>t<tDing?7900+Math.min(60,Math.floor((t-tSplit)*8))*0:7900+1000*ease((t-tDing)/0.5);
   return t=>{
     const phase=t<vt(4.4)?0:t<tSplit?1:t<tDance?2:t<tRev?3:4;
     // 기본 포즈
-    standPose(g);resetLegs(g);standPose(aide);standPose(eg);resetLegs(eg);standPose(eg2);resetLegs(eg2);
+    standPose(g);resetLegs(g);standPose(aide);resetLegs(aide);standPose(eg);resetLegs(eg);standPose(eg2);resetLegs(eg2);
     let renderSplit=false;
     if(phase===0){
       g.position.set(-1.8,0,-1.2);sitPose(g);g.userData.hip.position.y=0.9;g.rotation.y=0.5;setFace(g,false);
@@ -332,11 +339,11 @@ S[4]=()=>{
       aide.position.set(-1.7,0,-0.3);aide.rotation.y=0.3;
       CL.position.set(100,1.8,3.4);CL.lookAt(100,1.6,0);CR.position.set(0,1.8,3.4);CR.lookAt(0,1.6,0);
     }else if(phase===3){
-      g.position.set(0,0,0.4);g.rotation.y=0;setFace(g,true);lPose(g,t-tDance,1);
-      aide.position.set(-1.7,0,-0.3);aide.rotation.y=0.3;lPose(aide,t-tDance+0.2,1);
-      C.position.set(0,1.9,4.4);C.lookAt(0,1.6,0);
+      g.position.set(0,0,0.4);g.rotation.y=Math.PI;setFace(g,true);terminalPose(g,t-tDance,1);
+      aide.position.set(-1.7,0,-0.3);aide.rotation.y=Math.PI+0.3;setFace(aide,true);terminalPose(aide,t-tDance+0.15,1);
+      C.position.set(0.9,1.7,6.0);C.lookAt(-0.2,1.25,0);
     }else{
-      eg2.position.set(1.9,0,0.6);eg2.rotation.y=-0.35;lPose(eg2,t-tRev,1);phoneUp(eg2,0,1);
+      eg2.position.set(1.9,0,0.6);eg2.rotation.y=Math.PI-0.35;terminalPose(eg2,t-tRev,1);eg2.userData.head.rotation.y=-0.9;
       C.position.set(200+1.2,2.1,7.2);C.lookAt(200+1.6,1.6,0);
     }
     A.tri.visible=B.tri.visible=phase<2;waveFlag(A.fl,t);waveFlag(B.fl,t+1);
@@ -386,27 +393,27 @@ S[5]=()=>{
   const C=cam(48);const stamp=div('stamp','항복 반려');stamp.style.opacity=0;const ch=chip('인류 최초 · 항복 거절');
   return t=>{
     // 적장 걸어옴
-    const k=ease((t-0.1)/vt(3.5));const ez=-6+k*5.4;e.position.set(0.5,0,ez);e.rotation.y=0;standPose(e);resetLegs(e);
+    const k=ease((t-0.1)/vt(1.7));const ez=-6+k*5.4;e.position.set(0.5,0,ez);e.rotation.y=0;standPose(e);resetLegs(e);
     if(k<1)walkPose(e,t*9,0.5);
-    const Lk=clamp01((t-vt(1.1))/0.3);e.userData.arms[1].rotation.x=-2.75*Lk;e.userData.arms[1].rotation.z=1.15*Lk;
-    if(!e.userData.L){const L=textSprite('L',90,'#c8ff4d',0.0045);e.userData.head.add(L);e.userData.L=L;L.position.set(0.02,0.55,0.32)}e.userData.L.visible=Lk>0.5&&t<vt(3.6);
-    setFace(e,t<vt(3.9));
+    const Lk=0;e.userData.arms[1].rotation.x=-2.75*Lk;e.userData.arms[1].rotation.z=1.15*Lk;
+    if(!e.userData.L){const L=textSprite('L',90,'#c8ff4d',0.0045);e.userData.head.add(L);e.userData.L=L;L.position.set(0.02,0.55,0.32)}e.userData.L.visible=Lk>0.5&&t<vt(1.8);
+    setFace(e,t<vt(2.1));
     // 백기: 적장 왼손 -> 장군 쪽 -> 다시 적장
-    const off=ease((t-vt(3.96))/0.5),back=ease((t-vt(6.76))/0.4);const fe=new THREE.Vector3(0.1,0.3,ez+0.45),fg=new THREE.Vector3(-0.5,0.3,0.85);
+    const off=ease((t-vt(2.16))/0.5),back=ease((t-vt(4.96))/0.4);const fe=new THREE.Vector3(0.1,0.3,ez+0.45),fg=new THREE.Vector3(-0.5,0.3,0.85);
     wf.position.copy(fe).lerp(fg,off*(1-back));wf.rotation.z=-0.1;
     e.userData.arms[0].rotation.x=-0.8;
     // 장군
     standPose(g);setFace(g,false);g.rotation.y=Math.PI*0.85;phoneUp(g,1,1);
-    if(t>vt(6.76)&&t<vt(7.66)){g.userData.arms[0].rotation.x=-1.3*(1-ease((t-vt(7.36))/0.3))}
-    if(t>vt(8.06)){g.rotation.y=Math.PI*0.85-ease((t-vt(8.06))/0.6)*Math.PI*0.6;setFace(g,true)}
+    if(t>vt(4.96)&&t<vt(5.86)){g.userData.arms[0].rotation.x=-1.3*(1-ease((t-vt(5.56))/0.3))}
+    if(t>vt(6.26)){g.rotation.y=Math.PI*0.85-ease((t-vt(6.26))/0.6)*Math.PI*0.6;setFace(g,true)}
     scaleBubble(be,0);
-    scaleBubble(bg,t>vt(6.76)&&t<vt(8.06)?pop((t-vt(6.76))/0.3):0);
-    scaleBubble(bq,t>vt(8.36)?pop((t-vt(8.36))/0.3):0);
-    crowdA.concat(crowdB).forEach((p,i)=>{standPose(p);phoneUp(p,i%2,clamp01((t-vt(8.16)-i*0.04)/0.3));setFace(p,t>vt(8.16))});
+    scaleBubble(bg,t>vt(4.96)&&t<vt(6.26)?pop((t-vt(4.96))/0.3):0);
+    scaleBubble(bq,t>vt(6.56)?pop((t-vt(6.56))/0.3):0);
+    crowdA.concat(crowdB).forEach((p,i)=>{standPose(p);phoneUp(p,i%2,clamp01((t-vt(6.36)-i*0.04)/0.3));setFace(p,t>vt(6.36))});
     waveFlag(fa,t);waveFlag(fb,t+1);const pos=cloth.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i);pos.setZ(i,Math.sin(t*5+x*4)*0.06*(x+0.45))}pos.needsUpdate=true;
-    stamp.style.opacity=t>vt(6.96)?1:0;popEl(stamp,t,vt(6.96),'translateX(-50%) rotate(-10deg)');if(t>vt(8.06))stamp.style.opacity=0;
-    ch.style.opacity=t>vt(8.12)?1:0;chipPop(ch,t,vt(8.12));
-    const w=ease((t-vt(8.06))/2.5);
+    stamp.style.opacity=t>vt(5.16)?1:0;popEl(stamp,t,vt(5.16),'translateX(-50%) rotate(-10deg)');if(t>vt(6.26))stamp.style.opacity=0;
+    ch.style.opacity=t>vt(6.32)?1:0;chipPop(ch,t,vt(6.32));
+    const w=ease((t-vt(6.26))/2.5);
     C.position.set(3.4+w*1.2,2.9+w*3.6,7.6+w*5);C.lookAt(-0.6,1.6-w*0.4,-1.0-w*0.6);
     caption(5,t);renderer.render(scene,C);
   };
