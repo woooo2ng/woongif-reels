@@ -92,7 +92,7 @@ S[0]=()=>{
   const r=rng(901);const {g,fl,troops}=paradeGround(scene,r);
   const sun=glowSprite('rgba(255,236,190,1)',16);sun.position.set(0,6,-24);scene.add(sun);
   const C=cam(50);
-  ui.innerHTML=`<div class="tag">전쟁편</div><div class="title1 out">온 세상이 ESFP인데</div><div class="title2 out" style="color:${C_T}">전쟁이 난다면?</div>`;
+  ui.innerHTML=`<div class="tag">ESFP × 전쟁편</div><div class="title1 out">온 세상이 ESFP인데</div><div class="title2 out" style="color:${C_T}">전쟁이 난다면?</div>`;
   const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2');
   const tt=vt(2.95);
   return t=>{

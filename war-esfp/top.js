@@ -12,7 +12,7 @@ const CAPL={
 };
 let LEAD=0.25,VOICE=[];
 window.setTiming=(lead,voice)=>{LEAD=lead;VOICE=voice};
-function caption(si,t){
+function caption(si,t){if(window.noCap)return;
   const L=CAPL[si];if(!L)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
   let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
