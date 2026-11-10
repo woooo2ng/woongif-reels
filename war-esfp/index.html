@@ -549,7 +549,7 @@ S[4]=()=>{
   const pscr=div('pscr','<div class="in"><div class="live" style="left:24px;top:24px">LIVE</div><div style="position:absolute;left:24px;top:84px;font-size:36px;font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)">장군TV</div><div class="bar">로그인: <b>ESFP짱</b></div></div>');pscr.style.opacity=0;
   const ch=chip('같은 시각 · 적장 막사');ch.style.opacity=0;
   const stars=[];for(let i=0;i<24;i++){const s=textSprite('★',80,'#ffd84d',0.005);scene.add(s);stars.push({s,ph:r(),x:(r()-0.5)*4})}
-  const tSplit=vt(5.7),tDance=vt(13.8),tRev=vt(17.0),tDing=vt(9.37);
+  const tSplit=vt(5.7),tDance=vt(13.8),tRev=vt(99),tDing=vt(9.37);
   const cntR=t=>t<tDing?7900+Math.min(60,Math.floor((t-tSplit)*8))*0:7900+1000*ease((t-tDing)/0.5);
   return t=>{
     const phase=t<vt(4.4)?0:t<tSplit?1:t<tDance?2:t<tRev?3:4;

@@ -11,7 +11,7 @@ def trim(name, extra=''):
 subprocess.run(['ffmpeg','-y','-loglevel','error','-f','lavfi','-i','sine=f=1318:d=0.18','-f','lavfi','-i','sine=f=1760:d=0.35','-filter_complex','[0]volume=0.5,afade=t=out:st=0.1:d=0.08[a];[1]volume=0.5,afade=t=out:st=0.05:d=0.3[b];[a][b]concat=n=2:v=0:a=1,aresample=48000','-ac','1','trim/ding.wav'],check=True)
 CUT={'g5bc':('g5b','atrim=0:2.1,afade=t=out:st=2.0:d=0.1'),'j6c':('j6',None)}
 TTSFX='highpass=f=350,lowpass=f=3800,acrusher=bits=10:mix=0.35,volume=1.1'
-PRE={2:2.75};POST={4:3.2}
+PRE={2:2.75};POST={4:0.64}
 SC=[[('g1',0),('n1',0.55)],
     [('s2',0),('g2',0.35)],
     [('shutter',0),('e3',0.73),('s3',0.3),('n3',0.45)],
