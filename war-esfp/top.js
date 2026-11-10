@@ -23,9 +23,7 @@ function caption(si,t){if(window.noCap)return;
 }
 const vt=x=>LEAD+x; // 음성 기준 초 -> 장면 시간
 {const st=document.createElement('style');st.textContent=`
-.tag{top:420px;font-size:60px}
-.title1{top:510px;font-size:112px;letter-spacing:-3px}
-.title2{top:660px;font-size:168px;letter-spacing:-5px}
+.title3{position:absolute;left:0;right:0;top:745px;text-align:center;font-size:112px;letter-spacing:-3px}
 .notif{position:absolute;left:60px;right:60px;top:200px;background:rgba(255,255,255,.96);border-radius:36px;padding:22px 30px;display:flex;align-items:center;gap:22px;box-shadow:0 14px 40px rgba(0,0,0,.2);color:#222}
 .notif .ic{width:100px;height:100px;border-radius:24px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:30px}
 .notif .tx{font-size:42px;font-weight:700;line-height:1.3}

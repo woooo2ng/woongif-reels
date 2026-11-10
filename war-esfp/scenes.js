@@ -99,8 +99,8 @@ S[0]=()=>{
   const r=rng(901);const {g,fl,troops}=paradeGround(scene,r);
   const sun=glowSprite('rgba(255,236,190,1)',16);sun.position.set(0,6,-24);scene.add(sun);
   const C=cam(50);
-  ui.innerHTML=`<div class="tag">ESFP × 전쟁편</div><div class="title1 out">온 세상이 ESFP인데</div><div class="title2 out" style="color:${C_T}">전쟁이 난다면?</div>`;
-  const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2');
+  ui.innerHTML=`<div class="tag">ESFP × 전쟁편</div><div class="title1 out">온 세상이</div><div class="title2 out" style="color:${C_T}">ESFP인데</div><div class="title3 out">전쟁이 난다면?</div>`;
+  const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2'),t3=ui.querySelector('.title3');
   const tt=vt(2.95);
   return t=>{
     troops.forEach(q=>{phoneUp(q.p,(q.c+q.row)%3?1:0,1);q.p.userData.phone.userData.rec.visible=Math.floor(t*2+q.ph*2)%2==0})
@@ -110,6 +110,7 @@ S[0]=()=>{
     tag.style.transform=`translateX(-50%) scale(${pop((t-tt)/0.3)})`;tag.style.opacity=clamp01((t-tt)/0.08);
     t1.style.transform=`scale(${pop((t-tt-0.1)/0.35)})`;t1.style.opacity=clamp01((t-tt-0.1)/0.1);
     t2.style.transform=`scale(${pop((t-tt-0.35)/0.4)})`;t2.style.opacity=clamp01((t-tt-0.35)/0.1);
+    t3.style.transform=`scale(${pop((t-tt-0.6)/0.4)})`;t3.style.opacity=clamp01((t-tt-0.6)/0.1);
     caption(0,t);renderer.render(scene,C);
   };
 };
