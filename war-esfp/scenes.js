@@ -435,7 +435,7 @@ S[6]=()=>{
   const g=general(r,GEN),e=general(r,ENEMYG);g.position.set(-1.7,0,-2.2);e.position.set(1.7,0,-2.2);g.rotation.y=0.3;e.rotation.y=-0.3;setFace(g,true);setFace(e,true);scene.add(g);scene.add(e);
   const bgb=bub(g,'태그!',{y:2.7,size:0.006});
   const C=cam(50);const ch=chip('전쟁 10년째');
-  const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','신청소에서 골라 주세요');e1.style.opacity=e2.style.opacity=0;
+  const e1=div('end1 out','팔로우 부탁드려요!'),e2=div('end2 out','다음 전쟁편도 금방 올게요');e1.style.opacity=e2.style.opacity=0;
   const tEnd=vt(9.87)+0.45+0.3-2.0;
   return t=>{
     q.forEach((o,i)=>{standPose(o.p);if(i%4==0)phoneUp(o.p,1,1);o.p.userData.hip.position.y=0.8+Math.max(0,Math.sin(t*3+o.ph*6))*0.03});

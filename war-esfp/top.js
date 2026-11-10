@@ -64,6 +64,6 @@ const vt=x=>LEAD+x; // 음성 기준 초 -> 장면 시간
 .pscr .in{position:relative;width:100%;height:100%;border-radius:44px;overflow:hidden;background:linear-gradient(#a8d58a,#e9f5d8)}
 .pscr .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900}
 .pscr .bar b{color:#c8ff4d;margin-left:12px}
-.end1{position:absolute;left:0;right:0;top:190px;text-align:center;font-size:110px;letter-spacing:-3px}
+.end1{position:absolute;left:0;right:0;top:190px;text-align:center;font-size:96px;letter-spacing:-3px}
 .end2{position:absolute;left:0;right:0;top:340px;text-align:center;font-size:58px}
 `;document.head.appendChild(st)}
