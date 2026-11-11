@@ -284,14 +284,14 @@ S[3]=()=>{
   const tb=bT('음성 입력: "알겠어."',{fs:60,size:0.0036});tb.position.set(0,2.35,0);sB.add(tb);
   const camB=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   // DOM 메시지
-  const dom=document.createElement('div');dom.innerHTML=`<div class="bigmsg"><div class="who">ENTP ♡ · 오후 9:12</div><div class="b">알겠어<span class="dot">.</span></div></div>`;ui.appendChild(dom);
-  const msg=dom.querySelector('.bigmsg'),dot=dom.querySelector('.dot');
+  const dom=document.createElement('div');dom.innerHTML=`<div class="bigmsg"><div class="who">ENTP ♡ · 오후 9:12</div><div class="b" style="padding-right:70px">알겠어<span class="dot">.<svg class="cir" viewBox="0 0 100 100" style="position:absolute;left:-26px;top:54px;width:84px;height:84px;overflow:visible"><ellipse cx="50" cy="52" rx="44" ry="40" fill="none" stroke="#e2335a" stroke-width="9" stroke-linecap="round" stroke-dasharray="270" stroke-dashoffset="270" transform="rotate(-100 50 50)"/></svg></span></div></div>`;ui.appendChild(dom);
+  const msg=dom.querySelector('.bigmsg'),dot=dom.querySelector('.dot'),cir=dom.querySelector('.cir ellipse');
   const ch=chip('',1080);ch.style.fontSize='50px';
   const CUT=capAt(3,2)-0.05;
   return t=>{
     if(t<CUT){bgEl.style.background='linear-gradient(#1c2046,#34306a 60%,#4a3f80)';
       const mk=pop((t-0.05)/0.3);const out=ease((t-capAt(3,1)+0.3)/0.4);msg.style.opacity=1-out;msg.style.transform=`scale(${(0.8+0.2*mk)*(1-out*0.2)}) translateY(${-out*80}px)`;
-      const dz=ease((t-0.8)/1.0);dot.style.transform=`scale(${1+dz*2.6})`;dot.style.display='inline-block';
+      const dz=ease((t-0.8)/0.6);cir.setAttribute('stroke-dashoffset',String(270*(1-dz)));dot.style.transform='';
       const ns=[capAt(3,1),capAt(3,1)+1.15,capAt(3,1)+2.3];
       cls.forEach((c,i)=>{const k=pop((t-ns[i])/0.3);c.scale.set(c.userData.base[0]*k,c.userData.base[1]*k,1);c.visible=k>0.01});
       

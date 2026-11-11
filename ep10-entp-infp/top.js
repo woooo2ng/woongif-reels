@@ -43,6 +43,6 @@ const capAt=(si,i)=>LEAD+CAPT[si][i];
 .bigmsg{position:absolute;left:90px;right:90px;top:360px;border-radius:44px;background:#fff;box-shadow:0 24px 60px rgba(30,20,70,.35);padding:30px 40px;box-sizing:border-box}
 .bigmsg .who{font-size:34px;color:#888;font-weight:700;margin:0 0 10px 4px}
 .bigmsg .b{font-size:96px;font-weight:900;color:#222;max-width:none;background:#ffe3a8;display:inline-block;border-radius:40px;padding:14px 44px}
-.dot{display:inline-block;color:#e2335a;transform-origin:0% 85%}
+.dot{display:inline-block;position:relative;color:#222}
 .ring{position:absolute;border-radius:50%;border:12px solid #e2335a}
 `;document.head.appendChild(st)}
