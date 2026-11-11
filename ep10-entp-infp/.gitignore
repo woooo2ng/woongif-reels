@@ -1,0 +1,8 @@
+node_modules/
+out/
+shots/
+audio_raw/
+cs/
+*.log
+video.mp4
+list.txt
