@@ -55,21 +55,22 @@ S[0]=()=>{
   const hv=new THREE.Vector3();
   return t=>{
     allies.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});foes.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});
-    standPose(EJ);const sh=t<CUT?Math.sin(t*22)*0.05:0;
-    EJ.userData.arms[1].rotation.x=-1.75;EJ.userData.arms[0].rotation.x=-2.6;EJ.userData.arms[0].rotation.z=-0.5+Math.sin(t*9)*0.25;
+    standPose(EJ);const sw=t>at(0,'e1')-0.3&&t<CUT;const sh=sw?Math.sin(t*22)*0.05:0;
+    EJ.userData.arms[1].rotation.x=-1.75*(sw?1:ease((t-at(0,'e1')+0.6)/0.3));EJ.userData.arms[0].rotation.x=sw?-2.6:0;EJ.userData.arms[0].rotation.z=sw?-0.5+Math.sin(t*9)*0.25:0;
     EJ.userData.head.rotation.x=-0.15+sh;mega.position.set(0,0.95,0.42);
     scaleBubble(bE,0);
-    if(t<CUT){const k=t/CUT;C.position.set(-1.4+k*0.2,3.3,-10.6+k*1.0);C.lookAt(0.6,1.2,2.5)}
+    if(t<CUT){const k=ease(t/CUT);C.position.set(-1.4+k*0.3,3.6-k*0.4,-11.4+k*1.8);C.lookAt(0.6,2.3,2.5)}
     else{hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);const k=ease((t-CUT)/2.5);
       C.position.set(hv.x+0.75-k*0.1,hv.y+0.2,hv.z-1.6+k*0.2);C.lookAt(hv.x+0.08,hv.y+0.7,hv.z)}
     updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.55,hv.z),t>CUT?1:0);
-    chipPop(ch,t,0.9);ch.style.opacity=t<CUT?clamp01((t-0.9)/0.08):0;
+    const TE=at(0,'e1'),TC=endOf(0,'e1',-0.25);
+    chipPop(ch,t,TC);ch.style.opacity=t<CUT?clamp01((t-TC)/0.08):0;
     flash.style.opacity=t>=CUT?clamp01(1-(t-CUT)/0.25)*0.7:0;
-    const T0=CUT+0.05;
-    tag.style.transform=`translateX(-50%) scale(${pop((t-T0)/0.3)})`;tag.style.opacity=t>T0?1:0;
-    t1.style.transform=`scale(${pop((t-T0-0.1)/0.35)})`;t1.style.opacity=clamp01((t-T0-0.1)/0.1);
-    t2.style.transform=`scale(${pop((t-T0-0.35)/0.4)})`;t2.style.opacity=clamp01((t-T0-0.35)/0.1);
-    t3.style.transform=`scale(${pop((t-T0-0.65)/0.4)})`;t3.style.opacity=clamp01((t-T0-0.65)/0.1);
+    const T0=0.05,out=clamp01((t-TE+0.15)/0.25),os=1-out;
+    tag.style.transform=`translateX(-50%) scale(${pop((t-T0)/0.3)*os})`;tag.style.opacity=os;
+    t1.style.transform=`scale(${pop((t-T0-0.1)/0.35)*os})`;t1.style.opacity=clamp01((t-T0-0.1)/0.1)*os;
+    t2.style.transform=`scale(${pop((t-T0-0.35)/0.4)*os})`;t2.style.opacity=clamp01((t-T0-0.35)/0.1)*os;
+    t3.style.transform=`scale(${pop((t-T0-0.65)/0.4)*os})`;t3.style.opacity=clamp01((t-T0-0.65)/0.1)*os;
     caption(0,t);renderer.render(scene,C);
   };
 };
