@@ -2,24 +2,23 @@
 const TYPES=[
  ['ENTP','#ffa94d','굳이 가래떡데이를 꺼냄'],
  ['ISFP','#6fe0aa','답장 쓰고 지우고 10분째… 결국 ♥ 하나'],
- ['ISTJ','#8fbfff','받자마자 유통기한부터 확인'],
+ ['ISTJ','#8fbfff','받자마자 간식 칸에 줄 맞춰 정리'],
  ['ENFP','#ff8fc8','먹기 전에 인스타 스토리 먼저'],
  ['INFP','#c3a6ff','아까워서 포장 그대로 며칠째'],
  ['INTP','#6fd3e0','"상술이야" 하면서 다 먹음'],
  ['ESFP','#c8ff4d','주변에 다 들리게 자랑'],
  ['INFJ','#e0a3ff','집 가는 길에 계속 생각남'],
- ['ISTP','#ffd166','고개 한 번 끄덕, 바로 뜯어 먹음'],
+ ['ISTP','#ffd166','받고 나서야 빼빼로데이인 줄 앎'],
  ['ESFJ','#ff9e8a','미리 사 둔 빼빼로 바로 꺼냄'],
- ['INTJ','#8fa0ff','"고마워." 가방에 넣음. 끝.'],
+ ['INTJ','#8fa0ff','고맙다면서 취향은 확실하게 말함'],
  ['ESTP','#ff6b6b','한 입에 세 개'],
  ['ISFJ','#a8e6a1','누가 줬는지 기억해 뒀다가 꼭 답례'],
  ['ENFJ','#ffb3d9','손편지 붙여서 한 명씩 돌려줌'],
  ['ESTJ','#66c2a5','전날 미리 인원수대로 준비 완료'],
- ['ENTJ','#b58cff','받자마자 옆 사람한테 패스'],
+ ['ENTJ','#b58cff','칼로리 계산해서 딱 2개만 먹음'],
 ];
-const DURS=[2.4,...TYPES.map(()=>3.0),3.8];
-window.DURS=DURS;
-window.setTiming=()=>{};
+let DURS=[2.4,...TYPES.map(()=>3.0),3.8],LEAD=0.2;
+window.setTiming=(lead,voice)=>{LEAD=lead;DURS=voice.map((v,i)=>v+lead+0.35+(i==voice.length-1?0.3:0))};
 {const st=document.createElement('style');st.textContent=`
 .ptag{position:absolute;left:50%;transform:translateX(-50%);top:215px;background:#ffd84d;color:#3a2a00;font-weight:900;font-size:50px;padding:6px 28px;border-radius:16px;white-space:nowrap}
 .mb{position:absolute;left:0;right:0;top:290px;text-align:center;font-size:190px;letter-spacing:-4px;line-height:1.1}

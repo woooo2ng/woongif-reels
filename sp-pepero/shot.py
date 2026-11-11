@@ -13,6 +13,7 @@ with sync_playwright() as p:
     pg.on('console',lambda m: print('CONSOLE',m.text) if m.type in('error','warning') else None)
     pg.on('pageerror',lambda e: print('ERR',e))
     pg.goto('http://localhost:8126/index.html');pg.wait_for_function('window.ready===true',timeout=60000)
+    import json;pg.evaluate(f'setTiming(0.2,{json.dumps(json.load(open("voice.json")))})')
     for si,t in pairs:
         pg.evaluate(f'renderFrame({int(si)},{t})');pg.screenshot(path=f'shots/s{int(si)}_{t}.jpg',type='jpeg',quality=80)
     b.close()
