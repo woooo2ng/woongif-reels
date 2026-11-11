@@ -43,6 +43,15 @@ const capAt=(si,i)=>LEAD+CAPT[si][i];
 .bigmsg{position:absolute;left:90px;right:90px;top:360px;border-radius:44px;background:#fff;box-shadow:0 24px 60px rgba(30,20,70,.35);padding:30px 40px;box-sizing:border-box}
 .bigmsg .who{font-size:34px;color:#888;font-weight:700;margin:0 0 10px 4px}
 .bigmsg .b{font-size:96px;font-weight:900;color:#222;max-width:none;background:#ffe3a8;display:inline-block;border-radius:40px;padding:14px 44px}
+.chatp{position:absolute;left:80px;right:80px;top:330px;border-radius:44px;background:#c9dbea;box-shadow:0 24px 60px rgba(20,20,60,.4);padding:0 0 30px;overflow:hidden}
+.chatp .cht{height:96px;display:flex;align-items:center;padding:0 40px;font-size:42px;font-weight:900;color:#222;background:rgba(255,255,255,.55);margin-bottom:20px}
+.chatp .rw{display:flex;align-items:flex-end;gap:14px;padding:10px 34px;transform-origin:left bottom}
+.chatp .av2{width:70px;height:70px;border-radius:26px;background:#ffc04d;flex:none}
+.chatp .bb{font-size:46px;font-weight:700;background:#fff;color:#222;border-radius:30px;padding:16px 28px}
+.chatp .old .bb{opacity:.75}
+.chatp .tm{font-size:26px;color:#5a6a7a;font-weight:700}
+.chatp .dv{align-self:center;margin:14px auto 4px;width:140px;text-align:center;font-size:28px;color:#fff;background:rgba(0,0,0,.2);border-radius:999px;padding:4px 0}
+.chatp .big{font-size:84px;font-weight:900;padding:12px 70px 12px 36px;background:#fff}
 .dot{display:inline-block;position:relative;color:#222}
 .ring{position:absolute;border-radius:50%;border:12px solid #e2335a}
 `;document.head.appendChild(st)}

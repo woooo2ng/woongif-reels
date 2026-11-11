@@ -280,19 +280,22 @@ S[3]=()=>{
   const tb=bT('음성 입력: "알겠어."',{fs:60,size:0.0036});tb.position.set(0,2.35,0);sB.add(tb);
   const camB=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   // DOM 메시지
-  const dom=document.createElement('div');dom.innerHTML=`<div class="bigmsg"><div class="who">ENTP ♡ · 오후 9:12</div><div class="b" style="padding-right:70px">알겠어<span class="dot">.<svg class="cir" viewBox="0 0 100 100" style="position:absolute;left:-26px;top:54px;width:84px;height:84px;overflow:visible"><ellipse cx="50" cy="52" rx="44" ry="40" fill="none" stroke="#e2335a" stroke-width="9" stroke-linecap="round" stroke-dasharray="270" stroke-dashoffset="270" transform="rotate(-100 50 50)"/></svg></span></div></div>`;ui.appendChild(dom);
-  const msg=dom.querySelector('.bigmsg'),dot=dom.querySelector('.dot'),cir=dom.querySelector('.cir ellipse');
+  const SV='<svg class="cir" viewBox="0 0 100 100" style="position:absolute;left:-28px;top:48px;width:80px;height:80px;overflow:visible"><ellipse cx="50" cy="52" rx="44" ry="40" fill="none" stroke="#e2335a" stroke-width="9" stroke-linecap="round" stroke-dasharray="270" stroke-dashoffset="270" transform="rotate(-100 50 50)"/></svg>';
+  const OLD=[['3일 전','ㅇㅋㅋㅋ'],['어제','알겠어~ ㅎㅎ'],['어제','웅웅 좋아 ♥']];
+  const dom=document.createElement('div');dom.innerHTML=`<div class="chatp"><div class="cht">‹ ENTP ♡</div>${OLD.map(o=>`<div class="rw old"><div class="av2"></div><div class="bb">${o[1]}</div><span class="tm">${o[0]}</span></div>`).join('')}<div class="dv">오늘</div><div class="rw now"><div class="av2"></div><div class="bb big">알겠어<span class="dot">.${SV}</span></div><span class="tm">오후 9:12</span></div></div>`;ui.appendChild(dom);
+  const msg=dom.querySelector('.chatp'),dot=dom.querySelector('.dot'),cir=dom.querySelector('.cir ellipse'),rws=[...dom.querySelectorAll('.rw')],dv=dom.querySelector('.dv');
   const ch=chip('',1080);ch.style.fontSize='50px';
   const CUT=capAt(3,2)-0.05;
   return t=>{
     if(t<CUT){bgEl.style.background='linear-gradient(#1c2046,#34306a 60%,#4a3f80)';
-      const mk=pop((t-0.05)/0.3);const out=ease((t-capAt(3,1)+0.3)/0.4);msg.style.opacity=1-out;msg.style.transform=`scale(${(0.8+0.2*mk)*(1-out*0.2)}) translateY(${-out*80}px)`;
-      const dz=ease((t-0.8)/0.6);cir.setAttribute('stroke-dashoffset',String(270*(1-dz)));dot.style.transform='';
+      const mk=pop((t-0.02)/0.25);const out=ease((t-capAt(3,1)+0.3)/0.4);msg.style.opacity=Math.min(clamp01(t/0.1),1-out);msg.style.transform=`scale(${(0.85+0.15*mk)*(1-out*0.2)}) translateY(${-out*80}px)`;
+      rws.forEach((r,i)=>{const t0=i<3?0.15+i*0.25:1.05;r.style.opacity=clamp01((t-t0)/0.1);r.style.transform=`scale(${0.7+0.3*pop((t-t0)/0.22)})`});dv.style.opacity=clamp01((t-0.95)/0.1);
+      const dz=ease((t-1.55)/0.55);cir.setAttribute('stroke-dashoffset',String(270*(1-dz)));dot.style.transform='';
       const ns=[capAt(3,1),capAt(3,1)+1.15,capAt(3,1)+2.3];
       cls.forEach((c,i)=>{const k=pop((t-ns[i])/0.3);c.scale.set(c.userData.base[0]*k,c.userData.base[1]*k,1);c.visible=k>0.01});
       
       F.userData.arms[1].rotation.x=-1.5;ph.rotation.x=0.6;F.userData.head.rotation.x=0.2;F.userData.head.rotation.z=t>ns[0]?Math.sin(t*1.5)*0.08:0;
-      const sc=t<ns[0]?0:Math.min(3,1+Math.floor((t-ns[0])/1.15));ch.textContent=t<ns[0]?'답장 해석 중…':`시나리오 #${sc} · ${sc*40}분 경과`;ch.style.top='230px';chipPop(ch,t,0.6);
+      const sc=t<ns[0]?0:Math.min(3,1+Math.floor((t-ns[0])/1.15));ch.textContent=t<ns[0]?'평소 ㅎㅎ 100% → 오늘 0%':`시나리오 #${sc} · ${sc*40}분 경과`;ch.style.top='230px';chipPop(ch,t<ns[0]?t:t-ns[0],t<ns[0]?2.0:0);
       camA.position.set(0,2.1,7.0-t*0.08);camA.lookAt(0,2.05,0);
       dom.style.display='';caption(3,t);renderer.render(sA,camA)}
     else{const lt=t-CUT;dom.style.display='none';bgEl.style.background='linear-gradient(#141838,#283066 60%,#3c3e78)';
