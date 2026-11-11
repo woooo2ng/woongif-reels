@@ -1,0 +1,660 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Noto Sans CJK KR',sans-serif;}
+#bg{position:absolute;inset:0}
+#c{position:absolute;inset:0;width:1080px;height:1920px}
+#ui{position:absolute;inset:0;overflow:hidden}
+.out{color:#fff;font-weight:900;
+  text-shadow:0 0 2px #111,
+   5px 0 0 #111,-5px 0 0 #111,0 5px 0 #111,0 -5px 0 #111,
+   4px 4px 0 #111,-4px 4px 0 #111,4px -4px 0 #111,-4px -4px 0 #111,
+   0 10px 14px rgba(0,0,0,.35);}
+.cap{position:absolute;left:70px;right:70px;top:1250px;text-align:center;font-size:62px;line-height:1.32;letter-spacing:-1px;word-break:keep-all}
+.tag{position:absolute;left:50%;transform:translateX(-50%);top:250px;background:#ffd84d;color:#3a2a00;font-weight:900;font-size:50px;padding:6px 26px;border-radius:16px}
+.title1{position:absolute;left:0;right:0;top:340px;text-align:center;font-size:130px;letter-spacing:-3px}
+.title2{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:190px;letter-spacing:-6px;color:#9df2c8}
+.clock{white-space:nowrap;position:absolute;left:50%;transform:translateX(-50%);top:230px;background:rgba(255,255,255,.92);color:#333;font-weight:900;font-size:58px;padding:10px 34px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.phone{position:absolute;left:150px;top:330px;width:780px;height:880px;border-radius:80px;background:#1b1b22;padding:22px;box-sizing:border-box;box-shadow:0 30px 70px rgba(60,40,90,.35)}
+.screen{position:relative;width:100%;height:100%;border-radius:60px;background:#c9dbea;overflow:hidden}
+.sbar{height:70px;display:flex;justify-content:space-between;align-items:center;padding:0 50px;font-size:30px;font-weight:700;color:#222}
+.head{height:90px;display:flex;align-items:center;padding:0 40px;font-size:40px;font-weight:900;color:#222;border-bottom:2px solid rgba(0,0,0,.06)}
+.msgs{overflow:hidden;position:absolute;left:0;right:0;top:162px;bottom:0;padding:20px 34px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;gap:18px}
+.row{display:flex;align-items:flex-end;gap:14px}
+.row.me{justify-content:flex-end}
+.av{width:74px;height:74px;border-radius:28px;flex:none}
+.b{max-width:480px;font-size:38px;line-height:1.35;padding:18px 26px;border-radius:30px;background:#fff;color:#222;font-weight:500}
+.me .b{background:#ffe86b}
+.who{font-size:26px;color:#555;margin:0 0 6px 4px}
+.div{align-self:center;font-size:26px;color:#fff;background:rgba(0,0,0,.18);padding:6px 22px;border-radius:999px}
+.dots span{display:inline-block;width:16px;height:16px;border-radius:50%;background:#999;margin:0 5px}
+.react{display:inline-block;margin-top:8px;background:#fff;border-radius:999px;padding:4px 18px;font-size:30px;font-weight:900;color:#e2557a;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.end1{position:absolute;left:0;right:0;top:420px;text-align:center;font-size:110px;line-height:1.25;letter-spacing:-3px}
+.end2{position:absolute;left:0;right:0;top:760px;text-align:center;font-size:56px}
+.read{font-size:24px;color:#e0a800;font-weight:900;margin-right:8px;align-self:flex-end}
+.stamp{position:absolute;font-weight:900;color:#ffd84d}
+</style></head>
+<body>
+<div id="bg"></div>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div id="ui"></div>
+<script type="module">
+import * as THREE from './node_modules/three/build/three.module.js';
+const W=1080,H=1920;
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,H,false);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+const bgEl=document.getElementById('bg'),ui=document.getElementById('ui');
+const FONT='"Noto Sans CJK KR"';
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const ease=x=>{x=clamp01(x);return x*x*(3-2*x)};
+const pop=x=>{x=clamp01(x);if(x>=1)return 1;const c=1.70158*1.3;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const pick=(r,a)=>a[Math.floor(r()*a.length)];
+const matCache={};
+function lamb(c){return matCache[c]||(matCache[c]=new THREE.MeshLambertMaterial({color:c,flatShading:true}))}
+function basic(c){return new THREE.MeshBasicMaterial({color:c})}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+const texCache={};
+function bubbleTex(text,bg,fg,fs){
+  const key=text+bg+fg+fs; if(texCache[key])return texCache[key];
+  const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font=`900 ${fs}px ${FONT}`;const tw=ctx.measureText(text).width;
+  const pad=fs*0.55,h=fs*1.55,tail=fs*0.32;
+  c.width=Math.ceil(tw+pad*2)+8;c.height=Math.ceil(h+tail)+8;
+  ctx.translate(4,4);
+  ctx.fillStyle='rgba(0,0,0,0.18)';rr(ctx,0,4,c.width-8,h,h/2);ctx.fill();
+  ctx.fillStyle=bg;rr(ctx,0,0,c.width-8,h,h/2);ctx.fill();
+  ctx.beginPath();const cx=(c.width-8)/2;ctx.moveTo(cx-tail*0.8,h-2);ctx.lineTo(cx,h+tail);ctx.lineTo(cx+tail*0.8,h-2);ctx.fill();
+  ctx.font=`900 ${fs}px ${FONT}`;ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(text,cx,h/2+fs*0.06);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
+  return texCache[key]={t,w:c.width,h:c.height};
+}
+function makeBubble(text,o={}){
+  const {t,w,h}=bubbleTex(text,o.bg||'#ffffff',o.fg||'#2b2b3a',o.fs||72);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));
+  const k=o.size||0.0068;s.scale.set(w*k,h*k,1);s.center.set(0.5,0);s.userData.base=[w*k,h*k];
+  return s;
+}
+function setBubble(s,text,o={}){const {t,w,h}=bubbleTex(text,o.bg||'#ffffff',o.fg||'#2b2b3a',o.fs||72);s.material.map=t;const k=o.size||0.0068;s.userData.base=[w*k,h*k];s.scale.set(w*k,h*k,1)}
+function scaleBubble(s,k){const b=s.userData.base;s.scale.set(b[0]*k,b[1]*k,1);s.visible=k>0.01}
+function glowTex(col){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,col);g.addColorStop(0.35,col.replace('1)','0.6)'));g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+function textSprite(text,fs,col,size){const c=document.createElement('canvas'),ctx=c.getContext('2d');ctx.font=`900 ${fs}px ${FONT}`;const w=ctx.measureText(text).width+20;c.width=w;c.height=fs*1.4;ctx.font=`900 ${fs}px ${FONT}`;ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=fs*0.12;ctx.strokeStyle='rgba(40,40,60,0.9)';ctx.strokeText(text,w/2,c.height/2);ctx.fillText(text,w/2,c.height/2);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));s.scale.set(w*size,c.height*size,1);s.userData.base=[w*size,c.height*size];return s}
+const SKIN=[0xf3cfae,0xebb995,0xdfa882];
+const HAIR=[0x2a2220,0x4a3426,0x1d1d24,0x6b4a2f,0x3a2f2a];
+const SHIRT=[0x6c8ebf,0xd98c8c,0x8cc9a0,0xe0c070,0xa58cd0,0x7fb7c9,0xe39a6b,0xc7a3c9,0x90b86c];
+const PANTS=[0x33384a,0x3d3a36,0x2c4058,0x55506a,0x6b5a48];
+function makePerson(r,o={}){
+  const g=new THREE.Group();
+  const shirt=o.shirt??pick(r,SHIRT),pants=o.pants??pick(r,PANTS),skin=pick(r,SKIN),hair=o.hair??pick(r,HAIR);
+  const hip=new THREE.Group();hip.position.y=0.8;g.add(hip);
+  const body=new THREE.Mesh(new THREE.BoxGeometry(0.52,0.64,0.32),lamb(shirt));body.position.y=0.32;hip.add(body);
+  const legs=[],arms=[];
+  for(const s of[-1,1]){
+    const leg=new THREE.Group();leg.position.set(s*0.13,0.02,0);
+    const lm=new THREE.Mesh(new THREE.BoxGeometry(0.19,0.8,0.23),lamb(pants));lm.position.y=-0.4;leg.add(lm);
+    const shoe=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.1,0.32),lamb(0x2b2b30));shoe.position.set(0,-0.77,0.05);leg.add(shoe);
+    hip.add(leg);legs.push(leg);
+    const arm=new THREE.Group();arm.position.set(s*0.34,0.6,0);
+    const am=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.58,0.17),lamb(shirt));am.position.y=-0.27;arm.add(am);
+    const hand=new THREE.Mesh(new THREE.BoxGeometry(0.13,0.13,0.13),lamb(skin));hand.position.y=-0.6;arm.add(hand);
+    hip.add(arm);arms.push(arm);
+  }
+  const head=new THREE.Group();head.position.y=0.66;hip.add(head);
+  const hm=new THREE.Mesh(new THREE.SphereGeometry(0.25,14,10),lamb(skin));hm.position.y=0.24;head.add(hm);
+  const hr=new THREE.Mesh(new THREE.SphereGeometry(0.265,14,10,0,Math.PI*2,0,Math.PI*0.5),lamb(hair));hr.position.y=0.26;hr.rotation.x=-0.35;head.add(hr);
+  for(const s of[-1,1]){const e=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.07,0.02),lamb(0x1a1a1a));e.position.set(s*0.09,0.25,0.24);head.add(e);
+    const ch=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.035,0.01),basic(0xf2a3a3));ch.position.set(s*0.14,0.17,0.225);head.add(ch);}
+  g.userData={hip,legs,arms,head};
+  return g;
+}
+function walkPose(p,ph,amp=0.55){const u=p.userData,s=Math.sin(ph);u.legs[0].rotation.x=s*amp;u.legs[1].rotation.x=-s*amp;u.arms[0].rotation.x=-s*amp*0.8;u.arms[1].rotation.x=s*amp*0.8;u.hip.position.y=0.8+Math.abs(Math.cos(ph))*0.045}
+function standPose(p){const u=p.userData;u.legs.forEach(l=>l.rotation.x=0);u.arms.forEach(a=>{a.rotation.x=0;a.rotation.z=0});u.hip.position.y=0.8}
+function sitPose(p){const u=p.userData;u.hip.position.y=0.56;u.legs.forEach(l=>l.rotation.x=-Math.PI/2);u.arms.forEach(a=>a.rotation.x=-0.9)}
+function windowTexture(cols,rows,wall,win,lit,r){
+  const c=document.createElement('canvas');c.width=cols*32;c.height=rows*40;const x=c.getContext('2d');
+  x.fillStyle=wall;x.fillRect(0,0,c.width,c.height);
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){x.fillStyle=r()<lit?'#ffe9a8':win;x.fillRect(i*32+7,j*40+8,18,22);x.fillStyle='rgba(255,255,255,0.25)';x.fillRect(i*32+7,j*40+8,18,3)}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const WALLS=['#d9cbb8','#c9d3dc','#e3d6c6','#b9c4cf','#d6c2b0','#cfd8cf','#e8ddd0','#bfb6c9'];
+function makeBuilding(r,w,h,d,o={}){
+  const wall=o.wall||pick(r,WALLS);
+  const cols=Math.max(2,Math.round(w/1.1)),rows=Math.max(2,Math.round(h/1.4));
+  const side=new THREE.MeshLambertMaterial({map:windowTexture(cols,rows,wall,o.win||'#5d7590',o.lit??0.05,r)});
+  const sideD=new THREE.MeshLambertMaterial({map:windowTexture(Math.max(2,Math.round(d/1.1)),rows,wall,o.win||'#5d7590',o.lit??0.05,r)});
+  const top=new THREE.MeshLambertMaterial({color:new THREE.Color(wall).multiplyScalar(0.8)});
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[sideD,sideD,top,top,side,side]);m.position.y=h/2;return m;
+}
+function addLights(scene,o={}){
+  scene.add(new THREE.HemisphereLight(o.sky??0xffffff,o.ground??0x8a8070,o.hemi??1.6));
+  const d=new THREE.DirectionalLight(o.sun??0xffffff,o.dir??1.6);d.position.set(...(o.dpos||[6,12,8]));scene.add(d);
+}
+// ===== 온 세상이 ISTP인데 전쟁이 난다면? (전쟁편) =====
+const C_T='#ffb84d';
+const TM=await (await fetch('audio/timing.json')).json();
+// 줄 이름 -> 자막(여러 조각이면 글자 수 비율로 나눔)
+const TXT={
+ e1:['지금부터 너희에게 전쟁을 선포한다!!'],n1:[''],
+ n2:['진짜 전쟁이었습니다.','다만, 아무도 듣고 있지 않았을 뿐이죠.'],
+ s1:['…아 왜요.'],g1:['전쟁 났다고.'],s2:['…하.'],n3:['그렇게 병사들은,','세상에서 제일 하기 싫은 표정으로 전쟁터에 나갔습니다.'],
+ f1:['…화났어요?'],s3:['아뇨.'],f2:['표정이 화났는데.'],s4:['원래 이래요.'],f3:['아 저도긴 해요.'],
+ n4:['양쪽 다 상대가 화난 줄 알았지만,','아무도 화나지 않았습니다.','원래 얼굴이었죠.'],
+ f4:['…일부러 빗나가게 쐈죠?'],s5:['맞히면 보고서 써야 돼서.'],f5:['아 저도긴 해요.'],
+ s6:['…그거 몇 티어예요?'],f6:['다이아요.'],s7:['…듀오 할래요?'],n5:['관심 없는 건 1도 안 하지만,','꽂힌 건 전쟁보다 중요했습니다.'],
+ n6:['다음 날 작전은 단톡방으로 전달됐습니다.','아무도 읽지 않았죠.'],n7:['노이즈캔슬링도, 안 읽음도,','관심 있는 말은 막지 못했습니다.'],g2:['…아니 그게 아니라.'],
+ n8:['그날 이후, 양국 누구도','집 밖으로 나오지 않았습니다.'],e2:['종전 서명… 국경에서 만날까요?'],g3:['…굳이?'],e3:['아 저도긴 해요.'],
+ n9:['그렇게 이 전쟁은,','인류 역사상 최초로','집이 좋아서 끝난 전쟁이 됐습니다.'],
+};
+const CAPL={};
+TM.forEach((sc,si)=>{const L=[];for(const [nm,[st,d]] of Object.entries(sc.lines)){const parts=TXT[nm]||[''];const tot=parts.reduce((a,p)=>a+Math.max(1,p.length),0);let acc=st;
+  parts.forEach(p=>{L.push([acc,p]);acc+=d*Math.max(1,p.length)/tot});L.push([st+d+0.15,null])}
+  L.sort((a,b)=>a[0]-b[0]);CAPL[si]=L});
+const LN=(si,nm)=>TM[si].lines[nm]; // [시작, 길이] (음성 기준)
+const EV=si=>TM[si].ev;
+let LEAD=0.25,VOICE=[];
+window.setTiming=(lead,voice)=>{LEAD=lead;VOICE=voice};
+function caption(si,t){if(window.noCap)return;
+  const L=CAPL[si];if(!L)return;
+  let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
+  let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
+  // 다음 줄 전까지는 이전 자막 유지(null은 짧은 공백 뒤 다음 줄이 없을 때만 숨김)
+  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6){idx--;}else break}
+  if(idx<0||!L[idx][1]){el.style.opacity=0;return}
+  if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=L[idx][1]}
+  const st=LEAD+L[idx][0];
+  const k=pop((t-st+0.05)/0.18);el.style.transform=`scale(${0.85+0.15*k})`;el.style.opacity=clamp01((t-st+0.1)/0.1);
+}
+const vt=x=>LEAD+x; // 음성 기준 초 -> 장면 시간
+const at=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+k; // 줄 시작(장면 시간)
+const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
+{const st=document.createElement('style');st.textContent=`
+.title3{position:absolute;left:0;right:0;top:775px;text-align:center;font-size:122px;letter-spacing:-3px}
+.tag{top:290px}
+.title1{top:380px}
+.title2{top:540px;font-size:200px}
+.flash{position:absolute;inset:0;pointer-events:none}
+.kphone{position:absolute;left:150px;top:150px;width:780px;height:1060px;border-radius:80px;background:#1b1b22;padding:22px;box-sizing:border-box;box-shadow:0 30px 70px rgba(60,40,90,.35)}
+.kphone .screen{position:relative;width:100%;height:100%;border-radius:60px;background:#b2c7da;overflow:hidden}
+.kphone .head{height:110px;display:flex;align-items:center;gap:14px;padding:0 40px;font-size:48px;font-weight:900;color:#222;background:rgba(255,255,255,.35)}
+.kphone .head small{font-size:32px;color:#666;font-weight:700}
+.kphone .msgs{position:absolute;left:0;right:0;top:180px;bottom:120px;padding:20px 30px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;gap:16px;overflow:hidden}
+.kphone .row{display:flex;align-items:flex-end;gap:10px}
+.kphone .row.me{justify-content:flex-end}
+.kphone .b{max-width:500px;font-size:48px;line-height:1.35;padding:16px 24px;border-radius:28px;background:#fff;color:#222;font-weight:600}
+.kphone .me .b{background:#ffe86b}
+.kphone .un{font-size:38px;font-weight:900;color:#e8b400;min-width:10px;text-align:right}
+.kphone .tm{font-size:26px;color:#556;}
+.kphone .meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.kphone .sys{align-self:center;font-size:26px;color:#fff;background:rgba(0,0,0,.2);padding:6px 22px;border-radius:999px}
+.kphone .inp{position:absolute;left:0;right:0;bottom:0;height:120px;background:#fff;display:flex;align-items:center;padding:0 30px;gap:18px;box-sizing:border-box}
+.kphone .inp .box{flex:1;height:76px;border-radius:38px;background:#f1f1f4;display:flex;align-items:center;padding:0 28px;font-size:42px;color:#222;font-weight:600;white-space:nowrap;overflow:hidden}
+.kphone .inp .sd{width:80px;height:72px;border-radius:24px;background:#ffe86b;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#3a3000}
+.kphone .av{width:70px;height:70px;border-radius:26px;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff}
+.kphone .who{font-size:32px;color:#445;margin:0 0 6px 4px;font-weight:700}
+.doc{position:absolute;left:150px;top:200px;width:780px;height:960px;background:#fffdf5;border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:60px 64px;box-sizing:border-box;color:#2a2a2a}
+.doc h1{margin:0;text-align:center;font-size:76px;font-weight:900;letter-spacing:6px}
+.doc .ln{height:4px;background:#2a2a2a;margin:26px 0 40px}
+.doc p{font-size:40px;line-height:1.6;margin:0 0 18px;font-weight:600}
+.doc .why{margin-top:40px;padding:34px;border:4px dashed #c9a96b;border-radius:20px;font-size:54px;font-weight:900;line-height:1.45;text-align:center}
+.doc .why b{color:#e2552d}
+.doc .sg{position:absolute;left:64px;right:64px;bottom:70px;display:flex;justify-content:space-between}
+.doc .sg div{width:300px;text-align:center;font-size:32px;font-weight:700;color:#555}
+.doc .sg span{display:block;margin-top:14px;border-bottom:4px solid #444;font-size:70px;font-weight:900;color:#1d3b8f;height:96px;font-family:'Noto Sans CJK KR'}
+.stamp2{position:absolute;left:50%;top:600px;transform:translateX(-50%) rotate(-12deg);border:14px solid #e23b3b;color:#e23b3b;font-size:120px;font-weight:900;padding:4px 44px;border-radius:30px;white-space:nowrap;background:rgba(255,255,255,.55)}
+.end1{position:absolute;left:0;right:0;top:300px;text-align:center;font-size:92px;letter-spacing:-3px}
+.end2{position:absolute;left:0;right:0;top:440px;text-align:center;font-size:58px}
+.cut{position:absolute;left:50%;top:150px;transform:translateX(-50%);background:#3b3466;color:#fff;font-weight:900;font-size:44px;padding:8px 30px;border-radius:999px;white-space:nowrap}
+`;document.head.appendChild(st)}
+function chip(text,top){const el=document.createElement('div');el.className='clock';el.textContent=text;if(top!=null)el.style.top=top+'px';ui.appendChild(el);return el}
+function chipPop(el,t,t0=0){el.style.transform=`translateX(-50%) scale(${pop((t-t0)/0.3)})`;el.style.opacity=clamp01((t-t0)/0.08)}
+function labelSprite(text,o={}){
+  const fs=o.fs||64;const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font=`900 ${fs}px ${FONT}`;const tw=ctx.measureText(text).width;const pad=fs*0.5,h=fs*1.5;
+  c.width=Math.ceil(tw+pad*2)+8;c.height=Math.ceil(h)+12;ctx.translate(4,4);
+  ctx.fillStyle='rgba(0,0,0,0.2)';rr(ctx,0,5,c.width-8,h,o.r??18);ctx.fill();
+  ctx.fillStyle=o.bg||'#fff';rr(ctx,0,0,c.width-8,h,o.r??18);ctx.fill();
+  ctx.fillStyle=o.fg||'#333';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`900 ${fs}px ${FONT}`;ctx.fillText(text,(c.width-8)/2,h/2+fs*0.06);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));const k=o.size||0.006;
+  s.scale.set(c.width*k,c.height*k,1);s.userData.base=[c.width*k,c.height*k];return s;
+}
+function armUp(p,side,k){const a=p.userData.arms[side];a.rotation.x=-2.95*k;a.rotation.z=(side?0.18:-0.18)*k}
+function stars(scene,n,r,o={}){const g=new THREE.BufferGeometry();const pos=[];for(let i=0;i<n;i++){pos.push((r()-0.5)*(o.w||80),(o.y0??8)+r()*(o.h||30),(o.z??-40)-r()*10)}g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));const m=new THREE.PointsMaterial({color:0xfff6d8,size:o.size||0.18,sizeAttenuation:true});const p=new THREE.Points(g,m);scene.add(p);return p}
+function glowSprite(col,s){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(col),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));sp.scale.set(s,s,1);return sp}
+function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t}
+function makeHouse(r,o={}){
+  const g=new THREE.Group();const w=o.w||2.4,h=o.h||2,d=2.2;
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),lamb(o.wall||pick(r,[0x6f6a8f,0x5d6585,0x7a6f8a,0x66708c])));wall.position.y=h/2;g.add(wall);
+  const roof=new THREE.Mesh(new THREE.ConeGeometry(w*0.85,1.1,4),lamb(o.roof||pick(r,[0x8a4f5a,0x4f5a8a,0x5a7a6a,0x7a5a8a])));roof.rotation.y=Math.PI/4;roof.position.y=h+0.55;roof.scale.z=d/w;g.add(roof);
+  for(const x of[-w*0.25,w*0.25]){const win=new THREE.Mesh(new THREE.PlaneGeometry(0.42,0.5),basic(r()<0.8?0xffe39a:0x3a3f5a));win.position.set(x,h*0.55,d/2+0.01);g.add(win)}
+  return g;
+}
+renderer.setClearColor(0x000000,0);
+function sprinkleHearts(scene,n,r,o){const a=[];for(let i=0;i<n;i++){const h=textSprite('♥',80,o.col||'#ff8fb3',o.size||0.006);scene.add(h);a.push({h,x:(o.x||0)+(r()-0.5)*(o.w||2),z:(o.z||0)+(r()-0.5)*(o.dz||0.4),ph:r()})}return a}
+function updHearts(a,t,t0,y0,rise=2){a.forEach(q=>{const lt=((t-t0)*0.55+q.ph)%1;q.h.visible=t>t0;q.h.position.set(q.x,y0+lt*rise,q.z);const k=Math.sin(lt*Math.PI);q.h.scale.set(q.h.userData.base[0]*k,q.h.userData.base[1]*k,1)})}
+renderer.setClearColor(0x000000,0);
+function tree(scene,x,z,s=1,col=0x6fae6a){const t=new THREE.Group();const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.14,1.4,6),lamb(0x7a5a3c));tr.position.y=0.7;t.add(tr);
+  const cr=new THREE.Mesh(new THREE.IcosahedronGeometry(0.85,0),lamb(col));cr.position.y=1.9;t.add(cr);t.position.set(x,0,z);t.scale.setScalar(s);scene.add(t);return t}
+// ---------- ISTP 전쟁편 공용 (ESFP 전쟁편에서 가져옴) ----------
+const S=[];
+function addFace(p){const h=p.userData.head;
+  const sm=new THREE.Mesh(new THREE.TorusGeometry(0.05,0.013,4,10,Math.PI),basic(0x5a2a2a));sm.rotation.z=Math.PI;sm.position.set(0,0.165,0.245);h.add(sm);
+  const fl=new THREE.Mesh(new THREE.BoxGeometry(0.085,0.016,0.01),basic(0x5a2a2a));fl.position.set(0,0.145,0.248);h.add(fl);
+  p.userData.smile=sm;p.userData.flat=fl;setFace(p,false);return p}
+function setFace(p,smile){p.userData.smile.visible=smile;p.userData.flat.visible=!smile}
+const ALLY={shirt:0x7f9b5a,pants:0x55663f,helm:0x667f48};
+const FOE={shirt:0x9a8fd0,pants:0x5e5896,helm:0x7c74b8};
+const TOUR=[0xf28b8b,0xf2c46b,0x8bd1f2,0xb58bf2,0x8bf2b0,0xf29bd8];
+function soldier(r,side,o={}){const p=addFace(makePerson(r,{shirt:side.shirt,pants:side.pants}));
+  const h=p.userData.head;h.children[1].visible=false;
+  const hm=new THREE.Mesh(new THREE.SphereGeometry(0.29,12,8,0,Math.PI*2,0,Math.PI*0.5),lamb(side.helm));hm.position.y=0.27;h.add(hm);
+  const rim=new THREE.Mesh(new THREE.CylinderGeometry(0.33,0.33,0.035,14),lamb(side.helm));rim.position.y=0.28;h.add(rim);
+  return p}
+function general(r,o){const p=addFace(makePerson(r,{shirt:o.shirt,pants:o.pants}));const h=p.userData.head;
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.26,0.16,14),lamb(o.cap));cap.position.y=0.44;h.add(cap);
+  const top=new THREE.Mesh(new THREE.CylinderGeometry(0.31,0.27,0.07,14),lamb(o.cap));top.position.y=0.54;h.add(top);
+  const brim=new THREE.Mesh(new THREE.BoxGeometry(0.34,0.03,0.2),lamb(0x222222));brim.position.set(0,0.37,0.24);h.add(brim);
+  const badge=new THREE.Mesh(new THREE.CircleGeometry(0.06,5),basic(0xffd84d));badge.position.set(0,0.46,0.27);h.add(badge);
+  for(const s of[-1,1]){const ep=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.05,0.22),lamb(0xe8c050));ep.position.set(s*0.3,0.66,0);p.userData.hip.add(ep)}
+  const md=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.1,0.02),lamb(0xe8c050));md.position.set(-0.13,0.45,0.17);p.userData.hip.add(md);
+  p.scale.setScalar(1.15);return p}
+const GEN={shirt:0x56703f,pants:0x3e4f2e,cap:0x4a6136};
+const ENEMYG={shirt:0x6d62ad,pants:0x463f7d,cap:0x5b5199};
+function tourist(r){const p=addFace(makePerson(r,{shirt:pick(r,TOUR)}));setFace(p,true);return p}
+function phoneMesh(col=0xbfe3ff){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.BoxGeometry(0.17,0.3,0.03),lamb(0x24242c));g.add(b);
+  const s=new THREE.Mesh(new THREE.PlaneGeometry(0.14,0.26),basic(col));s.position.z=-0.017;s.rotation.y=Math.PI;g.add(s);
+  const rec=new THREE.Mesh(new THREE.CircleGeometry(0.02,10),basic(0xff3a3a));rec.position.set(-0.045,0.1,-0.019);rec.rotation.y=Math.PI;g.add(rec);
+  g.userData.rec=rec;return g}
+// 한 손으로 폰을 들어 앞을 찍는 자세(폰 화면이 본인 쪽)
+const _v=new THREE.Vector3();
+function phoneUp(p,side=1,k=1,ph=null){const a=p.userData.arms[side];a.rotation.x=-2.25*k;a.rotation.z=(side?0.12:-0.12)*k;
+  if(!p.userData.phone){const ph=phoneMesh();p.userData.hip.add(ph);p.userData.phone=ph}
+  const P=p.userData.phone;P.visible=k>0.05;P.rotation.set(-0.15,0,0);
+  // 손 위치에 폰을 붙인다
+  const hand=a.children[1];p.updateMatrixWorld(true);hand.getWorldPosition(_v);p.userData.hip.worldToLocal(_v);
+  P.position.set(_v.x,_v.y+0.13,_v.z+0.03);}
+function rifle(){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.1,0.85),lamb(0x3a3530));g.add(b);
+  const st=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.17,0.26),lamb(0x6b4a2f));st.position.set(0,-0.05,-0.36);g.add(st);
+  const mz=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.04,0.2),lamb(0x222222));mz.position.z=0.5;g.add(mz);return g}
+function aim(p){const u=p.userData;u.arms[0].rotation.x=-1.45;u.arms[0].rotation.z=0.35;u.arms[1].rotation.x=-1.5;u.arms[1].rotation.z=-0.1;
+  if(!u.rifle){const R=rifle();u.hip.add(R);u.rifle=R}u.rifle.visible=true;u.rifle.position.set(0.12,0.62,0.45)}
+function noRifle(p){if(p.userData.rifle)p.userData.rifle.visible=false}
+function vSign(p,side=1,k=1){const a=p.userData.arms[side];a.rotation.x=-2.7*k;a.rotation.z=(side?0.5:-0.5)*k}
+function lPose(p,t,k=1,hop=true){// L을 가져가: 한 손 L 이마, 한 손 배, 옆으로 뛰기
+  const u=p.userData;u.arms[1].rotation.x=-2.75*k;u.arms[1].rotation.z=1.15*k;
+  u.arms[0].rotation.x=-0.9*k;u.arms[0].rotation.z=0.9*k;
+  if(!u.L){const L=textSprite('L',90,'#c8ff4d',0.0045);u.head.add(L);u.L=L;L.position.set(0.02,0.55,0.32)}u.L.visible=k>0.5;
+  if(hop){const s=Math.sin(t*Math.PI*2*1.6);u.legs[0].rotation.z=-0.45*Math.max(0,s)*k;u.legs[1].rotation.z=0.45*Math.max(0,-s)*k;u.hip.position.y=0.8+Math.abs(s)*0.12*k;u.hip.position.x=s*0.12*k}
+}
+function terminalPose(p,t,k=1){// 뒤돌아 엉덩이 흔들기 + 머리 쓸어올리기, 고개는 뒤를 돌아봄
+  const u=p.userData,w=Math.sin(t*Math.PI*2*2.2);
+  u.hip.position.x=w*0.09*k;u.hip.rotation.z=w*0.16*k;u.hip.rotation.x=-0.18*k;u.hip.position.y=0.78;
+  u.legs[0].rotation.x=0.2*k;u.legs[1].rotation.x=0.2*k;u.legs[0].rotation.z=-0.12*k;u.legs[1].rotation.z=0.12*k;
+  u.arms[1].rotation.x=-2.7*k;u.arms[1].rotation.z=(0.6+Math.sin(t*Math.PI*2*1.1)*0.5)*k;
+  u.arms[0].rotation.x=-0.5*k;u.arms[0].rotation.z=0.5*k;
+  u.head.rotation.y=0.9*k;u.head.rotation.z=-0.1*k}
+function resetLegs(p){const u=p.userData;u.legs.forEach(l=>{l.rotation.z=0;l.rotation.x=0});u.hip.position.x=0;u.hip.position.y=0.8;u.hip.rotation.set(0,0,0);u.head.rotation.set(0,0,0);if(u.L)u.L.visible=false}
+function sandbags(scene,x,z,w,rows=3,col=0xc9b48a){const g=new THREE.Group();const n=Math.round(w/0.62);
+  for(let j=0;j<rows;j++)for(let i=0;i<n;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.28,0.42),lamb(j%2?col:0xbfa97e));b.position.set(-w/2+0.31+i*0.62+(j%2)*0.3,0.14+j*0.27,0);b.rotation.y=(i*7+j)%3*0.04-0.04;g.add(b)}
+  g.position.set(x,0,z);scene.add(g);return g}
+function flag(scene,x,z,col,h=4.5,w=1.6){const g=new THREE.Group();const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,h,6),lamb(0xdddddd));pole.position.y=h/2;g.add(pole);
+  const f=new THREE.Mesh(new THREE.PlaneGeometry(w,w*0.62,6,1),new THREE.MeshLambertMaterial({color:col,side:THREE.DoubleSide,flatShading:true}));f.position.set(w/2,h-w*0.35,0);g.add(f);g.userData.f=f;
+  const ball=new THREE.Mesh(new THREE.SphereGeometry(0.1,8,6),lamb(0xe8c050));ball.position.y=h;g.add(ball);g.position.set(x,0,z);scene.add(g);return g}
+function waveFlag(fl,t){const pos=fl.userData.f.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i);pos.setZ(i,Math.sin(t*4+x*3)*0.12*(x+0.8))}pos.needsUpdate=true}
+function ground(scene,col,size=200){const g=new THREE.Mesh(new THREE.PlaneGeometry(size,size),lamb(col));g.rotation.x=-Math.PI/2;scene.add(g);return g}
+function fence(scene,z,w=40){const g=new THREE.Group();for(let x=-w/2;x<=w/2;x+=2.2){const p=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.3,0.1),lamb(0x6b5a48));p.position.set(x,0.65,0);g.add(p)}
+  for(const y of[0.45,0.8,1.15]){const l=new THREE.Mesh(new THREE.BoxGeometry(w,0.025,0.025),lamb(0x8a8a8a));l.position.set(0,y,0);g.add(l)}g.position.z=z;scene.add(g);return g}
+function tent(scene,x,z,col,s=1){const g=new THREE.Group();const c=new THREE.Mesh(new THREE.ConeGeometry(2.2,2.6,4),lamb(col));c.rotation.y=Math.PI/4;c.position.y=1.3;g.add(c);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(0.9,1.3),basic(0x2a2a30));door.position.set(0,0.65,1.12);door.rotation.x=-0.36;g.add(door);g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);return g}
+function tank(col){const g=new THREE.Group();const tr=lamb(0x3a3a3a);
+  for(const s of[-1,1]){const t=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.7,4.2),tr);t.position.set(s*1.25,0.35,0);g.add(t)}
+  const b=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.8,3.8),lamb(col));b.position.y=1.0;g.add(b);
+  const tu=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.6,1.8),lamb(col));tu.position.set(0,1.7,-0.3);g.add(tu);
+  const br=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.12,2.4,8),lamb(0x55663f));br.rotation.x=Math.PI/2;br.position.set(0,1.75,1.6);g.add(br);return g}
+function popEl(el,t,t0,base=''){const k=pop((t-t0)/0.3);el.style.transform=`${base} scale(${k})`;el.style.opacity=clamp01((t-t0)/0.08)}
+function div(cls,html,parent=ui){const d=document.createElement('div');d.className=cls;if(html!=null)d.innerHTML=html;parent.appendChild(d);return d}
+function bub(p,text,o={}){const b=makeBubble(text,{bg:o.bg||'#f2ffd0',fg:o.fg||'#2b3a10',fs:o.fs||64,size:o.size});b.position.y=o.y??2.35;p.add(b);scaleBubble(b,0);return b}
+function cam(fov=50,asp=W/H){return new THREE.PerspectiveCamera(fov,asp,0.1,400)}
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+
+// ---------- ISTP 전용 소품 ----------
+function earbuds(p,col=0xffffff){const h=p.userData.head;const ebs=[];
+  for(const s of[-1,1]){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.SphereGeometry(0.055,10,8),lamb(col));g.add(b);
+    const st=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.11,0.03),lamb(col));st.position.set(0,-0.07,0.02);g.add(st);
+    g.position.set(s*0.265,0.19,0.02);h.add(g);ebs.push(g)}
+  p.userData.ebs=ebs;return p}
+function brows(p,k=0.32){const h=p.userData.head;
+  for(const s of[-1,1]){const b=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.025,0.02),lamb(0x1a1a1a));b.position.set(s*0.095,0.33,0.238);b.rotation.z=s*k;h.add(b)}return p}
+function istp(r,side){const p=brows(earbuds(soldier(r,side)));setFace(p,false);return p}
+function bob(p,t,k=1,sp=2.9){const u=p.userData;u.head.rotation.x=(Math.sin(t*Math.PI*sp)*0.09+0.02)*k;u.head.rotation.z=Math.sin(t*Math.PI*sp*0.5)*0.04*k}
+function notes(scene,n,r,sz=0.0045){const a=[];for(let i=0;i<n;i++){const s=textSprite(i%2?'♪':'♫',90,i%3?'#ffd56b':'#ffffff',sz);scene.add(s);a.push({s,ph:r(),dx:(r()-0.5)*0.5})}return a}
+function updNotes(a,t,anchor,on=1){a.forEach((q,i)=>{const lt=((t*0.6+q.ph)%1);const k=Math.sin(lt*Math.PI)*on;q.s.visible=k>0.02;
+  q.s.position.set(anchor.x+q.dx+(i%2?0.38:-0.38),anchor.y+lt*0.9,anchor.z);q.s.scale.set(q.s.userData.base[0]*k,q.s.userData.base[1]*k,1)})}
+function dragRifle(p){const a=p.userData.arms[1];if(!p.userData.drag){const R=rifle();a.add(R);R.position.set(0,-0.82,-0.32);R.rotation.x=2.62;p.userData.drag=R}p.userData.drag.visible=true}
+function slump(p,k=1){const u=p.userData;u.head.rotation.x=0.38*k;u.hip.rotation.x=0.12*k;u.arms[0].rotation.z=-0.05;u.arms[1].rotation.z=0.05}
+function trudge(p,t,k=1){walkPose(p,t*4.2,0.32*k);p.userData.arms[1].rotation.x=0.12;slump(p,k)}
+function puff(scene,x,y,z,s=1){const g=new THREE.Group();g.position.set(x,y,z);scene.add(g);const ps=[];const r=rng(Math.round(x*100+z*7));
+  for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.5,0),new THREE.MeshLambertMaterial({color:i<2?0xffc46b:0x9a968f,flatShading:true,transparent:true}));
+    m.position.set((r()-0.5)*1.2,r()*0.8,(r()-0.5)*1.2);g.add(m);ps.push(m)}
+  const fl=glowSprite('rgba(255,190,90,1)',3*s);g.add(fl);g.userData={ps,fl,s};g.visible=false;return g}
+function updPuff(g,t,t0){const lt=t-t0;g.visible=lt>0&&lt<1.6;if(!g.visible)return;const s=g.userData.s;
+  g.userData.ps.forEach((m,i)=>{const k=ease(lt/0.5);m.scale.setScalar(s*(0.3+k*(1.2+i*0.1)));m.position.y+=0.004;m.material.opacity=clamp01(1-(lt-0.6)/1.0)});
+  g.userData.fl.material.opacity=clamp01(1-lt/0.3)}
+function field(scene,r,o={}){
+  ground(scene,o.g??0x9cb97a,300);
+  const mud=new THREE.Mesh(new THREE.PlaneGeometry(80,7),lamb(0xa8946e));mud.rotation.x=-Math.PI/2;mud.position.set(0,0.01,o.mz??-1);scene.add(mud);
+  for(let i=0;i<14;i++){const x=(i-6.5)*3.1+r()*0.6;const post=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.9,0.09),lamb(0x5d4e3e));post.position.set(x,0.45,(o.mz??-1)+(i%2?0.4:-0.4));post.rotation.z=(r()-0.5)*0.3;scene.add(post)}
+  for(const y of[0.35,0.7]){const w=new THREE.Mesh(new THREE.BoxGeometry(44,0.02,0.02),lamb(0x7d7d84));w.position.set(0,y,o.mz??-1);scene.add(w)}
+  for(let i=0;i<9;i++){const h=new THREE.Mesh(new THREE.ConeGeometry(9+r()*6,5+r()*5,6),lamb(pick(r,[0x86a874,0x7d9f6c,0x93b07e])));h.position.set((i-4)*13+r()*4,0,-40-r()*12);scene.add(h)}
+  for(let i=0;i<12;i++)tree(scene,(i-5.5)*4.4+r()*2,-18-r()*6,1.1,0x76a866);
+}
+function setSky(a,b){bgEl.style.background=`linear-gradient(${a},${b})`}
+function lerpCol(c1,c2,k){const a=new THREE.Color(c1),b=new THREE.Color(c2);return '#'+a.lerp(b,clamp01(k)).getHexString()}
+function sbub(scene,text,x,o={}){const b=makeBubble(text,{bg:o.bg,fg:o.fg,fs:64,size:o.size||0.0026});b.position.set(x,o.y??2.25,o.z??0);scene.add(b);scaleBubble(b,0);return b}
+function sayBub(b,t,t0,t1,o){scaleBubble(b,t>=t0&&t<t1?pop((t-t0)/0.25):0)}
+
+// ===== 0. 선전포고 (타이틀) =====
+S[0]=()=>{
+  setSky('#a9bccf','#e3eaf0 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xd9e2ea,30,95);addLights(scene,{hemi:1.5});
+  const r=rng(11);field(scene,r,{mz:-1.2});
+  const allies=[];for(let row=0;row<4;row++)for(let c=0;c<7;c++){const p=istp(r,ALLY);p.position.set((c-3)*1.25+(row%2)*0.3,0,1.6+row*1.5);p.rotation.y=Math.PI;scene.add(p);allies.push({p,ph:r()*6})}
+  const foes=[];for(let row=0;row<3;row++)for(let c=0;c<7;c++){const p=istp(r,FOE);p.position.set((c-3)*1.3+0.4,0,-13.5-row*1.5);scene.add(p);foes.push({p,ph:r()*6})}
+  const mound=sandbags(scene,0,-4.2,2.4,2);
+  const EJ=brows(general(r,ENEMYG));EJ.position.set(0,0.55,-4.6);scene.add(EJ);setFace(EJ,true);
+  const mega=new THREE.Mesh(new THREE.ConeGeometry(0.22,0.5,10,1,true),new THREE.MeshLambertMaterial({color:0xf0f0f0,side:THREE.DoubleSide,flatShading:true}));
+  mega.rotation.x=-Math.PI/2;EJ.userData.hip.add(mega);
+  const bE=bub(EJ,'전쟁을 선포한다!!',{y:2.3,bg:'#e4e0ff',fg:'#2d2766',size:0.0028});
+  const hero=allies[3].p;const nts=notes(scene,6,r,0.0024);
+  const C=cam(50);const CUT=EV(0).cut;
+  const ch=chip('선전포고 청취율 0%');
+  ui.insertAdjacentHTML('beforeend',`<div class="tag">ISTP × 전쟁편</div><div class="title1 out">온 세상이</div><div class="title2 out" style="color:${C_T}">ISTP인데</div><div class="title3 out">전쟁이 난다면?</div>`);
+  const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2'),t3=ui.querySelector('.title3');
+  const flash=div('flash');flash.style.background='#fff';
+  const hv=new THREE.Vector3();
+  return t=>{
+    allies.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});foes.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});
+    standPose(EJ);const sh=t<CUT?Math.sin(t*22)*0.05:0;
+    EJ.userData.arms[1].rotation.x=-1.75;EJ.userData.arms[0].rotation.x=-2.6;EJ.userData.arms[0].rotation.z=-0.5+Math.sin(t*9)*0.25;
+    EJ.userData.head.rotation.x=-0.15+sh;mega.position.set(0,0.95,0.42);
+    scaleBubble(bE,0);
+    if(t<CUT){const k=t/CUT;C.position.set(-1.4+k*0.2,3.3,-10.6+k*1.0);C.lookAt(0.6,1.2,2.5)}
+    else{hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);const k=ease((t-CUT)/2.5);
+      C.position.set(hv.x+0.75-k*0.1,hv.y+0.2,hv.z-1.6+k*0.2);C.lookAt(hv.x+0.08,hv.y+0.7,hv.z)}
+    updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.55,hv.z),t>CUT?1:0);
+    chipPop(ch,t,0.9);ch.style.opacity=t<CUT?clamp01((t-0.9)/0.08):0;
+    flash.style.opacity=t>=CUT?clamp01(1-(t-CUT)/0.25)*0.7:0;
+    const T0=CUT+0.05;
+    tag.style.transform=`translateX(-50%) scale(${pop((t-T0)/0.3)})`;tag.style.opacity=t>T0?1:0;
+    t1.style.transform=`scale(${pop((t-T0-0.1)/0.35)})`;t1.style.opacity=clamp01((t-T0-0.1)/0.1);
+    t2.style.transform=`scale(${pop((t-T0-0.35)/0.4)})`;t2.style.opacity=clamp01((t-T0-0.35)/0.1);
+    t3.style.transform=`scale(${pop((t-T0-0.65)/0.4)})`;t3.style.opacity=clamp01((t-T0-0.65)/0.1);
+    caption(0,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 1. 옆에서 포탄 '퉁' =====
+S[1]=()=>{
+  setSky('#a9bccf','#e3eaf0 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde5ec,30,95);addLights(scene,{hemi:1.5});
+  const r=rng(21);field(scene,r,{mz:-1.2});
+  const allies=[];for(let row=0;row<4;row++)for(let c=0;c<7;c++){const p=istp(r,ALLY);p.position.set((c-3)*1.25+(row%2)*0.3,0,1.6+row*1.5);p.rotation.y=Math.PI;scene.add(p);allies.push({p,ph:r()*6})}
+  const foes=[];for(let row=0;row<3;row++)for(let c=0;c<7;c++){const p=istp(r,FOE);p.position.set((c-3)*1.3+0.4,0,-5.5-row*1.5);scene.add(p);foes.push({p,ph:r()*6})}
+  const hero=allies[3].p;
+  const B=EV(1).booms;const P1=puff(scene,hero.position.x+1.6,0,hero.position.z-0.6,1.0),P2=puff(scene,1.5,0,-1.2,1.6);
+  const tung=[textSprite('퉁',60,'#e9e9e9',0.004),textSprite('퉁',60,'#e9e9e9',0.004)];tung.forEach(s=>scene.add(s));
+  const nts=notes(scene,8,r,0.003);const C=cam(50);
+  const ch=chip('노이즈캔슬링 착용률 100%');
+  const hv=new THREE.Vector3();
+  return t=>{
+    allies.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});foes.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});
+    updPuff(P1,t,B[0]);updPuff(P2,t,B[1]);
+    tung[0].position.set(P1.position.x,1.6+(t-B[0])*0.3,P1.position.z);tung[0].visible=t>B[0]+0.05&&t<B[0]+1.3;
+    tung[1].position.set(P2.position.x,2.4+(t-B[1])*0.3,P2.position.z);tung[1].visible=t>B[1]+0.05&&t<B[1]+1.3;
+    hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);
+    const k=ease((t-2.3)/2.2);
+    const a=new THREE.Vector3(hv.x+0.45,hv.y+0.55,hv.z-2.4),b=new THREE.Vector3(5.5,7.5,-14);
+    C.position.copy(a.lerp(b,k));C.lookAt(new THREE.Vector3(hv.x+0.4,hv.y+0.25,hv.z).lerp(new THREE.Vector3(0.5,0.6,0),k));
+    updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.55,hv.z),1-k);
+    // 멀리서 보면 모두 머리 위 ♪
+    chipPop(ch,t,3.7);
+    caption(1,t);renderer.render(scene,C);
+  };
+};
+// 원경 ♪ (전원) — S[1]에서 k가 커지면 보이게 하려고 별도 스프라이트 대신 작게 붙임
+
+// ===== 2. 이어폰 쏙 → "아 왜요." =====
+S[2]=()=>{
+  setSky('#a9bccf','#e3eaf0 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde5ec,25,90);addLights(scene,{hemi:1.5});
+  const r=rng(31);field(scene,r,{mz:-6});
+  const hero=istp(r,ALLY);hero.position.set(0,0,0);hero.rotation.y=0.35;scene.add(hero);
+  const G=brows(general(r,GEN),0.15);G.position.set(0.55,0,1.25);G.rotation.y=Math.PI+0.5;scene.add(G);
+  const crowd=[];for(let i=0;i<10;i++){const p=istp(r,ALLY);p.position.set(-5+i*1.3+r()*0.4,0,-2.6-r()*1.4);p.rotation.y=Math.PI/2;scene.add(p);crowd.push({p,ph:r()*6})}
+  const held=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),lamb(0xffffff));G.userData.arms[1].children[1].add(held);held.position.set(0,-0.06,0.04);held.visible=false;
+  const nts=notes(scene,4,r,0.003);
+  const bH=bub(hero,'…아 왜요.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004}),bG=sbub(scene,'전쟁 났다고.',0.15,{y:2.55,z:1.0,bg:'#f2ffd0',fg:'#2b3a10',size:0.003}),bS=bub(hero,'…하.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004});
+  const sigh=textSprite('~',90,'#ffffff',0.004);scene.add(sigh);
+  const P=EV(2).pull,TW=at(2,'n3',0.1);const C=cam(46);
+  const ch=chip('출전 의지 3%');
+  const hv=new THREE.Vector3();
+  return t=>{
+    standPose(hero);standPose(G);
+    // 장군 손이 귀로
+    const reach=ease(t/P),back=ease((t-P-0.1)/0.5);
+    const g=G.userData;g.arms[1].rotation.x=-2.3*reach*(1-back*0.6);g.arms[1].rotation.z=0.55*reach*(1-back);
+    hero.userData.ebs[1].visible=t<P;held.visible=t>=P;
+    if(t<P)bob(hero,t);
+    else{hero.userData.head.rotation.set(0,0,0);if(t<TW){hero.userData.head.rotation.x=t>at(2,'s2')?0.25:0}}
+    // 짜증 → 한숨 → 터덜터덜
+    if(t>=TW){const k=t-TW;hero.rotation.y=0.35+(Math.PI/2-0.35-0.0)*ease(k/0.6)*1;hero.position.x=Math.max(0,k-0.6)*0.85;trudge(hero,k);dragRifle(hero);
+      G.rotation.y=Math.PI+0.5+ease(k/0.8)*0.6}
+    crowd.forEach(q=>{if(t>TW+0.4){const k=t-TW-0.4;q.p.position.x+=0;trudge(q.p,k+q.ph);dragRifle(q.p);q.p.position.x=q.p.userData.x0+(k*0.8)}else{standPose(q.p);bob(q.p,t+q.ph);if(q.p.userData.x0==null)q.p.userData.x0=q.p.position.x}});
+    hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);
+    updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.5,hv.z),t<P?1:0);
+    sayBub(bH,t,at(2,'s1'),at(2,'g1'));sayBub(bG,t,at(2,'g1'),at(2,'s2'));sayBub(bS,t,at(2,'s2'),TW+0.4);
+    sigh.visible=t>at(2,'s2',0.2)&&t<at(2,'s2',1.3);sigh.position.set(hv.x+0.1,hv.y+0.05-(t-at(2,'s2'))*0.1,hv.z+0.45);
+    if(t<TW){const k=ease(t/3);C.position.set(-3.3+k*0.4,2.25,4.9-k*0.5);C.lookAt(0.35,1.55,0.4)}
+    else{const k=ease((t-TW)/1.2);C.position.set(hero.position.x-2.6-k*1.0,2.3+k*0.6,3.6+k*2.0);C.lookAt(hero.position.x+0.6,1.4,0)}
+    chipPop(ch,t,TW+0.5);
+    caption(2,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 3. "화났어요?" "원래 이래요." =====
+S[3]=()=>{
+  setSky('#b2c4d4','#e6edf2 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
+  const r=rng(41);field(scene,r,{mz:-2.2});
+  const A=istp(r,ALLY),F=istp(r,FOE);A.ebs=A.userData.ebs;scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
+  const bub2=(p,txt,mine)=>sbub(scene,txt,mine?-0.35:0.35,{y:2.25,bg:mine?'#ffe7c2':'#e4e0ff',fg:mine?'#5a3300':'#2d2766'});
+  const L=[['f1',F,'…화났어요?',0],['s3',A,'아뇨.',1],['f2',F,'표정이 화났는데.',0],['s4',A,'원래 이래요.',1],['f3',F,'아 저도긴 해요.',0]].map(([nm,p,tx,m])=>({nm,b:bub2(p,tx,m)}));
+  const tags=[-1,1].map(sx=>{const s=labelSprite('원래 얼굴',{fs:46,bg:'#3b3466',fg:'#fff',size:0.0024});s.position.set(sx*0.5,2.15,0);scene.add(s);s.visible=false;return s});
+  const C=cam(44);const ARR=1.1;
+  const T3=at(3,'n4')+LN(3,'n4')[1]*0.62;
+  return t=>{
+    const k=ease(t/ARR);
+    A.position.set(-3.2+2.55*k,0,0);F.position.set(3.2-2.55*k,0,0);
+    if(t<ARR){A.rotation.y=Math.PI/2;F.rotation.y=-Math.PI/2;trudge(A,t);trudge(F,t+0.7);dragRifle(A);dragRifle(F)}
+    else{[A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0);p.userData.arms[1].rotation.x=0.05});
+      A.rotation.y=Math.PI/2-0.25;F.rotation.y=-Math.PI/2+0.25}
+    L.forEach((q,i)=>{const t0=at(3,q.nm),t1=i<L.length-1?at(3,L[i+1].nm):at(3,'n4');sayBub(q.b,t,t0,t1)});
+    tags.forEach(s=>{s.visible=t>T3;const kk=pop((t-T3)/0.3);s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1)});
+    const z=ease((t-at(3,'n4'))/2.5);
+    C.position.set(0,1.85,6.6-z*2.8);C.lookAt(0,1.45+z*0.25,0);
+    caption(3,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 4. 일부러 빗나가게 =====
+S[4]=()=>{
+  setSky('#b2c4d4','#e6edf2 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
+  const r=rng(51);field(scene,r,{mz:-3.5});
+  const A=istp(r,ALLY),F=istp(r,FOE);A.position.set(-1.45,0,0);A.rotation.y=Math.PI/2;F.position.set(1.45,0,0);F.rotation.y=-Math.PI/2;scene.add(A);scene.add(F);
+  A.userData.ebs[1].visible=false;
+  {const s1=sandbags(scene,-0.85,0,1.4,1);s1.rotation.y=Math.PI/2;const s2=sandbags(scene,0.85,0,1.4,1);s2.rotation.y=Math.PI/2}
+  const SH=EV(4).shots.map(x=>x);const tr=SH.map((s,i)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.04,0.04),basic(0xffe27a));scene.add(m);return m});
+  const fl=SH.map(()=>{const s=glowSprite('rgba(255,220,120,1)',0.9);scene.add(s);return s});
+  const bA=sbub(scene,'맞히면 보고서 써야 돼서.',-0.4,{bg:'#ffe7c2',fg:'#5a3300',y:2.3}),bF1=sbub(scene,'…일부러 빗나가게 쐈죠?',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.3}),bF2=sbub(scene,'아 저도긴 해요.',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.3});
+  const miss=SH.map(()=>{const s=textSprite('빗나감',44,'#ffffff',0.004);scene.add(s);return s});
+  const C=cam(48);const ch=chip('명중률 0%');
+  return t=>{
+    standPose(A);standPose(F);aim(A);aim(F);
+    const done=t>SH[SH.length-1]+0.5;
+    if(done){[A,F].forEach(p=>{p.userData.arms[0].rotation.x=-0.9;p.userData.arms[1].rotation.x=-1.0})}
+    SH.forEach((s,i)=>{const fromA=i%2==0;const lt=t-s;const m=tr[i];m.visible=lt>0&&lt<0.35;
+      const x0=fromA?-0.9:0.9,dir=fromA?1:-1;const zoff=(i%3==0?1:-1);
+      m.position.set(x0+dir*lt*9,1.45+lt*1.6,lt*zoff*5);m.rotation.y=-Math.atan2(zoff*5,dir*9);m.rotation.z=dir*0.17;
+      fl[i].visible=lt>0&&lt<0.08;fl[i].position.set(x0,1.5,0.1);
+      miss[i].visible=lt>0.12&&lt<0.7;miss[i].position.set(fromA?1.3:-1.3,2.05+lt*0.4,zoff*0.6)});
+    sayBub(bF1,t,at(4,'f4'),at(4,'s5'));sayBub(bA,t,at(4,'s5'),at(4,'f5'));sayBub(bF2,t,at(4,'f5'),99);
+    const k=ease((t-1.8)/2);C.position.set(0,2.2-k*0.2,7.6-k*1.6);C.lookAt(0,1.35+k*0.2,0);
+    chipPop(ch,t,1.3);
+    caption(4,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 5. 몇 티어예요? → 듀오 =====
+S[5]=()=>{
+  const scene=new THREE.Scene();addLights(scene,{hemi:1.5});
+  const r=rng(61);field(scene,r,{mz:-3});
+  const sb=sandbags(scene,0,0.2,3.2,2);
+  const A=istp(r,ALLY),F=istp(r,FOE);A.position.set(-0.55,0.32,0.55);F.position.set(0.55,0.32,0.55);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
+  const rifles=[rifle(),rifle()];rifles.forEach((R,i)=>{R.rotation.set(-1.25,0,0);R.position.set(i?1.9:-1.9,0.45,0.2);scene.add(R)});
+  const gameTex=canvasTex(140,260,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#3a2a7a');g.addColorStop(1,'#1d5f8a');x.fillStyle=g;x.fillRect(0,0,w,h);
+    x.fillStyle='#ffd84d';x.beginPath();x.arc(45,80,16,0,7);x.fill();x.fillStyle='#ff5a7a';x.beginPath();x.arc(95,150,16,0,7);x.fill();x.fillStyle='#7cf0ff';x.fillRect(20,200,100,14);x.fillStyle='#fff';x.font='900 26px sans-serif';x.fillText('◆ 다이아',18,40)});
+  const sun=glowSprite('rgba(255,170,90,1)',9);scene.add(sun);
+  const sparks=[0,1].map(i=>{const s=textSprite('✦',70,'#fff27a',0.004);scene.add(s);return s});
+  const bA1=sbub(scene,'…그거 몇 티어예요?',-0.35,{bg:'#ffe7c2',fg:'#5a3300',y:2.45,z:0.55}),bF=sbub(scene,'◆ 다이아요.',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.45,z:0.55}),bA2=sbub(scene,'…듀오 할래요?',-0.35,{bg:'#ffe7c2',fg:'#5a3300',y:2.45,z:0.55});
+  const C=cam(46);const ch=chip('교전 0회 · 듀오 1판');
+  const tS=at(5,'s6'),tD=at(5,'n5');
+  const hv=new THREE.Vector3();
+  return t=>{
+    [A,F].forEach(p=>{standPose(p);sitPose(p);p.userData.hip.rotation.set(0,0,0)});
+    // 적 병사 폰 게임 중
+    phoneUp(F,1,1);F.userData.phone.children[1].material=new THREE.MeshBasicMaterial({map:gameTex});
+    const both=t>at(5,'s7')+0.5;
+    if(both){phoneUp(A,0,1);A.userData.phone.children[1].material=F.userData.phone.children[1].material}
+    else if(A.userData.phone)A.userData.phone.visible=false;
+    // 고개: 처음엔 멍 → 폰 쪽으로 휙
+    const look=t>tS-0.2;A.userData.head.rotation.y=look&&!both?-0.75:0;A.userData.head.rotation.x=look?0.35:0;F.userData.head.rotation.x=0.4;
+    A.updateMatrixWorld(true);A.userData.head.getWorldPosition(hv);
+    sparks.forEach((s,i)=>{const on=t>tS&&t<at(5,'s7')+0.8;s.visible=on;const kk=on?0.8+Math.sin(t*12+i*2)*0.3:0;s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1);s.position.set(hv.x+(i?0.12:-0.12),hv.y+0.33,hv.z+0.35)});
+    sayBub(bA1,t,tS,at(5,'f6'));sayBub(bF,t,at(5,'f6'),at(5,'s7'));sayBub(bA2,t,at(5,'s7'),tD+0.3);
+    // 노을 타임랩스
+    const d=ease((t-tD)/3.2);
+    setSky(lerpCol('#b8cfe2','#ff9e6b',d),lerpCol('#eef3f6','#ffd9a0',d)+' 70%');
+    scene.children.forEach(o=>{if(o.isHemisphereLight)o.color.set(lerpCol('#ffffff','#ffd2b0',d))});
+    sun.position.set(-6,9-d*6.5,-30);sun.visible=t>tD;
+    const n=t<tD?1:1+Math.floor(ease((t-tD)/3.4)*11);ch.textContent=`교전 0회 · 듀오 ${n}판`;chipPop(ch,t,at(5,'s7')+0.4);
+    const k=ease((t-tD)/3);C.position.set(0.15-k*0.3,1.85+k*0.6,5.0+k*2.4);C.lookAt(0,1.45,0.4);
+    caption(5,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 6. 작전 단톡방 =====
+function kchat(title,cnt,col){const ph=div('kphone',`<div class="screen"><div style="height:70px"></div><div class="head" style="background:${col}"><span>${title}</span><small>${cnt}</small></div><div class="msgs"></div><div class="inp"><div class="box"></div><div class="sd">전송</div></div></div>`);
+  return {ph,msgs:ph.querySelector('.msgs'),box:ph.querySelector('.box')}}
+function kmsg(K,text,o={}){const row=document.createElement('div');row.className='row'+(o.me?' me':'');
+  if(o.me)row.innerHTML=`<div class="meta"><span class="un">${o.un??''}</span><span class="tm">${o.tm||''}</span></div><div class="b">${text}</div>`;
+  else row.innerHTML=`<div class="av" style="background:${o.av||'#6d62ad'}">${o.who?o.who[0]:''}</div><div><div class="who">${o.who||''}</div><div class="b">${text}</div></div>`;
+  K.msgs.appendChild(row);row.style.display='none';return row}
+S[6]=()=>{
+  const scene=new THREE.Scene();addLights(scene,{hemi:1.5});
+  const r=rng(71);field(scene,r,{mz:-8});
+  const vill=[];for(let i=0;i<9;i++){const h=makeHouse(r,{});h.position.set((i-4)*4.2+r()*1.5,0,-26-r()*5);h.scale.setScalar(1.3);scene.add(h);vill.push(h)}
+  const runners=[];for(let i=0;i<24;i++){const p=istp(r,ALLY);const pk=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.5,0.25),lamb(0x8a7a5a));pk.position.set(0,0.35,-0.25);p.userData.hip.add(pk);
+    p.position.set((r()-0.5)*14,0,4+r()*8);p.rotation.y=Math.PI;scene.add(p);runners.push({p,ph:r()*6,z0:p.position.z,sp:4+r()*2})}
+  const E=EV(6);
+  const K=kchat('전군 작전방','3,000','rgba(255,255,255,.4)');
+  const m1=kmsg(K,'[공지] 내일 05:00 전군 돌격.<br>1소대 좌측, 2소대 우측, 3소대는…',{me:1,un:'3000',tm:'AM 2:00'});
+  const m2=kmsg(K,'읽으면 답장 좀',{me:1,un:'3000',tm:'AM 5:00'}),m3=kmsg(K,'제발',{me:1,un:'3000',tm:'AM 5:01'}),m4=kmsg(K,'오늘 전쟁 일찍 끝남',{me:1,un:'3000',tm:'AM 5:02'}),m5=kmsg(K,'아니 그게 아니라',{me:1,un:'3000',tm:'AM 5:03'});
+  const ms=[m1,m2,m3,m4,m5];
+  const ch=chip('3시간 경과',55);const ch2=chip('귀가 소요 시간 3초');const cutL=div('cut','같은 시각 · 적군');
+  const big=div('stamp2','');big.style.top='520px';big.style.borderColor='#ffb800';big.style.color='#e09a00';
+  const C=cam(50);
+  const tStr='오늘 전쟁 일찍 끝남',tStr2='아니 그게 아니라';
+  const P3=[E.leave+0.15,E.oops-1.0];
+  return t=>{
+    const in3=t>=P3[0]&&t<P3[1];
+    K.ph.style.display=in3?'none':'block';
+    const foe=t>=E.foe;
+    K.ph.querySelector('.head span').textContent=foe?'적군 작전방':'전군 작전방';K.ph.querySelector('.head').style.background=foe?'#b9b0ee':'rgba(255,255,255,.4)';
+    K.ph.querySelector('.screen').style.background=foe?'#c9c2ea':'#b2c7da';
+    m1.style.display=t>=E.post?'flex':'none';m2.style.display=t>=E.req1?'flex':'none';m3.style.display=t>=E.req2?'flex':'none';m4.style.display=t>=E.send?'flex':'none';m5.style.display=t>=E.oops?'flex':'none';
+    const z=t>=E.zero&&t<E.oops;
+    [m1,m2,m3,m4].forEach(m=>{const u=m.querySelector('.un');u.textContent=z||t>=E.oops?'':'3000'});
+    // 입력창 타이핑
+    let s='';if(t>=E.type&&t<E.send)s=tStr.slice(0,Math.ceil((t-E.type)/(E.send-E.type-0.05)*tStr.length));
+    if(t>=E.oops-0.75&&t<E.oops)s=tStr2.slice(0,Math.ceil((t-E.oops+0.75)/0.7*tStr2.length));K.box.textContent=s;
+    // '3000' 강조
+    const u5=m5.querySelector('.un');const pul=t>=E.back?1+0.35*Math.abs(Math.sin((t-E.back)*6))*clamp01(1-(t-E.back)/1.5):1;u5.style.display='inline-block';u5.style.transform=`scale(${pul*(t>=E.back?1.6:1)})`;
+    big.textContent=t<E.oops?'읽음 0':'안 읽음 3000';big.style.opacity=(t>=E.zero&&t<E.leave+0.15)||(t>=E.back&&t<E.foe)?1:0;
+    big.style.transform=`translateX(-50%) rotate(-12deg) scale(${pop((t-(t<E.oops?E.zero:E.back))/0.25)})`;
+    chipPop(ch,t,2.3);ch.style.opacity=t>=2.3&&t<E.req1+0.3&&!in3?1:0;
+    cutL.style.opacity=foe?1:0;
+    // 3D: 전원 귀가
+    ch2.style.opacity=in3&&t>P3[0]+0.6?1:0;if(in3)chipPop(ch2,t,P3[0]+0.6);
+    if(in3){const lt=t-P3[0];runners.forEach(q=>{walkPose(q.p,(lt+q.ph)*11,0.75);q.p.position.z=q.z0-lt*q.sp*2.2;});
+      setSky('#9fc6ee','#e4f1ff 70%');C.position.set(0,3.2,15);C.lookAt(0,1.4,-6);renderer.render(scene,C)}
+    else{setSky('#6f86a8','#c3cfe0');renderer.clear()}
+    caption(6,t);
+  };
+};
+
+// ===== 7. 집이 좋아서 끝난 전쟁 =====
+S[7]=()=>{
+  const scene=new THREE.Scene();addLights(scene,{hemi:1.1,sun:0xffd2a8,dir:0.9});
+  const r=rng(81);ground(scene,0x6f8a68,300);
+  const road=new THREE.Mesh(new THREE.PlaneGeometry(4,200),lamb(0x6a6a72));road.rotation.x=-Math.PI/2;road.position.y=0.01;scene.add(road);
+  const houses=[];for(let row=0;row<4;row++)for(let i=0;i<5;i++){for(const s of[-1,1]){const h=makeHouse(r,{});h.position.set(s*(4+i*0+r()*0.5)+s*(i%2)*3.5,0,-row*6-(i%2)*3);h.rotation.y=s>0?-Math.PI/2:Math.PI/2;scene.add(h);houses.push(h)}}
+  const st=stars(scene,160,r,{w:120,y0:10,h:40,z:-60});
+  // 침실 세트(멀리 떨어진 곳)
+  const BR=new THREE.Group();BR.position.x=200;scene.add(BR);
+  {const fl=new THREE.Mesh(new THREE.PlaneGeometry(14,14),lamb(0xcaa57e));fl.rotation.x=-Math.PI/2;BR.add(fl);
+   const fr=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.5,3.2),lamb(0x8a6a4a));fr.position.set(0,0.25,0);BR.add(fr);
+   const mt=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.25,3.0),lamb(0xf4f1ea));mt.position.set(0,0.62,0);BR.add(mt);
+   const pl=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.2,0.55),lamb(0xffffff));pl.position.set(0,0.82,-1.15);BR.add(pl);
+   const rug=new THREE.Mesh(new THREE.PlaneGeometry(3,2),lamb(0x9db6d6));rug.rotation.x=-Math.PI/2;rug.position.set(2.4,0.01,0.5);BR.add(rug);
+   const lamp=glowSprite('rgba(255,210,140,1)',3);lamp.position.set(-1.6,1.2,-1.4);BR.add(lamp)}
+  const G=brows(general(r,GEN),0.2);G.rotation.x=-Math.PI/2;G.position.set(0,0.78,-1.55);BR.add(G);G.scale.setScalar(1.0);
+  const blanket=new THREE.Mesh(new THREE.BoxGeometry(2.05,0.3,1.9),lamb(0x7f9fd0));blanket.position.set(0,0.95,0.45);BR.add(blanket);
+  const E=EV(7);
+  const K=kchat('적장','','rgba(255,255,255,.45)');K.ph.style.transform='scale(.86)';K.ph.style.transformOrigin='50% 0';K.ph.style.top='120px';
+  const c1=kmsg(K,'종전 서명… 국경에서 만날까요?',{who:'적장',av:'#6d62ad'}),c2=kmsg(K,'굳이?',{me:1,un:'',tm:'PM 9:12'}),c3=kmsg(K,'아 저도긴 해요',{who:'적장',av:'#6d62ad'});
+  const doc=div('doc',`<h1>종전 협정서</h1><div class="ln"></div><p>제1조. 전쟁을 끝낸다.</p><p>제2조. 서로 연락하지 않는다.</p><div class="why">종전 사유<br><b>양국 모두 집이 더 좋아서</b></div><div class="sg"><div>아군 장군<span class="s1"></span></div><div>적군 장군<span class="s2"></span></div></div>`);
+  const stp=div('stamp2','종전');
+  const ch=chip('외출 인원 0명');const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','신청소에서 골라 주세요');
+  const C=cam(50);
+  const T1=at(7,'e2',-1.0),T2=E.stamp-0.9,T3=at(7,'n9',2.3),TE=VOICE[7]+0.25+0.45+0.3;
+  return t=>{
+    const bed=t>=T1&&t<T2;const night=t>=T3;
+    // 마을
+    const dk=night?1:ease(t/3);
+    setSky(lerpCol('#e9a27a','#141a3a',dk*0.85+ (night?0.15:0)),lerpCol('#ffd9a8','#3b3f6b',dk));
+    st.visible=night||t>2;
+    if(!bed){const k=night?ease((t-T3)/4):ease(t/3.5);
+      if(night){C.position.set(0,6+k*4,8+k*6);C.lookAt(0,1,-12)}else{C.position.set(0,2.2+k*1.2,6-k*3);C.lookAt(0,1.4,-14)}}
+    else{const k=ease((t-T1)/1.0);C.position.set(200+0.4,5.4-k*0.6,1.4-k*0.4);C.lookAt(200,0.6,-0.4);
+      G.userData.arms[1].rotation.x=-1.55;G.userData.arms[0].rotation.x=-1.55;phoneUp(G,1,0);if(G.userData.phone){G.userData.phone.visible=true;G.userData.phone.position.set(0.15,0.95,0.55);G.userData.phone.rotation.set(-Math.PI/2+0.3,0,0)}}
+    const showPhone=t>=T1+0.8&&t<T2;K.ph.style.display=showPhone?'block':'none';
+    K.ph.style.transform=`scale(.86) translateY(${(1-ease((t-T1-0.8)/0.35))*300}px)`;
+    c1.style.display=t>=at(7,'e2',-0.15)?'flex':'none';c2.style.display=t>=at(7,'g3',-0.1)?'flex':'none';c3.style.display=t>=at(7,'e3',-0.1)?'flex':'none';
+    const showDoc=t>=T2&&t<T3;doc.style.display=showDoc?'block':'none';doc.style.transform=`scale(${pop((t-T2)/0.3)})`;
+    doc.querySelector('.s1').textContent=t>E.stamp-0.6?'ㅇㅇ':'';doc.querySelector('.s2').textContent=t>E.stamp-0.35?'ㅇㅇ':'';
+    stp.style.display=showDoc&&t>=E.stamp?'block':'none';const sk=1+2*(1-ease((t-E.stamp)/0.12));stp.style.transform=`translateX(-50%) rotate(-12deg) scale(${sk})`;stp.style.top='830px';stp.style.left='62%';
+    houses.forEach(h=>h.children.forEach(c=>{if(c.geometry&&c.geometry.type==='PlaneGeometry')c.material.color.set(night||t>1.2?0xffe39a:0x3a3f5a)}));
+    chipPop(ch,t,1.0);ch.style.opacity=t>1.0&&t<T1?1:0;
+    e1.style.opacity=t>TE-2.6?1:0;e2.style.opacity=t>TE-2.4?1:0;popEl(e1,t,TE-2.6);popEl(e2,t,TE-2.4);
+    if(showDoc){renderer.clear();setSky('#3a3550','#5b5478')}else renderer.render(scene,C);
+    caption(7,t);
+  };
+};
+
+let curUpd=null,cur=-1;
+window.renderFrame=(si,t)=>{if(si!==cur){ui.innerHTML='';renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);curUpd=S[si]();cur=si}curUpd(t)};
+document.fonts.load(`900 60px ${FONT}`).then(()=>document.fonts.load(`500 40px ${FONT}`)).then(()=>{window.ready=true});
+</script></body></html>
