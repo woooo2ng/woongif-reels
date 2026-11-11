@@ -14,7 +14,7 @@ with sync_playwright() as p:
     pg.on('console',lambda m: print('CONSOLE',m.text) if m.type in('error','warning') else None)
     pg.on('pageerror',lambda e: print('ERR',e))
     pg.goto('http://localhost:8126/index.html');pg.wait_for_function('window.ready===true',timeout=60000)
-    pg.evaluate(f'setTiming(0.25,{json.dumps(VOICE)})');pg.evaluate("window.S3V='"+os.environ.get('V','A')+"'")
+    pg.evaluate(f'setTiming(0.25,{json.dumps(VOICE)})')
     for si,t in pairs:
         # 순서대로 진행시켜 사진 캡처 등 상태 재현
         pg.evaluate(f'renderFrame({int(si)},{t})');pg.screenshot(path=f'shots/s{int(si)}_{t}.png',type='png')

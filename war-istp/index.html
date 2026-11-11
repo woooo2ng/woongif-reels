@@ -206,6 +206,11 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .end1{position:absolute;left:0;right:0;top:300px;text-align:center;font-size:92px;letter-spacing:-3px}
 .end2{position:absolute;left:0;right:0;top:440px;text-align:center;font-size:58px}
 .cut{position:absolute;left:50%;top:150px;transform:translateX(-50%);background:#3b3466;color:#fff;font-weight:900;font-size:44px;padding:8px 30px;border-radius:999px;white-space:nowrap}
+.cmpbox{position:absolute;left:50%;top:200px;transform:translateX(-50%);display:flex;gap:26px}
+.cmpbox div{background:rgba(255,255,255,.94);border-radius:28px;padding:14px 34px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.cmpbox small{display:block;font-size:40px;font-weight:700;color:#666}
+.cmpbox b{display:block;white-space:nowrap;font-size:96px;font-weight:900}
+.cmpbox .c1 b{color:#ff5a2d}.cmpbox .c2 b{color:#9a9a9a;font-size:76px;line-height:1.26}
 `;document.head.appendChild(st)}
 function chip(text,top){const el=document.createElement('div');el.className='clock';el.textContent=text;if(top!=null)el.style.top=top+'px';ui.appendChild(el);return el}
 function chipPop(el,t,t0=0){el.style.transform=`translateX(-50%) scale(${pop((t-t0)/0.3)})`;el.style.opacity=clamp01((t-t0)/0.08)}
@@ -397,35 +402,58 @@ S[0]=()=>{
 };
 
 // ===== 1. 옆에서 포탄 '퉁' =====
+function starTex(){return canvasTex(256,256,(x,w,h)=>{const n=12;x.beginPath();for(let i=0;i<n*2;i++){const a=i/(n*2)*Math.PI*2,rr=i%2?60:124;x.lineTo(128+Math.cos(a)*rr,128+Math.sin(a)*rr)}x.closePath();x.fillStyle='#ffb02e';x.fill();x.lineWidth=8;x.strokeStyle='#e8521c';x.stroke();
+  x.beginPath();for(let i=0;i<n*2;i++){const a=i/(n*2)*Math.PI*2+0.2,rr=i%2?32:70;x.lineTo(128+Math.cos(a)*rr,128+Math.sin(a)*rr)}x.closePath();x.fillStyle='#fff2a0';x.fill()})}
+function shell(){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.5,8),lamb(0x4a4f45));g.add(b);
+  const n=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.25,8),lamb(0x3a3d36));n.position.y=-0.37;n.rotation.x=Math.PI;g.add(n);
+  for(const s of[0,1]){const f=new THREE.Mesh(new THREE.BoxGeometry(s?0.02:0.34,0.14,s?0.34:0.02),lamb(0x6b6f63));f.position.y=0.3;g.add(f)}return g}
 S[1]=()=>{
   setSky('#a9bccf','#e3eaf0 70%');
+  const V1=window.S1V||'C';
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde5ec,30,95);addLights(scene,{hemi:1.5});
   const r=rng(21);field(scene,r,{mz:-1.2});
   const allies=[];for(let row=0;row<4;row++)for(let c=0;c<7;c++){const p=istp(r,ALLY);p.position.set((c-3)*1.25+(row%2)*0.3,0,1.6+row*1.5);p.rotation.y=Math.PI;scene.add(p);allies.push({p,ph:r()*6})}
   const foes=[];for(let row=0;row<3;row++)for(let c=0;c<7;c++){const p=istp(r,FOE);p.position.set((c-3)*1.3+0.4,0,-5.5-row*1.5);scene.add(p);foes.push({p,ph:r()*6})}
   const hero=allies[3].p;
-  const B=EV(1).booms;const P1=puff(scene,hero.position.x+1.6,0,hero.position.z-0.6,1.0),P2=puff(scene,1.5,0,-1.2,1.6);
-  const tung=[textSprite('퉁',60,'#e9e9e9',0.004),textSprite('퉁',60,'#e9e9e9',0.004)];tung.forEach(s=>scene.add(s));
+  const B=EV(1).booms;
+  const spots=[new THREE.Vector3(hero.position.x+1.0,0,hero.position.z-1.5),new THREE.Vector3(1.5,0,-1.2)];
+  const P=spots.map((v,i)=>puff(scene,v.x,0,v.z,i?1.6:0.65));
+  const ST=starTex();const stars=spots.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ST,transparent:true,depthWrite:false}));sp.visible=false;scene.add(sp);return sp});
+  const shells=spots.map(()=>{const g=shell();scene.add(g);return g});
+  const trails=spots.map(()=>{const a=[];for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.22,0.05),basic(0xffffff));scene.add(m);a.push(m)}return a});
+  const kwang=spots.map(()=>{const s=textSprite('쾅!!',120,'#ff6a3d',0.0042);scene.add(s);return s});
+  const tung=spots.map(()=>{const s=textSprite('퉁',90,'#d8d8d8',0.0032);scene.add(s);return s});
+  const dum=V1==='C'?bub(hero,'♪ 둠칫둠칫',{y:2.3,bg:'#fff6c9',fg:'#5a4300',size:0.0026}):null;
+  let cmp=null;if(V1==='C'){cmp=div('cmpbox',`<div class="c1"><small>바깥 소리</small><b>쾅!!</b></div><div class="c2"><small>병사 귀에</small><b>♪ 퉁…</b></div>`)}
   const nts=notes(scene,8,r,0.003);const C=cam(50);
   const ch=chip('노이즈캔슬링 착용률 100%');
-  const hv=new THREE.Vector3();
+  const hv=new THREE.Vector3();const FALL=0.6;
   return t=>{
     allies.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});foes.forEach(q=>{standPose(q.p);bob(q.p,t+q.ph)});
-    updPuff(P1,t,B[0]);updPuff(P2,t,B[1]);
-    tung[0].position.set(P1.position.x,1.6+(t-B[0])*0.3,P1.position.z);tung[0].visible=t>B[0]+0.05&&t<B[0]+1.3;
-    tung[1].position.set(P2.position.x,2.4+(t-B[1])*0.3,P2.position.z);tung[1].visible=t>B[1]+0.05&&t<B[1]+1.3;
+    spots.forEach((v,i)=>{const t0=B[i],lt=t-t0;
+      // 낙하
+      const f=clamp01(1-(t0-t)/FALL);const sh=shells[i];sh.visible=t<t0&&t>t0-FALL;
+      const from=new THREE.Vector3(v.x-2.2,7,v.z+0.6);sh.position.copy(from.clone().lerp(new THREE.Vector3(v.x,0.3,v.z),f*f));sh.rotation.z=-0.32;
+      trails[i].forEach((m,j)=>{const ff=clamp01(f*f-(j+1)*0.06);m.visible=sh.visible&&ff>0;m.position.copy(from.clone().lerp(new THREE.Vector3(v.x,0.3,v.z),ff));m.rotation.z=-0.32});
+      updPuff(P[i],t,t0);
+      const st=stars[i];st.visible=lt>0&&lt<0.45;const k=pop(lt/0.15)*(1-clamp01((lt-0.25)/0.2));st.scale.set(2.4*k*(i?1.4:1),2.4*k*(i?1.4:1),1);st.position.set(v.x,1.1,v.z);
+      const K=kwang[i],T=tung[i];
+      if(V1==='A'){K.visible=lt>0&&lt<1.2;const kk=pop(lt/0.2);K.scale.set(K.userData.base[0]*kk,K.userData.base[1]*kk,1);K.position.set(v.x,2.3+lt*0.2,v.z);T.visible=false}
+      else{ // 쾅!! → 쪼그라들며 회색 '퉁'
+        const sw=0.45;K.visible=lt>0&&lt<sw;const kk=pop(lt/0.15)*(1-ease((lt-0.25)/0.2)*0.8);K.scale.set(K.userData.base[0]*kk,K.userData.base[1]*kk,1);K.position.set(v.x,2.3,v.z);
+        T.visible=lt>=sw&&lt<1.6;const tk=pop((lt-sw)/0.2);T.scale.set(T.userData.base[0]*tk,T.userData.base[1]*tk,1);T.position.set(v.x,2.1+(lt-sw)*0.15,v.z)}
+    });
     hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);
     const k=ease((t-2.3)/2.2);
-    const a=new THREE.Vector3(hv.x+0.45,hv.y+0.55,hv.z-2.4),b=new THREE.Vector3(5.5,7.5,-14);
-    C.position.copy(a.lerp(b,k));C.lookAt(new THREE.Vector3(hv.x+0.4,hv.y+0.25,hv.z).lerp(new THREE.Vector3(0.5,0.6,0),k));
-    updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.55,hv.z),1-k);
-    // 멀리서 보면 모두 머리 위 ♪
+    const a=new THREE.Vector3(hv.x+0.5,hv.y+0.9,hv.z-5.6),b=new THREE.Vector3(5.5,7.5,-14);
+    C.position.copy(a.lerp(b,k));C.lookAt(new THREE.Vector3(hv.x+0.85,hv.y+0.75,hv.z).lerp(new THREE.Vector3(0.5,0.6,0),k));
+    updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.55,hv.z),(1-k)*(V1==='C'?0:1));
+    if(dum)scaleBubble(dum,t>0.1&&t<2.6?pop((t-0.1)/0.25):0);
+    if(cmp){cmp.style.opacity=t>B[0]+0.1&&t<2.6?1:0;cmp.style.transform=`translateX(-50%) scale(${pop((t-B[0]-0.1)/0.25)})`}
     chipPop(ch,t,3.7);
     caption(1,t);renderer.render(scene,C);
   };
 };
-// 원경 ♪ (전원) — S[1]에서 k가 커지면 보이게 하려고 별도 스프라이트 대신 작게 붙임
-
 // ===== 2. 이어폰 쏙 → "아 왜요." =====
 S[2]=()=>{
   setSky('#a9bccf','#e3eaf0 70%');
