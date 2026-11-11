@@ -15,7 +15,7 @@ const TYPES=[
  ['ISFJ','#a8e6a1','누가 줬는지 기억해 뒀다가 꼭 답례'],
  ['ENFJ','#ffb3d9','손편지 붙여서 한 명씩 돌려줌'],
  ['ESTJ','#66c2a5','전날 미리 인원수대로 준비 완료'],
- ['ENTJ','#b58cff','칼로리 계산해서 딱 2개만 먹음'],
+ ['ENTJ','#b58cff','다이어트 중인데 딱 2개만 먹음'],
 ];
 let DURS=[2.4,...TYPES.map(()=>3.0),3.8],LEAD=0.2;
 window.setTiming=(lead,voice)=>{LEAD=lead;DURS=voice.map((v,i)=>v+lead+0.35+(i==voice.length-1?0.3:0))};
