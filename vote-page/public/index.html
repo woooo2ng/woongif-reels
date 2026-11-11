@@ -216,6 +216,15 @@ footer .contact a{font-weight:700;color:var(--sub)}
 .preview{margin:14px 0 10px;padding:14px;border-radius:16px;background:#f6f1ff;text-align:center;font-weight:900;font-size:17px;line-height:1.4;word-break:keep-all;min-height:54px}
 .preview.empty-p{color:#b7acd6;font-weight:700;font-size:14px}
 .wide{width:100%;padding:14px 0}
+.finder{border:2px solid var(--ink);box-shadow:0 5px 0 var(--ink)}
+.found{margin:14px 0 4px;padding:14px;border-radius:16px;background:#f6f1ff;animation:up .2s ease-out}
+.found .lbl{font-size:12px;font-weight:800;color:var(--sub);margin-bottom:8px}
+.found .lbl b{color:var(--lav-d)}
+.found .duo{justify-content:center}
+.found .duo-rel{text-align:center}
+.found .btn{margin-top:12px}
+.found .btn.on{background:#fff0f3;border-color:#e0456a;box-shadow:0 4px 0 #e0456a}
+.reset{display:block;margin:10px auto 0;border:none;background:none;font:inherit;font-size:13px;font-weight:800;color:var(--sub);cursor:pointer}
 .tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
 .tgrid .t{padding:14px 0}
 </style>
@@ -251,13 +260,8 @@ footer .contact a{font-weight:700;color:var(--sub)}
         <p class="sec-t">🏆 인기 궁합 TOP 3 · 보고 싶으면 ❤️</p>
         <div id="pair-rank"><div class="skel"></div></div>
       </div>
-      <div class="card" id="pair-rest-card" hidden>
-        <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 궁합 <span id="pair-rest-n"></span></p>
-          <div class="sort" data-rsort="pair"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
-        <div class="rfilter" id="pair-filter"></div><div id="pair-rest" class="compact"></div>
-      </div>
-      <div class="card">
-        <p class="sec-t">✍️ 새 궁합 신청 · 두 유형이 이런 사이라면?</p>
+      <div class="card finder">
+        <p class="sec-t">🔎 내 궁합 찾기 · 두 유형만 고르면 바로 ❤️</p>
         <div class="builder">
           <div class="slotw"><button class="slot" id="pa">?</button><small class="who" id="pa-who"></small></div><span class="x">×</span><div class="slotw"><button class="slot" id="pb">?</button><small class="who" id="pb-who"></small></div>
         </div>
@@ -266,10 +270,19 @@ footer .contact a{font-weight:700;color:var(--sub)}
           <input id="rel-custom" maxlength="12" placeholder="예: 엄마와 아들, 선생님과 학생">
         </div>
         <p class="note" id="rel-hint"></p>
-        <div class="preview" id="pair-prev"></div>
-        <div class="row" style="margin:0 0 10px"><input class="insta" id="pair-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
-        <button class="btn wide" id="pair-go" style="background:var(--lav)">이 궁합 신청</button>
+        <div id="pair-found"></div>
+        <div id="pair-newbox">
+          <div class="preview" id="pair-prev"></div>
+          <div class="row" style="margin:0 0 10px"><input class="insta" id="pair-author" maxlength="31" placeholder="인스타 아이디 (선택)" autocapitalize="off" autocorrect="off"></div>
+          <button class="btn wide" id="pair-go" style="background:var(--lav)">✨ 이 궁합 처음으로 신청하기</button>
+        </div>
         <p class="note" id="pair-mine"></p>
+        <button class="reset" id="pair-reset" hidden>↺ 다시 고르기</button>
+      </div>
+      <div class="card" id="pair-rest-card" hidden>
+        <div class="resthead"><p class="sec-t" style="margin:0">💬 다른 궁합 <span id="pair-rest-n"></span></p>
+          <div class="sort" data-rsort="pair"><button data-v="top" class="on">인기순</button><button data-v="new">최신순</button></div></div>
+        <div class="rfilter" id="pair-filter"></div><div id="pair-rest" class="compact"></div>
       </div>
       <div class="card" id="pair-done-card" hidden><p class="sec-t">🎬 이미 나온 궁합편</p><div class="done-list" id="pair-done"></div></div>
     </div>
@@ -573,7 +586,8 @@ function doneHTML(list, label){
 }
 
 // TOP 3 + 나머지 목록 (방금 신청한 줄은 반짝)
-const shownRest = {pair:10, sit:10}; let flashKey = null;
+const BASE_SHOWN = {pair:5, sit:10};
+const shownRest = {...BASE_SHOWN}; let flashKey = null;
 const restSort = {pair:"top", sit:"top"};
 // 다른 목록 거르기: MBTI(둘 중 하나라도) + 궁합은 관계
 const restFilter = {pair:{type:null, rel:null}, sit:{type:null, rel:null}};
@@ -589,20 +603,20 @@ function filterRest(pre, list){
 function renderFilter(pre, redraw){
   const f = restFilter[pre];
   const rels = pre==="pair" ? ["커플","친구","직장 동료","기타"] : [];
-  $(`#${pre}-filter`).innerHTML =
+  $(`#${pre}-filter`).innerHTML = (pre==="pair" ? "" :
     `<button data-f="type" class="${f.type?"on":""}">${f.type ? f.type+" 들어간 것 ✕" : "🔍 MBTI"}</button>`
-    + rels.map(r=>`<button data-r="${r}" class="${f.rel===r?"on":""}">${r}</button>`).join("");
-  $(`#${pre}-filter [data-f=type]`).onclick = ()=>{
-    if(f.type){ f.type=null; shownRest[pre]=10; redraw(); return; }
-    typePicker("이 유형이 들어간 것만", (t)=>{ f.type=t; shownRest[pre]=10; redraw(); });
+    ) + rels.map(r=>`<button data-r="${r}" class="${f.rel===r?"on":""}">${r}</button>`).join("");
+  if(pre!=="pair") $(`#${pre}-filter [data-f=type]`).onclick = ()=>{
+    if(f.type){ f.type=null; shownRest[pre]=BASE_SHOWN[pre]; redraw(); return; }
+    typePicker("이 유형이 들어간 것만", (t)=>{ f.type=t; shownRest[pre]=BASE_SHOWN[pre]; redraw(); });
   };
-  $(`#${pre}-filter`).querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ f.rel = f.rel===b.dataset.r ? null : b.dataset.r; shownRest[pre]=10; redraw(); });
+  $(`#${pre}-filter`).querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ f.rel = f.rel===b.dataset.r ? null : b.dataset.r; shownRest[pre]=BASE_SHOWN[pre]; redraw(); });
 }
 function renderBoard(pre, top, titleFn, empty, today, onTap){
   const max = Math.max(1, ...top.map(i=>i.votes));
   const byNew = restSort[pre]==="new";
   const allRest = top.slice(3);
-  if(flashKey && allRest.some(x=>x.key===flashKey)) restFilter[pre] = {type:null, rel:null};
+  if(flashKey && allRest.some(x=>x.key===flashKey) && pre!=="pair") restFilter[pre] = {type:null, rel:null};
   const filtered = filterRest(pre, allRest);
   const rest = byNew ? filtered.sort((a,b)=>(b.created||0)-(a.created||0)) : filtered;
   const fi = flashKey ? rest.findIndex(x=>x.key===flashKey) : -1;
@@ -618,7 +632,7 @@ function renderBoard(pre, top, titleFn, empty, today, onTap){
   const m = document.querySelector(`[data-more="${pre}"]`); if(m) m.onclick=()=>{ shownRest[pre]+=10; renderBoard(pre, top, titleFn, empty, today, onTap); };
   document.querySelectorAll(`[data-rsort="${pre}"] button`).forEach(b=>{
     b.classList.toggle("on", b.dataset.v===restSort[pre]);
-    b.onclick=()=>{ restSort[pre]=b.dataset.v; shownRest[pre]=10; renderBoard(pre, top, titleFn, empty, today, onTap); };
+    b.onclick=()=>{ restSort[pre]=b.dataset.v; shownRest[pre]=BASE_SHOWN[pre]; renderBoard(pre, top, titleFn, empty, today, onTap); };
   });
   if(flashKey){
     const row = [...document.querySelectorAll(`#${pre}-rank .rankrow, #${pre}-rest .rankrow`)].find(r=>r.dataset.key===flashKey);
@@ -654,7 +668,12 @@ async function loadPair(){
   try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
   catch(e){ $("#pair-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
+// 서버와 같은 키: 친구·직장 동료는 순서 상관없음
+const pairKeyOf = (a,b,rel)=> (rel==="친구"||rel==="직장 동료" ? [a,b].sort() : [a,b]).join("|")+"|"+rel;
 function renderPair(){
+  // 하나만 골라도 아래 목록이 그 유형으로 걸러짐
+  const ft = pSel.a || pSel.b || null;
+  if(restFilter.pair.type !== ft){ restFilter.pair.type = ft; shownRest.pair = BASE_SHOWN.pair; }
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking];
   renderBoard("pair", top, (it)=>`${duoHTML(it)}${badge(it.status)}`,
     "아직 신청이 없어요. 아래에서 첫 궁합을 만들어 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
@@ -674,6 +693,9 @@ function renderPair(){
   $("#rel-hint").hidden = !$("#rel-hint").textContent;
   for(const k of ["a","b"]){ const el=$("#p"+k); el.textContent = pSel[k]||(couple?(k==="a"?"남자 ?":"여자 ?"):"?"); el.className = "slot"+(pSel[k]?" filled g-"+group(pSel[k]):""); }
   renderPairPrev();
+  renderFound();
+  $("#pair-reset").hidden = !(pSel.a || pSel.b);
+  $("#pair-rest-card").querySelector(".sec-t").firstChild.textContent = ft ? `💬 ${ft} 들어간 궁합 ` : "💬 다른 궁합 ";
   $("#pair-mine").textContent = "";
   $("#pair-done-card").hidden = !pair.done.length;
   $("#pair-done").innerHTML = doneHTML(pair.done, (it)=>`${it.rel} ${pairNames(it.a,it.b,it.rel)}`);
@@ -683,7 +705,27 @@ function renderPairPrev(){
   $("#pair-prev").className = "preview"+(ok?"":" empty-p");
   $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,rel) : (pSel.a&&pSel.b ? "관계를 적어주세요" : "두 유형을 골라주세요");
 }
-$("#rel-custom").oninput = renderPairPrev;
+// 두 유형 + 관계가 정해지면: 이미 있으면 그 자리에서 ❤️, 없으면 처음 신청
+function renderFound(){
+  const rel = curRel(), ok = pSel.a && pSel.b && rel.length>=2;
+  const key = ok ? pairKeyOf(pSel.a, pSel.b, rel) : null;
+  const all = pairItems();
+  const it = key && all.find(x=>x.key===key);
+  $("#pair-newbox").hidden = !!it;
+  if(!it){ $("#pair-found").innerHTML = ""; return; }
+  const rank = pair.ranking.findIndex(x=>x.key===key);
+  const liked = pair.todayLikes.includes(key);
+  const lbl = it.status==="done" ? "🎬 이미 나온 궁합이에요"
+    : (it.status==="making"||it.status==="today") ? "🎬 지금 만들고 있는 궁합이에요"
+    : `이미 신청된 궁합 · 현재 <b>${rank+1}위</b> · ❤️ ${it.votes}`;
+  const btn = it.status==="done" && it.link
+    ? `<a class="btn wide" href="${esc(it.link)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:var(--mint)">▶ 보러 가기</a>`
+    : `<button class="btn wide${liked?" on":""}" id="found-like" style="background:${liked?"":"var(--lav)"}">${liked ? "❤️ 오늘 투표했어요 (다시 누르면 취소)" : "🤍 이 궁합 보고 싶어요"}</button>`;
+  $("#pair-found").innerHTML = `<div class="found"><p class="lbl">${lbl}</p>${duoHTML(it)}${btn}</div>`;
+  const fb = $("#found-like"); if(fb) fb.onclick = ()=>likePair(it.a, it.b, it.rel);
+}
+$("#pair-reset").onclick = ()=>{ pSel.a = pSel.b = null; renderPair(); };
+$("#rel-custom").oninput = ()=>{ renderPairPrev(); renderFound(); };
 $("#pa").onclick = ()=>typePicker(!pSel.custom&&pSel.rel==="커플" ? "남자 MBTI" : "첫 번째 유형", (t)=>{ pSel.a=t; renderPair(); });
 $("#pb").onclick = ()=>typePicker(!pSel.custom&&pSel.rel==="커플" ? "여자 MBTI" : "두 번째 유형", (t)=>{ pSel.b=t; renderPair(); });
 $("#pair-go").onclick = ()=>{
