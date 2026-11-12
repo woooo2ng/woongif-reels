@@ -421,8 +421,8 @@ S[1]=()=>{
   const foes=[];for(let row=0;row<3;row++)for(let c=0;c<7;c++){const p=istp(r,FOE);p.position.set((c-3)*1.3+0.4,0,-5.5-row*1.5);scene.add(p);foes.push({p,ph:r()*6})}
   const hero=allies[3].p;
   const B=EV(1).booms;
-  const spots=[new THREE.Vector3(hero.position.x+1.0,0,hero.position.z-1.5),new THREE.Vector3(1.5,0,-1.2)];
-  const P=spots.map((v,i)=>puff(scene,v.x,0,v.z,i?1.6:0.65));
+  const spots=[new THREE.Vector3(hero.position.x-0.2,0,hero.position.z+8.5),new THREE.Vector3(1.5,0,-1.2)];
+  const SS=[2.4,1.0];const P=spots.map((v,i)=>puff(scene,v.x,0,v.z,i?1.6:1.6));
   const ST=starTex();const stars=spots.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ST,transparent:true,depthWrite:false}));sp.visible=false;scene.add(sp);return sp});
   const shells=spots.map(()=>{const g=shell();scene.add(g);return g});
   const trails=spots.map(()=>{const a=[];for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.22,0.05),basic(0xffffff));scene.add(m);a.push(m)}return a});
@@ -438,15 +438,15 @@ S[1]=()=>{
     spots.forEach((v,i)=>{const t0=B[i],lt=t-t0;
       // 낙하
       const f=clamp01(1-(t0-t)/FALL);const sh=shells[i];sh.visible=t<t0&&t>t0-FALL;
-      const from=new THREE.Vector3(v.x-2.2,7,v.z+0.6);sh.position.copy(from.clone().lerp(new THREE.Vector3(v.x,0.3,v.z),f*f));sh.rotation.z=-0.32;
+      const from=i?new THREE.Vector3(v.x-2.2,7,v.z+0.6):new THREE.Vector3(v.x+1.6,8.5,v.z-1.0);sh.position.copy(from.clone().lerp(new THREE.Vector3(v.x,0.3,v.z),f*f));sh.rotation.z=-0.32;
       trails[i].forEach((m,j)=>{const ff=clamp01(f*f-(j+1)*0.06);m.visible=sh.visible&&ff>0;m.position.copy(from.clone().lerp(new THREE.Vector3(v.x,0.3,v.z),ff));m.rotation.z=-0.32});
       updPuff(P[i],t,t0);
-      const st=stars[i];st.visible=lt>0&&lt<0.45;const k=pop(lt/0.15)*(1-clamp01((lt-0.25)/0.2));st.scale.set(2.4*k*(i?1.4:1),2.4*k*(i?1.4:1),1);st.position.set(v.x,1.1,v.z);
+      const st=stars[i];st.visible=lt>0&&lt<0.45;const k=pop(lt/0.15)*(1-clamp01((lt-0.25)/0.2));st.scale.set(2.4*k*(i?1.4:SS[0]),2.4*k*(i?1.4:SS[0]),1);st.position.set(v.x,1.1*(i?1:SS[0]),v.z);
       const K=kwang[i],T=tung[i];
       if(V1==='A'){K.visible=lt>0&&lt<1.2;const kk=pop(lt/0.2);K.scale.set(K.userData.base[0]*kk,K.userData.base[1]*kk,1);K.position.set(v.x,2.3+lt*0.2,v.z);T.visible=false}
       else{ // 쾅!! → 쪼그라들며 회색 '퉁'
-        const sw=0.45;K.visible=lt>0&&lt<sw;const kk=pop(lt/0.15)*(1-ease((lt-0.25)/0.2)*0.8);K.scale.set(K.userData.base[0]*kk,K.userData.base[1]*kk,1);K.position.set(v.x,2.3,v.z);
-        T.visible=lt>=sw&&lt<1.6;const tk=pop((lt-sw)/0.2);T.scale.set(T.userData.base[0]*tk,T.userData.base[1]*tk,1);T.position.set(v.x,2.1+(lt-sw)*0.15,v.z)}
+        const sw=0.45;K.visible=lt>0&&lt<sw;const kk=pop(lt/0.15)*(1-ease((lt-0.25)/0.2)*0.8);K.scale.set(K.userData.base[0]*kk*SS[i],K.userData.base[1]*kk*SS[i],1);K.position.set(v.x,2.3*SS[i],v.z);
+        T.visible=lt>=sw&&lt<1.6;const tk=pop((lt-sw)/0.2);T.scale.set(T.userData.base[0]*tk*SS[i],T.userData.base[1]*tk*SS[i],1);T.position.set(v.x,(2.1+(lt-sw)*0.15)*SS[i],v.z)}
     });
     hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);
     const k=ease((t-2.3)/2.2);
