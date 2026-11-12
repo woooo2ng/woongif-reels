@@ -363,7 +363,12 @@ function showMode(m){
   if(m==="pair" && !pair) loadPair();
   if(m==="sit" && !sit) loadSit();
 }
-document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>showMode(b.dataset.mode));
+// 탭을 바꾸면 새 탭 맨 위(메뉴 바로 아래)부터 보이게
+document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{
+  showMode(b.dataset.mode);
+  const y = document.querySelector(".banner").offsetHeight;
+  if(window.scrollY > y) window.scrollTo({top:y});
+});
 
 // MBTI 고르기 시트
 let onType = null;
