@@ -416,7 +416,7 @@ async function loadMbti(){
 function renderMbti(){
   const by = Object.fromEntries(mbti.types.map(t=>[t.type,t]));
   const done = mbti.types.filter(t=>t.status==="done");
-  $("#prog").innerHTML = `<b>${done.length} / 16 나옴</b><span class="track"><i style="width:${done.length/16*100}%"></i></span><span>매일 새 편</span>`;
+  $("#prog").innerHTML = `<b>${done.length} / 16 나옴</b><span class="track"><i style="width:${done.length/16*100}%"></i></span>`;
   // 순서는 불러올 때만 정렬 (하트 누를 때마다 줄이 튀지 않게)
   const open = mbti.types.filter(t=>t.status!=="done").sort((a,b)=>mbti.order.indexOf(a.type)-mbti.order.indexOf(b.type));
   const first = open[0];
