@@ -431,6 +431,19 @@ function renderMbti(){
     : `<p class="empty">아직 하트가 없어요. 아래에서 보고 싶은 유형을 눌러 주세요!</p>`;
   const tc = $("#podium .topcard"); if(tc) tc.onclick = ()=>pick(first.type);
 
+  // 이미 그려져 있으면 하트 칸만 바꿈 (나온 편 사진은 그대로 → 깜빡임 없음)
+  const tileHTML = (type)=>{
+    const t = by[type] || {type, votes:0, status:"open"};
+    const liked = mbti.todayLikes.includes(type);
+    return `${badge(t.status)}<b>${type}</b>${hpill(t.votes, liked)}`;
+  };
+  const tileCls = (type)=>["t", "g-"+group(type), first&&first.votes>0&&first.type===type?"first":"", mbti.todayLikes.includes(type)?"on":""].join(" ");
+  const drawn = $("#grid").children.length===16 && $("#grid").dataset.done===done.map(t=>t.type).join(",");
+  if(drawn){
+    $("#grid").querySelectorAll("button.t[data-key]").forEach(b=>{ b.className = tileCls(b.dataset.key); b.innerHTML = tileHTML(b.dataset.key); });
+    return;
+  }
+  $("#grid").dataset.done = done.map(t=>t.type).join(",");
   $("#grid").innerHTML = TYPES.map(type=>{
     const t = by[type] || {type, votes:0, status:"open"};
     if(t.status==="done"){
