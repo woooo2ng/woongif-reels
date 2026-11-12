@@ -513,9 +513,12 @@ function renderFilter(pre, redraw){
   const f = restFilter[pre];
   const rels = pre==="pair" ? ["커플","친구","직장 동료","기타"] : [];
   const all = !f.type && !f.rel;
-  $(`#${pre}-filter`).innerHTML = `<button data-c="all" class="${all?"on":""}">전체</button>`
+  const typeBtn = `<button data-c="type" class="${f.type?"on":""}">${f.type ? f.type+" 들어간 것 ✕" : "내 MBTI로 찾기"}</button>`;
+  // 궁합은 '내 MBTI로 찾기'를 맨 앞에
+  $(`#${pre}-filter`).innerHTML = (pre==="pair" ? typeBtn : "")
+    + `<button data-c="all" class="${all?"on":""}">전체</button>`
     + rels.map(r=>`<button data-r="${r}" class="${f.rel===r?"on":""}">${r}</button>`).join("")
-    + `<button data-c="type" class="${f.type?"on":""}">${f.type ? f.type+" 들어간 것 ✕" : "내 MBTI로 찾기"}</button>`
+    + (pre==="pair" ? "" : typeBtn)
     + `<button data-c="new" class="${restSort[pre]==="new"?"on":""}">최신순</button>`;
   const reset = ()=>{ shownRest[pre]=BASE_SHOWN[pre]; redraw(); };
   $(`#${pre}-filter [data-c=all]`).onclick = ()=>{ f.type=null; f.rel=null; reset(); };
