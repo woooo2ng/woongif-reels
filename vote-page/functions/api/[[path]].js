@@ -17,6 +17,11 @@ const ADMIN_MAX_FAILS = 5;     // 관리자 비밀번호 15분에 5번 틀리면
 const BAD = ["시발","씨발","ㅅㅂ","병신","ㅂㅅ","좆","새끼","fuck","섹스","자살"];
 
 const RELS = ["커플", "친구", "직장 동료"];
+
+// 호감 MBTI 투표: 결과는 비밀, 참여 인원만 공개. 마감 뒤 관리자가 '공개'를 켜면 1~3위만 보여줌
+const POLL = { id: "fav-2026-11", end: "2026-11-30", reveal: "2026-12-01" };   // end = 이날(한국 시간) 밤 12시까지
+const POLL_IP_MAX = 30;   // 같은 인터넷(IP)에서 이 투표에 참여할 수 있는 기기 수
+const pollClosed = () => kstDay() > POLL.end;
 // 커플·친구·직장 동료는 순서 상관없음, 직접 입력(엄마와 아들 등)은 순서대로
 // 친구·직장 동료는 순서 상관없음 / 커플(앞 남자·뒤 여자)과 직접 입력은 순서대로
 const pairKey = (a, b, rel) => (rel === "친구" || rel === "직장 동료" ? [a, b].sort() : [a, b]).join("|") + "|" + rel;
@@ -135,6 +140,13 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_text ON ideas(text)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_ip ON ideas(ip, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS ideas_list ON ideas(approved, hearts)`),
+  ]);
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS poll_votes (
+      poll TEXT NOT NULL, voter TEXT NOT NULL, choice TEXT NOT NULL, my_type TEXT, ip TEXT,
+      created_at INTEGER, updated_at INTEGER, PRIMARY KEY (poll, voter))`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS poll_ip ON poll_votes(poll, ip)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)`),
   ]);
   // '오늘 공개'로 바꾼 날짜 (다음 날이면 자동으로 '나옴')
   for (const t of ["mbti_status", "combo_status"]) {
@@ -314,6 +326,40 @@ export async function onRequest({ request, env, params }) {
   }
 
   // ---------- 내가 ❤️ 누른 것 중 뽑힌 것 (제작 중 · 오늘 공개 · 나옴) ----------
+  // ---------- 호감 투표 ----------
+  if (path === "poll" && method === "GET") {
+    const voter = url.searchParams.get("voter") || "";
+    const [cnt, mine, rev] = await Promise.all([
+      db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=?").bind(POLL.id).first(),
+      validVoter(voter) ? db.prepare("SELECT choice, my_type FROM poll_votes WHERE poll=? AND voter=?").bind(POLL.id, voter).first() : null,
+      db.prepare("SELECT value FROM settings WHERE key=?").bind("poll_reveal:" + POLL.id).first(),
+    ]);
+    const out = { id: POLL.id, end: POLL.end, reveal: POLL.reveal, closed: pollClosed(), count: cnt.n, mine: mine || null, top3: null };
+    if (rev && rev.value === "1") {
+      out.top3 = (await db.prepare("SELECT choice type, COUNT(*) n FROM poll_votes WHERE poll=? GROUP BY choice ORDER BY n DESC LIMIT 3").bind(POLL.id).all()).results.map((r) => r.type);
+    }
+    return json(out);
+  }
+  if (path === "poll/vote" && method === "POST") {
+    if (!validVoter(body.voter)) return err("다시 시도해 주세요");
+    if (pollClosed()) return err("투표가 끝났어요. 결과는 @woong.if에서 확인해 주세요!");
+    const choice = String(body.choice || "").toUpperCase(), my = String(body.my_type || "").toUpperCase();
+    if (!MBTI.includes(choice)) return err("호감 MBTI를 골라 주세요");
+    if (!MBTI.includes(my)) return err("내 MBTI도 골라 주세요");
+    const ip = await ipHash(request, salt);
+    const had = await db.prepare("SELECT 1 x FROM poll_votes WHERE poll=? AND voter=?").bind(POLL.id, body.voter).first();
+    if (!had) {
+      const n = await db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=? AND ip=?").bind(POLL.id, ip).first();
+      if (n.n >= POLL_IP_MAX) return err("이 인터넷에서 이미 많이 투표했어요");
+    }
+    const now = Date.now();
+    await db.prepare(`INSERT INTO poll_votes (poll, voter, choice, my_type, ip, created_at, updated_at) VALUES (?,?,?,?,?,?,?)
+      ON CONFLICT(poll, voter) DO UPDATE SET choice=excluded.choice, my_type=excluded.my_type, updated_at=excluded.updated_at`)
+      .bind(POLL.id, body.voter, choice, my, ip, now, now).run();
+    const cnt = await db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=?").bind(POLL.id).first();
+    return json({ ok: true, changed: !!had, count: cnt.n, mine: { choice, my_type: my } });
+  }
+
   if (path === "mine" && method === "GET") {
     const voter = url.searchParams.get("voter") || "";
     if (!validVoter(voter)) return json({ picked: [] });
@@ -473,8 +519,22 @@ export async function onRequest({ request, env, params }) {
     }
 
     // ---- 백업 ----
+    if (path === "admin/poll" && method === "GET") {
+      const [rank, cross, cnt, rev] = await Promise.all([
+        db.prepare("SELECT choice type, COUNT(*) n FROM poll_votes WHERE poll=? GROUP BY choice ORDER BY n DESC").bind(POLL.id).all(),
+        db.prepare("SELECT my_type, choice, COUNT(*) n FROM poll_votes WHERE poll=? GROUP BY my_type, choice ORDER BY my_type, n DESC").bind(POLL.id).all(),
+        db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=?").bind(POLL.id).first(),
+        db.prepare("SELECT value FROM settings WHERE key=?").bind("poll_reveal:" + POLL.id).first(),
+      ]);
+      return json({ ...POLL, closed: pollClosed(), count: cnt.n, revealed: !!(rev && rev.value === "1"), ranking: rank.results, cross: cross.results });
+    }
+    if (path === "admin/poll/reveal" && method === "POST") {
+      await db.prepare("INSERT INTO settings (key, value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value")
+        .bind("poll_reveal:" + POLL.id, body.on ? "1" : "0").run();
+      return json({ ok: true });
+    }
     if (path === "admin/export" && method === "GET") {
-      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks"];
+      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings"];
       const out = { exported_at: new Date().toISOString(), tables: {} };
       for (const t of tables) out.tables[t] = (await db.prepare(`SELECT * FROM ${t}`).all()).results;
       return new Response(JSON.stringify(out), {

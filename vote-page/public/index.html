@@ -46,7 +46,7 @@ a{color:var(--ink)}
 
 /* 탭 */
 .tabs{position:-webkit-sticky;position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);transform:translateZ(0)}
-.tabs .in{max-width:520px;margin:0 auto;padding:12px 20px 0;display:flex;gap:24px}
+.tabs .in{max-width:520px;margin:0 auto;padding:12px 20px 0;display:flex;gap:22px}
 .tabs button{border:0;background:none;padding:6px 0 11px;font-size:17px;font-weight:700;color:var(--mute);cursor:pointer;margin-bottom:-2px;border-bottom:3px solid transparent}
 .tabs button.on{font-weight:900;color:var(--ink);border-bottom-color:var(--ink)}
 
@@ -173,6 +173,25 @@ textarea.inp{resize:none;line-height:1.5}
 .chiplist{display:flex;flex-wrap:wrap;gap:6px}
 .chiplist a,.chiplist span{font-size:13px;font-weight:800;padding:7px 11px;border-radius:999px;background:var(--soft);text-decoration:none}
 
+/* 호감 투표 */
+.pcount{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:2px solid var(--line);border-radius:18px;padding:14px 16px}
+.pcount b{font-size:22px;font-weight:900}
+.pcount span{font-size:13px;font-weight:700;color:var(--sub);line-height:1.5}
+.pq{font-weight:900;font-size:17px;margin:24px 0 10px}
+.pq small{font-weight:700;font-size:13px;color:var(--mute);margin-left:4px}
+.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pgrid button{position:relative;height:64px;border:0;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;transition:transform .08s}
+.pgrid button:active{transform:scale(.96)}
+.pgrid button.on{outline:3px solid var(--ink);outline-offset:-3px}
+.pgrid button.on::after{content:"";position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.pdone{margin-top:22px;background:var(--soft);border-radius:18px;padding:16px;text-align:center;font-size:14px;font-weight:700;line-height:1.6;color:var(--sub)}
+.pdone b{color:var(--ink);font-weight:900}
+.ptop{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end}
+.ptop div{border-radius:16px;padding:14px 6px;text-align:center;font-weight:900}
+.ptop div small{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
+.ptop div b{font-size:22px}
+.ptop .p1{padding-top:26px}.ptop .p1 b{font-size:28px}
+
 /* 내가 누른 게 뽑힘 */
 .pk{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:16px;padding:12px 12px 12px 14px;margin-top:14px}
 .pk .tx{flex:1;min-width:0;font-size:14px;font-weight:700;line-height:1.45;word-break:keep-all}
@@ -214,6 +233,7 @@ footer a{color:var(--sub);font-weight:700}
   <button data-mode="world" class="on" role="tab">MBTI</button>
   <button data-mode="pair" role="tab">궁합</button>
   <button data-mode="sit" role="tab">상황</button>
+  <button data-mode="poll" role="tab">호감 투표</button>
 </div></nav>
 
 <div class="wrap">
@@ -295,6 +315,21 @@ footer a{color:var(--sub);font-weight:700}
     </div>
   </section>
 
+  <!-- 호감 투표 -->
+  <section id="m-poll" hidden>
+    <div id="poll-top"></div>
+    <div class="pcount"><span id="poll-cnt-t">지금까지 참여</span><b id="poll-cnt">-</b></div>
+    <div id="poll-form">
+      <div class="pq">제일 호감인 MBTI는? <small>하나만</small></div>
+      <div class="pgrid" id="poll-choice"></div>
+      <div class="pq">내 MBTI는?</div>
+      <div class="pgrid" id="poll-my"></div>
+      <button class="go" id="poll-go" style="margin-top:20px">투표하기</button>
+      <p class="fnote" style="margin-top:10px">한 사람당 한 표 · 마감 전까지 다시 골라서 바꿀 수 있어요</p>
+    </div>
+    <div class="pdone" id="poll-msg" hidden></div>
+  </section>
+
   <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a><br>
     문의 <a href="mailto:ddd12340@naver.com">ddd12340@naver.com</a></footer>
 </div>
@@ -357,19 +392,21 @@ function setSel(el, t, empty="골라 주세요"){
 const BANNER = {
   world: {tag:"다음 편 투표 중", t1:"다음 편,<br>온 세상이", t2:"○○라면?", pill:"보고 싶은 유형에 하트 · 1등이 다음 편"},
   pair:  {tag:"궁합편 투표 중", t1:"이 두 유형이", t2:"만난다면?", pill:"보고 싶은 궁합에 하트 · 1등이 다음 편"},
+  poll:  {tag:"12월 1일 결과 공개", t1:"MBTI 중에", t2:"제일 호감인 유형은?", pill:"11월 30일까지 투표 · 결과는 @woong.if에서", long:true},
   sit:   {tag:"상황편 투표 중", t1:"온 세상이 ○○인데", t2:"이런 일이 생긴다면?", pill:"보고 싶은 상황에 하트 · 1등이 다음 편", long:true},
 };
 let mode = "world";
 function showMode(m){
   mode = m;
   document.querySelectorAll("#modes button").forEach(b=>{ b.classList.toggle("on", b.dataset.mode===m); b.setAttribute("aria-selected", b.dataset.mode===m); });
-  $("#m-world").hidden = m!=="world"; $("#m-pair").hidden = m!=="pair"; $("#m-sit").hidden = m!=="sit";
+  $("#m-world").hidden = m!=="world"; $("#m-pair").hidden = m!=="pair"; $("#m-sit").hidden = m!=="sit"; $("#m-poll").hidden = m!=="poll";
   const b = BANNER[m];
   $("#b-tag").textContent = b.tag; $("#b-t1").innerHTML = b.t1; $("#b-t2").textContent = b.t2; $("#b-pill").textContent = b.pill;
   $("#b-t2").classList.toggle("long", !!b.long);
   try{ history.replaceState(null,"", m==="world" ? location.pathname : "#"+m); }catch{}
   if(m==="pair" && !pair) loadPair();
   if(m==="sit" && !sit) loadSit();
+  if(m==="poll" && !poll) loadPoll();
 }
 // 탭을 바꾸면 새 탭 맨 위(메뉴 바로 아래)부터 보이게
 // 아이폰 사파리: 스크롤과 내용 바꾸기가 겹치면 예전 내용이 그대로 보이는 문제가 있어서
@@ -689,6 +726,42 @@ $("#sit-go").onclick = ()=>{
   newCombo("situation", {type:sSel.type, text, author:instaVal("#sit-author")}, async()=>{ $("#sit-custom").value=""; renderSitPrev(); await loadSit(); }, "상황 신청 완료!");
 };
 
+// ---------- 호감 투표 (결과는 비밀, 참여 인원만) ----------
+let poll = null; const pv = {choice:null, my:null};
+async function loadPoll(){
+  try{ poll = await api("poll?voter="+encodeURIComponent(voter));
+    if(poll.mine){ pv.choice = pv.choice || poll.mine.choice; pv.my = pv.my || poll.mine.my_type; }
+    renderPoll();
+  }catch(e){ $("#poll-msg").hidden=false; $("#poll-msg").textContent = e.message; }
+}
+function renderPoll(){
+  $("#poll-cnt").textContent = poll.count.toLocaleString()+"명";
+  $("#poll-cnt-t").innerHTML = poll.closed ? "투표 마감 · 참여한 사람" : "지금까지 참여<br>순위는 12월 1일 인스타에서 공개해요";
+  $("#poll-top").innerHTML = poll.top3 && poll.top3.length ? `<div class="ptop">${[1,0,2].map(i=>poll.top3[i] ? `<div class="g-${group(poll.top3[i])}${i===0?" p1":""}"><small>${i+1}위</small><b>${poll.top3[i]}</b></div>` : "<div></div>").join("")}</div>` : "";
+  const grid = (id, sel, pick)=>{ $(id).innerHTML = TYPES.map(t=>`<button class="g-${group(t)}${sel===t?" on":""}" data-t="${t}" aria-pressed="${sel===t}">${t}</button>`).join("");
+    $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{ pick(b.dataset.t); renderPoll(); }); };
+  $("#poll-form").hidden = poll.closed;
+  grid("#poll-choice", pv.choice, (t)=>pv.choice=t);
+  grid("#poll-my", pv.my, (t)=>pv.my=t);
+  const same = poll.mine && poll.mine.choice===pv.choice && poll.mine.my_type===pv.my;
+  $("#poll-go").textContent = !poll.mine ? "투표하기" : same ? "투표했어요" : "이걸로 바꾸기";
+  $("#poll-go").disabled = !!same;
+  const msg = poll.closed ? `투표가 끝났어요. <b>${Number(poll.reveal.slice(5,7))}월 ${Number(poll.reveal.slice(8,10))}일</b>에 <b>@woong.if</b>에서 결과를 공개해요!`
+    : poll.mine ? `<b>${poll.mine.choice}</b>에 투표했어요 (내 MBTI ${poll.mine.my_type})<br>결과는 12월 1일 <b>@woong.if</b>에서 공개해요` : "";
+  $("#poll-msg").hidden = !msg; $("#poll-msg").innerHTML = msg;
+}
+$("#poll-go").onclick = async ()=>{
+  if(!pv.choice){ toast("제일 호감인 MBTI를 골라 주세요!"); return; }
+  if(!pv.my){ toast("내 MBTI도 골라 주세요!"); return; }
+  const btn=$("#poll-go"); btn.disabled=true;
+  try{
+    const r = await api("poll/vote",{method:"POST",body:JSON.stringify({voter, choice:pv.choice, my_type:pv.my})});
+    poll.count = r.count; poll.mine = r.mine;
+    toast(r.changed ? "바꿨어요!" : "투표했어요! 결과는 12월 1일에 공개해요");
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled=false; renderPoll(); }
+};
+
 // ---------- 방문 기록 + "내가 누른 게 뽑혔어요" ----------
 api("visit",{method:"POST",body:JSON.stringify({voter})}).catch(()=>{});
 let seenPicked = {};
@@ -723,6 +796,7 @@ loadPicked();
 const startHash = location.hash;
 if(startHash==="#pair") showMode("pair");
 else if(startHash==="#sit") showMode("sit");
+else if(startHash==="#poll") showMode("poll");
 else showMode("world");
 loadMbti();
 </script>

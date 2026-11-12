@@ -59,6 +59,7 @@ table.st tr.now td{background:#fffbe6}
     <button data-t="mbti">MBTI</button>
     <button data-t="combo">궁합·상황</button>
     <button data-t="scenes">장면 제보<span id="scn"></span></button>
+    <button data-t="poll">호감 투표</button>
     <button data-t="safe">🛡️ 차단·백업</button>
   </div>
 
@@ -69,6 +70,16 @@ table.st tr.now td{background:#fffbe6}
     <h2>차단 목록</h2>
     <p class="sub">글 옆 🚫 차단을 누르면 그 글을 쓴 기기(영구)와 인터넷(7일)이 막혀요. 막힌 사람은 페이지는 볼 수 있지만 하트·글쓰기는 못 해요.</p>
     <div id="blocks"></div>
+  </section>
+
+  <section id="s-poll" hidden>
+    <h2>호감 MBTI 투표 <span class="sub">(나만 보임)</span></h2>
+    <div class="card" id="poll-sum"></div>
+    <h2>전체 순위</h2>
+    <div class="card" style="overflow-x:auto"><table class="st" id="poll-rank"></table></div>
+    <h2>투표한 사람 MBTI별</h2>
+    <p class="sub">왼쪽 = 투표한 사람 MBTI, 오른쪽 = 그 사람들이 고른 호감 MBTI (많은 순)</p>
+    <div class="card" style="overflow-x:auto"><table class="st" id="poll-cross"></table></div>
   </section>
 
   <section id="s-scenes" hidden>
@@ -141,10 +152,23 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["stats","pending","live","mbti","combo","scenes","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["stats","pending","live","mbti","combo","scenes","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks()]); }
+async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll()]); }
+const md = (d)=>`${Number(d.slice(5,7))}월 ${Number(d.slice(8,10))}일`;
+async function loadPoll(){
+  const d = await api("admin/poll");
+  $("#poll-sum").innerHTML = `<div class="txt">참여 ${d.count}명 · ${d.closed?"마감됨":md(d.end)+"까지"} · 공개 예정 ${md(d.reveal)}</div>
+    <p class="sub" style="margin:8px 0">"결과 공개"를 켜면 신청소 투표 탭에 1·2·3위만 보여요. 인스타에 올린 뒤에 켜세요.</p>
+    <button class="${d.revealed?"no":"pri"}" id="poll-rev" style="width:100%">${d.revealed?"결과 공개 끄기":"결과 공개 켜기 (1·2·3위)"}</button>`;
+  $("#poll-rev").onclick = async()=>{ if(!d.revealed && !confirm("신청소에 1·2·3위를 공개할까요?")) return;
+    try{ await api("admin/poll/reveal",{on:!d.revealed}); toast(d.revealed?"공개를 껐어요":"1·2·3위를 공개했어요"); loadPoll(); }catch(e){ toast(e.message); } };
+  const tot = Math.max(1, d.count);
+  $("#poll-rank").innerHTML = "<tr><th>순위</th><th>MBTI</th><th>표</th><th>비율</th></tr>" + (d.ranking.length ? d.ranking.map((r,i)=>`<tr${i<3?' class="now"':""}><td>${i+1}</td><td><b>${r.type}</b></td><td>${r.n}</td><td>${Math.round(r.n/tot*100)}%</td></tr>`).join("") : `<tr><td colspan="4">아직 투표가 없어요</td></tr>`);
+  const by = {}; for(const r of d.cross){ (by[r.my_type] ||= []).push(r); }
+  $("#poll-cross").innerHTML = "<tr><th>투표한 사람</th><th>명</th><th>고른 호감 MBTI</th></tr>" + (Object.keys(by).length ? Object.entries(by).sort((a,b)=>b[1].reduce((x,y)=>x+y.n,0)-a[1].reduce((x,y)=>x+y.n,0)).map(([my,rows])=>`<tr><td><b>${my}</b></td><td>${rows.reduce((x,y)=>x+y.n,0)}</td><td>${rows.slice(0,5).map(r=>`${r.choice} ${r.n}`).join(" · ")}</td></tr>`).join("") : `<tr><td colspan="3">아직 투표가 없어요</td></tr>`);
+}
 
 // ---- 차단 ----
 // ❤️ 숫자 누르면 하트 수 바꾸기
