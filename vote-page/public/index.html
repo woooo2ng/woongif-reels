@@ -364,11 +364,19 @@ function showMode(m){
   if(m==="sit" && !sit) loadSit();
 }
 // 탭을 바꾸면 새 탭 맨 위(메뉴 바로 아래)부터 보이게
+// 아이폰 사파리: 스크롤과 내용 바꾸기가 겹치면 예전 내용이 그대로 보이는 문제가 있어서
+// 먼저 스크롤 → 다음 화면에서 내용 바꾸기 → 강제로 다시 그리기
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{
-  showMode(b.dataset.mode);
+  const m = b.dataset.mode;
+  document.querySelectorAll("#modes button").forEach(x=>x.classList.toggle("on", x===b));
   const y = document.querySelector(".banner").offsetHeight;
-  // 아이폰에서 메뉴 밑줄이 안 바뀌어 보이는 문제: 그린 다음에 스크롤
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ if(window.scrollY > y) window.scrollTo({top:y}); }));
+  if(window.scrollY > y) window.scrollTo(0, y);
+  requestAnimationFrame(()=>{
+    showMode(m);
+    const w = document.querySelector(".wrap");
+    w.style.transform = "translateZ(0)"; void w.offsetHeight;
+    requestAnimationFrame(()=>{ w.style.transform = ""; });
+  });
 });
 
 // MBTI 고르기 시트
