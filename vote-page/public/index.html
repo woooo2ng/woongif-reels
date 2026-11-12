@@ -304,6 +304,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.6 1.2 5.4 3.2C13.8 6.2 15.3 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></svg>';
 const PLAY = '<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z" fill="#2b2b3a"/></svg>';
+const REELS = "https://www.instagram.com/woong.if/reels/";
 const hpill = (n, on)=>`<span class="hpill${on?" on":""}">${HEART}${n}</span>`;
 
 // 기기 식별용 랜덤 ID (개인정보 아님)
@@ -428,8 +429,7 @@ function renderMbti(){
     const t = by[type] || {type, votes:0, status:"open"};
     if(t.status==="done"){
       const inner = `<img src="/thumbs/${type}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="ep">${t.episode? t.episode+"편" : "나옴"}</span><b>${type}</b><span class="play">${PLAY}</span>`;
-      return t.link ? `<a class="t done" href="${esc(t.link)}" target="_blank" rel="noopener" aria-label="${type} 편 보기">${inner}</a>`
-                    : `<button class="t done" data-t="${type}" aria-label="${type} 이미 나옴">${inner}</button>`;
+      return `<a class="t done" href="${esc(t.link||REELS)}" target="_blank" rel="noopener" aria-label="${type} 편 보기">${inner}</a>`;
     }
     const liked = mbti.todayLikes.includes(type);
     const cls = ["t", "g-"+group(type), first&&first.votes>0&&first.type===type?"first":"", liked?"on":""].join(" ");
@@ -568,8 +568,8 @@ function renderPair(){
   $("#pair-done-card").hidden = !pair.done.length;
   $("#pair-done").innerHTML = pair.done.map(it=>{
     const cap = `${it.a} × ${it.b} ${esc(it.rel)}`;
-    const inner = `<img src="/thumbs/p_${it.a}_${it.b}.jpg" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="cap">${cap}${it.link?" ▶":""}</span>`;
-    return it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${inner}</a>` : `<span class="th">${inner}</span>`;
+    const inner = `<img src="/thumbs/p_${it.a}_${it.b}.jpg" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="cap">${cap} ▶</span>`;
+    return `<a href="${esc(it.link||REELS)}" target="_blank" rel="noopener">${inner}</a>`;
   }).join("");
 }
 function renderPairPrev(){
@@ -633,9 +633,7 @@ function renderSit(){
   setSel($("#st"), sSel.type);
   renderSitPrev();
   $("#sit-done-card").hidden = !sit.done.length;
-  $("#sit-done").innerHTML = sit.done.map(it=> it.link
-    ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${it.type} · ${esc(it.text)} ▶</a>`
-    : `<span>${it.type} · ${esc(it.text)}</span>`).join("");
+  $("#sit-done").innerHTML = sit.done.map(it=>`<a href="${esc(it.link||REELS)}" target="_blank" rel="noopener">${it.type} · ${esc(it.text)} ▶</a>`).join("");
 }
 const sitCustomText = ()=> $("#sit-custom").value.trim().replace(/^온\s*세상이\s*\S+?인데\s*/,"").replace(/[?？]+$/,"");
 function renderSitPrev(){
