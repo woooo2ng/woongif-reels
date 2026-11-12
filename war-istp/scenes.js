@@ -221,7 +221,7 @@ S[4]=()=>{
   const TIN=EV(4).plugin;
   const tags=[-1,1].map(sx=>{const s=labelSprite('원래 얼굴',{fs:46,bg:'#3b3466',fg:'#fff',size:0.0024});s.position.set(sx*0.5,2.15,0);scene.add(s);s.visible=false;return s});
   const C=cam(44);
-  const T3=at(4,'n4')+LN(4,'n4')[1]*0.62,tDot=endOf(4,'s4',0.15);
+  const T3=LEAD+CAPL[4].find(e=>e[1]==='원래 얼굴이었죠.')[0],tDot=endOf(4,'s4',0.15);
   return t=>{
     [A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0)});
     // 'ㅇㅋ' → 둘이 동시에 이어폰 다시 끼기
@@ -233,10 +233,12 @@ S[4]=()=>{
     const spk=t>=at(4,'fN')&&t<at(4,'s4')?F:t>=at(4,'s4')&&t<tDot?A:null;
     if(spk){const lt=t-(spk===F?at(4,'fN'):at(4,'s4'));spk.userData.hip.position.y=0.8+Math.max(0,Math.sin(Math.min(lt,0.3)/0.3*Math.PI))*0.08}
     const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff';
+    // '원래 얼굴이었죠'에 맞춰 둘이 동시에 카메라를 휙
+    {const kk=ease((t-T3+0.1)/0.14);A.rotation.y=(Math.PI/2-0.25)*(1-kk);F.rotation.y=(-Math.PI/2+0.25)*(1-kk)}
     sideTags.forEach(s=>s.visible=t<T3-0.1);
     tags.forEach(s=>{s.visible=t>T3;const kk=pop((t-T3)/0.3);s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1)});
     const z=ease((t-at(4,'n4'))/2.5);
-    C.position.set(0,1.85,6.6-z*2.8);C.lookAt(0,1.45+z*0.25,0);
+    C.position.set(0,1.85,6.6-z*2.0);C.lookAt(0,1.45+z*0.25,0);
     caption(4,t);renderer.render(scene,C);
   };
 };
