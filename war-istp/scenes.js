@@ -247,6 +247,7 @@ S[5]=()=>{
   const r=rng(61);field(scene,r,{mz:-3});
   const sb=sandbags(scene,0,0.2,3.2,2);
   const A=istp(r,ALLY),F=istp(r,FOE);A.position.set(-0.55,0.32,0.55);F.position.set(0.55,0.32,0.55);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
+  const sideTags=[[A,'아군','#5b8a3a'],[F,'적군','#6d62ad']].map(([p,tx,c])=>{const s=labelSprite(tx,{fs:44,bg:c,fg:'#fff',size:0.0034});s.position.y=1.92;p.add(s);return s});
   const rifles=[rifle(),rifle()];rifles.forEach((R,i)=>{R.rotation.set(-1.25,0,0);R.position.set(i?1.9:-1.9,0.45,0.2);scene.add(R)});
   const gameTex=canvasTex(280,520,(x,w,h)=>{x.fillStyle='#1c2a3a';x.fillRect(0,0,w,h);
     // 맵(오리지널 3갈래 길 MOBA풍)
@@ -295,8 +296,10 @@ S[5]=()=>{
     const n=t<tD?1:1+Math.floor(ease((t-tD)/3.4)*11);ch.textContent=`교전 0회 · 듀오 ${n}판`;chipPop(ch,t,at(5,'s7')+0.4);
     const TB=at(5,'s7')+0.55;const back=t>=TB;
     duo.visible=back&&t<TB+2.2;{const kk=pop((t-TB-0.1)/0.3);duo.scale.set(duo.userData.base[0]*kk,duo.userData.base[1]*kk,1)}
+    sideTags.forEach(st=>{const k=back&&t<at(5,'n5')+1.6?0.5:1;st.scale.set(st.userData.base[0]*k,st.userData.base[1]*k,1);st.position.y=k<1?1.45:1.92;st.material.depthTest=k<1?false:true;st.renderOrder=k<1?5:0});
     if(!back){C.position.set(0.15,1.85,5.0);C.lookAt(0,1.45,0.4)}
     else{const k=ease((t-TB)/4);const u=ease((t-tD-1.0)/2.2);const p0=new THREE.Vector3(0.05,4.6,2.6),p1=new THREE.Vector3(0,2.1,6.2);C.position.copy(p0.lerp(p1,u));C.lookAt(new THREE.Vector3(0,0.8,1.05).lerp(new THREE.Vector3(0,1.9,-3),u))}
+    {const spk=t>=at(5,'s7')&&t<endOf(5,'s7',0.2)?A:t>=at(5,'f6')&&t<endOf(5,'f6',0.2)?F:t>=tS&&t<endOf(5,'s6',0.2)?A:null;const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff'}
     caption(5,t);renderer.render(scene,C);
   };
 };
