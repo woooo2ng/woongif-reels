@@ -12,6 +12,7 @@
 ## 새 편을 완성하면
 - `epN-mbti/` 폴더에 최종 mp4, contact_sheet.jpg, index.html·render.py 등 코드를 넣는다(node_modules, 프레임, 임시 파일 제외).
 - `SCENES.md`에 그 편의 장면과 새로 쓴 연출을 추가하고 커밋·푸시한다.
+- 신청소 16칸에 사진이 뜨도록 `vote-page/public/thumbs/`에 타이틀 장면 썸네일(가로 360px jpg)을 넣는다. MBTI 편은 `유형.jpg`(예: `INTJ.jpg`), 궁합편은 `p_앞유형_뒤유형.jpg`(예: `p_ISTP_ENFP.jpg`).
 
 ## 폴더
 - `ep1-isfp/` ~ `ep4-estp/` — 최종 영상 + 장면 미리보기(contact_sheet.jpg, 2초 간격).
