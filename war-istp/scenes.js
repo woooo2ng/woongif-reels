@@ -202,17 +202,24 @@ S[4]=()=>{
   setSky('#b2c4d4','#e6edf2 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
   const r=rng(41);field(scene,r,{mz:-2.2});
-  const A=istp(r,ALLY),F=istp(r,FOE);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
+  const A=istp(r,ALLY),F=istp(r,FOE);scene.add(A);scene.add(F);A.userData.ebs[0].visible=false;F.userData.ebs[1].visible=false;
   A.position.set(-0.65,0,0);F.position.set(0.65,0,0);A.rotation.y=Math.PI/2-0.25;F.rotation.y=-Math.PI/2+0.25;
   const R1=rifle(),R2=rifle();[R1,R2].forEach((R,i)=>{R.rotation.set(-1.35,0,i?0.15:-0.15);R.position.set(i?1.25:-1.25,0.55,-0.25);scene.add(R)});
   const sideTags=[[A,'아군','#5b8a3a'],[F,'적군','#6d62ad']].map(([p,tx,c])=>{const s=labelSprite(tx,{fs:44,bg:c,fg:'#fff',size:0.0036});s.position.y=2.1;p.add(s);return s});
-  const bF=sbub(scene,'근데 표정이 왜 이렇게 안 좋아요?',0.25,{y:2.45,bg:'#e4e0ff',fg:'#2d2766',size:0.0022}),bA=sbub(scene,'원래 이래요.',-0.4,{y:2.45,bg:'#dff5c4',fg:'#24400f',size:0.0028}),bD=bub(F,'…',{y:2.42,bg:'#e4e0ff',fg:'#2d2766',size:0.0034});
+  const bF=sbub(scene,'근데 표정이 왜 이렇게 안 좋아요?',0.25,{y:2.45,bg:'#e4e0ff',fg:'#2d2766',size:0.0022}),bA=sbub(scene,'원래 이래요.',-0.4,{y:2.45,bg:'#dff5c4',fg:'#24400f',size:0.0028}),bD=sbub(scene,'ㅇㅋ',0.4,{y:2.45,bg:'#e4e0ff',fg:'#2d2766',size:0.0032});
+  const nts=notes(scene,6,r,0.0022),hv=new THREE.Vector3();const ch=chip('대화 종료 · 3초');
+  const TIN=EV(4).plugin;
   const tags=[-1,1].map(sx=>{const s=labelSprite('원래 얼굴',{fs:46,bg:'#3b3466',fg:'#fff',size:0.0024});s.position.set(sx*0.5,2.15,0);scene.add(s);s.visible=false;return s});
   const C=cam(44);
   const T3=at(4,'n4')+LN(4,'n4')[1]*0.62,tDot=endOf(4,'s4',0.15);
   return t=>{
     [A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0)});
-    sayBub(bF,t,at(4,'fN'),at(4,'s4'));sayBub(bA,t,at(4,'s4'),tDot);sayBub(bD,t,tDot,at(4,'n4')+0.3);
+    // 'ㅇㅋ' → 둘이 동시에 이어폰 다시 끼기
+    const up=clamp01((t-TIN+0.45)/0.3)*(1-clamp01((t-TIN-0.1)/0.35));
+    [[A,0],[F,1]].forEach(([p,i])=>{const ar=p.userData.arms[i];ar.rotation.x=-2.7*up;ar.rotation.z=(i?0.75:-0.75)*up;p.userData.ebs[i].visible=t>=TIN});
+    A.updateMatrixWorld(true);A.userData.head.getWorldPosition(hv);updNotes(nts,t,new THREE.Vector3(0,hv.y+0.55,0.2),t>TIN?clamp01((t-TIN)/0.3):0);
+    chipPop(ch,t,TIN+0.1);
+    sayBub(bF,t,at(4,'fN'),at(4,'s4'));sayBub(bA,t,at(4,'s4'),tDot);sayBub(bD,t,tDot,TIN+0.2);
     const spk=t>=at(4,'fN')&&t<at(4,'s4')?F:t>=at(4,'s4')&&t<tDot?A:null;
     if(spk){const lt=t-(spk===F?at(4,'fN'):at(4,'s4'));spk.userData.hip.position.y=0.8+Math.max(0,Math.sin(Math.min(lt,0.3)/0.3*Math.PI))*0.08}
     const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff';
