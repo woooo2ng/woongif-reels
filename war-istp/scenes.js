@@ -166,64 +166,60 @@ S[2]=()=>{
   };
 };
 
-// ===== 3. "화났어요?" "원래 이래요." =====
+// ===== 3. 일부러 빗나가게 (터덜터덜 나오자마자 교전) =====
 S[3]=()=>{
   setSky('#b2c4d4','#e6edf2 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
-  const r=rng(41);field(scene,r,{mz:-2.2});
-  const A=istp(r,ALLY),F=istp(r,FOE);A.ebs=A.userData.ebs;scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
-  const V3=window.S3V||'C';
-  const bub2=(p,txt,mine)=>V3==='0'?sbub(scene,txt,mine?-0.35:0.35,{y:2.25,bg:mine?'#ffe7c2':'#e4e0ff',fg:mine?'#5a3300':'#2d2766'})
-    :bub(p,txt,{y:V3==='C'?2.42:2.3,bg:mine?'#dff5c4':'#e4e0ff',fg:mine?'#24400f':'#2d2766',size:V3==='B'?0.0019:0.0028});
-  const sideTags=V3==='C'?[[A,'아군','#5b8a3a'],[F,'적군','#6d62ad']].map(([p,tx,c])=>{const s=labelSprite(tx,{fs:44,bg:c,fg:'#fff',size:0.0036});s.position.y=2.1;p.add(s);return s}):[];
-  const L=[['f1',F,'…화났어요?',0],['s3',A,'아뇨.',1],['f2',F,'표정이 화났는데.',0],['s4',A,'원래 이래요.',1],['f3',F,'아 저도긴 해요.',0]].map(([nm,p,tx,m])=>({nm,b:bub2(p,tx,m)}));
-  const tags=[-1,1].map(sx=>{const s=labelSprite('원래 얼굴',{fs:46,bg:'#3b3466',fg:'#fff',size:0.0024});s.position.set(sx*0.5,2.15,0);scene.add(s);s.visible=false;return s});
-  const C=cam(44);const ARR=1.1;
-  const T3=at(3,'n4')+LN(3,'n4')[1]*0.62;
-  return t=>{
-    const k=ease(t/ARR);
-    A.position.set(-3.2+2.55*k,0,0);F.position.set(3.2-2.55*k,0,0);
-    if(t<ARR){A.rotation.y=Math.PI/2;F.rotation.y=-Math.PI/2;trudge(A,t);trudge(F,t+0.7);dragRifle(A);dragRifle(F)}
-    else{[A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0);p.userData.arms[1].rotation.x=0.05});
-      A.rotation.y=Math.PI/2-0.25;F.rotation.y=-Math.PI/2+0.25}
-    let cur=-1;L.forEach((q,i)=>{const t0=at(3,q.nm),t1=i<L.length-1?at(3,L[i+1].nm):at(3,'n4');sayBub(q.b,t,t0,t1);if(t>=t0&&t<t1)cur=i});
-    const spk=cur<0?null:(L[cur].nm[0]==='s'?A:F);
-    if(V3!=='0'&&spk&&t>=ARR){const lt=t-at(3,L[cur].nm);spk.userData.hip.position.y=0.8+Math.max(0,Math.sin(Math.min(lt,0.3)/0.3*Math.PI))*0.08;spk.userData.head.rotation.x=-0.08}
-    if(V3==='C'){const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff'}
-    sideTags.forEach(s=>s.visible=t<T3-0.1);
-    tags.forEach(s=>{s.visible=t>T3;const kk=pop((t-T3)/0.3);s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1)});
-    const z=ease((t-at(3,'n4'))/2.5);
-    if(V3==='B'&&spk&&t<at(3,'n4')){const o=spk===A?F:A,sx=Math.sign(spk.position.x);C.position.set(o.position.x-sx*0.85,2.05,1.25);C.lookAt(spk.position.x,1.85,0)}
-    else{C.position.set(0,1.85,6.6-z*2.8);C.lookAt(0,1.45+z*0.25,0)}
-    caption(3,t);renderer.render(scene,C);
-  };
-};
-
-// ===== 4. 일부러 빗나가게 =====
-S[4]=()=>{
-  setSky('#b2c4d4','#e6edf2 70%');
-  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
   const r=rng(51);field(scene,r,{mz:-3.5});
-  const A=istp(r,ALLY),F=istp(r,FOE);A.position.set(-1.45,0,0);A.rotation.y=Math.PI/2;F.position.set(1.45,0,0);F.rotation.y=-Math.PI/2;scene.add(A);scene.add(F);
-  A.userData.ebs[1].visible=false;
+  const A=istp(r,ALLY),F=istp(r,FOE);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
   {const s1=sandbags(scene,-0.85,0,1.4,1);s1.rotation.y=Math.PI/2;const s2=sandbags(scene,0.85,0,1.4,1);s2.rotation.y=Math.PI/2}
-  const SH=EV(4).shots.map(x=>x);const tr=SH.map((s,i)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.04,0.04),basic(0xffe27a));scene.add(m);return m});
+  const SH=EV(3).shots;const tr=SH.map(()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.04,0.04),basic(0xffe27a));scene.add(m);return m});
   const fl=SH.map(()=>{const s=glowSprite('rgba(255,220,120,1)',0.9);scene.add(s);return s});
-  const bA=sbub(scene,'맞히면 보고서 써야 돼서.',-0.4,{bg:'#ffe7c2',fg:'#5a3300',y:2.3}),bF1=sbub(scene,'…일부러 빗나가게 쐈죠?',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.3}),bF2=sbub(scene,'아 저도긴 해요.',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.3});
+  const tags=[[A,'아군','#5b8a3a'],[F,'적군','#6d62ad']].map(([p,tx,c])=>{const s=labelSprite(tx,{fs:44,bg:c,fg:'#fff',size:0.0034});s.position.y=2.1;p.add(s);return s});
+  const bF1=sbub(scene,'…일부러 빗나가게 쐈죠?',0.45,{y:2.5,bg:'#e4e0ff',fg:'#2d2766'}),bA=sbub(scene,'맞히면 보고서 써야 돼서.',-0.45,{y:2.5,bg:'#dff5c4',fg:'#24400f'}),bF2=sbub(scene,'ㅇㅈ 귀찮긴 해',0.5,{y:2.5,bg:'#e4e0ff',fg:'#2d2766',size:0.003});
   const miss=SH.map(()=>{const s=textSprite('빗나감',44,'#ffffff',0.004);scene.add(s);return s});
-  const C=cam(48);const ch=chip('명중률 0%');
+  const C=cam(48);const ch=chip('명중률 0%');const ARR=1.1;
   return t=>{
-    standPose(A);standPose(F);aim(A);aim(F);
-    const done=t>SH[SH.length-1]+0.5;
-    if(done){[A,F].forEach(p=>{p.userData.arms[0].rotation.x=-0.9;p.userData.arms[1].rotation.x=-1.0})}
+    const k=ease(t/ARR);A.position.set(-3.2+1.75*k,0,0);F.position.set(3.2-1.75*k,0,0);A.rotation.y=Math.PI/2;F.rotation.y=-Math.PI/2;
+    if(t<ARR){trudge(A,t);trudge(F,t+0.7);dragRifle(A);dragRifle(F)}
+    else{[A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0);if(p.userData.drag)p.userData.drag.visible=false;aim(p)});
+      if(t>SH[SH.length-1]+0.5)[A,F].forEach(p=>{p.userData.arms[0].rotation.x=-0.9;p.userData.arms[1].rotation.x=-1.0})}
     SH.forEach((s,i)=>{const fromA=i%2==0;const lt=t-s;const m=tr[i];m.visible=lt>0&&lt<0.35;
       const x0=fromA?-0.9:0.9,dir=fromA?1:-1;const zoff=(i%3==0?1:-1);
       m.position.set(x0+dir*lt*9,1.45+lt*1.6,lt*zoff*5);m.rotation.y=-Math.atan2(zoff*5,dir*9);m.rotation.z=dir*0.17;
       fl[i].visible=lt>0&&lt<0.08;fl[i].position.set(x0,1.5,0.1);
       miss[i].visible=lt>0.12&&lt<0.7;miss[i].position.set(fromA?1.3:-1.3,2.05+lt*0.4,zoff*0.6)});
-    sayBub(bF1,t,at(4,'f4'),at(4,'s5'));sayBub(bA,t,at(4,'s5'),at(4,'f5'));sayBub(bF2,t,at(4,'f5'),99);
-    const k=ease((t-1.8)/2);C.position.set(0,2.2-k*0.2,7.6-k*1.6);C.lookAt(0,1.35+k*0.2,0);
-    chipPop(ch,t,1.3);
+    sayBub(bF1,t,at(3,'f4'),at(3,'s5'));sayBub(bA,t,at(3,'s5'),at(3,'gw'));sayBub(bF2,t,at(3,'gw'),99);
+    const spk=t>=at(3,'gw')?F:t>=at(3,'s5')?A:t>=at(3,'f4')?F:null;const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff';
+    const z=ease((t-2.6)/2);C.position.set(0,2.2-z*0.1,7.8-z*0.4);C.lookAt(0,1.45+z*0.1,0);
+    chipPop(ch,t,1.8);
+    caption(3,t);renderer.render(scene,C);
+  };
+};
+
+// ===== 4. "표정이 왜 이렇게 안 좋아요?" "원래 이래요." =====
+S[4]=()=>{
+  setSky('#b2c4d4','#e6edf2 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2e9ef,25,90);addLights(scene,{hemi:1.5});
+  const r=rng(41);field(scene,r,{mz:-2.2});
+  const A=istp(r,ALLY),F=istp(r,FOE);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
+  A.position.set(-0.65,0,0);F.position.set(0.65,0,0);A.rotation.y=Math.PI/2-0.25;F.rotation.y=-Math.PI/2+0.25;
+  const R1=rifle(),R2=rifle();[R1,R2].forEach((R,i)=>{R.rotation.set(-1.35,0,i?0.15:-0.15);R.position.set(i?1.25:-1.25,0.55,-0.25);scene.add(R)});
+  const sideTags=[[A,'아군','#5b8a3a'],[F,'적군','#6d62ad']].map(([p,tx,c])=>{const s=labelSprite(tx,{fs:44,bg:c,fg:'#fff',size:0.0036});s.position.y=2.1;p.add(s);return s});
+  const bF=sbub(scene,'근데 표정이 왜 이렇게 안 좋아요?',0.25,{y:2.45,bg:'#e4e0ff',fg:'#2d2766',size:0.0022}),bA=sbub(scene,'원래 이래요.',-0.4,{y:2.45,bg:'#dff5c4',fg:'#24400f',size:0.0028}),bD=bub(F,'…',{y:2.42,bg:'#e4e0ff',fg:'#2d2766',size:0.0034});
+  const tags=[-1,1].map(sx=>{const s=labelSprite('원래 얼굴',{fs:46,bg:'#3b3466',fg:'#fff',size:0.0024});s.position.set(sx*0.5,2.15,0);scene.add(s);s.visible=false;return s});
+  const C=cam(44);
+  const T3=at(4,'n4')+LN(4,'n4')[1]*0.62,tDot=endOf(4,'s4',0.15);
+  return t=>{
+    [A,F].forEach(p=>{standPose(p);p.userData.hip.rotation.x=0;p.userData.head.rotation.set(0,0,0)});
+    sayBub(bF,t,at(4,'fN'),at(4,'s4'));sayBub(bA,t,at(4,'s4'),tDot);sayBub(bD,t,tDot,at(4,'n4')+0.3);
+    const spk=t>=at(4,'fN')&&t<at(4,'s4')?F:t>=at(4,'s4')&&t<tDot?A:null;
+    if(spk){const lt=t-(spk===F?at(4,'fN'):at(4,'s4'));spk.userData.hip.position.y=0.8+Math.max(0,Math.sin(Math.min(lt,0.3)/0.3*Math.PI))*0.08}
+    const ce=ui.querySelector('.cap');if(ce)ce.style.color=spk===A?'#a8f070':spk===F?'#c4b4ff':'#fff';
+    sideTags.forEach(s=>s.visible=t<T3-0.1);
+    tags.forEach(s=>{s.visible=t>T3;const kk=pop((t-T3)/0.3);s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1)});
+    const z=ease((t-at(4,'n4'))/2.5);
+    C.position.set(0,1.85,6.6-z*2.8);C.lookAt(0,1.45+z*0.25,0);
     caption(4,t);renderer.render(scene,C);
   };
 };
@@ -357,12 +353,12 @@ S[7]=()=>{
   const blanket=new THREE.Mesh(new THREE.BoxGeometry(2.05,0.3,1.9),lamb(0x7f9fd0));blanket.position.set(0,0.95,0.45);BR.add(blanket);
   const E=EV(7);
   const K=kchat('적장','','rgba(255,255,255,.45)');K.ph.style.transform='scale(.86)';K.ph.style.transformOrigin='50% 0';K.ph.style.top='120px';
-  const c1=kmsg(K,'종전 서명… 국경에서 만날까요?',{who:'적장',av:'#6d62ad'}),c2=kmsg(K,'굳이?',{me:1,un:'',tm:'PM 9:12'}),c3=kmsg(K,'아 저도긴 해요',{who:'적장',av:'#6d62ad'});
+  const c1=kmsg(K,'종전 서명… 국경에서 만날까요?',{who:'적장',av:'#6d62ad'}),c2=kmsg(K,'굳이?',{me:1,un:'',tm:'PM 9:12'}),c3=kmsg(K,'ㅇㅇ',{who:'적장',av:'#6d62ad'});
   const doc=div('doc',`<h1>종전 협정서</h1><div class="ln"></div><p>제1조. 전쟁을 끝낸다.</p><p>제2조. 서로 연락하지 않는다.</p><div class="why">종전 사유<br><b>양국 모두 집이 더 좋아서</b></div><div class="sg"><div>아군 장군<span class="s1"></span></div><div>적군 장군<span class="s2"></span></div></div>`);
   const stp=div('stamp2','종전');
   const ch=chip('외출 인원 0명');const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','신청소에서 골라 주세요');
   const C=cam(50);
-  const T1=at(7,'e2',-1.0),T2=E.stamp-0.9,T3=at(7,'n9',2.3),TE=VOICE[7]+0.25+0.45+0.3;
+  const T1=at(7,'e2',-1.0),T2=E.stamp-0.75,T3=at(7,'n9',2.3),TE=VOICE[7]+0.25+0.45+0.3;
   return t=>{
     const bed=t>=T1&&t<T2;const night=t>=T3;
     // 마을
@@ -375,7 +371,7 @@ S[7]=()=>{
       G.userData.arms[1].rotation.x=-1.55;G.userData.arms[0].rotation.x=-1.55;phoneUp(G,1,0);if(G.userData.phone){G.userData.phone.visible=true;G.userData.phone.position.set(0.15,0.95,0.55);G.userData.phone.rotation.set(-Math.PI/2+0.3,0,0)}}
     const showPhone=t>=T1+0.8&&t<T2;K.ph.style.display=showPhone?'block':'none';
     K.ph.style.transform=`scale(.86) translateY(${(1-ease((t-T1-0.8)/0.35))*300}px)`;
-    c1.style.display=t>=at(7,'e2',-0.15)?'flex':'none';c2.style.display=t>=at(7,'g3',-0.1)?'flex':'none';c3.style.display=t>=at(7,'e3',-0.1)?'flex':'none';
+    c1.style.display=t>=at(7,'e2',-0.15)?'flex':'none';c2.style.display=t>=at(7,'g3',-0.1)?'flex':'none';c3.style.display=t>=E.reply?'flex':'none';
     const showDoc=t>=T2&&t<T3;doc.style.display=showDoc?'block':'none';doc.style.transform=`scale(${pop((t-T2)/0.3)})`;
     doc.querySelector('.s1').textContent=t>E.stamp-0.6?'ㅇㅇ':'';doc.querySelector('.s2').textContent=t>E.stamp-0.35?'ㅇㅇ':'';
     stp.style.display=showDoc&&t>=E.stamp?'block':'none';const sk=1+2*(1-ease((t-E.stamp)/0.12));stp.style.transform=`translateX(-50%) rotate(-12deg) scale(${sk})`;stp.style.top='830px';stp.style.left='62%';
