@@ -630,12 +630,12 @@ S[6]=()=>{
   const E=EV(6);
   const K=kchat('전군 작전방','3,000','rgba(255,255,255,.4)');
   const m1=kmsg(K,'[공지] 내일 05:00 전군 돌격.<br>1소대 좌측, 2소대 우측, 3소대는…',{me:1,un:'3000',tm:'AM 2:00'});
-  const m2=kmsg(K,'읽으면 답장 좀',{me:1,un:'3000',tm:'AM 5:00'}),m3=kmsg(K,'제발',{me:1,un:'3000',tm:'AM 5:01'}),m4=kmsg(K,'오늘 전쟁 일찍 끝남',{me:1,un:'3000',tm:'AM 5:02'}),m5=kmsg(K,'아니 그게 아니라',{me:1,un:'3000',tm:'AM 5:03'});
+  const m2=kmsg(K,'읽으면 답장 좀',{me:1,un:'3000',tm:'AM 5:00'}),m3=kmsg(K,'제발',{me:1,un:'3000',tm:'AM 5:01'}),m4=kmsg(K,'오늘 전쟁 일찍 끝남',{me:1,un:'3000',tm:'AM 5:02'}),m5=kmsg(K,'아니 이런 것만 빨리 보네',{me:1,un:'3000',tm:'AM 5:03'});
   const ms=[m1,m2,m3,m4,m5];
   const ch=chip('3시간 경과',55);const ch2=chip('귀가 소요 시간 3초');const cutL=div('cut','같은 시각 · 적군');
   const big=div('stamp2','');big.style.top='520px';big.style.borderColor='#ffb800';big.style.color='#e09a00';
   const C=cam(50);
-  const tStr='오늘 전쟁 일찍 끝남',tStr2='아니 그게 아니라';
+  const tStr='오늘 전쟁 일찍 끝남',tStr2='아니 이런 것만 빨리 보네';
   const P3=[E.leave+0.15,E.oops-1.0];
   return t=>{
     const in3=t>=P3[0]&&t<P3[1];
@@ -650,7 +650,7 @@ S[6]=()=>{
     let s='';if(t>=E.type&&t<E.send)s=tStr.slice(0,Math.ceil((t-E.type)/(E.send-E.type-0.05)*tStr.length));
     if(t>=E.oops-0.75&&t<E.oops)s=tStr2.slice(0,Math.ceil((t-E.oops+0.75)/0.7*tStr2.length));K.box.textContent=s;
     // '3000' 강조
-    const u5=m5.querySelector('.un');const pul=t>=E.back?1+0.35*Math.abs(Math.sin((t-E.back)*6))*clamp01(1-(t-E.back)/1.5):1;u5.style.display='inline-block';u5.style.transform=`scale(${pul*(t>=E.back?1.6:1)})`;
+    const u5=m5.querySelector('.un');const pul=t>=E.back?1+0.35*Math.abs(Math.sin((t-E.back)*6))*clamp01(1-(t-E.back)/1.5):1;u5.style.display='inline-block';u5.style.transformOrigin='100% 50%';u5.style.transform=`scale(${pul*(t>=E.back?1.6:1)})`;
     big.textContent=t<E.oops?'읽음 0':'안 읽음 3000';big.style.opacity=(t>=E.zero&&t<E.leave+0.15)||(t>=E.back&&t<E.foe)?1:0;
     big.style.transform=`translateX(-50%) rotate(-12deg) scale(${pop((t-(t<E.oops?E.zero:E.back))/0.25)})`;
     chipPop(ch,t,2.3);ch.style.opacity=t>=2.3&&t<E.req1+0.3&&!in3?1:0;
