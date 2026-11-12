@@ -133,33 +133,43 @@ S[2]=()=>{
   setSky('#a9bccf','#e3eaf0 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde5ec,25,90);addLights(scene,{hemi:1.5});
   const r=rng(31);field(scene,r,{mz:-6});
-  const hero=istp(r,ALLY);hero.position.set(0,0,0);hero.rotation.y=0.35;scene.add(hero);
-  const G=brows(general(r,GEN),0.15);G.position.set(0.55,0,1.25);G.rotation.y=Math.PI+0.5;scene.add(G);
+  const hero=istp(r,ALLY);hero.position.set(0,0,0);hero.rotation.y=0;scene.add(hero);
+  const G=brows(general(r,GEN),0.15);G.position.set(-0.55,0,-0.48);G.rotation.y=0.72;scene.add(G);
   const crowd=[];for(let i=0;i<10;i++){const p=istp(r,ALLY);p.position.set(-5+i*1.3+r()*0.4,0,-2.6-r()*1.4);p.rotation.y=Math.PI/2;scene.add(p);crowd.push({p,ph:r()*6})}
-  const held=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),lamb(0xffffff));G.userData.arms[1].children[1].add(held);held.position.set(0,-0.06,0.04);held.visible=false;
+  const held=new THREE.Mesh(new THREE.SphereGeometry(0.075,10,8),lamb(0xffffff));G.userData.arms[0].children[1].add(held);held.position.set(0,-0.06,0.04);held.visible=false;
   const nts=notes(scene,4,r,0.003);
-  const bH=bub(hero,'…아 왜요.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004}),bG=sbub(scene,'전쟁 났다고.',0.15,{y:2.55,z:1.0,bg:'#f2ffd0',fg:'#2b3a10',size:0.003}),bS=bub(hero,'…하.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004});
+  const bH=bub(hero,'…아 왜요.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004}),bG=sbub(scene,'전쟁 났다고.',-0.55,{y:2.55,z:-0.5,bg:'#f2ffd0',fg:'#2b3a10',size:0.0022}),bS=bub(hero,'…하.',{y:2.25,bg:'#ffe7c2',fg:'#5a3300',size:0.004});
   const sigh=textSprite('~',90,'#ffffff',0.004);scene.add(sigh);
-  const P=EV(2).pull,TW=at(2,'n3',0.1);const C=cam(46);
+  const E0=new THREE.Vector3();const ppop=textSprite('뽁!',70,'#ffffff',0.0035);scene.add(ppop);const P=EV(2).pull,TW=at(2,'n3',0.1);const C=cam(46);
   const ch=chip('출전 의지 3%');
   const hv=new THREE.Vector3();
   return t=>{
     standPose(hero);standPose(G);
     // 장군 손이 귀로
-    const reach=ease(t/P),back=ease((t-P-0.1)/0.5);
-    const g=G.userData;g.arms[1].rotation.x=-2.3*reach*(1-back*0.6);g.arms[1].rotation.z=0.55*reach*(1-back);
-    hero.userData.ebs[1].visible=t<P;held.visible=t>=P;
+    // 장군 왼손이 병사 왼쪽 이어폰을 잡아 쏙 뽑는다 (팔을 목표 지점으로 향하게)
+    hero.updateMatrixWorld(true);G.updateMatrixWorld(true);
+    const E=new THREE.Vector3();hero.userData.ebs[0].getWorldPosition(E);if(t<P)E0.copy(E);
+    const arm=G.userData.arms[0];const S=new THREE.Vector3();arm.getWorldPosition(S);
+    const rest=S.clone().add(new THREE.Vector3(0,-0.75,0.05));
+    const away=new THREE.Vector3(-0.9,0.0,0.35).normalize();
+    let tgt;
+    if(t<P){tgt=rest.clone().lerp(E.clone().add(new THREE.Vector3(-0.04,0,0.03)),ease((t-0.05)/(P-0.05)))}
+    else{const pk=ease((t-P)/0.25),dn=ease((t-P-1.0)/0.6);tgt=E0.clone().add(away.clone().multiplyScalar(0.45*pk)).lerp(rest.clone().add(new THREE.Vector3(0,0.25,0.25)),dn*0.7)}
+    const d=tgt.sub(S);const pq=new THREE.Quaternion();arm.parent.getWorldQuaternion(pq);d.applyQuaternion(pq.invert()).normalize();
+    arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),d);
+    hero.userData.ebs[0].visible=t<P;held.visible=t>=P;
+    ppop.visible=t>=P&&t<P+0.45;{const kk=pop((t-P)/0.15);ppop.scale.set(ppop.userData.base[0]*kk,ppop.userData.base[1]*kk,1);ppop.position.copy(E0).add(new THREE.Vector3(-0.25,0.22,0.15))}
     if(t<P)bob(hero,t);
     else{hero.userData.head.rotation.set(0,0,0);if(t<TW){hero.userData.head.rotation.x=t>at(2,'s2')?0.25:0}}
     // 짜증 → 한숨 → 터덜터덜
-    if(t>=TW){const k=t-TW;hero.rotation.y=0.35+(Math.PI/2-0.35-0.0)*ease(k/0.6)*1;hero.position.x=Math.max(0,k-0.6)*0.85;trudge(hero,k);dragRifle(hero);
-      G.rotation.y=Math.PI+0.5+ease(k/0.8)*0.6}
+    if(t>=TW){const k=t-TW;hero.rotation.y=(Math.PI/2)*ease(k/0.6);hero.position.x=Math.max(0,k-0.6)*0.85;trudge(hero,k);dragRifle(hero);
+      G.rotation.y=0.72+ease(k/0.8)*0.5}
     crowd.forEach(q=>{if(t>TW+0.4){const k=t-TW-0.4;q.p.position.x+=0;trudge(q.p,k+q.ph);dragRifle(q.p);q.p.position.x=q.p.userData.x0+(k*0.8)}else{standPose(q.p);bob(q.p,t+q.ph);if(q.p.userData.x0==null)q.p.userData.x0=q.p.position.x}});
     hero.updateMatrixWorld(true);hero.userData.head.getWorldPosition(hv);
     updNotes(nts,t,new THREE.Vector3(hv.x,hv.y+0.5,hv.z),t<P?1:0);
     sayBub(bH,t,at(2,'s1'),at(2,'g1'));sayBub(bG,t,at(2,'g1'),at(2,'s2'));sayBub(bS,t,at(2,'s2'),TW+0.4);
     sigh.visible=t>at(2,'s2',0.2)&&t<at(2,'s2',1.3);sigh.position.set(hv.x+0.1,hv.y+0.05-(t-at(2,'s2'))*0.1,hv.z+0.45);
-    if(t<TW){const k=ease(t/3);C.position.set(-3.3+k*0.4,2.25,4.9-k*0.5);C.lookAt(0.35,1.55,0.4)}
+    if(t<TW){const k=ease(t/3);C.position.set(-2.4+k*0.2,2.05,2.9-k*0.3);C.lookAt(-0.35,1.62,-0.15)}
     else{const k=ease((t-TW)/1.2);C.position.set(hero.position.x-2.6-k*1.0,2.3+k*0.6,3.6+k*2.0);C.lookAt(hero.position.x+0.6,1.4,0)}
     chipPop(ch,t,TW+0.5);
     caption(2,t);renderer.render(scene,C);
