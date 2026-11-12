@@ -13,6 +13,7 @@ const TXT={
  n6:['다음 날 작전은 단톡방으로 전달됐습니다.','아무도 읽지 않았죠.'],n7:['노이즈캔슬링도, 안 읽음도,','관심 있는 말은 막지 못했습니다.'],g2:[''],
  n8:['그날 이후, 양국 누구도','집 밖으로 나오지 않았습니다.'],e2:['종전 서명… 국경에서 만날까요?'],g3:['…굳이?'],
  n9:['그렇게 이 전쟁은,','인류 역사상 최초로','귀찮아서 끝난 전쟁이 됐습니다.'],
+ n10:['전쟁 사흘 만에 종전.','사상자 0명, 보고서 0장.'],
 };
 const CAPL={};
 TM.forEach((sc,si)=>{const L=[];for(const [nm,[st,d]] of Object.entries(sc.lines)){const parts=TXT[nm]||[''];const tot=parts.reduce((a,p)=>a+Math.max(1,p.length),0);let acc=st;
@@ -78,4 +79,8 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .cmpbox small{display:block;font-size:40px;font-weight:700;color:#666}
 .cmpbox b{display:block;white-space:nowrap;font-size:96px;font-weight:900}
 .cmpbox .c1 b{color:#ff5a2d}.cmpbox .c2 b{color:#9a9a9a;font-size:76px;line-height:1.26}
+.statbox{position:absolute;left:50%;top:330px;transform:translateX(-50%);display:flex;gap:30px}
+.statbox div{background:rgba(255,255,255,.95);border-radius:30px;padding:16px 46px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.statbox small{display:block;font-size:40px;font-weight:700;color:#666}
+.statbox b{display:block;white-space:nowrap;font-size:110px;font-weight:900;color:#e2552d;line-height:1.1}
 `;document.head.appendChild(st)}

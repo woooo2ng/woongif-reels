@@ -376,7 +376,8 @@ S[7]=()=>{
   const c1=kmsg(K,'종전 서명… 국경에서 만날까요?',{who:'적장',av:'#6d62ad'}),c2=kmsg(K,'굳이?',{me:1,un:'',tm:'PM 9:12'}),c3=kmsg(K,'ㅇㅋ',{who:'적장',av:'#6d62ad'});
   const doc=div('doc',`<h1>종전 협정서</h1><div class="ln"></div><p>제1조. 전쟁을 끝낸다.</p><p>제2조. 서로 연락하지 않는다.</p><div class="why">종전 사유<br><b>양국 모두 귀찮아서</b></div><div class="sg"><div>아군 장군<span class="s1"></span></div><div>적군 장군<span class="s2"></span></div></div>`);
   const stp=div('stamp2','종전');
-  const ch=chip('외출 인원 0명');const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','신청소에서 골라 주세요');
+  const ch=chip('외출 인원 0명');const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','팔로우하고 기다려 주세요');
+  const stat=div('statbox','<div><small>사상자</small><b>0명</b></div><div><small>보고서</small><b>0장</b></div>');
   const C=cam(50);
   const T1=at(7,'e2',-1.0),T2=E.stamp-0.75,T3=at(7,'n9',2.3),TE=VOICE[7]+0.25+0.45+0.3;
   return t=>{
@@ -397,7 +398,9 @@ S[7]=()=>{
     stp.style.display=showDoc&&t>=E.stamp?'block':'none';const sk=1+2*(1-ease((t-E.stamp)/0.12));stp.style.transform=`translateX(-50%) rotate(-12deg) scale(${sk})`;stp.style.top='830px';stp.style.left='62%';
     houses.forEach(h=>h.children.forEach(c=>{if(c.geometry&&c.geometry.type==='PlaneGeometry')c.material.color.set(night||t>1.2?0xffe39a:0x3a3f5a)}));
     chipPop(ch,t,1.0);ch.style.opacity=t>1.0&&t<T1?1:0;
-    e1.style.opacity=t>TE-2.6?1:0;e2.style.opacity=t>TE-2.4?1:0;popEl(e1,t,TE-2.6);popEl(e2,t,TE-2.4);
+    const TS=at(7,'n10')+LN(7,'n10')[1]*0.42,TEND=endOf(7,'n10',0.25);
+    stat.style.opacity=t>TS&&t<TEND?1:0;stat.style.transform=`translateX(-50%) scale(${pop((t-TS)/0.3)})`;
+    e1.style.opacity=t>TEND?1:0;e2.style.opacity=t>TEND+0.2?1:0;popEl(e1,t,TEND);popEl(e2,t,TEND+0.2);
     if(showDoc){renderer.clear();setSky('#3a3550','#5b5478')}else renderer.render(scene,C);
     caption(7,t);
   };
