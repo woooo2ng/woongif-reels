@@ -318,7 +318,7 @@ footer a{color:var(--sub);font-weight:700}
   <!-- 호감 투표 -->
   <section id="m-poll" hidden>
     <div id="poll-top"></div>
-    <div class="pcount"><span id="poll-cnt-t">지금까지 참여</span><b id="poll-cnt">-</b></div>
+    <div class="pcount"><span id="poll-cnt-t"></span></div>
     <div id="poll-form">
       <div class="pq">제일 호감인 MBTI는? <small>하나만</small></div>
       <div class="pgrid" id="poll-choice"></div>
@@ -735,8 +735,7 @@ async function loadPoll(){
   }catch(e){ $("#poll-msg").hidden=false; $("#poll-msg").textContent = e.message; }
 }
 function renderPoll(){
-  $("#poll-cnt").textContent = poll.count.toLocaleString()+"명";
-  $("#poll-cnt-t").innerHTML = poll.closed ? "투표 마감 · 참여한 사람" : "지금까지 참여<br>순위는 비밀 · 12월 1일 인스타에서 1·2·3위만 공개해요";
+  $("#poll-cnt-t").innerHTML = poll.closed ? "투표가 끝났어요<br>12월 1일 인스타에서 1·2·3위만 공개해요" : "순위는 비밀이에요<br>12월 1일 인스타에서 1·2·3위만 공개해요";
   $("#poll-top").innerHTML = poll.top3 && poll.top3.length ? `<div class="ptop">${[1,0,2].map(i=>poll.top3[i] ? `<div class="g-${group(poll.top3[i])}${i===0?" p1":""}"><small>${i+1}위</small><b>${poll.top3[i]}</b></div>` : "<div></div>").join("")}</div>` : "";
   const grid = (id, sel, pick)=>{ $(id).innerHTML = TYPES.map(t=>`<button class="g-${group(t)}${sel===t?" on":""}" data-t="${t}" aria-pressed="${sel===t}">${t}</button>`).join("");
     $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{ pick(b.dataset.t); renderPoll(); }); };
@@ -756,7 +755,7 @@ $("#poll-go").onclick = async ()=>{
   const btn=$("#poll-go"); btn.disabled=true;
   try{
     const r = await api("poll/vote",{method:"POST",body:JSON.stringify({voter, choice:pv.choice, my_type:pv.my})});
-    poll.count = r.count; poll.mine = r.mine;
+    poll.mine = r.mine;
     toast(r.changed ? "바꿨어요!" : "투표했어요! 12월 1일에 1·2·3위를 공개해요");
   }catch(e){ toast(e.message); }
   finally{ btn.disabled=false; renderPoll(); }

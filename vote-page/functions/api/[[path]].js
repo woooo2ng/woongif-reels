@@ -329,12 +329,11 @@ export async function onRequest({ request, env, params }) {
   // ---------- 호감 투표 ----------
   if (path === "poll" && method === "GET") {
     const voter = url.searchParams.get("voter") || "";
-    const [cnt, mine, rev] = await Promise.all([
-      db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=?").bind(POLL.id).first(),
+    const [mine, rev] = await Promise.all([
       validVoter(voter) ? db.prepare("SELECT choice, my_type FROM poll_votes WHERE poll=? AND voter=?").bind(POLL.id, voter).first() : null,
       db.prepare("SELECT value FROM settings WHERE key=?").bind("poll_reveal:" + POLL.id).first(),
     ]);
-    const out = { id: POLL.id, end: POLL.end, reveal: POLL.reveal, closed: pollClosed(), count: cnt.n, mine: mine || null, top3: null };
+    const out = { id: POLL.id, end: POLL.end, reveal: POLL.reveal, closed: pollClosed(), mine: mine || null, top3: null };   // 참여 인원은 공개 안 함
     if (rev && rev.value === "1") {
       out.top3 = (await db.prepare("SELECT choice type, COUNT(*) n FROM poll_votes WHERE poll=? GROUP BY choice ORDER BY n DESC LIMIT 3").bind(POLL.id).all()).results.map((r) => r.type);
     }
@@ -356,8 +355,7 @@ export async function onRequest({ request, env, params }) {
     await db.prepare(`INSERT INTO poll_votes (poll, voter, choice, my_type, ip, created_at, updated_at) VALUES (?,?,?,?,?,?,?)
       ON CONFLICT(poll, voter) DO UPDATE SET choice=excluded.choice, my_type=excluded.my_type, updated_at=excluded.updated_at`)
       .bind(POLL.id, body.voter, choice, my, ip, now, now).run();
-    const cnt = await db.prepare("SELECT COUNT(*) n FROM poll_votes WHERE poll=?").bind(POLL.id).first();
-    return json({ ok: true, changed: !!had, count: cnt.n, mine: { choice, my_type: my } });
+    return json({ ok: true, changed: !!had, mine: { choice, my_type: my } });
   }
 
   if (path === "mine" && method === "GET") {
