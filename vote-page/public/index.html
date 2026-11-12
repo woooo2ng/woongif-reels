@@ -392,7 +392,7 @@ function setSel(el, t, empty="골라 주세요"){
 const BANNER = {
   world: {tag:"다음 편 투표 중", t1:"다음 편,<br>온 세상이", t2:"○○라면?", pill:"보고 싶은 유형에 하트 · 1등이 다음 편"},
   pair:  {tag:"궁합편 투표 중", t1:"이 두 유형이", t2:"만난다면?", pill:"보고 싶은 궁합에 하트 · 1등이 다음 편"},
-  poll:  {tag:"12월 1일 결과 공개", t1:"MBTI 중에", t2:"제일 호감인 유형은?", pill:"11월 30일까지 투표 · 결과는 @woong.if에서", long:true},
+  poll:  {tag:"12월 1일 1·2·3위 공개", t1:"MBTI 중에", t2:"제일 호감인 유형은?", pill:"11월 30일까지 투표 · 결과는 @woong.if에서", long:true},
   sit:   {tag:"상황편 투표 중", t1:"온 세상이 ○○인데", t2:"이런 일이 생긴다면?", pill:"보고 싶은 상황에 하트 · 1등이 다음 편", long:true},
 };
 let mode = "world";
@@ -736,7 +736,7 @@ async function loadPoll(){
 }
 function renderPoll(){
   $("#poll-cnt").textContent = poll.count.toLocaleString()+"명";
-  $("#poll-cnt-t").innerHTML = poll.closed ? "투표 마감 · 참여한 사람" : "지금까지 참여<br>순위는 12월 1일 인스타에서 공개해요";
+  $("#poll-cnt-t").innerHTML = poll.closed ? "투표 마감 · 참여한 사람" : "지금까지 참여<br>순위는 비밀 · 12월 1일 인스타에서 1·2·3위만 공개해요";
   $("#poll-top").innerHTML = poll.top3 && poll.top3.length ? `<div class="ptop">${[1,0,2].map(i=>poll.top3[i] ? `<div class="g-${group(poll.top3[i])}${i===0?" p1":""}"><small>${i+1}위</small><b>${poll.top3[i]}</b></div>` : "<div></div>").join("")}</div>` : "";
   const grid = (id, sel, pick)=>{ $(id).innerHTML = TYPES.map(t=>`<button class="g-${group(t)}${sel===t?" on":""}" data-t="${t}" aria-pressed="${sel===t}">${t}</button>`).join("");
     $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{ pick(b.dataset.t); renderPoll(); }); };
@@ -746,8 +746,8 @@ function renderPoll(){
   const same = poll.mine && poll.mine.choice===pv.choice && poll.mine.my_type===pv.my;
   $("#poll-go").textContent = !poll.mine ? "투표하기" : same ? "투표했어요" : "이걸로 바꾸기";
   $("#poll-go").disabled = !!same;
-  const msg = poll.closed ? `투표가 끝났어요. <b>${Number(poll.reveal.slice(5,7))}월 ${Number(poll.reveal.slice(8,10))}일</b>에 <b>@woong.if</b>에서 결과를 공개해요!`
-    : poll.mine ? `<b>${poll.mine.choice}</b>에 투표했어요 (내 MBTI ${poll.mine.my_type})<br>결과는 12월 1일 <b>@woong.if</b>에서 공개해요` : "";
+  const msg = poll.closed ? `투표가 끝났어요. <b>${Number(poll.reveal.slice(5,7))}월 ${Number(poll.reveal.slice(8,10))}일</b>에 <b>@woong.if</b>에서 1·2·3위만 공개해요!`
+    : poll.mine ? `<b>${poll.mine.choice}</b>에 투표했어요 (내 MBTI ${poll.mine.my_type})<br>12월 1일 <b>@woong.if</b>에서 1·2·3위만 공개해요` : "";
   $("#poll-msg").hidden = !msg; $("#poll-msg").innerHTML = msg;
 }
 $("#poll-go").onclick = async ()=>{
@@ -757,7 +757,7 @@ $("#poll-go").onclick = async ()=>{
   try{
     const r = await api("poll/vote",{method:"POST",body:JSON.stringify({voter, choice:pv.choice, my_type:pv.my})});
     poll.count = r.count; poll.mine = r.mine;
-    toast(r.changed ? "바꿨어요!" : "투표했어요! 결과는 12월 1일에 공개해요");
+    toast(r.changed ? "바꿨어요!" : "투표했어요! 12월 1일에 1·2·3위를 공개해요");
   }catch(e){ toast(e.message); }
   finally{ btn.disabled=false; renderPoll(); }
 };
