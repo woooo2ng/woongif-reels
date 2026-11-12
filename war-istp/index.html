@@ -561,8 +561,25 @@ S[5]=()=>{
   const sb=sandbags(scene,0,0.2,3.2,2);
   const A=istp(r,ALLY),F=istp(r,FOE);A.position.set(-0.55,0.32,0.55);F.position.set(0.55,0.32,0.55);scene.add(A);scene.add(F);A.userData.ebs[1].visible=false;
   const rifles=[rifle(),rifle()];rifles.forEach((R,i)=>{R.rotation.set(-1.25,0,0);R.position.set(i?1.9:-1.9,0.45,0.2);scene.add(R)});
-  const gameTex=canvasTex(140,260,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#3a2a7a');g.addColorStop(1,'#1d5f8a');x.fillStyle=g;x.fillRect(0,0,w,h);
-    x.fillStyle='#ffd84d';x.beginPath();x.arc(45,80,16,0,7);x.fill();x.fillStyle='#ff5a7a';x.beginPath();x.arc(95,150,16,0,7);x.fill();x.fillStyle='#7cf0ff';x.fillRect(20,200,100,14);x.fillStyle='#fff';x.font='900 26px sans-serif';x.fillText('◆ 다이아',18,40)});
+  const gameTex=canvasTex(280,520,(x,w,h)=>{x.fillStyle='#1c2a3a';x.fillRect(0,0,w,h);
+    // 맵(오리지널 3갈래 길 MOBA풍)
+    const M=[14,70,252,252];x.fillStyle='#3f7a45';x.fillRect(...M);
+    x.strokeStyle='#c9b98a';x.lineWidth=16;x.lineCap='round';
+    x.beginPath();x.moveTo(36,300);x.lineTo(36,92);x.lineTo(244,92);x.stroke();
+    x.beginPath();x.moveTo(36,300);x.lineTo(244,300);x.lineTo(244,92);x.stroke();
+    x.beginPath();x.moveTo(40,296);x.lineTo(240,96);x.stroke();
+    x.strokeStyle='#4f8fd0';x.lineWidth=5;x.beginPath();x.moveTo(110,240);x.quadraticCurveTo(150,190,175,160);x.stroke();
+    x.fillStyle='#3b8cff';x.beginPath();x.arc(36,300,16,0,7);x.fill();x.fillStyle='#ff4a4a';x.beginPath();x.arc(244,92,16,0,7);x.fill();
+    for(const [px,py,c] of [[36,220,'#3b8cff'],[36,150,'#ff4a4a'],[110,300,'#3b8cff'],[190,300,'#ff4a4a'],[100,232,'#3b8cff'],[180,152,'#ff4a4a'],[120,92,'#3b8cff'],[200,92,'#ff4a4a']]){x.fillStyle=c;x.fillRect(px-7,py-7,14,14)}
+    for(const [px,py,c] of [[130,205,'#7fd0ff'],[150,190,'#ff9a9a'],[160,200,'#ff9a9a']]){x.fillStyle=c;x.beginPath();x.arc(px,py,7,0,7);x.fill()}
+    // 상단: 티어 배지 · 킬 스코어
+    x.fillStyle='#fff';x.font='900 30px sans-serif';x.fillStyle='#7cf0ff';x.fillText('◆ 다이아',14,46);x.fillStyle='#fff';x.font='900 26px sans-serif';x.fillText('12 : 3',190,46);
+    // 하단: 체력바·스킬 버튼
+    x.fillStyle='#333';x.fillRect(14,346,252,22);x.fillStyle='#4fd65a';x.fillRect(16,348,190,18);
+    x.fillStyle='#ffffff';for(let i=0;i<4;i++){x.beginPath();x.arc(46+i*62,420,24,0,7);x.fill()}
+    x.fillStyle='#ffd84d';x.beginPath();x.arc(46,420,24,0,7);x.fill();
+    x.fillStyle='#ff6a3d';x.beginPath();x.arc(140,480,30,0,7);x.fill();x.fillStyle='#fff';x.font='900 22px sans-serif';x.fillText('공격',117,488)});
+  const duo=labelSprite('듀오 매칭 완료!',{fs:56,bg:'#3b3466',fg:'#ffe86b',size:0.0013});duo.position.set(0,1.95,1.1);scene.add(duo);duo.visible=false;
   const sun=glowSprite('rgba(255,170,90,1)',9);scene.add(sun);
   const sparks=[0,1].map(i=>{const s=textSprite('✦',70,'#fff27a',0.004);scene.add(s);return s});
   const bA1=sbub(scene,'…그거 몇 티어예요?',-0.35,{bg:'#ffe7c2',fg:'#5a3300',y:2.45,z:0.55}),bF=sbub(scene,'◆ 다이아요.',0.4,{bg:'#e4e0ff',fg:'#2d2766',y:2.45,z:0.55}),bA2=sbub(scene,'…듀오 할래요?',-0.35,{bg:'#ffe7c2',fg:'#5a3300',y:2.45,z:0.55});
@@ -572,22 +589,27 @@ S[5]=()=>{
   return t=>{
     [A,F].forEach(p=>{standPose(p);sitPose(p);p.userData.hip.rotation.set(0,0,0)});
     // 적 병사 폰 게임 중
-    phoneUp(F,1,1);F.userData.phone.children[1].material=new THREE.MeshBasicMaterial({map:gameTex});
+    gameTex.center.set(0.5,0.5);gameTex.rotation=Math.PI;const gmat=new THREE.MeshBasicMaterial({map:gameTex});
+    const hold=(p,on)=>{const u=p.userData;if(!u.gp){const g=phoneMesh();g.children[1].material=gmat;g.scale.setScalar(2.8);u.hip.add(g);u.gp=g}
+      u.gp.visible=on;if(!on)return;u.gp.position.set(0,0.2,0.62);u.gp.rotation.set(1.15,0,0);u.arms.forEach(a=>{a.rotation.x=-0.95;a.rotation.z=0});u.head.rotation.x=0.45};
+    hold(F,true);
     const both=t>at(5,'s7')+0.5;
-    if(both){phoneUp(A,0,1);A.userData.phone.children[1].material=F.userData.phone.children[1].material}
-    else if(A.userData.phone)A.userData.phone.visible=false;
+    hold(A,both);
     // 고개: 처음엔 멍 → 폰 쪽으로 휙
-    const look=t>tS-0.2;A.userData.head.rotation.y=look&&!both?-0.75:0;A.userData.head.rotation.x=look?0.35:0;F.userData.head.rotation.x=0.4;
+    const look=t>tS-0.2;A.userData.head.rotation.y=look&&!both?-0.75:0;if(!both)A.userData.head.rotation.x=look?0.35:0;
     A.updateMatrixWorld(true);A.userData.head.getWorldPosition(hv);
     sparks.forEach((s,i)=>{const on=t>tS&&t<at(5,'s7')+0.8;s.visible=on;const kk=on?0.8+Math.sin(t*12+i*2)*0.3:0;s.scale.set(s.userData.base[0]*kk,s.userData.base[1]*kk,1);s.position.set(hv.x+(i?0.12:-0.12),hv.y+0.33,hv.z+0.35)});
-    sayBub(bA1,t,tS,at(5,'f6'));sayBub(bF,t,at(5,'f6'),at(5,'s7'));sayBub(bA2,t,at(5,'s7'),tD+0.3);
+    sayBub(bA1,t,tS,at(5,'f6'));sayBub(bF,t,at(5,'f6'),at(5,'s7'));sayBub(bA2,t,at(5,'s7'),at(5,'s7')+0.55);
     // 노을 타임랩스
     const d=ease((t-tD)/3.2);
     setSky(lerpCol('#b8cfe2','#ff9e6b',d),lerpCol('#eef3f6','#ffd9a0',d)+' 70%');
     scene.children.forEach(o=>{if(o.isHemisphereLight)o.color.set(lerpCol('#ffffff','#ffd2b0',d))});
     sun.position.set(-6,9-d*6.5,-30);sun.visible=t>tD;
     const n=t<tD?1:1+Math.floor(ease((t-tD)/3.4)*11);ch.textContent=`교전 0회 · 듀오 ${n}판`;chipPop(ch,t,at(5,'s7')+0.4);
-    const k=ease((t-tD)/3);C.position.set(0.15-k*0.3,1.85+k*0.6,5.0+k*2.4);C.lookAt(0,1.45,0.4);
+    const TB=at(5,'s7')+0.55;const back=t>=TB;
+    duo.visible=back&&t<TB+2.2;{const kk=pop((t-TB-0.1)/0.3);duo.scale.set(duo.userData.base[0]*kk,duo.userData.base[1]*kk,1)}
+    if(!back){C.position.set(0.15,1.85,5.0);C.lookAt(0,1.45,0.4)}
+    else{const k=ease((t-TB)/4);const u=ease((t-tD-1.0)/2.2);const p0=new THREE.Vector3(0.05,4.6,2.6),p1=new THREE.Vector3(0,2.1,6.2);C.position.copy(p0.lerp(p1,u));C.lookAt(new THREE.Vector3(0,0.8,1.05).lerp(new THREE.Vector3(0,1.9,-3),u))}
     caption(5,t);renderer.render(scene,C);
   };
 };
