@@ -45,7 +45,7 @@ a{color:var(--ink)}
 .grass{height:24px;background:#9fc98a;border-top:6px solid #b6d99e}
 
 /* 탭 */
-.tabs{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line)}
+.tabs{position:-webkit-sticky;position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);transform:translateZ(0)}
 .tabs .in{max-width:520px;margin:0 auto;padding:12px 20px 0;display:flex;gap:24px}
 .tabs button{border:0;background:none;padding:6px 0 11px;font-size:17px;font-weight:700;color:var(--mute);cursor:pointer;margin-bottom:-2px;border-bottom:3px solid transparent}
 .tabs button.on{font-weight:900;color:var(--ink);border-bottom-color:var(--ink)}
@@ -367,7 +367,8 @@ function showMode(m){
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{
   showMode(b.dataset.mode);
   const y = document.querySelector(".banner").offsetHeight;
-  if(window.scrollY > y) window.scrollTo({top:y});
+  // 아이폰에서 메뉴 밑줄이 안 바뀌어 보이는 문제: 그린 다음에 스크롤
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ if(window.scrollY > y) window.scrollTo({top:y}); }));
 });
 
 // MBTI 고르기 시트
