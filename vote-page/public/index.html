@@ -233,7 +233,6 @@ footer a{color:var(--sub);font-weight:700}
   <button data-mode="world" class="on" role="tab">MBTI</button>
   <button data-mode="pair" role="tab">궁합</button>
   <button data-mode="sit" role="tab">상황</button>
-  <button data-mode="poll" role="tab">호감 투표</button>
 </div></nav>
 
 <div class="wrap">
@@ -795,7 +794,6 @@ loadPicked();
 const startHash = location.hash;
 if(startHash==="#pair") showMode("pair");
 else if(startHash==="#sit") showMode("sit");
-else if(startHash==="#poll") showMode("poll");
 else showMode("world");
 loadMbti();
 </script>
