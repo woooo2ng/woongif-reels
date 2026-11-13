@@ -53,6 +53,7 @@ function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(see
 const pick=(r,a)=>a[Math.floor(r()*a.length)];
 const matCache={};
 function lamb(c){return matCache[c]||(matCache[c]=new THREE.MeshLambertMaterial({color:c,flatShading:true}))}
+const smCache={};function smooth(c){return smCache[c]||(smCache[c]=new THREE.MeshLambertMaterial({color:c}))}
 function basic(c){return new THREE.MeshBasicMaterial({color:c})}
 function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 const texCache={};
@@ -102,8 +103,8 @@ function makePerson(r,o={}){
     hip.add(arm);arms.push(arm);
   }
   const head=new THREE.Group();head.position.y=0.66;hip.add(head);
-  const hm=new THREE.Mesh(new THREE.SphereGeometry(0.25,14,10),lamb(skin));hm.position.y=0.24;head.add(hm);
-  const hr=new THREE.Mesh(new THREE.SphereGeometry(0.265,14,10,0,Math.PI*2,0,Math.PI*0.5),lamb(hair));hr.position.y=0.26;hr.rotation.x=-0.35;head.add(hr);
+  const hm=new THREE.Mesh(new THREE.SphereGeometry(0.25,40,30),smooth(skin));hm.position.y=0.24;head.add(hm);
+  const hr=new THREE.Mesh(new THREE.SphereGeometry(0.265,40,20,0,Math.PI*2,0,Math.PI*0.5),smooth(hair));hr.position.y=0.26;hr.rotation.x=-0.35;head.add(hr);
   for(const s of[-1,1]){const e=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.07,0.02),lamb(0x1a1a1a));e.position.set(s*0.09,0.25,0.24);head.add(e);
     const ch=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.035,0.01),basic(0xf2a3a3));ch.position.set(s*0.14,0.17,0.225);head.add(ch);}
   g.userData={hip,legs,arms,head};
