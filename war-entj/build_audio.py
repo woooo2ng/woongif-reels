@@ -143,7 +143,7 @@ def sfx(si, ev):
     L = info[si]['lines']; vt = lambda name, k=0: LEAD + L[name][0] + k
     b = np.zeros(int(T * SR)); b += wind(T, 0.05)
     if si == 0:
-        for tt in (0.1, 2.1): place(b, boom(0.7), tt)  # 타이틀 내레이션 동안 2초 간격 쿵
+        for tt in (0.1, 2.1, 4.1): place(b, boom(0.7), tt)  # 타이틀 내레이션~장군 외침 동안 2초 간격 쿵
         st = vt('crowd', -0.35); ev['step'] = round(st, 3)
         place(b, drum(0.5), st); place(b, boom(0.12), st)
     elif si == 1:
