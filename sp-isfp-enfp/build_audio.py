@@ -13,13 +13,13 @@ def cut(src, a, b, tempo=1.0):
 
 # 내레이터 Taehyung(1.1배속), ENFP Yeonhee — 구간은 silencedetect로 확인
 L = {
- 'n1': cut('raw/nar.mp3', 0.00, 2.14, 1.1),
- 'n2': cut('raw/nar.mp3', 2.39, 9.38, 1.1),
+ 'n1': cut('raw/nar.mp3', 0.00, 3.97, 1.1),
+ 'n2': cut('raw/nar.mp3', 4.58, 9.38, 1.1),
  'n3': cut('raw/nar.mp3', 9.78, 12.70, 1.1),
  'n4': cut('raw/nar.mp3', 13.17, 16.75, 1.1),
  'n5': cut('raw/nar.mp3', 17.18, 19.87, 1.1),
  'n6': cut('raw/nar.mp3', 20.44, 24.27, 1.1),
- 'e1': cut('raw/enfp.mp3', 0.00, 2.41),
+ 'e1': cut('raw/enfp.mp3', 0.00, 2.5),
  'e2': cut('raw/enfp.mp3', 2.61, 3.97),
  'e3': cut('raw/enfp.mp3', 4.12, 5.15),
  'e4': cut('raw/enfp.mp3', 5.47, 7.01),
