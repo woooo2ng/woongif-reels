@@ -188,7 +188,10 @@ S[3]=()=>{
   const EJ=entj(r,ENEMYG);EJ.position.set(1.0,0,0);EJ.rotation.y=-Math.PI/2;scene.add(EJ);
   const b1=bubS(G,'병사 좀 빌려주실 수…?',{y:2.0,size:0.0023}),b2=bubF(EJ,'저희도 빌리러 가려던 참',{y:2.0,size:0.0023}),
         d1=bubS(G,'…',{y:2.0}),d2=bubF(EJ,'…',{y:2.0}),b3=bubF(EJ,'제 밑으로 들어오시죠',{y:2.0,size:0.0023}),b4=bubS(G,'내일 아침 9시, 발표로.',{y:2.0,size:0.0024});
-  [b1,b2,d1,d2,b3,b4].forEach(b=>b.position.z=0.55);const E=EV(3);const C=cam(48);const ch=chip('병사 합계: 0명 + 0명 = 0명');
+  [b1,b2,d1,d2,b3,b4].forEach(b=>{b.position.z=0.55;b.position.y=2.3});
+  const lG=labelSprite('아군',{bg:'#7f9b5a',fg:'#fff',fs:64,size:0.0034}),lE=labelSprite('적군',{bg:'#6d62ad',fg:'#fff',fs:64,size:0.0034});
+  [lG,lE].forEach(l=>{l.center.set(0.5,0);l.material.depthTest=false;l.renderOrder=9});G.add(lG);EJ.add(lE);lG.position.set(0,1.95,0.3);lE.position.set(0,1.95,0.3);d1.position.y=2.0;d2.position.y=2.0;
+  const camp=labelSprite('적군 진영',{bg:'#6d62ad',fg:'#fff',fs:72,size:0.006});camp.position.set(0,4.5,-6);scene.add(camp);const E=EV(3);const C=cam(48);const ch=chip('병사 합계: 0명 + 0명 = 0명');
   const WK=1.0;
   return t=>{
     foes.forEach(q=>{stern(q.p);glint(q.p,t);const a=q.p.userData.arms[1];a.rotation.x=-2.0+Math.sin(t*6+q.ph)*0.3});
@@ -200,11 +203,11 @@ S[3]=()=>{
     if(t>endOf(3,'g3',-0.4)){watchLook(G,ease((t-endOf(3,'g3',-0.4))/0.3));watchLook(EJ,ease((t-endOf(3,'g3',-0.4))/0.3))}
     if(t>at(3,'e4')&&t<endOf(3,'e4')){const a=EJ.userData.arms[1];a.rotation.x=-1.3;a.rotation.z=-0.6}
     show(b1,t,at(3,'g2'),endOf(3,'g2',0.2));show(b2,t,at(3,'e3'),endOf(3,'e3',0.2));
-    show(d1,t,E.silence,at(3,'e4'));show(d2,t,E.silence+0.15,at(3,'e4'));
+    show(d1,t,E.silence,at(3,'e4'));const sil=t>=E.silence&&t<at(3,'e4');lG.visible=!sil;lE.visible=!sil;show(d2,t,E.silence+0.15,at(3,'e4'));
     show(b3,t,at(3,'e4'),endOf(3,'e4',0.2));show(b4,t,TG3,99);
     if(t<WK+0.2){C.fov=50;C.updateProjectionMatrix();C.position.set(-2.5,2.6,6.5);C.lookAt(-1,1.4,-1)}
     else if(t<E.silence){const k=ease((t-WK)/3);C.fov=50;C.updateProjectionMatrix();C.position.set(0.2,2.3,5.4-k*0.6);C.lookAt(0,1.35,-0.2)}
-    else if(t<at(3,'e4')){const k=ease((t-E.silence)/0.9);C.fov=50-k*10;C.updateProjectionMatrix();C.position.set(0,2.0,4.6);C.lookAt(0,1.4,0)}
+    else if(t<at(3,'e4')){const k=ease((t-E.silence)/0.9);C.fov=50-k*6;C.updateProjectionMatrix();C.position.set(0,2.0,4.6);C.lookAt(0,1.45,0)}
     else{const k=ease((t-at(3,'e4'))/4);C.fov=50;C.updateProjectionMatrix();C.position.set(0.4-k*0.6,2.3,5.2);C.lookAt(0,1.35,-0.2)}
     chipPop(ch,t,E.silence);ch.style.opacity=t>E.silence&&t<at(3,'g3')?1:0;
     caption(3,t);renderer.render(scene,C);
