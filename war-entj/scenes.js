@@ -142,7 +142,7 @@ S[2]=()=>{
   const pg=glowSprite('rgba(255,236,150,1)',1.2);P.userData.head.add(pg);pg.position.set(0,0.42,0.35);
   const spares=crowd.map(p=>{const m=plate(STAR_T,0.26);p.userData.arms[1].add(m);m.position.set(0,-0.7,0.12);m.visible=false;return m});
   const spk=sparkles(scene,10,r);
-  const bG=bubS(G,'자네, 돌격해.',{y:2.55}),bP=topB(bub(P,'저도 별 네 개인데요.',{y:1.95,bg:'#eef7e0',fg:'#2b3a10',size:0.0015})),bQ=bubS(G,'…',{y:2.55});
+  const gQ=bubS(G,'…',{y:2.15,size:0.0026}),pQ=topB(bub(P,'…',{y:2.0,bg:'#eef7e0',fg:'#2b3a10',size:0.0026})),bG=bubS(G,'자네, 돌격해.',{y:2.55}),bP=topB(bub(P,'저도 별 네 개인데요.',{y:1.95,bg:'#eef7e0',fg:'#2b3a10',size:0.0015})),bQ=bubS(G,'…',{y:2.55});
   const E=EV(2);const C=cam(50);const ch=chip('명령 받을 사람: 0명');
   const FIND=E.find,TG=at(2,'g1'),STK=E.stick,SP=E.spares;
   return t=>{
@@ -160,14 +160,14 @@ S[2]=()=>{
     inHand.visible=t>STK-0.6&&t<STK;st.visible=t>=STK;bar.visible=t<STK;
     const gk=t>=STK?clamp01(1-(t-STK)/0.6):0;pg.material.opacity=gk;pg.scale.setScalar(0.6+gk*1.2);
     // 여분 별
-    crowd.forEach((p,i)=>{const k=ease((t-SP-0.2-i*0.05)/0.3);if(t>SP){handUp(p,k)}spares[i].visible=t>SP+0.15+i*0.05});
-    updSpk(spk,t,crowd.slice(0,10).map(p=>headPos(p,0.9)),t>SP+0.3?1:0);
-    show(bG,t,TG,STK-0.9);show(bQ,t,STK+0.35,SP);show(bP,t,at(2,'s1'),SP+0.2);
+    spares.forEach(m=>m.visible=false);updSpk(spk,t,[headPos(P)],0);
+    if(t>=SP){P.rotation.y=-0.15;G.position.set(1.85,0,0.65);G.rotation.y=1.5;G.userData.arms[1].rotation.x=0;G.userData.head.rotation.y=0}
+    show(bG,t,TG,STK-0.9);show(bQ,t,STK+0.35,STK+1.2);show(bP,t,at(2,'s1'),SP);show(gQ,t,SP+0.15,99);show(pQ,t,SP+0.35,99);
     // 카메라
     if(t<FIND+0.2){const k=ease(t/1.0);C.fov=50;C.updateProjectionMatrix();C.position.set(-3.6,2.4,4.8);C.lookAt(-0.6+k*2.6,1.6,0.2)}
     else if(t<STK-1.1){const k=ease((t-FIND-0.2)/1.0);C.fov=50;C.updateProjectionMatrix();C.position.set(-3.0+k*0.5,2.1,3.6);C.lookAt(1.6,1.5,-0.2)}
     else if(t<SP){const hp=headPos(P,0.3);const k=ease((t-STK+1.1)/0.6);C.fov=44;C.updateProjectionMatrix();C.position.set(hp.x-0.78*(2.3+0.8*(1-k))+0.3,hp.y+0.2,hp.z+0.62*(2.3+0.8*(1-k))+0.3);C.lookAt(hp.x,hp.y-0.05,hp.z)}
-    else{const k=ease((t-SP)/1.4);C.fov=54;C.updateProjectionMatrix();C.position.set(1.2-k*1.0,2.9+k*0.8,4.4+k*1.4);C.lookAt(-0.6,1.6,-1.0)}
+    else{const k=ease((t-SP)/4);C.fov=40;C.updateProjectionMatrix();C.position.set(6.0-k*0.4,2.5,5.0-k*0.5);C.lookAt(2.3,1.7,0.27)}
     chipPop(ch,t,at(2,'n3'));ch.style.opacity=t>at(2,'n3')?1:0;
     caption(2,t);renderer.render(scene,C);
   };
