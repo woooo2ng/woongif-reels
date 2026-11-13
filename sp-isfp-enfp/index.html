@@ -377,36 +377,36 @@ S[2]=()=>{
   const ch2=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.08,0.55),lamb(0xffffff));ch2.position.set(0,0.52,-2.25);scene.add(ch2);
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,100);
   // DOM 단톡방
-  const ch=dayChip('이사 2일 차 · PM 1:00');
+  const ch=dayChip('이사 2일 차 · PM 9:00');
   const phone=document.createElement('div');phone.className='phone';
-  phone.innerHTML='<div class="screen"><div class="sbar"><span>1:00</span><span>▮▮▮ 100%</span></div><div class="head">우리 동네 ♥ <span style="color:#888;margin-left:12px">31</span></div><div class="msgs"></div></div>';
+  phone.innerHTML='<div class="screen"><div class="sbar"><span>9:00</span><span>▮▮▮ 100%</span></div><div class="head">우리 동네 ♥ <span style="color:#888;margin-left:12px">31</span></div><div class="msgs"></div></div>';
   ui.appendChild(phone);const msgs=phone.querySelector('.msgs');
   const NAMES=['민지','하늘','도윤','서아','준호','유나','지호','소율','태오','다은'];
   const RE=['좋아요!! 꼭 갈게요 ㅎㅎ','저도 갈게요~ ㅎㅎ','꼭 갈게요 ♥'];
   const items=[];
-  const me=document.createElement('div');me.className='row me';me.innerHTML='<div class="b">오늘 저녁 7시 우리 집 파티!!<br>다들 와요~ ♥</div>';msgs.appendChild(me);items.push({el:me,t:0.4});
+  const me=document.createElement('div');me.className='row me';me.innerHTML='<div class="b">내일 저녁 7시 우리 집 파티!!<br>다들 와요~ ♥</div>';msgs.appendChild(me);items.push({el:me,t:0.4});
   RE.forEach((x,i)=>{const d=document.createElement('div');d.className='row';d.innerHTML=`<div class="av" style="background:${['#9df2c8','#b8e0d2','#a8c8e0','#d8c8e8'][i%4]}"></div><div><div class="who">${NAMES[i]}</div><div class="b">${x}</div></div>`;msgs.appendChild(d);items.push({el:d,t:1.0+i*0.2})});
   const cnt=statChip('참석 확정 <b>30명</b> ✔');
   const NT=[['민지','헉 갑자기 배가 아파서…'],['하늘','고양이가 아파서 ㅠㅠ'],['도윤','비가 와서… <span class="wx">☀ 맑음</span>'],['서아','갑자기 일이 생겨서…'],['준호','어제 먹은 게 좀…'],['유나','오늘은 좀 피곤해서 ㅠ']];
-  const notis=NT.map((n,i)=>{const d=document.createElement('div');d.className='noti';d.style.top=(200+i*132)+'px';d.innerHTML=`<div class="ic" style="background:${['#9df2c8','#b8e0d2','#a8c8e0'][i%3]}"></div><div><div class="nm">우리 동네 ♥ · ${n[0]}</div><div class="tx">${n[1]}</div></div>`;ui.appendChild(d);return d});
+  const notis=NT.map((n,i)=>{const d=document.createElement('div');d.className='noti';d.style.top=(340+i*132)+'px';d.innerHTML=`<div class="ic" style="background:${['#9df2c8','#b8e0d2','#a8c8e0'][i%3]}"></div><div><div class="nm">우리 동네 ♥ · ${n[0]}</div><div class="tx">${n[1]}</div></div>`;ui.appendChild(d);return d});
   const st=statChip('참석 확정 30명 · <b>실제 참석 0명</b>');
-  const CUT=5.45;
+  const CUT=6.35;
   return t=>{
     chipPop(ch,t,0);
     if(t<CUT){
       bgEl.style.background='linear-gradient(#ffd9ec,#ffeef6 60%,#fff8fb)';
-      ch.textContent=t<3.45?'이사 2일 차 · PM 1:00':'PM 6:50';
+      ch.textContent=t<3.6?'이사 2일 차 · PM 9:00':'파티 당일 · AM 8:00';
       phone.style.display='';items.forEach(q=>{const k=pop((t-q.t)/0.25);q.el.style.display=t<q.t?'none':'';q.el.style.transform=`scale(${k})`;q.el.style.transformOrigin=q.el.classList.contains('me')?'right bottom':'left bottom'});
       popEl(cnt,t,2.05);if(t>3.4)cnt.style.opacity=0;
-      phone.style.filter=t>3.6?'brightness(.75)':'';
-      notis.forEach((d,i)=>{const t0=3.7+i*0.28;d.style.display=t<t0?'none':'';d.style.transform=`translateY(${(1-ease((t-t0)/0.2))*-40}px) scale(${pop((t-t0)/0.25)})`});
+      phone.style.filter=t>3.75?'brightness(.75)':'';
+      notis.forEach((d,i)=>{const t0=3.9+i*0.28;d.style.display=t<t0?'none':'';d.style.transform=`translateY(${(1-ease((t-t0)/0.2))*-40}px) scale(${pop((t-t0)/0.25)})`});
       st.style.opacity=0;renderer.clear();
     }else{
       const lt=t-CUT;phone.style.display='none';cnt.style.opacity=0;notis.forEach(d=>d.style.display='none');
       bgEl.style.background='linear-gradient(#2c2547,#4a3d6e 60%,#6a5a8a)';ch.textContent='PM 7:00';
       E.userData.arms.forEach(a=>{a.rotation.x=-0.9;a.rotation.z=0});E.userData.head.rotation.x=0.25+Math.sin(lt*1.2)*0.03;
       cam.position.set(Math.sin(lt*0.12)*1.2,4.2-lt*0.1,7.4-lt*0.15);cam.lookAt(0,0.55,-0.6);
-      popEl(st,t,6.85);
+      popEl(st,t,8.0);
       renderer.render(scene,cam);
     }
     caption(2,t);
