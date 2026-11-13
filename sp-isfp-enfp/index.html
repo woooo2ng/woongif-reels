@@ -274,7 +274,7 @@ S[0]=()=>{
   const scene=new THREE.Scene();addLights(scene,{dpos:[5,10,9]});
   const r=rng(11);grass(scene);lane(scene,1.0);
   const homes=[];
-  for(let i=0;i<5;i++){const hm=home(r,{peek:true,wx:[-0.65]});hm.position.set(-5.8+i*2.9,0,-4.2);scene.add(hm);homes.push(hm)}
+  for(let i=0;i<5;i++){const hm=home(r,{wx:[-0.65]});hm.position.set(-5.8+i*2.9,0,-4.2);scene.add(hm);homes.push(hm)}
   // 이삿짐 트럭
   const truck=new THREE.Group();const box=new THREE.Mesh(new THREE.BoxGeometry(2.4,1.7,1.6),lamb(0xf5f0e6));box.position.set(0,1.35,0);truck.add(box);
   const cab=new THREE.Mesh(new THREE.BoxGeometry(1.0,1.2,1.6),lamb(0xffb0c8));cab.position.set(-1.7,1.1,0);truck.add(cab);
@@ -297,7 +297,7 @@ S[0]=()=>{
     else if(t>e1.t0-0.1){const k=ease((t-e1.t0+0.1)/0.25);armUp(E,0,k);armUp(E,1,k);
       const wv=Math.sin((t-e1.t0)*14)*0.35*k;E.userData.arms[0].rotation.z=-0.18-wv;E.userData.arms[1].rotation.z=0.18+wv;E.position.y=Math.abs(Math.sin((t-e1.t0)*7))*0.12*k}
     scaleBubble(eb,pop((t-0.9)/0.3));
-    homes.forEach((hm,i)=>{const k=ease((t-shut-i*0.04)/0.22);setWin(hm,0,k<0.6,k);const f=hm.userData.wins[0].face;f.position.y=hm.userData.h*0.6-0.2+Math.sin(t*2+i)*0.03})
+    homes.forEach((hm,i)=>{const k=ease((t-shut-i*0.04)/0.22);setWin(hm,0,k<0.6,k);})
     cam.position.set(-0.3,2.5,10.6);cam.lookAt(-0.3,2.05,-1);
     tg.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
     t1.style.transform=`scale(${pop((t-0.1)/0.35)})`;t1.style.opacity=clamp01((t-0.1)/0.1);
