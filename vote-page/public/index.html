@@ -84,6 +84,7 @@ a{color:var(--ink)}
 .hl-SJ{background:linear-gradient(transparent 62%,var(--sj) 62%)}.hl-SP{background:linear-gradient(transparent 62%,var(--sp) 62%)}
 .topcard .line{font-size:21px;font-weight:900;letter-spacing:-.4px;line-height:1.35;word-break:keep-all}
 .topcard .bd{gap:3px}
+.topcard .line .mbc{font-size:inherit;padding:0 6px;border-radius:8px}
 .topcard .gap{font-size:12px;font-weight:700;color:var(--mute)}
 .topcard .hpill{position:relative;font-size:15px;min-width:52px}
 .topcard .hpill svg{width:30px;height:30px}
@@ -455,6 +456,7 @@ async function like(kind, body, board, items, rerender){
 }
 
 // 1위 카드
+const mbcHTML = (t)=>`<span class="mbc g-${group(t)}">${t}</span>`;
 const hl = (t)=>`<span class="hl hl-${group(t)}">${t}</span>`;
 function topCardHTML(it, big, line, liked, second, small){
   const lbl = it.status==="today" ? '<span class="lbl mk">오늘 공개됨</span>' : it.status==="making" ? '<span class="lbl mk">제작 중</span>' : '<span class="lbl">지금 1위</span>';
@@ -627,7 +629,7 @@ async function loadPair(){
 const pairKeyOf = (a,b,rel)=> (rel==="친구"||rel==="직장 동료" ? [a,b].sort() : [a,b]).join("|")+"|"+rel;
 function renderPair(){
   const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking];
-  renderBoard("pair", top, duoHTML, (it)=>[`${hl(it.a)}<span class="xx">×</span>${hl(it.b)}`, `${esc(pairTitle(it.a,it.b,it.rel))} ${badge(it.status)}`, true], "아직 신청이 없어요. 아래에서 첫 궁합을 신청해 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
+  renderBoard("pair", top, duoHTML, (it)=>[`${hl(it.a)}<span class="xx">×</span>${hl(it.b)}`, `${mbcHTML(it.a)}${it.rel==="커플"?"(남자)":""} × ${mbcHTML(it.b)}${it.rel==="커플"?"(여자)":""} ${esc(it.rel)}${irami(it.rel)}? ${badge(it.status)}`, true], "아직 신청이 없어요. 아래에서 첫 궁합을 신청해 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
   $("#rels").innerHTML = pair.rels.map(r=>`<button type="button" class="${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r}</button>`).join("")
     + `<button type="button" class="${pSel.custom?"on":""}" data-r="">직접 쓰기</button>`;
   $("#rels").querySelectorAll("button").forEach(b=>b.onclick=()=>{
@@ -698,7 +700,7 @@ async function newCombo(kind, body, reload, msg){
 let sit = null; const sSel = {type:null};
 const sitTitle = (t,text)=>`온 세상이 ${t}인데 ${text}?`;
 const sitHTML = (it)=>`<span class="mbc g-${group(it.type)}">${it.type}</span><span class="stx">${esc(it.text)} ${badge(it.status)}</span>`;
-const sitTopHTML = (it)=>[hl(it.type), `온 세상이 ${it.type}인데 ${esc(it.text)}? ${badge(it.status)}`];
+const sitTopHTML = (it)=>[hl(it.type), `온 세상이 ${mbcHTML(it.type)}인데 ${esc(it.text)}? ${badge(it.status)}`];
 async function loadSit(){
   try{ sit = await api("situation?voter="+encodeURIComponent(voter)); renderSit(); }
   catch(e){ $("#sit-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
