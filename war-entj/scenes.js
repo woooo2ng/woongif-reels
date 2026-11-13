@@ -249,7 +249,8 @@ S[4]=()=>{
       const scr=i?SA:SB;const tgt=new THREE.Vector3(Math.sin(t*(2.3+i)+i*2)*1.1,2.55+Math.sin(t*3.1+i)*0.55,0.02);
       const cross=(t>2&&t<TE5)?1:0;const S2=(Math.sin(t*1.3+i*3)>0.2&&cross)?scr:(i?SB:SA);S2.localToWorld(_b.copy(tgt));
       p.updateMatrixWorld(true);a.children[1].getWorldPosition(_a);dots[i].position.copy(_b);
-      const m=beams[i];m.position.copy(_a).add(_b).multiplyScalar(0.5);m.scale.y=_a.distanceTo(_b);m.lookAt(_b);m.rotateX(Math.PI/2)});
+      const m=beams[i];m.position.copy(_a).add(_b).multiplyScalar(0.5);m.scale.y=_a.distanceTo(_b);m.lookAt(_b);m.rotateX(Math.PI/2);
+      const close=t>=TE5-0.3;m.visible=!close;dots[i].visible=!close;if(close){a.rotation.x=-0.25;a.rotation.z=i?0.1:-0.1}});
     show(bE,t,TE5,endOf(4,'e5',0.3));show(bG,t,TG4,99);
     const sl=Math.min(96,Math.round(t/(VOICE[4]+0.4)*96));ch2.textContent=`발사된 포탄 0발 · 넘긴 슬라이드 ${sl}장`;
     chipPop(ch,t,0.1);ch.style.opacity=t<1.6?1:0;chipPop(ch2,t,1.4);ch2.style.top='230px';ch2.style.opacity=t>1.6?1:0;
