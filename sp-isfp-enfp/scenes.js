@@ -19,6 +19,8 @@ function mkE(){ // ENFP 여자 (시안 C): 양갈래 번, 큰 눈, 웃는 입, �
   const bk=new THREE.Mesh(new THREE.SphereGeometry(0.266,40,24,Math.PI,Math.PI,0,Math.PI*0.72),m);bk.position.y=0.25;h.add(bk);
   for(const sx of[-1,1]){const bun=new THREE.Mesh(new THREE.SphereGeometry(0.1,24,18),m);bun.position.set(sx*0.17,0.47,-0.06);h.add(bun);
     const tie=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.018,8,16),smooth(0xff4d8d));tie.position.set(sx*0.15,0.42,-0.05);tie.rotation.set(0.3,0,sx*0.75);h.add(tie)}
+  // 2등신 느낌: 몸은 줄이고 머리는 키움
+  p.scale.setScalar(0.8);h.scale.setScalar(1.4);h.position.y=0.62;
   return p}
 const ISHIRT=[0x9fd8c0,0xb8e0d2,0xc7d9b7,0xa8c8e0,0xd8c8e8,0xe8d8b8,0xb0d8d0];
 function mkI(r){return makePerson(r,{shirt:pick(r,ISHIRT)})}
@@ -83,7 +85,7 @@ S[0]=()=>{
   const lab=signPlane('이사 왔어요 ♥',1.8,0.5,{bg:'#ffe0f0',fg:'#8a1f5a'});lab.position.set(0,1.5,0.81);truck.add(lab);
   truck.position.set(-3.4,0,1.1);scene.add(truck);
   const boxes=[];for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.4,0.5),lamb(0xd9b98a));b.position.set(-1.6+i*0.15,0.2+i*0.4,1.9-i*0.05);b.rotation.y=i*0.3;scene.add(b)}
-  const E=mkE();scene.add(E);const eb=makeBubble('ENFP',{...EB,fs:70});eb.position.y=2.15;E.add(eb);
+  const E=mkE();scene.add(E);const eb=makeBubble('ENFP',{...EB,fs:70,size:0.0085});eb.position.y=2.45;E.add(eb);
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   ui.innerHTML=`<div class="tag2">나만 다른 MBTI</div><div class="t1b out">온 세상이 <span style="color:${C_I}">ISFP</span>인데</div><div class="t2b out">나만 <span style="color:${C_E}">ENFP</span>라면?</div>`;
   const tg=ui.querySelector('.tag2'),t1=ui.querySelector('.t1b'),t2=ui.querySelector('.t2b');
@@ -224,7 +226,7 @@ S[3]=()=>{
     const hp=new THREE.Mesh(new THREE.TorusGeometry(0.27,0.04,6,14,Math.PI),lamb(0x2b2b30));hp.position.y=0.27;if((i+j)%2)p.userData.head.add(hp);
     P.push({p,hm,t0:2.1+i*0.32+j*0.5,j})}});
   const E=mkE();E.position.set(2.5,0,3.8);E.rotation.y=Math.PI*1.15;scene.add(E);
-  const q=makeBubble('…?',{...EB,fs:80});q.position.y=2.15;E.add(q);
+  const q=makeBubble('…?',{...EB,fs:80,size:0.0085});q.position.y=2.45;E.add(q);
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   const ch=dayChip('이사 3일 차 · PM 6:20');
   const card=document.createElement('div');card.className='phone';card.style.cssText='top:360px;height:760px';
@@ -352,7 +354,7 @@ S[6]=()=>{
   const bed=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.5,3.0),lamb(0xffffff));bed.position.set(0.6,0.25,-0.4);scene.add(bed);
   const hb=new THREE.Mesh(new THREE.BoxGeometry(2.1,1.1,0.15),lamb(0xffb0c8));hb.position.set(0.6,0.55,-1.95);scene.add(hb);
   const pil=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.18,0.5),lamb(0xfff3f8));pil.position.set(0.6,0.6,-1.55);scene.add(pil);
-  const E=mkE();E.rotation.order='YXZ';E.rotation.set(-Math.PI/2,0,0);E.position.set(0.6,0.66,0.45);scene.add(E);standPose(E);
+  const E=mkE();E.rotation.order='YXZ';E.rotation.set(-Math.PI/2,0,0);E.position.set(0.6,0.62,0.16);scene.add(E);standPose(E);
   const blanket=new THREE.Mesh(new THREE.BoxGeometry(2.04,0.24,1),lamb(0xffc2e0));scene.add(blanket);
   const drape=new THREE.Mesh(new THREE.BoxGeometry(2.04,0.42,0.06),lamb(0xffb0d4));drape.position.set(0.6,0.78,1.14);scene.add(drape);
   const lump=new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),lamb(0xffc2e0));lump.scale.set(1,0.75,1.1);lump.position.set(0.6,0.98,-1.3);scene.add(lump);
