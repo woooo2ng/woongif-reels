@@ -348,7 +348,10 @@ S[6]=()=>{
   const hb=new THREE.Mesh(new THREE.BoxGeometry(2.1,1.1,0.15),lamb(0xffb0c8));hb.position.set(0.6,0.55,-1.95);scene.add(hb);
   const pil=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.18,0.5),lamb(0xfff3f8));pil.position.set(0.6,0.6,-1.55);scene.add(pil);
   const E=mkE();E.rotation.order='YXZ';E.rotation.set(-Math.PI/2,0,0);E.position.set(0.6,0.66,0.45);scene.add(E);standPose(E);
-  const blanket=new THREE.Mesh(new THREE.BoxGeometry(2.05,0.22,2.2),lamb(0xffc2e0));scene.add(blanket);
+  const blanket=new THREE.Mesh(new THREE.BoxGeometry(2.04,0.24,1),lamb(0xffc2e0));scene.add(blanket);
+  const drape=new THREE.Mesh(new THREE.BoxGeometry(2.04,0.42,0.06),lamb(0xffb0d4));drape.position.set(0.6,0.78,1.14);scene.add(drape);
+  const lump=new THREE.Mesh(new THREE.SphereGeometry(0.34,14,10),lamb(0xffc2e0));lump.scale.set(1,0.75,1.1);lump.position.set(0.6,0.98,-1.3);scene.add(lump);
+  const ridge=new THREE.Mesh(new THREE.CapsuleGeometry(0.3,1.5,4,10),lamb(0xffc2e0));ridge.rotation.x=Math.PI/2;ridge.scale.set(1.1,1,0.42);ridge.position.set(0.6,0.95,0.05);scene.add(ridge);
   const lamp=new THREE.Group();const lp=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1.2,8),lamb(0xeeeeee));lp.position.y=0.6;lamp.add(lp);
   const sh=new THREE.Mesh(new THREE.ConeGeometry(0.35,0.4,12,1,true),lamb(0xfff3c4));sh.position.y=1.3;lamp.add(sh);const lg=glowSprite('rgba(255,225,150,1)',2.2);lg.position.y=1.25;lamp.add(lg);lamp.position.set(2.2,0,-1.5);scene.add(lamp);
   const ic=new THREE.Group();const icb=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.7,0.06),lamb(0xf2f2ee));ic.add(icb);const ics=new THREE.Mesh(new THREE.PlaneGeometry(0.36,0.3),basic(0x9fc8e8));ics.position.set(0,0.12,0.035);ic.add(ics);
@@ -356,7 +359,7 @@ S[6]=()=>{
   const win=new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.2),basic(0x9fc8f0));win.position.set(-0.9,2.6,-2.18);scene.add(win);
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,100);
   const ch=dayChip('이사 7일 차');
-  const icom=document.createElement('div');icom.className='icom';
+  const icom=document.createElement('div');icom.className='icom';icom.style.cssText='top:345px;height:600px;left:230px;right:230px;transform-origin:50% 0';
   icom.innerHTML='<div class="scr"><div class="live">● 띵동</div><div class="bub">안녕하세요!! 새로 이사 왔어요!!</div>'+
    '<div style="position:absolute;left:50%;top:220px;width:150px;height:150px;margin-left:-75px;border-radius:50%;background:#f3cfae"></div>'+
    '<div style="position:absolute;left:50%;top:205px;width:166px;height:90px;margin-left:-83px;border-radius:83px 83px 20px 20px;background:#e0a040"></div>'+
@@ -377,13 +380,13 @@ S[6]=()=>{
     hemi.intensity=1.6-1.15*off;dl.intensity=1.2*(1-off*0.85);lg.visible=off<0.5;win.material.color.set(off>0.5?0x2a3050:0x9fc8f0);
     bgEl.style.background=off>0.5?'#1a1830':'#ffe6f0';
     // 이불: 가슴까지 → 머리끝까지 덮기
-    const bk=ease((t-2.25)/0.45);blanket.position.set(0.6,0.62,-0.05-bk*0.45);blanket.scale.set(1,1+bk*0.4,1+bk*0.38);
+    const bk=ease((t-2.25)/0.4);const back=-0.5-1.3*bk;blanket.scale.z=1.14-back;blanket.position.set(0.6,0.86,(1.14+back)/2);lump.visible=bk>0.6;lump.scale.set(1,0.75*clamp01((bk-0.6)/0.4),1.1);
     E.userData.head.rotation.y=t>0.3&&t<2.2?-0.6*ease((t-0.3)/0.3):0;
     const ik=t<0.55?0:pop((t-0.55)/0.3)*(1-ease((t-2.0)/0.2));icom.style.transform=`scale(${ik})`;icom.style.display=ik<0.01?'none':'';
     const pk=t<3.2?0:pop((t-3.2)/0.3)*(1-ease((t-6.0)/0.25));ph.style.transform=`scale(${pk})`;ph.style.display=pk<0.01?'none':'';
     msg.style.display=t<3.6?'none':'';msg.style.transform=`scale(${pop((t-3.6)/0.25)})`;msg.style.transformOrigin='right bottom';
     popEl(st,t,6.1);if(t>ENDT)st.style.opacity=0;
-    cam.position.set(2.8-t*0.05,3.6,4.6-t*0.08);cam.lookAt(0.3,0.75,-0.7);
+    cam.position.set(2.2-t*0.03,2.7,2.3-t*0.05);cam.lookAt(0.5,0.75,-1.1);
     const ek=t-ENDT;e1.style.opacity=clamp01(ek/0.15);e1.style.transform=`scale(${pop(ek/0.4)})`;e2.style.opacity=clamp01((ek-0.4)/0.15);e2.style.transform=`scale(${pop((ek-0.4)/0.35)})`;
     if(t>ENDT){hemi.intensity=0.35;}
     caption(6,t,ENDT);renderer.render(scene,cam);

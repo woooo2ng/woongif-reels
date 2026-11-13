@@ -33,7 +33,7 @@ const lineT=(si,k)=>TM.lines.find(l=>l.s===si&&l.k===k);
 .photo .sun{position:absolute;left:50%;top:62%;width:110px;height:110px;margin-left:-55px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 60px #ffd27a}
 .photo .sea{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(#7a5fa8,#4a3f7a)}
 .icom{position:absolute;left:170px;right:170px;top:360px;height:760px;border-radius:40px;background:#e9e6df;box-shadow:0 26px 60px rgba(0,0,0,.4);padding:30px;box-sizing:border-box}
-.icom .scr{position:relative;height:560px;border-radius:24px;background:linear-gradient(#a9c8e8,#dde9f5);overflow:hidden}
+.icom .scr{position:relative;height:440px;border-radius:24px;background:linear-gradient(#a9c8e8,#dde9f5);overflow:hidden}
 .icom .lbl{margin-top:24px;text-align:center;font-size:40px;font-weight:900;color:#444}
 .icom .live{position:absolute;left:22px;top:18px;font-size:30px;font-weight:900;color:#fff;background:#e2335a;border-radius:10px;padding:2px 14px}
 .icom .bub{position:absolute;left:30px;right:30px;top:70px;text-align:center;font-size:44px;font-weight:900;color:#5a3a00;background:#fff3c4;border-radius:999px;padding:12px 10px}
