@@ -2,7 +2,7 @@
 const S=[];
 function mkE(){ // ENFP 여자 (시안 C): 양갈래 번, 큰 눈, 웃는 입, 분홍 티 + 노란 치마, 매끈한 얼굴
   const p=makePerson(rng(31),{shirt:0xff9fcf,pants:0x55506a});const u=p.userData,h=u.head;
-  const SK=0xf6d7bd;h.children[0].material=smooth(SK);u.arms.forEach(a=>a.children[1].material=lamb(SK));
+  const SK=0xffe3cf;h.children[0].material=new THREE.MeshLambertMaterial({color:SK,emissive:0x2a1a10});u.arms.forEach(a=>a.children[1].material=lamb(SK));
   h.children[1].visible=false;u.hip.children[0].scale.x=0.9;const skin=u.arms[0].children[1].material;u.legs.forEach(l=>{l.children[0].material=skin});
   const skirt=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.36,0.36,16),lamb(0xfff0a8));skirt.position.y=-0.14;u.hip.add(skirt);
   h.children.forEach(c=>{const g=c.geometry&&c.geometry.parameters;if(g&&((g.width===0.05&&g.height===0.07)||(g.width===0.07&&g.height===0.035)))c.visible=false});
