@@ -117,7 +117,7 @@ def fanfare(vol=0.12):  # 소박한 나팔
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
     [('n1', 0.0), ('g0', 0.2), ('crowd', -0.22)],
-    [('n2', 0.1), ('e2', 0.35)],
+    [('n2', 0.1)],
     [('g1', 1.1), ('s1', 1.0), ('n3', 0.8)],
     [('g2', 0.5), ('e3', 0.25), ('e4', 0.9), ('g3', 0.3)],
     [('n4', 0.3), ('e5', 0.45), ('g4', 0.25)],
@@ -125,7 +125,7 @@ SC = [
     [('e7', 0.2), ('g6', 0.25), ('n6', 1.2), ('redo', 0.35)],
     [('n7', 0.5), ('g8', 0.4), ('n8', 0.8)],
 ]
-POST = {3: 0.3, 5: 0.3, 6: 0.3, 7: 1.5}
+POST = {1: 0.9, 3: 0.3, 5: 0.3, 6: 0.3, 7: 1.5}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []
@@ -148,9 +148,7 @@ def sfx(si, ev):
         place(b, drum(0.5), st); place(b, boom(0.12), st)
     elif si == 1:
         st = LEAD + 0.2
-        for i in range(int((vt('e2') - st) / 0.22)): place(b, tap(0.12), st + i * 0.22 + rs.random() * 0.05)
-        ev['mega'] = round(vt('e2', -0.4), 3)
-        e = vt('e2') + L['e2'][1]; ev['ah'] = round(vt('e2') + L['e2'][1] * 0.72, 3); ev['end'] = round(e, 3)
+        for i in range(int((T - 0.4 - st) / 0.22)): place(b, tap(0.12), st + i * 0.22 + rs.random() * 0.05)
     elif si == 2:
         ev['find'] = round(LEAD + 0.6, 3); place(b, ding(0.12), LEAD + 0.6)
         stk = vt('s1', -0.55); ev['stick'] = round(stk, 3)

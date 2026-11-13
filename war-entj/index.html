@@ -435,55 +435,25 @@ S[0]=()=>{
   };
 };
 
-// ===== 1. 화이트보드 작전 3,000개 → 국경 너머 적장 피드백 =====
+// ===== 1. 화이트보드 작전 3,000개 =====
 S[1]=()=>{
   setSky('#b4cde6','#eef3f7 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde7ef,25,90);addLights(scene,{hemi:1.5});
   const r=rng(41);ground(scene,0x9cb97a,300);
   tent(scene,-5,-4,0x6f8a55,1.3);tent(scene,5.5,-5,0x6f8a55,1.2);for(let i=0;i<8;i++)tree(scene,(i-3.5)*4+r(),-12-r()*4,1.1,0x76a866);
   const WB=whiteboard(scene,{w:4.2,h:2.6,base:1.7});WB.position.set(0,0,-1);
-  const A=arrowsList(7,220);const KEEP=[12,57,140];
+  const A=arrowsList(7,220);
   const gens=[];for(let i=0;i<11;i++){const p=entj(r,GEN);const row=i<6?0:1;p.position.set((i%6-2.5)*0.72+(row?0.36:0),0,0.15+row*0.75+r()*0.1);p.rotation.y=Math.PI+(r()-0.5)*0.4;scene.add(p);gens.push({p,ph:r()*6,row})}
-  const bubs=[['여기로!',0],['아니 이쪽!',3],['비효율적!',7],['제가 할게요',4],['근거는요?',9]].map(([tx,i],k)=>({b:bubS(gens[i].p,tx,{y:2.5,size:0.0026}),d:0.5+k*0.62,i}));
-  const confused=gens.slice(0,6).map((g,i)=>bubS(g.p,i%2?'?':'…',{y:2.45,size:0.0028}));
-  // 국경 너머 언덕 (멀리 떨어진 세트)
-  const HL=new THREE.Group();HL.position.x=120;scene.add(HL);
-  {const hill=new THREE.Mesh(new THREE.ConeGeometry(6,2.2,8),lamb(0x8fb07a));hill.position.set(0,-0.2,-1.5);HL.add(hill);
-   for(let i=0;i<5;i++){const tt=new THREE.Group();HL.add(tt)}}
-  const EJ=entj(r,ENEMYG);EJ.position.set(0,0.85,-1.2);HL.add(EJ);
-  const bn=binoc();EJ.userData.head.add(bn);bn.position.set(0,0.26,0.36);
-  const mg=megaphone();mg.rotation.x=-Math.PI/2;EJ.userData.hip.add(mg);mg.position.set(0,0.95,0.42);
-  const bE=bubF(EJ,'피드백 드릴게요',{y:2.3,size:0.0032});
-  const C=cam(50);const E=EV(1);
-  const TS=at(1,'e2',-0.4),TB=at(1,'e2',1.4),TERASE=at(1,'e2',2.6),TAH=at(1,'e2',4.27),TGONE=at(1,'e2',5.1);
+  const bubs=[['여기로!',0],['아니 이쪽!',3],['비효율적!',7],['제가 할게요',4],['근거는요?',9],['제 거로 가죠',2]].map(([tx,i],k)=>({b:bubS(gens[i].p,tx,{y:2.5,size:0.0026}),d:0.4+k*0.62,i}));
+  const C=cam(50);const TF=VOICE[1]-0.2;
   const ch=chip('작전 0개 · 채택 0개');
   return t=>{
-    // 화살표 개수
-    let mode,n;
-    if(t<TERASE){n=Math.min(A.length,Math.floor(6+Math.pow(clamp01(t/3.6),1.4)*A.length));mode='all'}
-    else if(t<TGONE){n=A.length;mode='keep'}else{n=A.length;mode='none'}
-    const er=clamp01((t-TERASE)/0.6);const key=mode+n+(mode==='keep'?Math.round(er*10):'');
-    if(WB.userData.last!==key){WB.userData.last=key;const x=WB.userData.ctx,w=WB.userData.c.width,h=WB.userData.c.height;boardBase(x,w,h,{title:'작전 회의 (전원 장군)'});
-      if(mode==='all')for(let i=0;i<n;i++)drawArrow(x,A[i]);
-      else if(mode==='keep'){x.globalAlpha=1-er;for(let i=0;i<n;i++)if(!KEEP.includes(i))drawArrow(x,A[i]);x.globalAlpha=1;KEEP.forEach(i=>drawArrow(x,A[i],1,'#e0352b',12))}
-      WB.userData.tex.needsUpdate=true}
-    const cnt=t<TERASE?Math.round(3000*clamp01(t/3.6)):(t<TGONE?3:0);
-    ch.textContent=`작전 ${fmt(cnt)}개 · 채택 0개`;chipPop(ch,t,0.3);ch.style.opacity=(t<TS||t>TB)?1:0;
-    gens.forEach((g,i)=>{stern(g.p);glint(g.p,t);const busy=t<TERASE;
-      if(busy){const a=g.p.userData.arms[1];a.rotation.x=-2.0+Math.sin(t*7+g.ph)*0.35;a.rotation.z=Math.sin(t*5+g.ph)*0.3;g.p.position.x+=Math.sin(t*3+g.ph)*0.002}
-      else{g.p.userData.head.rotation.x=-0.15}});
+    const n=Math.min(A.length,Math.floor(6+Math.pow(clamp01(t/TF),1.4)*A.length));
+    if(WB.userData.last!==n){WB.userData.last=n;const x=WB.userData.ctx,w=WB.userData.c.width,h=WB.userData.c.height;boardBase(x,w,h,{title:'작전 회의 (전원 장군)'});for(let i=0;i<n;i++)drawArrow(x,A[i]);WB.userData.tex.needsUpdate=true}
+    ch.textContent=`작전 ${fmt(Math.round(3000*clamp01(t/TF)))}개 · 채택 0개`;chipPop(ch,t,0.3);
+    gens.forEach(g=>{stern(g.p);glint(g.p,t);const a=g.p.userData.arms[1];a.rotation.x=-2.0+Math.sin(t*7+g.ph)*0.35;a.rotation.z=Math.sin(t*5+g.ph)*0.3});
     bubs.forEach(q=>show(q.b,t,q.d,q.d+0.9));
-    confused.forEach((b,i)=>show(b,t,TERASE+0.4+i*0.05,99));
-    // 적장
-    const far=t>=TS&&t<TB;const binK=t<at(1,'e2',0.25);
-    standPose(EJ);bn.visible=binK;mg.visible=!binK;
-    if(binK){EJ.userData.arms[0].rotation.x=-2.3;EJ.userData.arms[1].rotation.x=-2.3;EJ.userData.arms[0].rotation.z=-0.35;EJ.userData.arms[1].rotation.z=0.35}
-    else{EJ.userData.arms[1].rotation.x=-1.75;EJ.userData.arms[0].rotation.x=0}
-    show(bE,t,at(1,'e2',0.25),TB);
-    if(far){const k=ease((t-TS)/1.8);C.fov=40;C.updateProjectionMatrix();C.position.set(120+1.2,2.5,4.2-k*0.8);C.lookAt(120,2.2,-1.2)}
-    else if(t<TS){const k=ease(t/4.4);C.fov=50;C.updateProjectionMatrix();C.position.set(1.6-k*1.2,3.1,6.6-k*0.6);C.lookAt(0,2.75,-1)}
-    else{const z=t<TAH?0:ease((t-TAH)/0.5);const kp=A[KEEP[1]];
-      C.fov=50-z*8;C.updateProjectionMatrix();C.position.set(0.2-z*0.2,3.1,6.0-z*1.2);C.lookAt(0,2.8,-1)}
+    const k=ease(t/(VOICE[1]+0.7));C.fov=50;C.updateProjectionMatrix();C.position.set(1.6-k*1.2,3.1,6.6-k*0.9);C.lookAt(0,2.75,-1);
     caption(1,t);renderer.render(scene,C);
   };
 };
