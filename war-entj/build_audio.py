@@ -143,7 +143,7 @@ def sfx(si, ev):
     L = info[si]['lines']; vt = lambda name, k=0: LEAD + L[name][0] + k
     b = np.zeros(int(T * SR)); b += wind(T, 0.05)
     if si == 0:
-        place(b, boom(0.3), 0.1)
+        place(b, boom(0.7), 0.1)
         st = vt('crowd', -0.35); ev['step'] = round(st, 3)
         place(b, drum(0.5), st); place(b, boom(0.12), st)
     elif si == 1:
