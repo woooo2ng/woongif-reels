@@ -87,7 +87,7 @@ X += [(3, send(), 0.6)]
 e = place(3, 'n4', 2.3); D.append(e + 1.4)
 # 4 강변 — 2차 제안, 해 지며 사라짐
 e = place(4, 'e3', 0.3)
-X += [(4, swoosh(0.08), 2.0 + i * 0.55) for i in range(5)]
+X += [(4, ping(0.09), 1.65 + i * 0.07) for i in range(5)] + [(4, swoosh(0.1), 2.35), (4, swoosh(0.12), 4.35)]
 e = place(4, 'n5', e + 1.6); D.append(e + 1.0)
 # 5 공원 — 뭐 해? / 이게 하는 거예요 / 이거 좀 좋은데?
 e = place(5, 'e4', 0.6)

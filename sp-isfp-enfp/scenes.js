@@ -256,18 +256,24 @@ S[4]=()=>{
   const rail=new THREE.Mesh(new THREE.BoxGeometry(17,0.08,0.1),lamb(0xf2efe8));rail.position.set(0,0.92,-2.9);scene.add(rail);
   const sunG=glowSprite('rgba(255,210,140,1)',16);scene.add(sunG);const sun=new THREE.Mesh(new THREE.CircleGeometry(2.4,32),basic(0xffe2a0));scene.add(sun);
   const refl=new THREE.Mesh(new THREE.PlaneGeometry(2.2,30),new THREE.MeshBasicMaterial({color:0xffc890,transparent:true,opacity:0.45}));refl.rotation.x=-Math.PI/2;refl.position.set(0,-0.28,-30);scene.add(refl);
-  const r=rng(41);const P=[];const BAT=['#5fd38a','#c8d84a','#ffc04d','#ff8a4d','#ff4d5a'];
-  const batTex=(lv)=>canvasTex(180,96,(x,w,h)=>{x.fillStyle='#fff';rr(x,6,10,150,76,16);x.fill();x.fillRect(158,32,16,32);x.fillStyle='#2b2b3a';rr(x,16,20,130,56,10);x.fill();
-    const k=Math.max(0.08,lv);x.fillStyle=BAT[Math.min(4,Math.floor((1-lv)*5))];rr(x,22,26,118*k,44,8);x.fill()});
-  const TX=[1,0.75,0.5,0.25,0.06].map(batTex);
-  for(let i=0;i<5;i++){const p=mkI(r);p.position.set(-2.0+i*1.05,0,-2.1);p.rotation.y=Math.PI;scene.add(p);
-    const bat=new THREE.Sprite(new THREE.SpriteMaterial({map:TX[0],transparent:true,depthWrite:false}));bat.scale.set(0.62,0.33,1);bat.position.y=2.3;p.add(bat);
-    const bb=makeBubble('저… 충전이 다 됐어요',{...IB,fs:60,size:0.0044});bb.position.y=2.55;p.add(bb);
-    P.push({p,bat,bb,t0:2.0+[2,0,4,1,3][i]*0.55})}
-  const E=mkE();E.position.set(3.1,0,-0.9);E.rotation.y=-Math.PI*0.62;scene.add(E);
+  const r=rng(41);const P=[];
+  // 버스 정류장 + 버스
+  const stop=new THREE.Group();const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,2.2,8),lamb(0xdddddd));pole.position.y=1.1;stop.add(pole);
+  const sg=signPlane('버스',0.7,0.45,{bg:'#3a7bd5',fg:'#fff'});sg.position.set(0,2.15,0.03);stop.add(sg);stop.position.set(-2.6,0,0.2);stop.visible=false;scene.add(stop);
+  const bus=new THREE.Group();const bb0=new THREE.Mesh(new THREE.BoxGeometry(3.6,1.5,1.4),lamb(0x7fd8b0));bb0.position.y=1.05;bus.add(bb0);
+  const wnd=new THREE.Mesh(new THREE.PlaneGeometry(3.0,0.5),basic(0xcfeaff));wnd.position.set(0,1.4,0.71);bus.add(wnd);
+  const bl=signPlane('집 가는 버스',1.4,0.32,{bg:'#fff',fg:'#2f7a5a'});bl.position.set(0,0.75,0.72);bus.add(bl);
+  for(const x of[-1.2,1.2])for(const z of[-0.7,0.7]){const wh=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.2,12),lamb(0x2b2b30));wh.rotation.x=Math.PI/2;wh.position.set(x,0.3,z);bus.add(wh)}
+  bus.position.set(-14,0,-0.3);scene.add(bus);
+  for(let i=0;i<4;i++){const p=mkI(r);p.position.set(-2.2+i*1.0,0,-2.1);p.rotation.y=Math.PI;scene.add(p);
+    const ph=holdObj(p,1,phoneMesh(),-0.6,0.1);ph.visible=false;
+    const lb=labelSprite('버스 3분 후',{bg:'#3a7bd5',fg:'#fff',fs:54,size:0.0042});lb.visible=false;p.add(lb);
+    P.push({p,ph,lb,x0:-2.2+i*1.0,t0:2.5+i*0.1})}
+  const E=mkE();E.position.set(2.0,0,-1.5);E.rotation.y=-Math.PI*0.6;scene.add(E);
+  const app=document.createElement('div');app.className='noti';app.style.cssText='top:360px;height:150px';app.innerHTML='<div class="ic" style="background:#3a7bd5"></div><div><div class="nm">버스 알림 · 집 가는 버스</div><div class="tx" style="font-size:48px">3분 후 도착</div></div>';ui.appendChild(app);
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,300);
   const ch=dayChip('PM 6:43 · 강변');
-  const st=statChip('사회 배터리 지속 시간 <b>17분</b>');
+  const st=statChip('2차 참석 0명 · <b>막차 탑승 30명</b>');
   return t=>{
     chipPop(ch,t,0);
     const sk=ease(t/6.3);
@@ -278,12 +284,15 @@ S[4]=()=>{
     hemi.intensity=1.5-sk*0.5;dl.intensity=1.3*(1-sk*0.7);
     // ENFP: 2차 제안 (양팔 번쩍)
     standPose(E);const ek=ease((t-0.25)/0.2)*(1-ease((t-1.6)/0.3));armUp(E,0,ek);armUp(E,1,ek);E.position.y=hop(t,0.3,0.7,0.25)+hop(t,0.7,1.1,0.18);
-    const left=P.filter(o=>t<o.t0+0.6).length;
-    E.userData.head.rotation.y=left?0:Math.sin(t*3)*0.4;
-    P.forEach((o,i)=>{const lv=clamp01(1-(t-1.2)/0.9);o.bat.material.map=TX[Math.min(4,Math.floor((1-lv)*4.99))];o.bat.visible=t>1.2&&t<o.t0+0.35;
-      const bk=pop((t-o.t0)/0.2)*(1-ease((t-o.t0-0.42)/0.15));scaleBubble(o.bb,bk);
-      const vk=ease((t-o.t0-0.38)/0.25);o.p.scale.setScalar(1-vk);o.p.position.y=vk*0.4;o.p.visible=vk<0.99;o.p.rotation.y=Math.PI+(t>o.t0?Math.PI*0.9*ease((t-o.t0)/0.2):0)});
-    cam.position.set(0.25,3.0,10.8);cam.lookAt(0.25,1.75,-4);
+    // 버스: 왼쪽에서 와서 2.4~3.1 정차, 4.3부터 오른쪽으로 출발
+    const bx=t<4.3?-14+13*ease((t-2.2)/0.9):-1.0+14*Math.pow(clamp01((t-4.3)/1.3),1.6);bus.position.x=bx;
+    const ak=t<1.75?0:pop((t-1.75)/0.3)*(1-ease((t-2.9)/0.2));app.style.transform=`scale(${ak})`;app.style.display=ak<0.01?'none':'';
+    E.userData.head.rotation.y=t>2.4?Math.min(0.9,(t-2.4)*2):0;
+    P.forEach((o,i)=>{const {p,ph}=o;const pk=ease((t-1.6-i*0.05)/0.25);ph.visible=pk>0.05&&t<o.t0+0.6;
+      if(t<o.t0){standPose(p);p.rotation.y=Math.PI*(1-0.85*pk);p.userData.arms[1].rotation.x=-1.3*pk;p.userData.head.rotation.x=0.3*pk;p.position.set(o.x0,0,-2.1)}
+      else{const lt=t-o.t0;p.userData.head.rotation.x=0;p.rotation.y=0;walkPose(p,lt*14,0.8);
+        const z=-2.1+lt*1.6;p.position.set(o.x0+(-1.0-o.x0)*clamp01(lt/0.8)*0.3,Math.abs(Math.sin(lt*14))*0.08,z);p.visible=z<-1.05}});
+    cam.position.set(0.0,2.9,9.4);cam.lookAt(0.0,1.45,-3);
     popEl(st,t,4.8);
     caption(4,t);renderer.render(scene,cam);
   };
