@@ -136,7 +136,7 @@ const C_T='#ff6b5a';
 const TM=await (await fetch('audio/timing.json')).json();
 // 줄 이름 -> 자막. 조각이 [문장, 시작오프셋(초)]이면 그 시각에, 문자열이면 글자 수 비율로 나눔
 const TXT={
- n1:[''],e1:['지금부터 너희에게 전쟁을 선포한다!!'],crowd:['제가 지휘하겠습니다.'],
+ n1:[''],g0:[['적이 전쟁을 선포했다!',0],['이번 전쟁 지휘는…',2.03]],crowd:['제가 지휘하겠습니다.'],
  n2:[['진짜 전쟁이었습니다.',0],['다만, 작전이 3,000개였을 뿐이죠.',1.70]],
  e2:[['피드백 드릴게요.',0],['화살표 2,997개 지우시고요…',1.16],['아, 남은 3개도 지우세요.',4.27]],
  g1:['자네, 돌격해.'],s1:['저도 별 네 개인데요.'],n3:['모두가 명령할 줄은 알았지만,','명령받을 줄 아는 사람은 없었습니다.'],
@@ -404,15 +404,14 @@ function headPos(p,dy=0){p.updateMatrixWorld(true);p.userData.head.getWorldPosit
 S[0]=()=>{
   setSky('#a8c3e0','#eef3f7 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xdde7ef,30,95);addLights(scene,{hemi:1.5});
-  const r=rng(31);field(scene,r,{mz:-1.4});
+  const r=rng(31);field(scene,r,{mz:-3.2});
   const allies=[];for(let row=0;row<5;row++)for(let c=0;c<9;c++){const p=entj(r,GEN);p.position.set((c-4)*1.2+(row%2)*0.3,0,1.6+row*1.45);p.rotation.y=Math.PI;scene.add(p);allies.push({p,row,c,z0:p.position.z})}
-  sandbags(scene,0,-5.2,2.4,2);
-  const EJ=entj(r,ENEMYG);EJ.position.set(0,0.55,-5.6);scene.add(EJ);
-  const mg=megaphone();mg.rotation.x=-Math.PI/2;EJ.userData.hip.add(mg);mg.position.set(0,0.95,0.42);
-  const bE=bubF(EJ,'전쟁을 선포한다!!',{y:2.25,size:0.0034});
+  const pod=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.45,1.1),lamb(0x8a6a48));pod.position.set(-0.6,0.225,-1.0);scene.add(pod);
+  const EJ=entj(r,GEN);EJ.position.set(-0.6,0.45,-1.0);scene.add(EJ);
+  const bE=bubS(EJ,'적이 전쟁을 선포했다!',{y:2.25,size:0.0022}),bE2=bubS(EJ,'이번 전쟁 지휘는…',{y:2.25,size:0.0022});
   for(let row=0;row<3;row++)for(let c=0;c<9;c++){const p=entj(r,ENEMYG);p.position.set((c-4)*1.3,0,-9-row*1.5);scene.add(p)}
   const vol=[];[[0,4],[1,1],[1,7],[2,2],[2,6]].forEach(([row,c],i)=>{const q=allies.find(a=>a.row===row&&a.c===c);vol.push({q,b:bubS(q.p,i===0?'제가 지휘하겠습니다':'제가!',{y:2.3,size:i===0?0.0034:0.0028}),d:i*0.06})});
-  const C=cam(50);const TE=at(0,'e1'),ST=EV(0).step;
+  const C=cam(50);const TE=at(0,'g0'),ST=EV(0).step,TE2=at(0,'g0',2.03);
   const ch=chip('병사 0명 · 장군 3,000명');
   ui.insertAdjacentHTML('beforeend',`<div class="tag">ENTJ × 전쟁편</div><div class="title1 out">온 세상이</div><div class="title2 out" style="color:${C_T}">ENTJ인데</div><div class="title3 out">전쟁이 난다면?</div>`);
   const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2'),t3=ui.querySelector('.title3');
@@ -420,10 +419,11 @@ S[0]=()=>{
     const stepK=ease((t-ST)/0.35);
     allies.forEach(q=>{stern(q.p);glint(q.p,t);q.p.position.z=q.z0-0.6*stepK;if(t>ST&&t<ST+0.4)walkPose(q.p,(t-ST)*9,0.5);
       if(t>ST+0.2)handUp(q.p,ease((t-ST-0.2-(q.c%3)*0.04)/0.25))});
-    stern(EJ);glint(EJ,t);const sw=t>TE-0.2&&t<ST;EJ.userData.arms[1].rotation.x=sw?-1.75:0;EJ.userData.arms[0].rotation.x=sw?-2.5:0;EJ.userData.arms[0].rotation.z=sw?-0.4+Math.sin(t*9)*0.25:0;mg.visible=sw||t>=TE-0.2;
-    show(bE,t,TE+0.1,ST-0.15);vol.forEach(v=>show(v.b,t,ST+0.25+v.d,99));
+    stern(EJ);glint(EJ,t);const sw=t>TE-0.2&&t<TE2;if(sw){handUp(EJ,ease((t-TE+0.2)/0.25),1)}else if(t<ST){EJ.userData.arms[1].rotation.x=-1.2;EJ.userData.arms[0].rotation.x=-0.2}
+    if(t>ST){EJ.rotation.y=0;EJ.userData.head.rotation.y=Math.sin(t*6)*0.25;EJ.userData.arms[0].rotation.x=-0.4;EJ.userData.arms[1].rotation.x=-0.4}
+    show(bE,t,TE+0.05,TE2-0.1);show(bE2,t,TE2,ST+0.1);vol.forEach(v=>show(v.b,t,ST+0.25+v.d,99));
     if(t<TE-0.15){const k=t/(TE-0.15);C.fov=44;C.updateProjectionMatrix();C.position.set(-4.4+k*5.2,2.2,-2.1);C.lookAt(-3.6+k*5.2,1.95,2.6)}
-    else if(t<ST){const k=ease((t-TE)/2.2);C.fov=42;C.updateProjectionMatrix();C.position.set(1.0,2.3,-0.4-k*0.8);C.lookAt(0,2.25,-5.6)}
+    else if(t<ST){const k=ease((t-TE)/2.6);C.fov=44;C.updateProjectionMatrix();C.position.set(0.6-k*0.3,3.0,3.1-k*0.4);C.lookAt(-0.6,2.35,-1.0)}
     else{const k=ease((t-ST)/1.6);C.fov=52;C.updateProjectionMatrix();C.position.set(0,2.2+k*0.3,-4.2-k*0.5);C.lookAt(0,2.5,4)}
     chipPop(ch,t,ST+0.5);ch.style.opacity=t>ST+0.5?1:0;
     const T0=0.05,out=clamp01((t-TE+0.15)/0.25),os=1-out;
