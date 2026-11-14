@@ -361,11 +361,11 @@ S[5]=()=>{
   const wash=div('sunwash');wash.style.cssText='position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,rgba(255,170,90,.75),rgba(255,200,120,.25) 45%,rgba(255,200,120,0) 70%);opacity:0';ui.prepend(wash);
   const flashes=[];const phoneM=()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.26,0.03),lamb(0x22222a));const sc=new THREE.Mesh(new THREE.PlaneGeometry(0.13,0.23),basic(0xbfe3ff));sc.position.z=-0.017;sc.rotation.y=Math.PI;m.add(sc);const f=glowSprite('rgba(255,255,255,1)',0.9);f.position.z=0.05;m.add(f);flashes.push({f,ph:Math.random()*10});return m};
   // 양군: 각자 진지에 앉아 노을 멍 → 마지막엔 일어나 철조망 너머로 서로 사진
-  const crowd=[];for(const side of[1,-1])for(let i=0;i<14;i++){const p=soldier(r,side>0?ALLY:FOE);helmOff(p);
+  const crowd=[];for(const side of[1,-1])for(let i=0;i<14;i++){const p=soldier(r,side>0?ALLY:FOE);
     const x=-0.6+(i%5)*1.2+r()*0.2,z=side*(0.85+Math.floor(i/5)*0.8+r()*0.15);if(i===0||(side<0&&i===6))continue;p.position.set(x,0,z);scene.add(p);
     const rf=rifle();rf.position.set(x+0.3,0.05,z+side*0.35);rf.rotation.set(0,0.3,Math.PI/2);scene.add(rf);
     const ph=phoneM();p.userData.arms[1].add(ph);ph.position.set(0,-0.66,0.08);crowd.push({p,ph,ph0:r(),side,x,z})}
-  const MS=soldier(r,ALLY),ES=soldier(r,FOE);helmOff(MS);helmOff(ES);scene.add(MS);scene.add(ES);
+  const MS=soldier(r,ALLY),ES=soldier(r,FOE);scene.add(MS);scene.add(ES);
   const msSit=new THREE.Vector3(-0.6,0,0.75),msPose=new THREE.Vector3(-2.3,0,0.45);
   const esFrom=new THREE.Vector3(0.6,0,-1.65),esTo=new THREE.Vector3(-0.5,0,-0.4);
   const esPh=phoneM();ES.userData.arms[1].add(esPh);esPh.position.set(0,-0.66,0.08);
