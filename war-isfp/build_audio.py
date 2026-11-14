@@ -151,7 +151,7 @@ SC = [
     [('e2', 0.9), ('g4', 0.45), ('both', 0.35), ('n4', 0.5)],
     [('n5', 0.4)],
     [('g2', 0.3), ('n6', 0.25), ('s2', 0.5), ('s3', 1.1), ('g3', 0.5), ('s4', 0.3), ('f1', 0.4), ('n7', 0.3)],
-    [('g6', 0.2), ('f2', 4.6), ('s5', 0.25), ('n8', 0.4)],
+    [('g6a', 0.2), ('g6b', 2.0), ('f2', 4.6), ('s5', 0.25), ('n8', 0.4)],
     [('g7', 0.25), ('yes', 0.1), ('n9', 2.0)],
     [('e4', 2.7), ('g8', 0.25), ('n10', 1.4)],
 ]
@@ -206,10 +206,11 @@ def sfx(si, ev):
         ev['foe'] = round(vt('f1', -0.3), 3); place(b, whoosh(0.6, 0.15), vt('f1', -0.4))
     elif si == 5:
         b += wind(T, 0.03)
-        ev['sunset'] = round(vt('g6', 0.35), 3)
-        ev['photo'] = round(en('g6', 0.35), 3)
-        for i in range(10): place(b, shutter(0.18), en('g6', 0.45) + i * 0.17 + rs.random() * 0.05)
-        ev['walk'] = round(en('g6', 1.5), 3)
+        ev['sunset'] = round(en('g6a', 0.1), 3); place(b, sparkle(0.18), en('g6a', 0.1))
+        ev['look'] = round(vt('g6b', -0.8), 3)
+        ev['photo'] = round(en('g6b', 0.35), 3)
+        for i in range(10): place(b, shutter(0.18), en('g6b', 0.45) + i * 0.17 + rs.random() * 0.05)
+        ev['walk'] = round(en('g6b', 1.5), 3)
         ev['sit'] = round(vt('f2', -1.6), 3); place(b, pop(0.12), vt('f2', -1.6))
         ev['song'] = round(vt('f2', -0.75), 3); place(b, blip(880, 0.08), vt('f2', -0.8)); place(b, softsong(T - vt('f2', -0.75), 0.13), vt('f2', -0.75))
         ev['share'] = round(vt('n8', 0.3), 3)

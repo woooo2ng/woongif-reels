@@ -147,7 +147,7 @@ const TXT={
  g2:['이번엔 연기 없다. 진짜 간다!!'],n6:['38번째 날,','드디어 양군이 국경에서 마주했습니다.'],
  s2:['가는 길 외롭지 않게…','꽃 하나만 그려줄게.'],s3:['너는 이제… 몽실이야.'],g3:['장전!!'],
  s4:['…몽실이는 못 보내요.'],f1:['…초코는 안 돼요.'],n7:['이름이 생긴 무기는,','아무도 쏠 수 없었습니다.'],
- g6:['발…! …와.'],f2:['…이 노래 아세요?'],s5:['헐 이거 제 최애곡인데.'],n8:['그날 양국은 포탄 대신,','플레이리스트를 주고받았습니다.'],
+ g6a:['발…!'],g6b:['…와.'],f2:['…이 노래 아세요?'],s5:['헐 이거 제 최애곡인데.'],n8:['그날 양국은 포탄 대신,','플레이리스트를 주고받았습니다.'],
  g7:['내일 새벽 총공격, 다들 괜찮죠?'],yes:['네 좋아요~!'],n9:['그날 들은 "네 좋아요"는,','취소의 시작이었습니다.'],
  e4:['그럼… 다음에 봬요!'],g8:['네! 다음에 봬요!'],n10:['전쟁 3년째, 사상자 0명.','양국은 아직도,','날짜를 조율하고 있습니다.'],
 };
@@ -693,6 +693,7 @@ S[5]=()=>{
   const glow=glowSprite('rgba(255,190,110,1)',28);glow.position.set(-58,8,0);scene.add(glow);
   const G=general(r,GEN);G.position.set(4,0,4.2);G.rotation.y=0.75;scene.add(G);
   const bG=bubA(G,'발…!',{y:2.45,size:0.003}),bW=bubA(G,'…와',{y:2.45,size:0.003});
+  const eyes=[];G.userData.head.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&Math.abs(o.geometry.parameters.height-0.07)<0.001)eyes.push(o)});
   const wash=div('sunwash');wash.style.cssText='position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,rgba(255,170,90,.75),rgba(255,200,120,.25) 45%,rgba(255,200,120,0) 70%);opacity:0';ui.prepend(wash);
   const flashes=[];const phoneM=()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.26,0.03),lamb(0x22222a));const sc=new THREE.Mesh(new THREE.PlaneGeometry(0.13,0.23),basic(0xbfe3ff));sc.position.z=-0.017;sc.rotation.y=Math.PI;m.add(sc);const f=glowSprite('rgba(255,255,255,1)',0.9);f.position.z=0.05;m.add(f);flashes.push({f,ph:Math.random()*10});return m};
   // 걸어 나와 앉는 사람들: 양쪽 진영에서 출발 → 국경선 근처 노을 쪽(-x)을 보고 앉음
@@ -718,18 +719,20 @@ S[5]=()=>{
   const walkTo=(p,from,to,t0,t1,t)=>{const k=clamp01((t-t0)/(t1-t0));p.position.lerpVectors(from,to,ease(k));
     if(k<=0){standPose(p);p.rotation.y=Math.atan2(-1,0)}else if(k<1){walkPose(p,(t-t0)*9,0.5);const dx=to.x-from.x,dz=to.z-from.z;p.rotation.y=Math.atan2(dx,dz)}else{sitPose(p);p.rotation.y=-Math.PI/2}return k};
   return t=>{
-    const k=ease((t-SS)/1.4);
+    const k=ease((t-SS)/1.0);
     setSky(lerpCol('#93b2d6','#ff9f7a',k),lerpCol('#e3ebf3','#ffe0b0',k)+' 70%');
     fog.color.set(lerpCol('#dde6ef','#ffd2a8',k));hemi.color.set(lerpCol('#ffffff','#ffd9b8',k));sun.color.set(lerpCol('#ffffff','#ffb070',k));sun.intensity=1.5+k*0.8;
     SUN.position.y=8-k*3.5;glow.position.y=SUN.position.y;glow.material.opacity=k;
-    // 장군: 발…! → 빛이 얼굴에 확 → 눈부셔서 손으로 가리고 빛 쪽으로 고개 → …와
-    standPose(G);const g6=at(5,'g6');const fl=clamp01((t-SS)/0.25);
-    wash.style.opacity=t<TP?fl*(t<SS+0.9?1:0.6):0;
-    setFace(G,t>SS+0.9);
+    // 장군: 발…! → 햇빛이 눈에 확 → 눈 질끈+손 가림 → 천천히 고개 돌려 봄 → …와
+    standPose(G);const g6=at(5,'g6a'),LK=E.look,G6B=at(5,'g6b');const fl=clamp01((t-SS)/0.15);
+    wash.style.opacity=t<TP?(t<LK?fl:0.55+0.45*(1-ease((t-LK)/0.6))):0;
+    setFace(G,t>G6B);
+    const sq=t>SS&&t<LK+0.5?1:0;eyes.forEach(e=>e.scale.y=sq?0.22:1);
     if(t<SS)G.userData.arms[1].rotation.x=-2.9*ease((t-g6+0.2)/0.2);
-    else{G.userData.arms[1].rotation.x=-2.9*(1-ease((t-SS)/0.5));const sh=t<SS+0.9?ease((t-SS)/0.2):1-ease((t-SS-0.9)/0.4);G.userData.arms[0].rotation.x=-2.5*sh;G.userData.arms[0].rotation.z=-0.6*sh}
-    G.userData.head.rotation.y=-1.0*ease((t-SS-0.1)/0.5);G.userData.head.rotation.x=t>SS&&t<SS+0.9?0.12:0;
-    show(bG,t,g6,SS+0.05);show(bW,t,SS+0.95,TP+0.3);
+    else{G.userData.arms[1].rotation.x=-2.9*(1-ease((t-SS)/0.35));const sh=t<LK?ease((t-SS)/0.18):1-ease((t-LK-0.3)/0.5);G.userData.arms[0].rotation.x=-2.5*sh;G.userData.arms[0].rotation.z=-0.6*sh}
+    G.userData.head.rotation.y=-1.0*ease((t-LK)/0.8);G.userData.head.rotation.x=t>SS&&t<LK?0.15+Math.sin(t*20)*0.01:0;
+    G.userData.hip.position.y=0.8-(t>SS&&t<LK?0.03:0);
+    show(bG,t,g6,SS+0.05);show(bW,t,G6B,TP+0.3);
     G.visible=t<TP;flashes.forEach(q=>{q.f.visible=t>TP&&t<TW+1.6&&Math.sin(t*9+q.ph*7)>0.93});
     // 다 같이 폰 꺼내 노을 사진 → 명당 찾아 걸어 나옴 → 앉음
     walkers.forEach(q=>{const kk=walkTo(q.p,q.from,q.to,TW+q.d,TW+q.d+1.6,t);setFace(q.p,true);
@@ -752,7 +755,7 @@ S[5]=()=>{
     const ph=t<TP?0:Math.round(3412*ease((t-TP)/1.6));const sh=t<TSH?0:Math.round(3000*ease((t-TSH)/2.4));
     ch.textContent=t<TSH?`포탄 0발 · 노을 사진 ${fmt(ph)}장`:`포탄 0발 · 플리 공유 ${fmt(sh)}건`;chipPop(ch,t,t<TSH?TP:TSH);ch.style.opacity=t>TP&&!(t>TS+0.9&&t<TSH)?1:0;
     toasts.forEach((d,i)=>{const t0=TSH+0.15+i*0.35;d.style.opacity=t>t0?1:0;d.style.transform=`translateY(${(1-ease((t-t0)/0.25))*-60}px)`});
-    caption(5,t);{const cap=ui.querySelector('.cap');if(cap)cap.style.visibility=(t>endOf(5,'g6',0.5)&&t<F2-0.05)?'hidden':'visible'}renderer.render(scene,C);
+    caption(5,t);{const cap=ui.querySelector('.cap');if(cap)cap.style.visibility=(t>endOf(5,'g6b',0.5)&&t<F2-0.05)?'hidden':'visible'}renderer.render(scene,C);
   };
 };
 
