@@ -706,6 +706,15 @@ S[5]=()=>{
   const esFrom=new THREE.Vector3(0.6,0,-1.65),esTo=new THREE.Vector3(-0.5,0,-0.4);
   const esPh=phoneM();ES.userData.arms[1].add(esPh);esPh.position.set(0,-0.66,0.08);
   const bF=bubE(ES,'사진 찍어 드릴까요?',{y:2.15,size:0.0014}),bA=bubA(MS,'헐 네 감사합니당!',{y:1.8,size:0.0014});
+  // 서로 찍어 주기 3컷 (국경선을 따라 노을 쪽으로)
+  const mk=(side,x,z,ry)=>{const p=soldier(r,side>0?ALLY:FOE);p.position.set(x,0,z);p.rotation.y=ry;scene.add(p);return p};
+  const v1={ph:mk(-1,-4.2,-1.3,0),subs:[mk(1,-4.75,1.0,Math.PI),mk(1,-4.0,1.0,Math.PI)]};
+  const v2={ph:mk(1,-7.4,1.3,Math.PI),subs:[mk(-1,-8.1,-1.0,0),mk(-1,-7.45,-1.0,0),mk(-1,-6.8,-1.0,0)]};
+  const v3={subs:[mk(1,-10.6,0.42,Math.PI/2),mk(-1,-10.6,-0.42,Math.PI/2)]};
+  [v1,v2].forEach(v=>{const m=phoneM();v.ph.userData.arms[1].add(m);m.position.set(0,-0.66,0.08);v.m=m});
+  {const m=phoneM();v3.subs[0].userData.arms[0].add(m);m.position.set(0,-0.66,0.08);v3.m=m}
+  const vflash=div('vflash');vflash.style.cssText='position:absolute;inset:0;background:#fff;opacity:0';
+  const tagV=div('pill','');tagV.style.top='345px';tagV.style.background='#7f9b5a';tagV.style.opacity=0;
   const E=EV(5);const C=cam(46);const ch=chip('노을 감상 10분째');
   const frame=div('polaroid','<b>찰칵</b>');frame.style.cssText='position:absolute;left:110px;top:300px;width:860px;height:1000px;border:34px solid #fff;border-bottom-width:150px;box-shadow:0 20px 60px rgba(0,0,0,.35);box-sizing:border-box;opacity:0;display:flex;align-items:flex-end;justify-content:center';
   frame.querySelector('b').style.cssText='position:absolute;bottom:-118px;font-size:64px;font-weight:900;color:#2b2b3a';
@@ -742,6 +751,16 @@ S[5]=()=>{
     else{standPose(ES);ES.position.copy(esTo);ES.rotation.y=t<TP?-0.6:-Math.PI*0.25;ES.visible=!(t>=TP&&t<TWD);esPh.visible=t>F3+0.6;ES.userData.arms[1].rotation.x=t>F3+0.6?-1.5:0}
     setFace(ES,true);
     show(bF,t,F3,S6);show(bA,t,S6,TP+0.2);
+    // 서로 찍어 주기 3컷
+    const VT=[TWD,TWD+1.3,TWD+2.6,TWD+3.9];const vi=t<VT[0]?-1:t<VT[1]?0:t<VT[2]?1:t<VT[3]?2:3;
+    [v1,v2].forEach(v=>{standPose(v.ph);setFace(v.ph,true);v.ph.userData.arms[1].rotation.x=-1.55;v.ph.userData.head.rotation.x=0.1});
+    v1.subs.forEach((p,i)=>{standPose(p);setFace(p,true);p.userData.arms[i?0:1].rotation.x=-0.3;p.userData.arms[i?0:1].rotation.z=(i?-2.5:2.5);p.userData.head.rotation.z=i?-0.15:0.15});
+    v2.subs.forEach((p,i)=>{standPose(p);setFace(p,true);p.userData.arms[0].rotation.z=-0.6;p.userData.arms[1].rotation.z=0.6;p.userData.hip.position.y=0.8+(i===1?0.05:0)});
+    v3.subs.forEach((p,i)=>{standPose(p);setFace(p,true);p.userData.head.rotation.z=i?0.22:-0.22});
+    v3.subs[0].userData.arms[0].rotation.x=-1.9;v3.subs[0].userData.arms[0].rotation.z=-0.2;v3.subs[1].userData.arms[1].rotation.z=2.4;v3.subs[1].userData.arms[1].rotation.x=-0.3;
+    const fk=vi>=0&&vi<3?t-VT[vi]:9;vflash.style.opacity=fk>0.7&&fk<0.95?1-(fk-0.7)/0.25:0;
+    tagV.style.opacity=vi>=0&&vi<3?1:0;tagV.textContent=['적군이 아군을 찰칵','아군이 적군을 찰칵','아군·적군 같이 셀카'][Math.max(0,Math.min(2,vi))];
+    tagV.style.background=vi===0?'#7c74b8':vi===1?'#7f9b5a':'#ff8fb3';
     // 찰칵: 하얀 플래시 → 폴라로이드 프레임
     vf.style.opacity=t>TP+0.1&&t<TSN?1:0;
     white.style.opacity=t>TSN&&t<TSN+0.25?1-(t-TSN)/0.25:0;
@@ -752,7 +771,10 @@ S[5]=()=>{
     else if(t<F3-0.2){const kk=ease((t-TW-0.6)/(F3-TW-0.8));C.fov=46;C.updateProjectionMatrix();C.position.set(-6.5+kk*0.5,1.85,0.1);C.lookAt(0,1.4,-0.1)}
     else if(t<TP){C.fov=42;C.updateProjectionMatrix();C.position.set(-6.0,1.75,0.1);C.lookAt(0,1.45,0.05)}
     else if(t<TWD){const kk=ease((t-TP)/1.2);C.fov=42;C.updateProjectionMatrix();C.position.set(0.8,1.7,-0.3);C.lookAt(-2.3,1.5,0.45)}
-    else{const kk=ease((t-TWD)/3.5);C.fov=55;C.updateProjectionMatrix();C.position.set(7.5+kk*2,2.6+kk*2.5,0);C.lookAt(-1,1.0,0)}
+    else if(vi===0){const kk=ease((t-VT[0])/1.3);C.fov=42;C.updateProjectionMatrix();C.position.set(-2.9+kk*0.1,2.55,-3.2+kk*0.3);C.lookAt(-4.4,1.3,1.0)}
+    else if(vi===1){const kk=ease((t-VT[1])/1.3);C.fov=44;C.updateProjectionMatrix();C.position.set(-6.0,2.55,3.3-kk*0.3);C.lookAt(-7.45,1.25,-1.0)}
+    else if(vi===2){const kk=ease((t-VT[2])/1.3);C.fov=44;C.updateProjectionMatrix();C.position.set(-7.6-kk*0.2,1.95,0);C.lookAt(-10.6,1.6,0)}
+    else{const kk=ease((t-VT[3])/1.0);C.fov=55;C.updateProjectionMatrix();C.position.set(7.5+kk*2,2.6+kk*2.5,0);C.lookAt(-1,1.0,0)}
     // 칩
     let txt='',on=false,t0=TST+0.3;
     if(t>=TST+0.3&&t<F3-0.2){txt='노을 감상 10분째';on=true}

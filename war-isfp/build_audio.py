@@ -213,7 +213,8 @@ def sfx(si, ev):
         ev['pose'] = round(en('s6', 0.2), 3)
         ev['snap'] = round(en('s6', 1.1), 3); place(b, shutter(0.35), en('s6', 1.1))
         ev['wide'] = round(en('s6', 1.7), 3)
-        for i in range(14): place(b, shutter(0.16), en('s6', 1.8) + i * 0.27 + rs.random() * 0.08)
+        for k in range(3): place(b, shutter(0.32), en('s6', 1.7 + 0.7 + k * 1.3))
+        for i in range(8): place(b, shutter(0.12), en('s6', 1.7 + 3.9) + i * 0.15 + rs.random() * 0.05)
     elif si == 6:
         ev['yes'] = round(vt('yes'), 3)
         ev['dawn'] = round(en('yes', 0.5), 3); place(b, alarm(0.08), en('yes', 0.5))
