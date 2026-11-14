@@ -292,7 +292,7 @@ S[4]=()=>{
   const AX=[-6,-3,0,3,6];const crew=[];
   for(const side of[1,-1]){const S=side>0?ALLY:FOE;
     AX.forEach((x,i)=>{const cn=cannon(side>0?0x667f48:0x7c74b8);cn.position.set(x,0,side*5.2);cn.rotation.y=side>0?Math.PI:0;scene.add(cn);
-      const p=soldier(r,S);const sx=x+(side>0?0.95:-0.95);p.position.set(sx,0,side*5.3);p.rotation.y=side>0?Math.PI+0.55:-0.55;scene.add(p);
+      const p=soldier(r,S);const sx=x+(side>0?0.95:-0.95);p.position.set(sx,0,side*5.3);p.rotation.y=Math.atan2(side>0?0.55:-0.55,side*-0.5);p.userData.face0=p.rotation.y;scene.add(p);
       const cr=crate();cr.position.set(sx+(side>0?0.55:-0.55),0,side*4.8);scene.add(cr);
       const sh=shell({name:side>0?(i===2?'몽실이':['콩이','보리','뭉치','두부','몽실이'][i]):(i===2?'초코':['구름','망고','쿠키','호떡','초코'][i]),pal:i%2?['#8fd0ff','#ff8fb3','#ffd84d','#9df2c8']:undefined,rib:i%2?'#5aa0ff':'#ff5a8a',style:side>0?'a':'b',col:side>0?0x8a8f6a:0x8a6a52});
       sh.position.set(sx+(side>0?0.55:-0.55),0.6,side*4.8);sh.rotation.y=side>0?Math.PI:0;scene.add(sh);shellSet(sh,0);
@@ -323,7 +323,7 @@ S[4]=()=>{
       else k=clamp01((t-S3+0.3-q.i*0.15)/1.6);
       shellSet(q.sh,k);setFace(p,t>S2);
       const drawing=t>TD&&t<TL&&(q===MS?true:t>S3-0.3);
-      if(drawing){p.userData.arms[1].rotation.x=-1.25+Math.sin(t*14+q.i)*0.08;p.userData.arms[1].rotation.z=0.25;p.userData.head.rotation.x=0.25}
+      if(drawing){p.userData.arms[1].rotation.x=-1.2+Math.sin(t*14+q.i)*0.08;p.userData.arms[1].rotation.z=-0.42;p.userData.head.rotation.x=0.35;p.userData.hip.rotation.x=0.22}else p.userData.hip.rotation.x=0;
       // D: 장전 → 끌어안기
       const hk=ease((t-TH-(me?0:0.3+q.i*0.05))/0.3);
       if(t>TH-(me?0:-0.3)&&hk>0){hug(p,hk);p.userData.head.rotation.x=0;if(!q.held&&hk>0.3){p.userData.hip.add(q.sh);q.sh.position.set(0,-0.28,0.32);q.sh.rotation.set(0,0,0);q.held=1}
