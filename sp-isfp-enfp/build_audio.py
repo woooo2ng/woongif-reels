@@ -109,6 +109,28 @@ e = place(5, 'n7', 7.45); D.append(e + 1.0)
 e = place(6, 'e4', 0.6)
 X += [(6, ping(0.08), e + 0.35)]
 e = place(6, 'e5', e + 2.0); D.append(e + 1.3)
+# ENFP가 눕는 순간부터 숲소리·새소리 (합성: 나뭇잎 바람 + 새 지저귐), 3.0초부터 서서히, 장면 끝에서 페이드아웃
+from scipy.signal import butter, sosfilt
+an = int((D[-1] - 3.0) * SR); tt = np.arange(an) / SR
+wind = sosfilt(butter(2, [250, 2200], 'bandpass', fs=SR, output='sos'), rs.standard_normal(an))
+wind *= (0.55 + 0.45 * np.sin(2 * np.pi * 0.23 * tt + 1.0) * np.sin(2 * np.pi * 0.11 * tt)) * 0.06
+birds = np.zeros(an)
+def chirp(f0, f1, d, vib=0):
+    n = int(d * SR); k = np.arange(n) / SR; f = np.linspace(f0, f1, n) + vib * np.sin(2 * np.pi * 28 * k)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.linspace(0, np.pi, n)) ** 2
+t = 0.4
+while t < an / SR - 0.6:
+    base = rs.uniform(2600, 4200); kind = rs.integers(0, 3)
+    if kind == 0: seq = [chirp(base, base * 1.35, 0.07) for _ in range(rs.integers(2, 5))]
+    elif kind == 1: seq = [chirp(base * 1.3, base * 0.9, 0.12, 180)]
+    else: seq = [chirp(base, base * 1.1, 0.05), chirp(base * 1.25, base * 0.95, 0.09)]
+    vol = rs.uniform(0.05, 0.11); p = int(t * SR)
+    for c in seq:
+        e = min(an, p + len(c)); birds[p:e] += c[:e - p] * vol; p += len(c) + int(0.045 * SR)
+    t += rs.uniform(0.45, 1.1)
+amb = (wind + birds).astype(np.float32)
+fi, fo = int(0.9 * SR), int(0.5 * SR); amb[:fi] *= np.linspace(0, 1, fi); amb[-fo:] *= np.linspace(1, 0, fo)
+X.append((6, amb, 3.0))
 # 6 엔딩 — 초인종, 불 끄기, 문자 전송, 내레이션, 엔드카드
 X += [(7, dingdong(), 0.3), (7, click(), 2.2), (7, send(), 3.6)]
 e = place(7, 'n6', 4.1); D.append(e + 3.0)
