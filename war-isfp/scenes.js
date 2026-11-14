@@ -422,6 +422,8 @@ S[5]=()=>{
     v2.subs.forEach((p,i)=>{standPose(p);setFace(p,true);p.userData.arms[0].rotation.z=-0.6;p.userData.arms[1].rotation.z=0.6;p.userData.hip.position.y=0.8+(i===1?0.05:0)});
     v3.subs.forEach((p,i)=>{standPose(p);setFace(p,true);p.userData.head.rotation.z=i?0.22:-0.22});
     v3.subs[0].userData.arms[0].rotation.x=-1.9;v3.subs[0].userData.arms[0].rotation.z=-0.2;v3.subs[1].userData.arms[1].rotation.z=2.4;v3.subs[1].userData.arms[1].rotation.x=-0.3;
+    {const all=[v1.ph,v2.ph,...v1.subs,...v2.subs,...v3.subs];all.forEach(p=>{if(p.userData.ry0==null)p.userData.ry0=p.rotation.y;if(t<TWD){standPose(p);p.userData.head.rotation.set(0,0,0);p.userData.hip.position.y=0.8;p.rotation.y=-Math.PI/2}else p.rotation.y=p.userData.ry0});
+     [v1.m,v2.m,v3.m].forEach(m=>m.visible=t>=TWD)}
     const fk=vi>=0&&vi<3?t-VT[vi]:9;vflash.style.opacity=fk>0.7&&fk<0.95?1-(fk-0.7)/0.25:0;
     tagV.style.opacity=vi>=0&&vi<3?1:0;tagV.textContent=['적군이 아군을 찰칵','아군이 적군을 찰칵','아군·적군 같이 셀카'][Math.max(0,Math.min(2,vi))];
     tagV.style.background=vi===0?'#7c74b8':vi===1?'#7f9b5a':'#ff8fb3';
