@@ -151,7 +151,7 @@ SC = [
     [('e2', 0.9), ('g4', 0.45), ('both', 0.35), ('n4', 0.5)],
     [('n5', 0.4)],
     [('g2', 0.3), ('n6', 0.25), ('s2', 0.5), ('s3', 1.1), ('g3', 0.5), ('s4', 0.3), ('f1', 0.4), ('n7', 0.3)],
-    [('g6a', 0.2), ('g6b', 2.0), ('f2', 6.4), ('s5', 0.3), ('n8', 0.5)],
+    [('g6a', 0.2), ('g6b', 2.0), ('f3', 4.4), ('s6', 0.3), ('n11', 2.2)],
     [('g7', 0.25), ('yes', 0.1), ('n9', 2.0)],
     [('e4', 2.7), ('g8', 0.25), ('n10', 1.4)],
 ]
@@ -209,16 +209,11 @@ def sfx(si, ev):
         ev['sunset'] = round(en('g6a', 0.1), 3); place(b, sparkle(0.18), en('g6a', 0.1))
         ev['look'] = round(vt('g6b', -0.8), 3)
         ev['stare'] = round(en('g6b', 0.35), 3)
-        ev['song'] = round(en('g6b', 1.8), 3)
-        ev['walk'] = round(en('g6b', 3.8), 3)
-        ev['meet'] = round(vt('f2', -0.8), 3); place(b, pop(0.15), vt('f2', -0.75))
-        st = en('g6b', 1.8); song = softsong(T - st, 0.14)
-        g = np.ones(len(song)); w0 = int((en('g6b', 3.8) - st) * SR); w1 = int((vt('f2', -0.8) - st) * SR)
-        g[:w0] = 0.35; g[w0:w1] = np.linspace(0.35, 1, max(1, w1 - w0)); song *= g
-        place(b, song, st)
-        ev['give'] = round(en('s5', 0.05), 3); place(b, pop(0.2), en('s5', 0.1))
-        ev['share'] = round(vt('n8', 0.3), 3)
-        for i in range(6): place(b, blip(990 + i * 30, 0.05), vt('n8', 0.3) + i * 0.35)
+        ev['walk'] = round(en('g6b', 2.0), 3)
+        ev['pose'] = round(en('s6', 0.2), 3)
+        ev['snap'] = round(en('s6', 1.1), 3); place(b, shutter(0.35), en('s6', 1.1))
+        ev['wide'] = round(en('s6', 1.7), 3)
+        for i in range(14): place(b, shutter(0.16), en('s6', 1.8) + i * 0.27 + rs.random() * 0.08)
     elif si == 6:
         ev['yes'] = round(vt('yes'), 3)
         ev['dawn'] = round(en('yes', 0.5), 3); place(b, alarm(0.08), en('yes', 0.5))

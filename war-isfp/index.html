@@ -147,7 +147,7 @@ const TXT={
  g2:['이번엔 연기 없다. 진짜 간다!!'],n6:['38번째 날,','드디어 양군이 국경에서 마주했습니다.'],
  s2:['가는 길 외롭지 않게…','꽃 하나만 그려줄게.'],s3:['너는 이제… 몽실이야.'],g3:['장전!!'],
  s4:['…몽실이는 못 보내요.'],f1:['…초코는 안 돼요.'],n7:['이름이 생긴 무기는,','아무도 쏠 수 없었습니다.'],
- g6a:['발…!'],g6b:['…와.'],f2:['…이 노래 아세요?'],s5:['헐 이거 제 최애곡인데.'],n8:['그날 양국은 포탄 대신,','플레이리스트를 주고받았습니다.'],
+ g6a:['발…!'],g6b:['…와.'],f3:['저기… 사진 찍어 드릴까요?'],s6:['헐 네 감사합니당'],n11:['그날 국경에서 가장 많이 터진 건,','카메라 셔터였습니다.'],
  g7:['내일 새벽 총공격, 다들 괜찮죠?'],yes:['네 좋아요~!'],n9:['그날 들은 "네 좋아요"는,','취소의 시작이었습니다.'],
  e4:['그럼… 다음에 봬요!'],g8:['네! 다음에 봬요!'],n10:['전쟁 3년째, 사상자 0명.','양국은 아직도,','날짜를 조율하고 있습니다.'],
 };
@@ -684,7 +684,7 @@ S[4]=()=>{
   };
 };
 
-// ===== 5. "발…!" 눈부심 → "…와." → 각자 진지에서 노을 멍 → 적진 스피커 노래가 바람 타고 → 소리 따라 다가감 → 철조망 앞 마주침 → 플리 공유 =====
+// ===== 5. "발…!" 눈부심 → "…와." → 다 같이 노을 멍 → 적 병사 "사진 찍어 드릴까요?" → 노을 배경 브이 → 찰칵 → 양군 서로 사진 =====
 S[5]=()=>{
   const scene=new THREE.Scene();const fog=new THREE.Fog(0xdde6ef,28,95);scene.fog=fog;
   const hemi=new THREE.HemisphereLight(0xffffff,0x8a8070,1.4);scene.add(hemi);const sun=new THREE.DirectionalLight(0xffffff,1.5);sun.position.set(-10,6,-2);scene.add(sun);
@@ -695,27 +695,28 @@ S[5]=()=>{
   const bG=bubA(G,'발…!',{y:2.45,size:0.003}),bW=bubA(G,'…와',{y:2.45,size:0.003});
   const eyes=[];G.userData.head.traverse(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&Math.abs(o.geometry.parameters.height-0.07)<0.001)eyes.push(o)});
   const wash=div('sunwash');wash.style.cssText='position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,rgba(255,170,90,.75),rgba(255,200,120,.25) 45%,rgba(255,200,120,0) 70%);opacity:0';ui.prepend(wash);
-  // 각자 진지에 앉아 노을 멍 (아군 z>0, 적군 z<0, 모두 노을 쪽 -x를 봄)
-  const crowd=[];for(const side of[1,-1])for(let i=0;i<14;i++){const p=soldier(r,side>0?ALLY:FOE);helmOff(p);sitPose(p);
-    const x=-0.6+(i%5)*1.25+r()*0.3,z=side*(2.4+Math.floor(i/5)*0.95+r()*0.3);if(side>0&&i===0)continue;p.position.set(x,0,z);p.rotation.y=-Math.PI/2;scene.add(p);
-    const rf=rifle();rf.position.set(x+0.3,0.05,z+side*0.35);rf.rotation.set(0,0.3,Math.PI/2);scene.add(rf);crowd.push({p,ph:r(),side})}
+  const flashes=[];const phoneM=()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.26,0.03),lamb(0x22222a));const sc=new THREE.Mesh(new THREE.PlaneGeometry(0.13,0.23),basic(0xbfe3ff));sc.position.z=-0.017;sc.rotation.y=Math.PI;m.add(sc);const f=glowSprite('rgba(255,255,255,1)',0.9);f.position.z=0.05;m.add(f);flashes.push({f,ph:Math.random()*10});return m};
+  // 양군: 각자 진지에 앉아 노을 멍 → 마지막엔 일어나 철조망 너머로 서로 사진
+  const crowd=[];for(const side of[1,-1])for(let i=0;i<14;i++){const p=soldier(r,side>0?ALLY:FOE);helmOff(p);
+    const x=-0.6+(i%5)*1.25+r()*0.3,z=side*(1.9+Math.floor(i/5)*0.95+r()*0.3);if(i===0)continue;p.position.set(x,0,z);scene.add(p);
+    const rf=rifle();rf.position.set(x+0.3,0.05,z+side*0.35);rf.rotation.set(0,0.3,Math.PI/2);scene.add(rf);
+    const ph=phoneM();p.userData.arms[1].add(ph);ph.position.set(0,-0.66,0.08);crowd.push({p,ph,ph0:r(),side,x,z})}
   const MS=soldier(r,ALLY),ES=soldier(r,FOE);helmOff(MS);helmOff(ES);scene.add(MS);scene.add(ES);
-  const msFrom=new THREE.Vector3(-1.6,0,2.5),msTo=new THREE.Vector3(-0.9,0,0.42);MS.position.copy(msFrom);
-  ES.position.set(-0.9,0,-0.42);ES.rotation.y=-Math.PI/2;
-  const spk=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.42,20),smooth(0x2b2b36));spk.rotation.z=Math.PI/2;spk.position.set(-0.9,0.17,-1.0);scene.add(spk);
-  const notes=[];for(let i=0;i<10;i++){const s=textSprite(i%2?'♪':'♫',90,i%3?'#fff3a8':'#ffffff',0.005);scene.add(s);notes.push({s,ph:i/10})}
-  const ebE=earbud(ES,1),ebM=earbud(MS,-1);ebM.visible=false;
-  const hand=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.08,0.06),smooth(0xffffff));scene.add(hand);hand.visible=false;
-  const bQ=[bubA(MS,'…!',{y:1.8,size:0.0018}),bubE(ES,'…!',{y:1.8,size:0.0018})];
-  const bF=bubE(ES,'이 노래 아세요?',{y:1.75,size:0.0013}),bA=bubA(MS,'헐 제 최애곡인데',{y:1.75,size:0.0013});
-  const E=EV(5);const C=cam(46);const ch=chip('노을 감상 0분째');
-  const toasts=[0,1,2].map(i=>{const d=div('toast',`<i>♪</i><div>플레이리스트가 공유됐어요<br><small style="font-size:30px;color:#777">${['적군 병사 412','아군 병사 77','적군 병사 1,029'][i]} · 「노을 감성 모음」</small></div>`);d.style.top=(330+i*150)+'px';return d});
-  const SS=E.sunset,LK=E.look,TST=E.stare,TSONG=E.song,TW=E.walk,TM=E.meet,TG=E.give,TSH=E.share,F2=at(5,'f2'),S5=at(5,'s5'),G6B=at(5,'g6b'),g6=at(5,'g6a');
+  const msSit=new THREE.Vector3(-1.0,0,0.5),msPose=new THREE.Vector3(-2.3,0,0.45);
+  const esFrom=new THREE.Vector3(-0.6,0,-1.9),esTo=new THREE.Vector3(-0.5,0,-0.4);
+  const esPh=phoneM();ES.userData.arms[1].add(esPh);esPh.position.set(0,-0.66,0.08);
+  const bF=bubE(ES,'사진 찍어 드릴까요?',{y:2.15,size:0.0014}),bA=bubA(MS,'헐 네 감사합니당!',{y:1.8,size:0.0014});
+  const E=EV(5);const C=cam(46);const ch=chip('노을 감상 10분째');
+  const frame=div('polaroid','<b>찰칵</b>');frame.style.cssText='position:absolute;left:110px;top:300px;width:860px;height:1000px;border:34px solid #fff;border-bottom-width:150px;box-shadow:0 20px 60px rgba(0,0,0,.35);box-sizing:border-box;opacity:0;display:flex;align-items:flex-end;justify-content:center';
+  frame.querySelector('b').style.cssText='position:absolute;bottom:-118px;font-size:64px;font-weight:900;color:#2b2b3a';
+  const vf=div('vf','<i></i>');vf.style.cssText='position:absolute;left:90px;top:200px;width:900px;height:1000px;border:5px solid rgba(255,255,255,.85);border-radius:30px;box-sizing:border-box;opacity:0';vf.querySelector('i').style.cssText='position:absolute;left:50%;bottom:-150px;transform:translateX(-50%);width:110px;height:110px;border-radius:50%;background:#fff;border:10px solid rgba(255,255,255,.5);box-shadow:0 0 0 6px rgba(0,0,0,.15)';
+  const white=div('white');white.style.cssText='position:absolute;inset:0;background:#fff;opacity:0';
+  const SS=E.sunset,LK=E.look,TST=E.stare,TW=E.walk,TP=E.pose,TSN=E.snap,TWD=E.wide,F3=at(5,'f3'),S6=at(5,'s6'),G6B=at(5,'g6b'),g6=at(5,'g6a');
   return t=>{
     const k=ease((t-SS)/1.0);
     setSky(lerpCol('#93b2d6','#ff9f7a',k),lerpCol('#e3ebf3','#ffe0b0',k)+' 70%');
     fog.color.set(lerpCol('#dde6ef','#ffd2a8',k));hemi.color.set(lerpCol('#ffffff','#ffd9b8',k));sun.color.set(lerpCol('#ffffff','#ffb070',k));sun.intensity=1.5+k*0.8;
-    SUN.position.y=8-k*3.5-ease((t-TST)/12)*1.5;glow.position.y=SUN.position.y;glow.material.opacity=k;
+    SUN.position.y=8-k*3.5-ease((t-TST)/14)*1.2;glow.position.y=SUN.position.y;glow.material.opacity=k;
     // 장군
     standPose(G);G.visible=t<TST;const fl=clamp01((t-SS)/0.15);
     wash.style.opacity=t<TST?(t<LK?fl:0.55+0.45*(1-ease((t-LK)/0.6))):0;
@@ -724,40 +725,40 @@ S[5]=()=>{
     else{G.userData.arms[1].rotation.x=-2.9*(1-ease((t-SS)/0.35));const sh=t<LK?ease((t-SS)/0.18):1-ease((t-LK-0.3)/0.5);G.userData.arms[0].rotation.x=-2.5*sh;G.userData.arms[0].rotation.z=-0.6*sh}
     G.userData.head.rotation.y=-1.0*ease((t-LK)/0.8);G.userData.head.rotation.x=t>SS&&t<LK?0.15:0;
     show(bG,t,g6,SS+0.05);show(bW,t,G6B,TST+0.2);
-    // 노을 멍 + 노래에 고개 까딱
-    crowd.forEach(q=>{sitPose(q.p);setFace(q.p,true);q.p.userData.arms.forEach(a=>a.rotation.x=-0.5);
-      const nod=t>TSONG+0.6+q.ph*0.6?Math.sin((t-TSONG)*5+q.ph*2)*0.12:0;q.p.userData.head.rotation.x=nod;q.p.userData.head.rotation.z=nod*0.4});
-    // 적 병사(스피커 주인)
-    sitPose(ES);setFace(ES,true);ES.userData.arms.forEach(a=>a.rotation.x=-0.5);ES.userData.head.rotation.x=t>TSONG&&t<TM?Math.sin((t-TSONG)*5)*0.1:0;
-    spk.visible=t>TSONG-0.4;
-    // 아군 병사: 고개 까딱 → 일어나서 소리 따라감 → 철조망 앞에서 앉음
-    const wk=clamp01((t-TW)/(TM-TW-0.1));
-    if(t<TW){MS.position.copy(msFrom);sitPose(MS);MS.rotation.y=-Math.PI/2;MS.userData.arms.forEach(a=>a.rotation.x=-0.5);setFace(MS,true);
-      const nd=t>TSONG+0.3?Math.sin((t-TSONG)*5)*0.14:0;MS.userData.head.rotation.x=nd;MS.userData.head.rotation.y=t>TSONG+1.0?0.5*ease((t-TSONG-1.0)/0.4):0}
-    else if(wk<1){standPose(MS);MS.position.lerpVectors(msFrom,msTo,ease(wk));walkPose(MS,(t-TW)*6,0.4);MS.rotation.y=Math.atan2(msTo.x-msFrom.x,msTo.z-msFrom.z);MS.userData.head.rotation.set(0,0,0);setFace(MS,true)}
-    else{MS.position.copy(msTo);sitPose(MS);MS.rotation.y=-Math.PI/2;MS.userData.arms.forEach(a=>a.rotation.x=-0.5);setFace(MS,true)}
-    // 마주침: 서로 고개 돌림
-    const face=t>TM&&t<F2+0.2?1:(t>=F2+0.2&&t<TG?0.6:0);MS.userData.head.rotation.y=t>=TW?face*0.9:MS.userData.head.rotation.y;ES.userData.head.rotation.y=-face*0.9;
-    bQ.forEach(b=>show(b,t,TM+0.05,F2-0.05));show(bF,t,F2,S5);show(bA,t,S5,TSH+0.4);
-    // 이어폰 건네기 (철조망 사이)
-    const gv=clamp01((t-TG+0.5)/0.5);ES.userData.arms[0].rotation.x=t>TG-0.5&&t<TG+0.6?-1.2*Math.sin(gv*Math.PI/2):-0.5;
-    ebM.visible=t>TG;hand.visible=t>TG-0.5&&t<TG;hand.position.set(-1.05,1.15,-0.25+gv*0.5);
-    notes.forEach(q=>{const lt=((t-TSONG)*0.35+q.ph)%1;q.s.visible=t>TSONG;q.s.position.set(-0.9+Math.sin(q.ph*20)*0.4+lt*1.5,0.6+lt*1.2,-1.0+lt*3.6);const s=Math.sin(lt*Math.PI);q.s.scale.set(q.s.userData.base[0]*s,q.s.userData.base[1]*s,1)});
+    // 군중: 노을 멍(앉음) → 와이드에서 일어나 철조망 너머로 서로 찍어 줌
+    crowd.forEach(q=>{const p=q.p;setFace(p,true);
+      if(t<TWD){sitPose(p);p.position.set(q.x,0,q.z);p.rotation.y=-Math.PI/2;p.userData.arms.forEach(a=>a.rotation.x=-0.5);q.ph.visible=false}
+      else{standPose(p);p.position.set(q.x,0,q.z*0.55);p.rotation.y=q.side>0?Math.PI:0;const pose=(Math.floor(q.ph0*10)%2)===0;
+        if(pose){q.ph.visible=true;p.userData.arms[1].rotation.x=-1.5}else{q.ph.visible=false;p.userData.arms[1].rotation.x=-2.6;p.userData.arms[1].rotation.z=0.3;p.userData.head.rotation.z=0.15}}});
+    flashes.forEach(q=>{q.f.visible=t>TWD&&Math.sin(t*9+q.ph*7)>0.9});
+    // 아군 병사: 앉아서 노을 → 사진 제안 → 일어나 노을 배경으로 브이
+    if(t<TP){MS.position.copy(msSit);sitPose(MS);MS.rotation.y=-Math.PI/2;MS.userData.arms.forEach(a=>a.rotation.x=-0.5);setFace(MS,true);MS.userData.head.rotation.y=t>F3-0.2?-0.9*ease((t-F3+0.2)/0.3):0}
+    else{const kk=ease((t-TP)/0.4);standPose(MS);MS.position.lerpVectors(msSit,msPose,kk);MS.rotation.y=Math.PI/2*kk-Math.PI/2*(1-kk);setFace(MS,true);MS.userData.head.rotation.set(0,0,0.18*kk);
+      MS.userData.arms[1].rotation.x=-0.4*kk;MS.userData.arms[1].rotation.z=2.5*kk;MS.userData.arms[0].rotation.x=-0.4*kk;MS.userData.arms[0].rotation.z=-2.5*kk}
+    // 적 병사: 일어나 다가옴 → 폰 들고 찍어 줌
+    const wk=clamp01((t-TW)/(F3-0.3-TW));
+    if(t<TW){ES.position.copy(esFrom);sitPose(ES);ES.rotation.y=-Math.PI/2;ES.userData.arms.forEach(a=>a.rotation.x=-0.5);esPh.visible=false}
+    else if(wk<1){standPose(ES);ES.position.lerpVectors(esFrom,esTo,ease(wk));walkPose(ES,(t-TW)*6,0.4);ES.rotation.y=Math.atan2(esTo.x-esFrom.x,esTo.z-esFrom.z);esPh.visible=false}
+    else{standPose(ES);ES.position.copy(esTo);ES.rotation.y=t<TP?-0.6:-Math.PI*0.25;ES.visible=!(t>=TP&&t<TWD);esPh.visible=t>F3+0.6;ES.userData.arms[1].rotation.x=t>F3+0.6?-1.5:0}
+    setFace(ES,true);
+    show(bF,t,F3,S6);show(bA,t,S6,TP+0.2);
+    // 찰칵: 하얀 플래시 → 폴라로이드 프레임
+    vf.style.opacity=t>TP+0.1&&t<TSN?1:0;
+    white.style.opacity=t>TSN&&t<TSN+0.25?1-(t-TSN)/0.25:0;
+    frame.style.opacity=t>TSN&&t<TWD?1:0;frame.style.transform=`scale(${0.92+0.08*ease((t-TSN)/0.2)}) rotate(-2deg)`;
     // 카메라
     if(t<TST){C.fov=40;C.updateProjectionMatrix();C.position.set(6.2,2.3,6.2);C.lookAt(4,2.25,4.2)}
-    else if(t<TSONG+0.9){const kk=ease((t-TST)/(TSONG+0.9-TST));C.fov=62;C.updateProjectionMatrix();C.position.set(11-kk*1.5,2.8,0);C.lookAt(-4,1.6,0)}
-    else if(t<TW+0.2){const kk=ease((t-TSONG-0.9)/1.5);C.fov=44;C.updateProjectionMatrix();C.position.set(-4.4+kk*0.3,1.45,2.3);C.lookAt(-1.0,1.3,2.6)}
-    else if(t<TM){const kk=ease((t-TW-0.2)/(TM-TW-0.2));C.fov=50;C.updateProjectionMatrix();C.position.set(-2.8,2.0,-2.4+kk*0.3);C.lookAt(-1.2,1.0,1.2-kk*0.6)}
-    else if(t<TSH){const kk=ease((t-TM)/4);C.fov=48;C.updateProjectionMatrix();C.position.set(-4.2+kk*0.4,1.55,0);C.lookAt(0,1.35,0)}
-    else{const kk=ease((t-TSH)/3);C.fov=50;C.updateProjectionMatrix();C.position.set(-3.8-kk*2,1.6+kk*2.6,kk*1.5);C.lookAt(1,1.0,0)}
-    // 칩: 노을 감상 10분째 → 30분째 → 플리 공유
+    else if(t<TW+0.6){const kk=ease((t-TST)/(TW+0.6-TST));C.fov=62;C.updateProjectionMatrix();C.position.set(11-kk*1.5,2.8,0);C.lookAt(-4,1.6,0)}
+    else if(t<F3-0.2){const kk=ease((t-TW-0.6)/(F3-TW-0.8));C.fov=48;C.updateProjectionMatrix();C.position.set(-4.0,1.7,1.6-kk*0.6);C.lookAt(0,1.3,-0.4)}
+    else if(t<TP){C.fov=42;C.updateProjectionMatrix();C.position.set(-6.0,1.75,0.1);C.lookAt(0,1.45,0.05)}
+    else if(t<TWD){const kk=ease((t-TP)/1.2);C.fov=42;C.updateProjectionMatrix();C.position.set(0.8,1.7,-0.3);C.lookAt(-2.3,1.5,0.45)}
+    else{const kk=ease((t-TWD)/3.5);C.fov=55;C.updateProjectionMatrix();C.position.set(7.5+kk*2,2.6+kk*2.5,0);C.lookAt(-1,1.0,0)}
+    // 칩
     let txt='',on=false,t0=TST+0.3;
-    if(t>=TST+0.3&&t<TSONG+0.9){txt='노을 감상 10분째';on=true}
-    else if(t>=TSONG+0.9&&t<TM){txt='노을 감상 30분째';on=true;t0=TSONG+0.9}
-    else if(t>=TSH){txt=`포탄 0발 · 플리 공유 ${fmt(Math.round(3000*ease((t-TSH)/2.4)))}건`;on=true;t0=TSH}
+    if(t>=TST+0.3&&t<F3-0.2){txt='노을 감상 10분째';on=true}
+    else if(t>=TWD){txt=`포탄 0발 · 사진 ${fmt(Math.round(3412*ease((t-TWD)/2.4)))}장`;on=true;t0=TWD}
     ch.textContent=txt;chipPop(ch,t,t0);ch.style.opacity=on?1:0;ch.style.visibility=on?'visible':'hidden';
-    toasts.forEach((d,i)=>{const t0=TSH+0.15+i*0.35;d.style.opacity=t>t0?1:0;d.style.transform=`translateY(${(1-ease((t-t0)/0.25))*-60}px)`});
-    caption(5,t);{const cap=ui.querySelector('.cap');if(cap)cap.style.visibility=(t>endOf(5,'g6b',0.5)&&t<F2-0.05)?'hidden':'visible'}renderer.render(scene,C);
+    caption(5,t);{const cap=ui.querySelector('.cap');if(cap)cap.style.visibility=(t>endOf(5,'g6b',0.5)&&t<F3-0.05)||(t>endOf(5,'s6',0.3)&&t<at(5,'n11')-0.05)?'hidden':'visible'}renderer.render(scene,C);
   };
 };
 
