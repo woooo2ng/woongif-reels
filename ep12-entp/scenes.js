@@ -80,30 +80,31 @@ S[0]=()=>{
   const ch=chip('러닝타임 2시간');ch.style.opacity=0;
   return t=>{
     const c1=capAt(0,1),c2=capAt(0,2),c3=capAt(0,3),c4=capAt(0,4);
-    const cutB=t>=c3&&t<c4-0.1,cutC=t>=c4-0.1;
-    // 스크린
-    const sp=t<c3+(c4-c3)*0.3?1:(t<c3+(c4-c3)*0.62?2:4);const credits=cutC&&t>c4+0.7;
+    // 컷: A(0~c2) 관객 뒤 스크린 2x · B(c2~c3) 관객 정면 · C(c3~c4) 스크린 2x→4x · D(c4~) 크레딧
+    const front=t>=c2&&t<c3;const m=c4-c3;
+    const sp=t<c2?2:(t<c3+m*0.4?2:4);const credits=t>c4+0.7;
     const sc=scr.userData;drawFilm(sc.ctx,800,400,t,sp,credits,clamp01((t-c4-0.7)/2.2));sc.t.needsUpdate=true;
     for(const q of ppl){
-      if(cutC&&t>c4+0.9){const k=clamp01((t-c4-0.9)/0.3);standPose(q.p);q.p.userData.hip.position.y=0.8+Math.abs(Math.sin(t*10+q.ph))*0.05;
+      if(t>c4+0.9){const k=clamp01((t-c4-0.9)/0.3);standPose(q.p);q.p.userData.hip.position.y=0.8+Math.abs(Math.sin(t*10+q.ph))*0.05;
         armUp(q.p,0,k);armUp(q.p,1,k);q.p.userData.arms[0].rotation.z=-0.5+Math.sin(t*16+q.ph)*0.35;q.p.userData.arms[1].rotation.z=0.5-Math.sin(t*16+q.ph)*0.35;}
-      else{sitPose(q.p);const jig=t>c1?1:0;q.p.userData.legs[0].rotation.x=-Math.PI/2+Math.sin(t*28+q.ph)*0.12*jig;q.p.userData.legs[1].rotation.x=-Math.PI/2-Math.sin(t*28+q.ph)*0.12*jig;
-        q.p.userData.head.rotation.y=jig*Math.sin(t*2+q.ph)*0.25;
-        if(!q.pc)q.p.userData.arms[1].rotation.x=-0.9-jig*0.6;}
+      else{sitPose(q.p);const jig=1;q.p.userData.legs[0].rotation.x=-Math.PI/2+Math.sin(t*28+q.ph)*0.12*jig;q.p.userData.legs[1].rotation.x=-Math.PI/2-Math.sin(t*28+q.ph)*0.12*jig;
+        q.p.userData.head.rotation.y=jig*Math.sin(t*2+q.ph)*0.25;if(!q.pc)q.p.userData.arms[1].rotation.x=-1.5;}
     }
-    showB(b1,t,c2,c3);others.forEach((o,j)=>showB(o.b,t,c1+0.3+j*0.35,c3));
-    // 컷
-    if(!cutB&&!cutC){cam.position.set(0,2.7,-5.4);cam.lookAt(0,3.05,1.6)}
-    else{const u=t-c3;cam.position.set(0,3.6,8.2-u*0.2);cam.lookAt(0,2.7,-7)}
-    proj.children.forEach(o=>{if(o.userData.s)o.rotation.x=t*sp*3});
+    showB(b1,t,c2+0.05,c3);others.forEach((o,j)=>showB(o.b,t,c2+0.25+j*0.25,c3));
+    if(front){cam.position.set(0,2.7,-5.4);cam.lookAt(0,3.05,1.6)}
+    else if(t<c2){cam.position.set(0,3.6,8.4-t*0.08);cam.lookAt(0,3.55,-7)}
+    else{const u=t;cam.position.set(0,3.6,8.2-u*0.08);cam.lookAt(0,2.7,-7)}
     tag.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
     const tf=1-clamp01((t-c2+0.2)/0.2);
     tag.style.opacity=tf;t1.style.transform=`scale(${pop((t-0.1)/0.35)})`;t1.style.opacity=clamp01((t-0.1)/0.1)*tf;
     t2.style.transform=`scale(${pop((t-0.35)/0.4)})`;t2.style.opacity=clamp01((t-0.35)/0.1)*tf;
-    // 2x 버튼
-    if(cutB){const m=(c4-c3);const sw=[c3,c3+m*0.3,c3+m*0.62];const k=t<sw[1]?0:(t<sw[2]?1:2);btn.textContent=['1x','2x','4x'][k];
-      btn.style.opacity=1;btn.style.transform=`scale(${pop((t-sw[k])/0.25)})`}else btn.style.opacity=0;
-    if(cutC){ch.textContent=t>c4+0.8?'러닝타임 2시간 → 2분':'러닝타임 2시간';chipPop(ch,t,c4)}else ch.style.opacity=0;
+    // 배속 버튼: 0.8초부터 2x, C컷에서 2x→4x
+    if(t<c2){btn.textContent='2x';btn.style.top='790px';btn.style.width=btn.style.height='300px';btn.style.marginLeft='-150px';btn.style.fontSize='130px';btn.style.opacity=t>0.8?1:0;btn.style.transform=`scale(${pop((t-0.8)/0.25)})`}
+    else if(t>=c3&&t<c4-0.1){const sw=c3+m*0.4;const k=t<sw?0:1;btn.textContent=['2x','4x'][k];btn.style.top='420px';btn.style.width=btn.style.height='340px';btn.style.marginLeft='-170px';btn.style.fontSize='150px';btn.style.opacity=1;btn.style.transform=`scale(${pop((t-(k?sw:c3))/0.25)})`}
+    else btn.style.opacity=0;
+    // 칩: 0.3초부터 화면 아래쪽, 타이틀이 사라지면 위로
+    ch.textContent='러닝타임 2시간 → 2분';
+    if(t<c2){ch.style.top='1145px';chipPop(ch,t,0.3)}else if(front){ch.style.opacity=0}else{ch.style.top='230px';chipPop(ch,t,c3)}
     caption(0,t);renderer.render(scene,cam);
   };
 };
