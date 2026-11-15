@@ -188,7 +188,7 @@ S[0]=()=>{
   const ph=new THREE.Group();const pb=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.025,0.36),lamb(0x24242c));ph.add(pb);
   const psc=new THREE.Mesh(new THREE.PlaneGeometry(0.17,0.32),basic(0xff6b6b));psc.rotation.x=Math.PI/2;psc.position.y=-0.014;ph.add(psc);sB.add(ph);
   const pgl=new THREE.PointLight(0xffb0b0,2.5,2.2,1.5);sB.add(pgl);
-  const bS=topB(makeBubble('…아 그렇구나',{bg:'#ece4ff',fg:'#3d2a6b',fs:64,size:0.0011}));bS.position.set(-0.3,1.0,-2.3);sB.add(bS);scaleBubble(bS,0);
+  const bS=topB(makeBubble('…아 그렇구나',{bg:'#ece4ff',fg:'#3d2a6b',fs:64,size:0.0011}));bS.position.set(0.05,1.0,-2.3);sB.add(bS);scaleBubble(bS,0);
   // C: 아파트 창문
   const sC=new THREE.Scene();nightLights(sC,{hemi:1.0});
   const fac=new THREE.Mesh(new THREE.BoxGeometry(9,14,1),lamb(0x4a4868));fac.position.set(0,7,-1);sC.add(fac);
@@ -210,10 +210,10 @@ S[0]=()=>{
     else if(t<TB){sc=null}
     else if(t<TW){sc=sB;const k=ease((t-TB)/(TW-TB));
       const up=t<endOf(0,'s1',0.1);const dn=ease((t-endOf(0,'s1',0.1))/0.35);
-      const arm=up?1:1-dn;H.userData.arms.forEach((a,i)=>{a.rotation.x=-1.15*arm;a.rotation.z=(i?-0.25:0.25)*arm});
-      ph.position.set(0.32,0.72+0.42*arm,-1.45+(1-arm)*0.7);ph.rotation.z=-0.5;ph.visible=true;psc.visible=arm>0.3;pgl.position.set(0,1.0,-1.6);pgl.intensity=arm*2.5;
+      const arm=up?1:1-dn;H.userData.arms[0].rotation.set(0,0,0);H.userData.arms[1].rotation.set(-1.45*arm,0,-0.35*arm);
+      ph.position.set(0.12+(1-arm)*0.6,0.72+0.56*arm-0.1*(1-arm),-1.3+(1-arm)*0.2);ph.rotation.set(-0.45*arm,0,0);ph.visible=true;psc.visible=arm>0.3;pgl.position.set(0,1.1,-1.68);pgl.intensity=arm*2.5;
       const cv=ease((t-endOf(0,'s1',0.35))/0.45);cover(cv);ph.visible=cv<0.6;
-      C.fov=46;C.updateProjectionMatrix();C.position.set(0.35,3.5-k*0.2,0.5);C.lookAt(0,0.8,-1.5);
+      C.fov=44;C.updateProjectionMatrix();C.position.set(0.15,3.3-k*0.2,-0.75);C.lookAt(0.05,0.8,-1.5);
       show(bS,t,at(0,'s1'),endOf(0,'s1',0.4))}
     else{sc=sC;const k=(t-TW);C.fov=50;C.updateProjectionMatrix();C.position.set(0,6.5,15+k*0.8);C.lookAt(0,6.5,-1);
       wins.forEach(w=>{w.m.material.color.setHex(k>0.5+w.d?0x23263a:0x9fb8ff)})}
@@ -302,23 +302,25 @@ S[2]=()=>{
     const TE=E.enc,K=[E.k1,E.k2,E.k3,E.k4],TL=E.lost,TD=E.ding;
     const fl=t<TE?(Math.sin(t*23)>0.85||Math.sin(t*7.3)>0.95?0:1):1;lampOn(lamps[0],fl);lampOn(lamps[1],1);lamps[1].visible=t<E.k4;lampOn(lamps[2],1);lampOn(lamps[3],1);
     Z.forEach(q=>{q.z.visible=t>=TE;zPose(q.z,t,t>TE&&t<TL?0.5:0);if(t>TE){const k=clamp01((t-TE)/6);q.z.position.z=q.z0+k*1.3}});ZL.visible=t>=TE;
-    standPose(H);slouch(H);ph.visible=false;H.userData.hip.position.y=0.8;H.userData.head.rotation.x=0.12;
+    standPose(H);slouch(H);ph.visible=false;H.userData.hip.position.y=0.8;H.userData.hip.rotation.x=0;H.userData.head.rotation.x=0.12;
     if(t<TE){const k=t/TE;H.position.set(0.1,0,4.2-k*2.8);walkPose(H,t*5.5,0.4);
       C.fov=46;C.updateProjectionMatrix();C.position.set(1.0,2.0,H.position.z+4.4);C.lookAt(-0.1,1.3,H.position.z-3)}
     else if(t<K[3]){H.position.set(0.1,0,1.4);H.rotation.y=Math.PI;
       if(t>=K[0]&&t<K[1]){ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-1.35;a.rotation.z=-0.55;H.userData.head.rotation.x=0.5}
-      else if(t>=K[1]&&t<K[2]){const u=H.userData;const c=ease((t-K[1])/0.25);u.hip.position.y=0.8-0.38*c;u.legs.forEach(l=>l.rotation.x=-1.2*c);u.hip.rotation.x=0;u.arms.forEach(a=>{a.rotation.x=-0.9*c});u.head.rotation.x=0.55*c;
-        u.arms.forEach((a,i)=>a.rotation.x=-0.9*c+Math.sin(t*14+i)*0.12*c)}
+      else if(t>=K[1]&&t<K[2]){const u=H.userData;const c=ease((t-K[1])/0.3);const L=0.6*c;u.hip.position.y=0.8-0.36*c;u.hip.rotation.x=L;
+        u.legs[0].rotation.x=(-1.45)*c-L;u.legs[1].rotation.x=(1.05)*c-L;u.head.rotation.x=0.35*c;
+        u.arms.forEach((a,i)=>{a.rotation.x=(-0.55+Math.sin(t*16+i*2)*0.12)*c;a.rotation.z=(i?0.22:-0.22)*c})}
       else if(t>=K[2]){ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.5;a.rotation.z=-0.5;ph.rotation.set(-Math.PI/2,0,0);H.userData.head.rotation.x=0;H.rotation.y=Math.PI-0.5}
       if(t<K[0])H.userData.head.rotation.x=0.12}
     else{const k=clamp01((t-K[3])/2.6);H.rotation.y=Math.PI*0.5-0.35;H.position.set(0.1+k*3.6,0,1.4+k*1.7);walkPose(H,t*4.5,0.35);ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.75;a.rotation.z=-0.62}
     // 대장 좀비
-    const ap=ease((t-TE)/(K[1]+0.4-TE));ZL.position.set(0.15,0,-1.4+ap*1.95);ZL.rotation.y=0;zPose(ZL,t,t<K[1]+0.4?0.6:0);
-    if(t>=K[1]+0.4&&t<K[2])ZL.userData.head.rotation.x=0.55+Math.sin(t*9)*0.06;
+    const ap=ease((t-TE)/(K[1]+0.4-TE));ZL.position.set(0.15,0,-1.6+ap*1.45);ZL.rotation.y=0;zPose(ZL,t,t<K[1]+0.4?0.6:0);
+    if(t>=K[1]+0.4&&t<K[2]){ZL.userData.head.rotation.x=0.45+Math.sin(t*9)*0.06;ZL.userData.hip.rotation.x=0.18}else ZL.userData.hip.rotation.x=0;
     if(t>=TL){const lk=Math.sin((t-TL)*3);ZL.userData.head.rotation.y=lk*0.7;Z.forEach((q,i)=>{q.z.userData.head.rotation.y=Math.sin((t-TL)*2.5+i)*0.6})}
     show(bCall,t,K[2]+0.3,K[3]+0.5);show(bZ,t,TL,TD+1.2);qs.forEach((b,i)=>show(b,t,TL+0.2+i*0.12,TD+1.2));
     // 카메라
-    if(t>=TE&&t<K[2]){C.fov=56;C.updateProjectionMatrix();C.position.set(2.05,1.9,-0.7);C.lookAt(0.0,1.15,1.1)}
+    if(t>=K[1]&&t<K[2]){C.fov=62;C.updateProjectionMatrix();C.position.set(2.3,1.6,1.7);C.lookAt(0.0,0.85,0.55)}
+    else if(t>=TE&&t<K[2]){C.fov=56;C.updateProjectionMatrix();C.position.set(2.05,1.9,-0.7);C.lookAt(0.0,1.15,1.1)}
     else if(t>=K[2]&&t<K[3]){C.fov=50;C.updateProjectionMatrix();C.position.set(1.5,1.95,-0.1);C.lookAt(0.1,1.65,1.4)}
     else if(t>=K[3]){const k=ease((t-K[3])/4);C.fov=48;C.updateProjectionMatrix();C.position.set(-0.6,6.2,-7.6+k*0.5);C.lookAt(1.5,0.7,1.8)}
     const bp=beatPulse(2,t);vig.style.opacity=t<TL?0.35+0.5*bp:0;
