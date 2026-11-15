@@ -1,0 +1,13 @@
+# 역할별 한 번에 뽑은 음성을 대사 단위로 자름 (silencedetect 구간)
+import subprocess, os
+os.makedirs('lines', exist_ok=True)
+R = {
+ 'raw/nar.mp3': {'n1': (0, 3.63), 'n2': (4.24, 7.85), 'n3': (8.31, 11.34), 'n4': (11.82, 17.73), 'n5': (18.36, 21.89), 'n6': (22.36, 26.23), 'n7': (26.79, 32.88)},
+ 'raw/sol.mp3': {'s1': (0, 1.40), 's2': (2.02, 2.72), 's3': (3.29, 3.73), 's4': (4.24, 7.88), 's5': (8.24, 9.57), 's6': (10.06, 11.28)},
+ 'raw/zom.mp3': {'z1': (0, 1.43), 'z2': (1.86, 2.43), 'z3': (2.98, 6.67), 'z4': (6.95, 9.14)},
+ 'raw/anc.mp3': {'a1': (0, 5.52)},
+}
+for f, d in R.items():
+    for k, (a, b) in d.items():
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', f, '-ss', f'{max(0, a - 0.03):.3f}', '-to', f'{b + 0.06:.3f}', '-ar', '48000', '-ac', '1', f'lines/{k}.wav'], check=True)
+        print(k, round(b - a, 2))
