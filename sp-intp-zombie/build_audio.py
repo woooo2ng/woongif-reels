@@ -163,10 +163,10 @@ SC = [
     [('n3', 0.9), ('s2', 0.6)],
     [('z3', 3.3), ('z1', 0.15), ('s3', 0.55), ('n4', 1.2)],
     [('s4', 2.3), ('z2', 0.35), ('s5', 0.4), ('n5', 0.6)],
-    [('s6', 5.0), ('n6', 0.4)],
+    [('s7', 2.4), ('n6', 0.45), ('s8', 0.6), ('z5', 0.35)],
     [('n7', 1.0)],
 ]
-POST = {1: 0.9, 3: 0.6, 4: 1.0, 5: 1.6}
+POST = {1: 0.9, 3: 0.6, 4: 0.9, 5: 1.6}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []
@@ -220,16 +220,18 @@ def sfx(si, ev):
         place(b, calm(T - LAB, 0.07), LAB)
         for i in range(8): place(b, tap(0.12), LAB + 0.4 + i * 0.27)  # 화이트보드 마커
     elif si == 4:
-        EU = LEAD + 0.5; LAP = LEAD + 2.6; CUT = LAP + 0.15
-        D = {'eureka': EU, 'laptop': LAP, 'cut': CUT, 'save': ve('s6', 0.3), 'bed': ve('s6', 1.1)}
+        EU = LEAD + 0.5; CUT = vt('s7', -0.25)
+        D = {'eureka': EU, 'cut': CUT, 'cross': vt('n6', 0.15), 'talk': vt('s8', -0.45), 'yay': vt('z5')}
         ev.update({k: round(x, 3) for k, x in D.items()})
         place(b, ding(0.3), EU)
-        e = epic(CUT - EU + 0.02, 0.24); place(b, e, EU)
-        place(b, fadeout(sine(98, 98, 0.25, 0.1) * 0.0), CUT)
-        for i in range(5): place(b, tap(0.14), D['save'] - 0.55 + i * 0.1)
-        place(b, ding(0.18), D['save']); place(b, whoosh(0.6, 0.15), D['bed'])
+        place(b, epic(CUT - EU + 0.02, 0.24), EU)
+        place(b, filt(noise(0.25), 'bandpass', [1500, 5000], 2) * env(int(0.25 * SR), 0.005, 0.08) * 0.12, D['cross'])  # 지우개 쓱
+        for i in range(10): place(b, tap(0.12), D['cross'] + 0.5 + i * 0.22)
+        place(b, calm(T - D['talk'], 0.07), D['talk'])
+        place(b, ding(0.25), D['yay'] + 0.1)
     elif si == 5:
         b += birds(T, 0.05) + calm(T, 0.06)
+        BK = vt('n7', 2.55); ev['books'] = round(BK, 3); place(b, whoosh(0.5, 0.15), BK - 0.15); place(b, ding(0.25), BK + 0.2)
     save(b, f'audio/x{si + 1}.wav')
 
 for si in range(len(SC)):

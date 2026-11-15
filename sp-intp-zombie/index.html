@@ -144,8 +144,9 @@ const TXT={
  n4:[['좀비들은 그를 공격하지 않았습니다.',0],['평소 표정이,',2.15],['이미 좀비였거든요.',3.35]],
  s4:['…근데 님은 배고파서 무는 거예요,','아니면 본능이에요?'],z2:['…으어.'],s5:['…저도 그게 궁금했어요.'],
  n5:['무서워야 할 좀비가,','점점 궁금해지기 시작했습니다.'],
- s6:['…내일 정리하자.'],n6:['인류를 구할 방법을 알아냈지만,','정리하는 건 귀찮았습니다.'],
- n7:[['좀비 사태 1년째, 감염자 0명.',0],['치료법은 아직,',2.75],['메모장 안에 있습니다.',3.9]],
+ s7:['…근데 좀비가 꼭 나쁜 건가?'],n6:['치료법을 거의 알아냈지만,','더 궁금한 게 생겨 버렸습니다.'],
+ s8:['으어어… 으어? (번역: 배고파서 그런 거예요?)'],z5:['으어어!! (번역: 드디어 말이 통하네!!)'],
+ n7:[['좀비 사태 1년째, 감염자 0명.',0],['치료제 대신,',2.6],['좀비어 사전 3권이 나왔습니다.',3.55]],
 };
 const CAPL={};
 TM.forEach((sc,si)=>{const L=[];for(const [nm,[st,d]] of Object.entries(sc.lines)){const parts=TXT[nm]||[''];
@@ -724,71 +725,106 @@ function scene_store(sc,r){
   for(let z=2;z>-6;z-=2){const lt=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.04,1.4),basic(0xffffff));lt.position.set(0,3.3,z);sc.add(lt)}
 }
 
-// ===== 4. 치료제?! → 빈 문서 커서 → "…내일 정리하자." → 저장 → 침대, 좀비가 이불 덮어 줌 =====
+// ===== 4. 치료제?! → "근데 좀비가 꼭 나쁜 건가?" → 좀비어 연구 → "으어어… 으어?" "으어어!!" =====
+function wbLang(B,k){k=Math.round(clamp01(k)*40)/40;const key='L'+k;if(key===B.k)return;B.k=key;const x=B.x;
+  x.fillStyle='#fbfbf7';x.fillRect(0,0,1280,720);x.lineCap='round';
+  const txt=(s,px,py,fs,c='#2b2b3a',al='center')=>{x.font=`900 ${fs}px ${FONT}`;x.fillStyle=c;x.textAlign=al;x.textBaseline='middle';x.fillText(s,px,py)};
+  // 지운 자국 + 줄 그은 치료제
+  x.fillStyle='rgba(180,180,190,.25)';x.fillRect(820,320,380,170);
+  txt('치료제?!',1010,400,70,'rgba(217,42,42,.55)');x.strokeStyle='#d92a2a';x.lineWidth=10;x.beginPath();x.moveTo(850,400);x.lineTo(1170,400);x.stroke();
+  txt('좀비어 문법 노트',420,90,74,'#2f6b3a');
+  const rows=[['으어','네'],['으어?','왜요?'],['으어어!!','좋아요!!'],['그르르','배고파요'],['으어…','오늘 좀 피곤해요']];
+  rows.forEach(([a,b2],i)=>{if(k>0.1+i*0.16){txt(a,90,210+i*100,56,'#2b2b3a','left');txt('=',330,210+i*100,56,'#888');txt(b2,390,210+i*100,56,'#3a5bd9','left')}});
+  if(k>0.92){x.strokeStyle='#2f6b3a';x.lineWidth=8;x.beginPath();x.ellipse(1010,620,200,60,0,0,Math.PI*2);x.stroke();txt('자연스러움 92%',1010,620,48,'#2f6b3a')}
+  B.tex.needsUpdate=true}
 S[4]=()=>{
   const E=EV(4);const r=rng(341);
   const sR=new THREE.Scene();nightLights(sR,{hemi:1.0,sky:0x9a9ad8});roomBox(sR,{wall:0x5f5a86,floor:0x8a7a68});
   const B=wb(sR,0,1.9,-2.9);
   const HR=hero(r,{hood:0});HR.position.set(-0.7,0,-1.7);HR.rotation.y=0.45;sR.add(HR);
   const gl=glowSprite('rgba(255,240,160,1)',1.2);gl.position.set(0,0.3,0.3);HR.userData.head.add(gl);
-  const lap=div('lap',`<div class="screen"><div class="tb"><i style="background:#ff6b6b"></i><i style="background:#ffd84d"></i><i style="background:#6bd38a"></i>&nbsp; 새 문서</div><div class="doc">좀비 치료법 정리<span class="cur"></span></div><div class="body"></div></div>`);
-  const cur=lap.querySelector('.cur');
-  const dlg=div('dlg','<div class="h">메모장 · 다른 이름으로 저장</div><div class="f">파일 이름</div><div class="in"></div><div class="bt"><span>취소</span><span class="ok">저장</span></div>');const din=dlg.querySelector('.in');
-  const okp=div('okp','저장 완료 ✔ · 정리: 내일');
-  // 침대
-  const sB=new THREE.Scene();nightLights(sB,{hemi:0.95,sky:0x7a80c0});roomBox(sB,{wall:0x55507a,wall2:0x4a466e,floor:0x7a6a5e});bed(sB);windowPlane(sB,1.6,2.4,-2.95,1.4,1.2,0x23305a);
-  const HB=hero(r,{hood:0});lie(HB,0.72);sB.add(HB);const cover=blanket(sB);
-  const ZB=zombie(r,{shirt:0x9a8a78});ZB.position.set(1.15,0,-0.9);ZB.rotation.y=-Math.PI/2;sB.add(ZB);
-  const bz=bubZ(ZB,'…으어',{size:0.0015,y:2.2});
-  const C=cam(50);const ch=chip('정리 진행률 0%');
+  const chair=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.5,0.6),lamb(0x4a4a5a));chair.position.set(1.05,0.25,-0.9);sR.add(chair);
+  const ZS=zombie(r,{shirt:0x9a8a78});ZS.position.set(1.05,0.06,-0.9);ZS.rotation.y=-2.5;sR.add(ZS);
+  const bQ=bubH(HR,'근데 좀비가 꼭 나쁜 건가?',{size:0.0019,y:2.2});bQ.position.x=0.45;
+  // 마주 앉아 대화
+  const sT=new THREE.Scene();nightLights(sT,{hemi:1.05,sky:0x9a9ad8});roomBox(sT,{wall:0x5f5a86,floor:0x8a7a68});
+  const B2=wb(sT,0,1.9,-2.9);
+  const tbl=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.08,0.8),lamb(0x9a7652));tbl.position.set(0,0.75,-0.8);sT.add(tbl);
+  const tl=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.75,0.1),lamb(0x6a5040));tl.position.set(0,0.375,-0.8);sT.add(tl);
+  const nb=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.03,0.3),lamb(0xfff6d0));nb.position.set(-0.15,0.8,-0.8);sT.add(nb);
+  const H2=hero(r,{hood:0});H2.position.set(-0.85,0.06,-0.8);H2.rotation.y=Math.PI/2;sT.add(H2);
+  const Z2=zombie(r,{shirt:0x9a8a78});Z2.position.set(0.85,0.06,-0.8);Z2.rotation.y=-Math.PI/2;sT.add(Z2);
+  for(const x of[-0.85,0.85]){const c=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.5,0.55),lamb(0x4a4a5a));c.position.set(x,0.25,-0.8);sT.add(c)}
+  const bS=bubH(H2,'으어어… 으어?',{size:0.0019,y:2.0}),bZ=bubZ(Z2,'으어어!!',{size:0.0022,y:2.0});bS.position.z=0.45;bZ.position.z=0.35;
+  const hearts=sprinkleHearts(sT,6,r,{x:0.85,z:-0.8,w:0.8,col:'#ff8fb3',size:0.004});
+  const C=cam(50);const ch=chip('좀비어 연구 30일째');
   return t=>{
-    const TEu=E.eureka,TLp=E.laptop,TSv=E.save,TBd=E.bed;
-    sh(lap,t>=TLp&&t<TBd);sh(dlg,t>=TSv-0.75&&t<TBd);sh(okp,t>=TSv+0.1&&t<TBd);
-    if(t<TLp){wbDraw(B,1,clamp01((t-TEu)/0.5));const eu=ease((t-TEu)/0.25);eyeOpen(HR,0.75+0.6*eu);gl.visible=t>TEu&&t<TEu+1.2;gl.scale.setScalar(1.2*(1+0.3*Math.sin(t*12)));
-      standPose(HR);HR.userData.arms.forEach((a,i)=>{a.rotation.x=-2.6*eu;a.rotation.z=(i?0.3:-0.3)*eu});
-      const k=ease(t/TLp);C.fov=52-k*8;C.updateProjectionMatrix();C.position.set(0.1,1.9,3.0-k*0.8);C.lookAt(0.12,1.75,-2.2);
-      setSky('#1c1a34','#3a3660');renderer.render(sR,C)}
-    else if(t<TBd){renderer.clear();setSky('#14121f','#242036');cur.style.opacity=Math.floor((t-TLp)*2.2)%2?0:1;
-      if(t>=TSv-0.75){const nm='좀비치료법_최종_진짜최종.txt';const n=Math.round(clamp01((t-TSv+0.7)/0.55)*nm.length);din.textContent=nm.slice(0,n);popEl(dlg,t,TSv-0.75,'translateX(-50%)')}
-      popEl(okp,t,TSv+0.1,'translateX(-50%)')}
-    else{const k=ease((t-TBd)/1.0);const cv=ease((t-TBd-0.9)/0.8);cover(0.3*cv);
-      zPose(ZB,t,0);ZB.userData.arms.forEach(a=>{a.rotation.x=-1.0-0.5*cv});
-      show(bz,t,TBd+1.9,99);
-      C.fov=48;C.updateProjectionMatrix();C.position.set(-1.0,4.1,2.0);C.lookAt(0.45,0.9,-1.0);
-      setSky('#1a1830','#2e2c50');renderer.render(sB,C)}
-    chipPop(ch,t,TBd+0.5);ch.style.opacity=t>TBd+0.5?1:0;
+    const TEu=E.eureka,TC=E.cut,TX=E.cross,TK=E.talk;
+    let S_=sR;
+    sitPose(ZS);zPose(ZS,t,0);ZS.userData.arms.forEach(a=>a.rotation.x=-0.9);ZS.userData.hip.position.y=0.56;ZS.userData.legs.forEach(l=>l.rotation.x=-Math.PI/2);
+    if(t<TX){wbDraw(B,1,clamp01((t-TEu)/0.5));standPose(HR);
+      if(t<TC){const eu=ease((t-TEu)/0.25);eyeOpen(HR,0.75+0.6*eu);gl.visible=t>TEu&&t<TEu+1.2;gl.scale.setScalar(1.2*(1+0.3*Math.sin(t*12)));
+        HR.userData.arms.forEach((a,i)=>{a.rotation.x=-2.6*eu;a.rotation.z=(i?0.3:-0.3)*eu});HR.rotation.y=0.45;
+        const k=ease(t/TC);C.fov=52-k*6;C.updateProjectionMatrix();C.position.set(0.25,1.95,3.1-k*0.6);C.lookAt(0.15,1.7,-2.0)}
+      else{gl.visible=false;const d=ease((t-TC)/0.4);HR.userData.arms.forEach((a,i)=>{a.rotation.x=-2.6*(1-d);a.rotation.z=(i?0.3:-0.3)*(1-d)});eyeOpen(HR,0.75);
+        const tr=ease((t-at(4,'s7')-0.6)/0.5);HR.rotation.y=0.45+tr*0.9;
+        const k=ease((t-TC)/2.5);C.fov=54;C.updateProjectionMatrix();C.position.set(-0.2-k*0.2,1.9,3.3-k*0.3);C.lookAt(0.0,1.55,-1.4)}
+      show(bQ,t,at(4,'s7'),TX)}
+    else if(t<TK){S_=sR;wbLang(B,(t-TX-0.4)/2.6);standPose(HR);HR.rotation.y=0.15;eyeOpen(HR,0.8);HR.userData.arms[1].rotation.x=-2.0+Math.sin(t*9)*0.15;HR.userData.arms[1].rotation.z=0.3;
+      scaleBubble(bQ,0);const k=ease((t-TX)/3);C.fov=60;C.updateProjectionMatrix();C.position.set(0.0,1.95,2.6-k*0.3);C.lookAt(0.0,1.8,-2.6)}
+    else{S_=sT;wbLang(B2,1);sitPose(H2);H2.userData.arms.forEach(a=>a.rotation.x=-1.1);eyeOpen(H2,0.75);
+      sitPose(Z2);zPose(Z2,t,0);Z2.userData.hip.position.y=0.56;Z2.userData.legs.forEach(l=>l.rotation.x=-Math.PI/2);Z2.userData.arms.forEach(a=>a.rotation.x=-1.1);
+      const yay=t>at(4,'z5');if(yay){Z2.userData.hip.position.y=0.56+Math.abs(Math.sin((t-at(4,'z5'))*9))*0.12;Z2.userData.arms.forEach((a,i)=>{a.rotation.x=-2.8;a.rotation.z=(i?0.3:-0.3)})}
+      show(bS,t,at(4,'s8'),at(4,'z5')+0.1);show(bZ,t,at(4,'z5'),99);updHearts(hearts,t,at(4,'z5')+0.1,1.8,1.4);
+      const k=ease((t-TK)/3);C.fov=54;C.updateProjectionMatrix();C.position.set(0,1.95,3.9-k*0.4);C.lookAt(0,1.4,-0.8)}
+    renderer.setClearColor(0x000000,0);setSky('#1c1a34','#3a3660');renderer.render(S_,C);
+    chipPop(ch,t,TX+0.2);ch.style.opacity=t>TX+0.2?1:0;
     caption(4,t)};
 };
 
-// ===== 5. 1년 후: 사람·좀비 나란히 멍 → 메모장 그대로 → 엔딩 =====
+// ===== 5. 1년 후: 사람·좀비가 '으어'로 수다 → 좀비어 사전 3권 베스트셀러 → 엔딩 =====
+function bookCover(n,sub,col){return canvasTex(300,420,(x,w,h)=>{x.fillStyle=col;x.fillRect(0,0,w,h);x.fillStyle='rgba(255,255,255,.9)';x.fillRect(20,20,w-40,h-40);
+  x.fillStyle=col;x.font=`900 46px ${FONT}`;x.textAlign='center';x.fillText('좀비어',w/2,95);x.fillText('사전',w/2,150);
+  x.fillStyle='#2b2b3a';x.font=`900 64px ${FONT}`;x.fillText(n+'권',w/2,250);x.font=`800 30px ${FONT}`;x.fillStyle='#666';x.fillText(sub,w/2,315);
+  x.fillStyle='#9cbb8c';x.beginPath();x.arc(w/2,370,22,0,Math.PI*2);x.fill()})}
 S[5]=()=>{
-  const r=rng(351);
+  const E=EV(5);const r=rng(351);
   const sc=new THREE.Scene();addLights(sc,{hemi:1.5});
   ground(sc,0xa9b49a,200);
   const shop=new THREE.Mesh(new THREE.BoxGeometry(9,4,3),lamb(0xe9ecf2));shop.position.set(0,2,-3);sc.add(shop);
   const sign=new THREE.Mesh(new THREE.BoxGeometry(6,0.7,0.1),lamb(0x7c6cf0));sign.position.set(0,3.4,-1.45);sc.add(sign);
   const gls=new THREE.Mesh(new THREE.PlaneGeometry(5,2.2),basic(0xbfdcef));gls.position.set(0,1.3,-1.48);sc.add(gls);
   const side=new THREE.Mesh(new THREE.BoxGeometry(9,0.12,2.5),lamb(0xd8d2c6));side.position.set(0,0.06,-0.4);sc.add(side);
-  const ppl=[];const order=['z','h','z','h','z','h'];
-  for(const [bx] of [[-2.0],[2.0]]){const bench=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.12,0.6),lamb(0x9a7652));bench.position.set(bx,0.5,-0.6);sc.add(bench);
-    for(const s of[-1,1]){const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.5,0.5),lamb(0x5a4a3a));leg.position.set(bx+s*1.4,0.25,-0.6);sc.add(leg)}}
-  [-3.0,-2.0,-1.0,1.0,2.0,3.0].forEach((x,i)=>{const p=order[i]==='z'?zombie(r):hero(r,{hood:i%2,shirt:pick(r,[0x8a7fc0,0x7f9bb8,0xa88fb0])});p.position.set(x,0.06,-0.6);sc.add(p);ppl.push({p,z:order[i]==='z'})});
-  const sp=[];for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),lamb(0x8a6a4a));b.position.set(-1+i*0.9,0.09,0.8);sc.add(b);sp.push(b)}
-  const memo=div('memo',`<div class="screen"><div class="top">메모</div><div class="it"><b>장보기 목록</b><small>3주 전 수정</small></div><div class="it hl"><b>좀비치료법_최종_진짜최종.txt</b><small>1년 전 수정 · 공유 0회</small></div><div class="it"><b>근데 별은 왜 반짝일까</b><small>어제 수정</small></div><div class="it"><b>좀비 분류 체계 v14</b><small>오늘 수정</small></div></div>`);
+  for(const bx of[-1.7,1.7]){const bench=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.12,0.6),lamb(0x9a7652));bench.position.set(bx,0.5,-0.6);sc.add(bench);
+    for(const s of[-1,1]){const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.5,0.5),lamb(0x5a4a3a));leg.position.set(bx+s*0.95,0.25,-0.6);sc.add(leg)}}
+  const ppl=[];[[-2.2,'h',0.5],[-1.2,'z',-0.5],[1.2,'h',0.5],[2.2,'z',-0.5]].forEach(([x,k,ry])=>{const p=k==='z'?zombie(r):hero(r,{hood:0,shirt:pick(r,[0x8a7fc0,0x7f9bb8,0xa88fb0])});p.position.set(x,0.06,-0.6);p.rotation.y=ry;sc.add(p);ppl.push({p,z:k==='z'})});
+  const talk=[bubH(ppl[0].p,'으어?',{size:0.0024,y:2.0}),bubZ(ppl[1].p,'으어어~',{size:0.0024,y:2.0}),bubH(ppl[2].p,'으어 ㅋㅋ',{size:0.0024,y:2.0}),bubZ(ppl[3].p,'으어!!',{size:0.0024,y:2.0})];
+  // 서점 진열대
+  const sB=new THREE.Scene();addLights(sB,{hemi:1.6});
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(30,30),lamb(0xe8dccb));fl.rotation.x=-Math.PI/2;sB.add(fl);
+  const wl=new THREE.Mesh(new THREE.PlaneGeometry(30,10),lamb(0xf3ece0));wl.position.set(0,4,-3);sB.add(wl);
+  for(let i=0;i<4;i++)for(let j=0;j<12;j++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.5,0.3),lamb(pick(r,[0xd98c8c,0x8cc9a0,0xe0c070,0xa58cd0,0x7fb7c9])));b.position.set(-3+j*0.55+(r()-0.5)*0.1,1.0+i*0.75,-2.85);sB.add(b)}
+  const stand=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.9,1.0),lamb(0x8a6a4e));stand.position.set(0,0.45,-0.5);sB.add(stand);
+  const books=[[1,'기초 으어','#7c6cf0'],[2,'존댓말 으어','#e2557a'],[3,'감정 표현','#3a9a6a']].map(([n,sub,col],i)=>{const g=new THREE.Group();
+    const bd=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.86,0.1),[lamb(0xffffff),lamb(0xffffff),lamb(0xffffff),lamb(0xffffff),new THREE.MeshBasicMaterial({map:bookCover(n,sub,col)}),lamb(0xffffff)]);g.add(bd);
+    g.position.set((i-1)*0.8,1.33,-0.4);g.rotation.x=-0.15;sB.add(g);return g});
+  const badge=labelSprite('베스트셀러 1위',{bg:'#ffd84d',fg:'#3a2a00',fs:64,size:0.0028});badge.position.set(0,2.15,-0.4);sB.add(badge);
+  const crowd=[];[[-2.0,'z'],[-1.35,'h'],[1.35,'z'],[2.0,'h']].forEach(([x,k])=>{const p=k==='z'?zombie(r):hero(r,{hood:1,shirt:pick(r,[0x8a7fc0,0x7f9bb8])});p.position.set(x,0,0.9);p.rotation.y=Math.PI+(x<0?-0.3:0.3);sB.add(p);crowd.push({p,z:k==='z'})});
   const st=div('stat','<div><small>좀비 사태</small><b>1년째</b></div><div><small>감염자</small><b>0명</b></div>');
   const e1=div('end1 out','다음 좀비편은?'),e2=div('end2 out','팔로우하고 기다려 주세요');
-  const C=cam(50);const ch=chip('1년 후');
+  const C=cam(50);const ch=chip('1년 후');const ch2=chip('좀비어 사전 누적 판매 300만 부');
   return t=>{
-    const TN=at(5,'n7'),TM=TN+2.65,TE=VOICE[5]+LEAD+0.45+0.3-1.6;
-    ppl.forEach(q=>{if(q.z){zPose(q.p,t,0);q.p.userData.arms.forEach(a=>a.rotation.x=-0.9)}else{standPose(q.p)}sitPose(q.p);if(q.z){q.p.userData.head.rotation.z=0.28}});
-    sp.forEach((b,i)=>{b.position.y=0.09+Math.abs(Math.sin(t*5+i))*0.08});
-    const k=ease(t/6);C.fov=44;C.updateProjectionMatrix();C.position.set(-1.2+k*2.4,1.6,5.4);C.lookAt(0,1.1,-0.6);
-    sh(memo,t>=TM&&t<TE);if(t>=TM)popEl(memo,t,TM);
-    renderer.setClearColor(0x000000,0);setSky('#9fd0f5','#e8f4ff 70%');
-    if(t<TM||t>=TE)renderer.render(sc,C);else renderer.clear();
-    if(t>=TE){bgEl.style.filter='';}
-    popEl(st,t,TN,'translateX(-50%)');st.style.opacity=t>TN&&t<TM?1:0;
-    chipPop(ch,t,0.1);ch.style.opacity=t<TN?1:0;
+    const TN=at(5,'n7'),TB=E.books,TE=VOICE[5]+LEAD+0.45+0.3-1.5;
+    let S_=sc;
+    if(t<TB){ppl.forEach(q=>{if(q.z){zPose(q.p,t,0);q.p.userData.arms.forEach(a=>a.rotation.x=-0.9);q.p.userData.head.rotation.z=0.28}else standPose(q.p);sitPose(q.p)});
+      talk.forEach((b,i)=>show(b,t,0.3+i*0.35,99));
+      const k=ease(t/TB);C.fov=56;C.updateProjectionMatrix();C.position.set(-0.4+k*0.8,2.0,8.6);C.lookAt(0,1.3,-0.6)}
+    else{S_=sB;crowd.forEach((q,i)=>{if(q.z)zPose(q.p,t,0);else standPose(q.p)});
+      books.forEach((g,i)=>{const k=pop((t-TB-0.1-i*0.15)/0.3);g.scale.setScalar(Math.max(0.001,k))});scaleBubble(badge,t<TE?pop((t-TB-0.7)/0.3):0);
+      const k=ease((t-TB)/2.5);C.fov=44;C.updateProjectionMatrix();C.position.set(0,2.4,4.6-k*0.8);C.lookAt(0,1.35,-0.4)}
+    renderer.setClearColor(0x000000,0);setSky('#9fd0f5','#e8f4ff 70%');renderer.render(S_,C);
+    popEl(st,t,TN,'translateX(-50%)');st.style.opacity=t>TN&&t<TB?1:0;
+    chipPop(ch,t,0.1);ch.style.opacity=t<TN?1:0;chipPop(ch2,t,TB+1.0);ch2.style.opacity=t>TB+1.0&&t<TE?1:0;
     popEl(e1,t,TE);popEl(e2,t,TE+0.25);sh(e1,t>=TE);sh(e2,t>=TE);
     caption(5,t)};
 };
