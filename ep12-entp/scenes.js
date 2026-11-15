@@ -284,51 +284,59 @@ S[3]=()=>{
   };
 };
 
-// ---------- S4 해결책 47개 → 3초 ----------
-function drawSol(x,w,h,n){x.fillStyle='#fdfdf8';x.fillRect(0,0,w,h);x.strokeStyle='#9aa0aa';x.lineWidth=14;x.strokeRect(7,7,w-14,h-14);
-  x.fillStyle='#2a3a8a';x.font=`900 ${h*0.13}px ${FONT}`;x.textAlign='left';x.textBaseline='middle';x.fillText('해결책',w*0.06,h*0.13);
-  const L=['1. 이직 준비','2. 운동 시작','3. 엑셀로 정리','4. 여행 가기','5. 일찍 자기','6. 취미 찾기','7. 사업 구상','8. 명상 앱'];
-  x.font=`900 ${h*0.085}px ${FONT}`;x.fillStyle='#333';const m=Math.min(n,L.length);
-  for(let i=0;i<m;i++){const col=i<4?0:1,row=i%4;x.fillText(L[i],w*(0.06+col*0.48),h*(0.32+row*0.17))}}
+// ---------- S4 단톡 단수 공지 → 드립 300개 → 아무도 못 봄 ----------
+function foam(p){const g=new THREE.Group();const m=smooth(0xffffff);const pts=[[0,0.48,0,0.16],[0.12,0.44,0.06,0.11],[-0.13,0.43,0.04,0.12],[0.05,0.46,-0.12,0.12],[-0.06,0.56,0.02,0.1],[0.1,0.53,-0.04,0.08]];
+  for(const[x,y,z,r] of pts){const s=new THREE.Mesh(new THREE.SphereGeometry(r,20,14),m);s.position.set(x,y,z);g.add(s)}
+  for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.035,12,8),new THREE.MeshLambertMaterial({color:0xcfefff,transparent:true,opacity:0.8}));b.position.set(-0.15+i*0.15,0.62,0.1);g.add(b);b.userData.ph=i}
+  p.userData.head.add(g);return g}
 S[4]=()=>{
-  bgEl.style.background='linear-gradient(#e6f0ea,#f4f8f2)';
-  const scene=new THREE.Scene();addLights(scene,{hemi:1.6,dir:1.3});const r=rng(1601);
-  room(scene,{wall:0xdfeee2,floor:0xb89a7a,wz:-2.4});
-  for(const x of[-2.4,2.4]){const pl=new THREE.Mesh(new THREE.IcosahedronGeometry(0.4,0),lamb(0x6fae6a));pl.position.set(x,1.2,-2.0);scene.add(pl);const pt=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.18,0.5,8),lamb(0xd98c6a));pt.position.set(x,0.25,-2.0);scene.add(pt);const sk=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.6,5),lamb(0x6a5a3a));sk.position.set(x,0.75,-2.0);scene.add(sk)}
-  const tb=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.08,24),lamb(0xf2e6d2));tb.position.set(0,0.78,0);scene.add(tb);
-  const tl=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.12,0.78,8),lamb(0x6a5a4a));tl.position.y=0.39;scene.add(tl);
-  [-0.35,0.35].forEach(x=>{const c=cup(0xffffff);c.position.set(x,0.82,0.3);scene.add(c)});
-  const seat=(x,z,ry,o)=>{seatChair(scene,x,z,ry,0x7a9a8a);const p=makePerson(r,o);p.position.set(x,0,z);p.rotation.y=ry;scene.add(p);sitPose(p);return p};
-  const sad=seat(-1.05,0.25,Math.PI/2-0.45,{shirt:0x7f9ac9});
-  const fr=[seat(-0.25,-0.95,0.15),seat(0.65,-0.75,-0.4),seat(1.1,0.3,-Math.PI/2+0.45)];
-  const board=liveCanvas(900,560,1.7,1.06);board.position.set(0,2.5,-2.25);scene.add(board);board.scale.setScalar(0.01);
-  const sB=wbub(scene,'나 요즘 힘들어…',-0.3,1.95,0.3,{bg:'#e3ecff',fg:'#2a3a6a'});
-  const sB2=wbub(scene,'…그냥 들어 주면 안 돼?',-0.05,1.95,0.3,{bg:'#e3ecff',fg:'#2a3a6a'});
-  const fB=[['이직해!',-0.3,2.0,-0.95],['운동해 봐',0.4,2.2,-0.75],['엑셀로 정리하자',0.25,1.8,0.3]].map(([s,x,y,z])=>wbub(scene,s,x,y,z));
-  const okB=[[-0.3,2.0,-0.95],[0.45,2.05,-0.75],[0.7,1.8,0.3]].map(([x,y,z])=>wbub(scene,'아 ㅇㅋ',x,y,z));
-  const lastB=wbub(scene,'근데 방법이 하나 더 있는데',0.05,2.2,-0.75);
-  const zip=fr.map(p=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.025,0.02),lamb(0x1a1a1a));m.position.set(0,0.13,0.25);p.userData.head.add(m);m.visible=false;return m});
-  const bd=board.userData;const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
-  const ch=chip('카페 · 고민 상담');
-  const wt=document.createElement('div');wt.className='watch';wt.style.opacity=0;ui.appendChild(wt);
+  bgEl.style.background='linear-gradient(#dfe9f5,#f2f6fb)';
+  const scene=new THREE.Scene();addLights(scene,{hemi:1.7,dir:1.2});const r=rng(1651);
+  // 엘리베이터 안
+  const metal=lamb(0xc9ced6),dark=lamb(0x9aa2ae);
+  const fl=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.05,2.6),lamb(0x8a8f99));fl.position.y=-0.02;scene.add(fl);
+  const bw=new THREE.Mesh(new THREE.BoxGeometry(3.2,3.4,0.1),metal);bw.position.set(0,1.7,-1.3);scene.add(bw);
+  for(const s of[-1,1]){const sw=new THREE.Mesh(new THREE.BoxGeometry(0.1,3.4,2.6),dark);sw.position.set(s*1.6,1.7,0);scene.add(sw);
+    const rail=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.06,2.2),lamb(0xe8e8ee));rail.position.set(s*1.52,1.0,0);scene.add(rail)}
+  const mirror=new THREE.Mesh(new THREE.PlaneGeometry(2.4,1.6),new THREE.MeshLambertMaterial({color:0xdde8f2}));mirror.position.set(0,1.9,-1.24);scene.add(mirror);
+  const ind=signPlane('▲ 7F',0.9,0.32,{bg:'#1d2230',fg:'#ffb84d',r:12});ind.position.set(0,3.15,-1.22);scene.add(ind);
+  const ceil=glowSprite('rgba(255,250,235,1)',1.6);ceil.position.set(0,3.5,-1.0);scene.add(ceil);
+  // 문(카메라 쪽에서 열림)
+  const doors=[-1,1].map(s=>{const d=new THREE.Mesh(new THREE.BoxGeometry(1.6,3.4,0.08),lamb(0xb0b7c2));d.position.set(s*0.8,1.7,1.35);scene.add(d);d.userData.s=s;return d});
+  const ppl=[[-0.75,-0.55,0.15],[0.05,-0.75,0],[0.8,-0.5,-0.15],[-0.35,0.2,0.1],[0.55,0.25,-0.1]].map(([x,z,ry],i)=>{const p=makePerson(r);p.position.set(x,0,z);p.rotation.y=ry;scene.add(p);const f=foam(p);
+    const tw=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.08,0.12),lamb([0xffd0e0,0xd0f0ff,0xfff0b0,0xd8f5d0,0xe8d8ff][i]));tw.position.set(0,0.66,0.05);p.userData.hip.add(tw);return {p,f}});
+  const q1=wbub(scene,'…단수였어요?',-0.35,2.2,0.5,{size:0.0024});
+  const q2=wbub(scene,'공지 있었어요?',0.35,2.55,0.3,{size:0.0024});
+  const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
+  const ch=chip('우리아파트 단톡방');
+  // DOM 단톡
+  const AV=['#ffb84d','#7fb7c9','#d98c8c','#8cc9a0','#a58cd0','#e0c070','#e39a6b','#90b86c'];
+  const DR=[['702호','물 없으면 사이다로 씻나요?'],['1103호','이참에 단체 사우나 가죠'],['508호','단수 기념 물풍선 금지인가요'],['303호','생수 공구 받습니다 ㅋㅋ'],['907호','머리는 모레 감는 걸로'],['1201호','단수 = 단 수요일?'],['401호','관리소장님 MBTI 뭐예요?'],['605호','오늘 밤 미리 씻기 대회 ㄱ'],['812호','물 대신 드립으로 씻어요'],['204호','ㅋㅋㅋㅋㅋㅋㅋㅋ']];
+  const ph=document.createElement('div');ph.className='phone';ph.style.top='290px';ph.style.height='900px';
+  ph.innerHTML=`<div class="screen"><div class="sbar"><span>PM 8:10</span><span>●●●</span></div><div class="head">우리아파트 입주민 (300)</div><div class="msgs">
+   <div class="row nt"><div style="width:100%;background:#fff;border-radius:28px;padding:20px 26px;box-sizing:border-box;border:4px solid #ffb84d"><div style="font-size:30px;font-weight:900;color:#e07a00">[관리사무소] 공지</div><div style="font-size:42px;font-weight:900;color:#222;margin-top:6px">내일 오전 9시~12시 단수입니다</div></div></div>
+   ${DR.map(([w,m],i)=>`<div class="row dr" style="display:none"><div class="av" style="background:${AV[i%8]}"></div><div><div class="who">${w}</div><div class="b">${m}</div></div></div>`).join('')}
+  </div></div>`;
+  ui.appendChild(ph);const rows=[...ph.querySelectorAll('.dr')];
   return t=>{
-    const c1=capAt(4,1),c2=capAt(4,2),c3=capAt(4,3),T=vEnd(4)+0.45;
-    const tAsk=c2+0.05,tOk=c2+0.85,tW=tOk+0.45,tEnd=Math.min(T-0.95,tW+1.5);
-    sad.userData.head.rotation.x=0.25;
-    showB(sB,t,0.3,c1+0.1);
-    const bs=pop((t-c1)/0.35);board.scale.setScalar(Math.max(0.01,bs));
-    const n=t<c1?0:Math.min(8,1+Math.floor((t-c1)*4));drawSol(bd.ctx,900,560,n);bd.t.needsUpdate=true;
-    fr.forEach((p,i)=>{showB(fB[i],t,c1+0.15+i*0.3,tAsk);if(t>c1&&t<tAsk){p.userData.arms[1].rotation.x=-1.6+Math.sin(t*8+i)*0.4}else p.userData.arms[1].rotation.x=-0.9});
-    showB(sB2,t,tAsk,tOk+0.3);
-    fr.forEach((p,i)=>{showB(okB[i],t,tOk+i*0.08,tW);zip[i].visible=t>tW&&t<tEnd});
-    if(t>tW&&t<tEnd){wt.style.opacity=1;const seg=(tEnd-tW)/3;const k=Math.min(2,Math.floor((t-tW)/seg));wt.textContent=String(3-k);wt.style.transform=`scale(${pop((t-tW-k*seg)/0.2)})`}else wt.style.opacity=0;
-    if(t>tEnd){armUp(fr[1],1,clamp01((t-tEnd)/0.2))}
-    showB(lastB,t,tEnd+0.05);
-    ch.textContent=t>tEnd?'공감 3초 · 해결책 47개':(t>c1?`해결책 ${Math.min(47,1+Math.floor((t-c1)*14))}개`:'카페 · 고민 상담');chipPop(ch,t,t>tEnd?tEnd:(t>c1?c1:0));
-    cam.position.set(0,2.75,4.4);cam.lookAt(0,1.65,-0.3);
+    const c1=capAt(4,1),T=vEnd(4)+0.45;const tCut=c1+0.75;
+    if(t<tCut){ph.style.display='block';ph.style.transform=`scale(${0.92+0.08*pop(t/0.3)})`;
+      const t0=0.8,step=(c1+0.5-t0)/DR.length;const n=t<t0?0:Math.min(DR.length,1+Math.floor((t-t0)/step));
+      rows.forEach((el,i)=>{el.style.display=i<n?'flex':'none';if(i==n-1){el.style.transform=`scale(${pop((t-t0-i*step)/0.15)})`;el.style.transformOrigin='left bottom'}});
+      const cnt=t<t0?0:Math.min(300,Math.round(((t-t0)/(c1+0.6-t0))**1.6*300));
+      ch.textContent=t<t0?'우리아파트 단톡방':`공지 1개 · 드립 ${cnt}개`;chipPop(ch,t,t<t0?0:t0);ch.style.top='150px';
+      cam.position.set(0,1.7,6);cam.lookAt(0,1.7,0);caption(4,t);renderer.clear();return;
+    }else{ph.style.display='none';ch.style.top='230px';
+      const k=ease((t-tCut)/0.4);doors.forEach(d=>d.position.x=d.userData.s*(0.8+k*1.6));
+      ppl.forEach((q,i)=>{standPose(q.p);q.f.children.forEach(b=>{if(b.userData.ph!==undefined)b.position.y=0.62+((t*0.8+b.userData.ph*0.33)%1)*0.25});q.p.userData.head.rotation.z=Math.sin(t*1.5+i)*0.06});
+      showB(q1,t,tCut+0.45);showB(q2,t,tCut+0.95);
+      ch.textContent='다음 날 AM 9:10 · 단수 중';chipPop(ch,t,tCut+0.2);
+      cam.position.set(0,1.85,4.9);cam.lookAt(0,1.6,-0.4);
+    }
     caption(4,t);renderer.render(scene,cam);
   };
 };
+
 
 // ---------- S5 장난 → 진지 → 내 사람 지키기 ----------
 S[5]=()=>{
