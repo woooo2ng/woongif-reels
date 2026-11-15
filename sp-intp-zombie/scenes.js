@@ -179,6 +179,7 @@ S[0]=()=>{
   const cone=new THREE.Mesh(new THREE.ConeGeometry(3.2,22,24,1,true),new THREE.MeshBasicMaterial({color:0xfff6d0,transparent:true,opacity:0.13,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));sA.add(cone);
   const spot=new THREE.Mesh(new THREE.CircleGeometry(3.2,32),new THREE.MeshBasicMaterial({color:0xfff6d0,transparent:true,opacity:0.3,depthWrite:false}));spot.rotation.x=-Math.PI/2;spot.position.y=0.05;sA.add(spot);
   const heli=glowSprite('rgba(255,255,255,1)',1.2);sA.add(heli);
+  const horde=[];for(let i=0;i<26;i++){const z=zombie(r);z.position.set((r()-0.5)*5.2,0,-2-i*0.42-r()*0.6);z.rotation.y=(r()-0.5)*0.3;sA.add(z);horde.push({z,z0:z.position.z,sp:0.45+r()*0.25})}
   // B: 침대
   const sB=new THREE.Scene();nightLights(sB,{hemi:0.9,sky:0x7a80c0});
   roomBox(sB,{wall:0x55507a,wall2:0x4a466e,floor:0x7a6a5e});bed(sB);windowPlane(sB,1.6,2.4,-2.95,1.4,1.2,0x23305a);
@@ -204,7 +205,7 @@ S[0]=()=>{
   return t=>{
     const TA=E.alert,TV=TA+0.95,TB=E.bed,TW=E.win;
     let sc,cm=C;
-    if(t<TV){sc=sA;const k=t/TV;C.fov=55;C.updateProjectionMatrix();C.position.set(0,9-k*2.5,16-k*5);C.lookAt(0,2.5,-12);
+    if(t<TV){sc=sA;const k=t/TV;horde.forEach(q=>{q.z.position.z=q.z0+t*q.sp;zPose(q.z,t,0.7)});C.fov=50;C.updateProjectionMatrix();C.position.set(0.3,1.9,6.2-k*0.6);C.lookAt(0,1.2,-6);
       const a=Math.sin(t*1.3)*0.5;heli.position.set(6*Math.sin(t*0.7),18,-8);cone.position.set(heli.position.x*0.5+Math.sin(t*0.9)*2,9,-8+Math.cos(t*0.8)*3);cone.rotation.z=-heli.position.x*0.02;spot.position.set(cone.position.x,0.05,cone.position.z);
       cars.forEach(c=>{const on=Math.floor(t*4+c.ph*4)%2;c.R.visible=!!on;c.Bl.visible=!on})}
     else if(t<TB){sc=null}
@@ -245,7 +246,7 @@ S[1]=()=>{
   fr.add(back);for(const y of[0.55,1.06,1.6]){const s=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.03,0.7),new THREE.MeshBasicMaterial({color:0xe8f2ff,transparent:true,opacity:0.7}));s.position.set(0,y,0);fr.add(s)}
   for(const x of[-0.57,0.57]){const w=new THREE.Mesh(new THREE.BoxGeometry(0.04,2.1,1.4),basic(0xf2f2ee));w.position.set(x,1.1,0);fr.add(w)}
   const top=new THREE.Mesh(new THREE.BoxGeometry(1.18,0.04,0.8),basic(0xf2f2ee));top.position.set(0,2.15,0);fr.add(top);
-  const kb=new THREE.Group();const kc=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.32,14),smooth(0xe03a2a));kb.add(kc);const kcap=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.06,0.08,12),smooth(0xffffff));kcap.position.y=-0.2;kb.add(kcap);kb.rotation.z=Math.PI;kb.position.set(0.2,1.24,0.05);fr.add(kb);
+  const kb=new THREE.Group();const kc=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.09,0.32,14),smooth(0xe03a2a));kb.add(kc);const kcap=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.06,0.08,12),smooth(0xffffff));kcap.position.y=0.2;kb.add(kcap);kb.position.set(-0.2,1.26,0.25);kb.rotation.z=0;fr.add(kb);
   fr.position.set(0,0,0.2);sF.add(fr);
   const fl=new THREE.PointLight(0xfff6e0,5,4,1.2);fl.position.set(0,1.3,0.4);sF.add(fl);
   const bF=bubH(H,'…',{size:0.0018,y:2.25});
@@ -278,21 +279,25 @@ S[1]=()=>{
     caption(1,t)};
 };
 
-// ===== 2. 골목: 긴장 → 좀비 무리와 정면 → 아는 사람 피하던 기술 4단계 → 회피 성공 =====
+// ===== 2. 골목: 긴장 → 좀비 무리 먼저 보여 줌 → 아는 사람 피하던 기술 4단계 → 회피 성공 =====
 S[2]=()=>{
   const E=EV(2);const r=rng(321);
-  const sc=new THREE.Scene();sc.fog=new THREE.Fog(0x161a2c,7,28);nightLights(sc,{hemi:0.8,dir:0.45});
+  const sc=new THREE.Scene();sc.fog=new THREE.Fog(0x161a2c,8,30);nightLights(sc,{hemi:0.85,dir:0.5});
   ground(sc,0x4b4e58,200);
   for(const sd of[-1,1])for(let z=8;z>-40;z-=4.6){if(sd>0&&Math.abs(z-3.4)<0.1)continue;const h=5+r()*5;const bl=makeBuilding(r,3,h,4.4,{wall:pick(r,['#6b6478','#5d6175','#726a6a','#5f6a6e']),win:'#2a3048',lit:0.12});bl.position.set(sd*3.9,h/2,z);sc.add(bl)}
-  for(let i=0;i<5;i++){const bin=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.8,0.5),lamb(pick(r,[0x4f7a5a,0x5a6a8a])));bin.position.set(-2.1,0.4,4-i*5.5);sc.add(bin)}
+  for(let i=0;i<5;i++){const bin=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.8,0.5),lamb(pick(r,[0x4f7a5a,0x5a6a8a])));bin.position.set(-2.1,0.4,6-i*5.5);sc.add(bin)}
   const side=new THREE.Mesh(new THREE.PlaneGeometry(10,4.2),lamb(0x55586a));side.rotation.x=-Math.PI/2;side.position.set(6,0.01,3.4);sc.add(side);
-  const lamps=[lamp(sc,-1.9,3.5),lamp(sc,-1.9,-3.2),lamp(sc,1.9,-9),lamp(sc,5.5,2.0)];
+  const lamps=[lamp(sc,-1.9,4.5),lamp(sc,-1.9,-2.0),lamp(sc,1.9,-9),lamp(sc,5.5,2.0)];
   const H=hero(r,{hood:1});H.rotation.y=Math.PI;sc.add(H);
   const ph=phoneMesh(0x9fd0ff);ph.position.set(0,-0.62,0.06);ph.rotation.x=-Math.PI/2;H.userData.arms[1].add(ph);
+  // 앞발 신발 끈(리본)
+  const lace=new THREE.Group();for(const s2 of[-1,1]){const lp=new THREE.Mesh(new THREE.TorusGeometry(0.045,0.012,6,12),lamb(0xffffff));lp.position.set(s2*0.045,0.02,0);lp.rotation.y=s2*0.5;lace.add(lp)}
+  lace.position.set(0,-0.7,0.12);H.userData.legs[0].add(lace);
   const Z=[];const ZL=zombie(r,{shirt:0x8a94a6});sc.add(ZL);
-  for(let i=0;i<10;i++){const z=zombie(r);z.position.set(((i%5)-2)*0.8+(r()-0.5)*0.3,0,-2.4-Math.floor(i/5)*1.1-r()*0.4);sc.add(z);Z.push({z,x0:z.position.x,z0:z.position.z})}
-  const bCall=bubH(H,'아 네네~',{size:0.0016,y:2.2}),bZ=bubZ(ZL,'으어…?',{size:0.0018,y:2.2});
-  const qs=Z.slice(0,4).map(q=>bubZ(q.z,'?',{size:0.0022,y:2.15,bg:'#f1f1f4',fg:'#555'}));
+  const spots=[[-1.5,-1.2],[-0.7,-1.0],[0.1,-1.6],[-1.9,-2.2],[-1.0,-2.1],[-0.1,-2.3],[-1.5,-3.2],[-0.5,-3.1],[-2.1,-3.3],[-1.0,-4.1],[0.0,-4.2]];
+  spots.forEach(([x,z])=>{const q=zombie(r);q.position.set(x,0,z);sc.add(q);Z.push({z:q,x0:x,z0:z})});
+  const bCall=bubH(H,'아 네네~',{size:0.0022,y:2.25}),bZ=bubZ(ZL,'으어…?',{size:0.0024,y:2.2});
+  const qs=Z.slice(0,5).map(q=>bubZ(q.z,'?',{size:0.0026,y:2.15,bg:'#f1f1f4',fg:'#555'}));
   const C=cam(50);const vig=div('vig');
   const ch=chip('PM 11:40 · 편의점까지 200m');const ch2=chip('아는 사람 회피 경력 15년');
   const sk=div('judge','');sk.style.background='#ffffff';sk.style.color='#3d2a6b';sk.style.fontSize='60px';
@@ -300,29 +305,32 @@ S[2]=()=>{
   const SK=['기술 1 · 폰 보는 척','기술 2 · 신발 끈 묶는 척','기술 3 · 통화하는 척','기술 4 · 자연스럽게 꺾기'];
   return t=>{
     const TE=E.enc,K=[E.k1,E.k2,E.k3,E.k4],TL=E.lost,TD=E.ding;
-    const fl=t<TE?(Math.sin(t*23)>0.85||Math.sin(t*7.3)>0.95?0:1):1;lampOn(lamps[0],fl);lampOn(lamps[1],1);lamps[1].visible=t<E.k4;lampOn(lamps[2],1);lampOn(lamps[3],1);
-    Z.forEach(q=>{q.z.visible=t>=TE;zPose(q.z,t,t>TE&&t<TL?0.5:0);if(t>TE){const k=clamp01((t-TE)/6);q.z.position.z=q.z0+k*1.3}});ZL.visible=t>=TE;
-    standPose(H);slouch(H);ph.visible=false;H.userData.hip.position.y=0.8;H.userData.hip.rotation.x=0;H.userData.head.rotation.x=0.12;
-    if(t<TE){const k=t/TE;H.position.set(0.1,0,4.2-k*2.8);walkPose(H,t*5.5,0.4);
-      C.fov=46;C.updateProjectionMatrix();C.position.set(1.0,2.0,H.position.z+4.4);C.lookAt(-0.1,1.3,H.position.z-3)}
-    else if(t<K[3]){H.position.set(0.1,0,1.4);H.rotation.y=Math.PI;
+    const fl=t<TE?(Math.sin(t*23)>0.85||Math.sin(t*7.3)>0.95?0:1):1;lampOn(lamps[0],fl);lampOn(lamps[1],1);lampOn(lamps[2],1);lampOn(lamps[3],1);
+    // 좀비 무리: 처음부터 골목 안쪽에 있음(주인공이 모퉁이를 돌기 전엔 어둠 속)
+    Z.forEach((q,i)=>{const k=clamp01((t-TE)/3);q.z.position.z=q.z0+k*0.5;zPose(q.z,t,t>TE&&t<TE+3?0.45:0);q.z.rotation.y=0;q.z.visible=t>=TE});
+    standPose(H);slouch(H);ph.visible=false;lace.visible=false;H.userData.hip.position.y=0.8;H.userData.hip.rotation.x=0;H.userData.head.rotation.x=0.12;
+    if(t<TE){const k=t/TE;H.position.set(0.1,0,4.6-k*2.6);walkPose(H,t*5.5,0.4)}
+    else if(t<K[3]){H.position.set(0.1,0,2.0);H.rotation.y=Math.PI;
       if(t>=K[0]&&t<K[1]){ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-1.35;a.rotation.z=-0.55;H.userData.head.rotation.x=0.5}
-      else if(t>=K[1]&&t<K[2]){const u=H.userData;const c=ease((t-K[1])/0.3);const L=0.6*c;u.hip.position.y=0.8-0.36*c;u.hip.rotation.x=L;
-        u.legs[0].rotation.x=(-1.45)*c-L;u.legs[1].rotation.x=(1.05)*c-L;u.head.rotation.x=0.35*c;
-        u.arms.forEach((a,i)=>{a.rotation.x=(-0.55+Math.sin(t*16+i*2)*0.12)*c;a.rotation.z=(i?0.22:-0.22)*c})}
-      else if(t>=K[2]){ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.5;a.rotation.z=-0.5;ph.rotation.set(-Math.PI/2,0,0);H.userData.head.rotation.x=0;H.rotation.y=Math.PI-0.5}
-      if(t<K[0])H.userData.head.rotation.x=0.12}
-    else{const k=clamp01((t-K[3])/2.6);H.rotation.y=Math.PI*0.5-0.35;H.position.set(0.1+k*3.6,0,1.4+k*1.7);walkPose(H,t*4.5,0.35);ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.75;a.rotation.z=-0.62}
-    // 대장 좀비
-    const ap=ease((t-TE)/(K[1]+0.4-TE));ZL.position.set(0.15,0,-1.6+ap*1.45);ZL.rotation.y=0;zPose(ZL,t,t<K[1]+0.4?0.6:0);
-    if(t>=K[1]+0.4&&t<K[2]){ZL.userData.head.rotation.x=0.45+Math.sin(t*9)*0.06;ZL.userData.hip.rotation.x=0.18}else ZL.userData.hip.rotation.x=0;
-    if(t>=TL){const lk=Math.sin((t-TL)*3);ZL.userData.head.rotation.y=lk*0.7;Z.forEach((q,i)=>{q.z.userData.head.rotation.y=Math.sin((t-TL)*2.5+i)*0.6})}
-    show(bCall,t,K[2]+0.3,K[3]+0.5);show(bZ,t,TL,TD+1.2);qs.forEach((b,i)=>show(b,t,TL+0.2+i*0.12,TD+1.2));
+      else if(t>=K[1]&&t<K[2]){const u=H.userData;const c=ease((t-K[1])/0.3);const L=0.45*c;lace.visible=true;
+        u.hip.position.y=0.8-0.25*c;u.hip.rotation.x=L;u.legs[0].rotation.x=-0.8*c-L;u.legs[1].rotation.x=0.8*c-L;u.head.rotation.x=0.45*c;
+        u.arms.forEach((a,i)=>{a.rotation.x=(-0.35+Math.sin(t*16+i*2)*0.12)*c;a.rotation.z=(i?0.3:-0.3)*c});
+        lace.rotation.z=Math.sin(t*14)*0.3}
+      else if(t>=K[2]){ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.5;a.rotation.z=-0.5;ph.rotation.set(-Math.PI/2,0,0);H.userData.head.rotation.x=0;H.rotation.y=Math.PI-0.35}}
+    else{const k=clamp01((t-K[3])/2.4);H.rotation.y=Math.PI*0.5-0.25;H.position.set(0.1+k*3.4,0,2.0+k*1.2);walkPose(H,t*4.5,0.35);ph.visible=true;const a=H.userData.arms[1];a.rotation.x=-2.5;a.rotation.z=-0.5}
+    // 대장 좀비: 1.3m 앞까지만 다가옴
+    const ap=ease((t-TE)/(K[1]+0.4-TE));ZL.position.set(-0.75,0,-0.5+ap*1.15);ZL.rotation.y=0;zPose(ZL,t,t>TE&&t<K[1]+0.4?0.6:0);ZL.userData.hip.rotation.x=0;
+    if(t>=K[1]+0.4&&t<K[2]){ZL.userData.head.rotation.x=0.5+Math.sin(t*9)*0.06;ZL.userData.hip.rotation.x=0.22}
+    if(t>=TL){ZL.userData.head.rotation.y=Math.sin((t-TL)*3)*0.7;Z.forEach((q,i)=>{q.z.userData.head.rotation.y=Math.sin((t-TL)*2.5+i)*0.6})}
+    show(bCall,t,K[2]+0.3,K[3]+0.6);show(bZ,t,TL,TD+1.2);qs.forEach((b,i)=>show(b,t,TL+0.2+i*0.12,TD+1.2));
     // 카메라
-    if(t>=K[1]&&t<K[2]){C.fov=62;C.updateProjectionMatrix();C.position.set(2.3,1.6,1.7);C.lookAt(0.0,0.85,0.55)}
-    else if(t>=TE&&t<K[2]){C.fov=56;C.updateProjectionMatrix();C.position.set(2.05,1.9,-0.7);C.lookAt(0.0,1.15,1.1)}
-    else if(t>=K[2]&&t<K[3]){C.fov=50;C.updateProjectionMatrix();C.position.set(1.5,1.95,-0.1);C.lookAt(0.1,1.65,1.4)}
-    else if(t>=K[3]){const k=ease((t-K[3])/4);C.fov=48;C.updateProjectionMatrix();C.position.set(-0.6,6.2,-7.6+k*0.5);C.lookAt(1.5,0.7,1.8)}
+    if(t<TE){C.fov=46;C.updateProjectionMatrix();C.position.set(1.0,2.0,H.position.z+4.4);C.lookAt(-0.1,1.3,H.position.z-3)}
+    else if(t<K[0]){// 좀비 무리 공개: 주인공 어깨 너머
+      const k=ease((t-TE)/(K[0]-TE));C.fov=50-k*4;C.updateProjectionMatrix();C.position.set(1.0,2.5,5.8);C.lookAt(-0.5,1.2,-2.0)}
+    else if(t>=K[1]&&t<K[2]){// 신발 끈: 쪼그려 앉은 주인공 쪽으로 다가감
+      const k=ease((t-K[1])/1.2);C.fov=44;C.updateProjectionMatrix();C.position.set(2.0-k*0.2,2.0-k*0.3,-3.2+k*0.6);C.lookAt(-0.3,0.8,1.5)}
+    else{// 마스터 숏: 좀비 무리 뒤쪽에서 주인공 얼굴 쪽
+      const k=ease((t-K[0])/6);C.fov=48;C.updateProjectionMatrix();C.position.set(2.3,2.6,-4.9+k*0.5);C.lookAt(-0.35,1.0,1.1)}
     const bp=beatPulse(2,t);vig.style.opacity=t<TL?0.35+0.5*bp:0;
     renderer.setClearColor(0x000000,0);setSky('#0e1022','#262a48');renderer.render(sc,C);
     chipPop(ch,t,0.1);ch.style.opacity=t<TE?1:0;
@@ -359,13 +367,13 @@ S[3]=()=>{
     const TT=E.turn,TL=E.lab;
     if(t<TL){
       // 주인공이 컵라면 담는 동안 등 뒤로 좀비 접근
-      const zk=clamp01(t/TT);Zm.position.set(0.15,0,-4.2+zk*3.75);Zm.rotation.y=0;zPose(Zm,t,t<TT?0.7:0);
+      const zk=clamp01(t/TT);Zm.position.set(0.15,0,-4.2+zk*3.45);Zm.rotation.y=0;zPose(Zm,t,t<TT?0.7:0);if(t>TT)Zm.userData.arms.forEach(a=>a.rotation.x=-1.0);
       const tk=ease((t-TT)/0.4);H.rotation.y=Math.PI*tk;standPose(H);slouch(H);
       if(t<TT){H.userData.arms[1].rotation.x=-0.9-Math.sin(t*3)*0.3;H.userData.arms[0].rotation.x=-0.4}
       else{H.userData.arms[1].rotation.x=-0.2;H.userData.arms[0].rotation.x=-0.4;
         const cu=ease((t-at(3,'s4'))/0.3);eyeOpen(H,0.42+0.45*cu);H.userData.head.rotation.z=-0.18*cu;spk.visible=t>at(3,'s4')&&t<endOf(3,'s5',0.5)&&Math.sin(t*10)>-0.3}
       if(t<TT){spk.visible=false;eyeOpen(H,0.42);C.fov=40;C.updateProjectionMatrix();C.position.set(0.5,1.7,3.6-t*0.15);C.lookAt(0.1,1.5,-1.5)}
-      else if(t<at(3,'z2')-0.1||t>=at(3,'s5')-0.1){C.fov=60;C.updateProjectionMatrix();C.position.set(1.4,1.95,-0.9);C.lookAt(0.0,1.8,0.45)}else{C.fov=60;C.updateProjectionMatrix();C.position.set(1.4,1.95,1.8);C.lookAt(0.15,1.8,-0.35)}
+      else if(t<at(3,'z2')-0.1||t>=at(3,'s5')-0.1){C.fov=52;C.updateProjectionMatrix();C.position.set(1.55,1.9,-1.7);C.lookAt(0.0,1.75,0.6)}else{C.fov=52;C.updateProjectionMatrix();C.position.set(1.5,1.9,2.3);C.lookAt(0.15,1.75,-0.75)}
       show(bH,t,at(3,'s4'),endOf(3,'s4',0.2));show(bZ,t,at(3,'z2'),endOf(3,'z2',0.3));show(bH2,t,at(3,'s5'),TL);
       const bp=beatPulse(3,t);vig.style.opacity=t<TT+0.3?0.3+0.5*bp:0;
       renderer.setClearColor(0x000000,0);setSky('#e8eef6','#c9d6e6');renderer.render(sc,C)}
@@ -483,7 +491,7 @@ S[5]=()=>{
     let S_=sc;
     if(t<TB){ppl.forEach(q=>{if(q.z){zPose(q.p,t,0);q.p.userData.arms.forEach(a=>a.rotation.x=-0.9);q.p.userData.head.rotation.z=0.28}else standPose(q.p);sitPose(q.p)});
       talk.forEach((b,i)=>show(b,t,0.3+i*0.35,99));
-      const k=ease(t/TB);C.fov=56;C.updateProjectionMatrix();C.position.set(-0.4+k*0.8,2.0,8.6);C.lookAt(0,1.3,-0.6)}
+      const k=ease(t/TB);C.fov=50;C.updateProjectionMatrix();C.position.set(-0.3+k*0.6,1.7,6.3);C.lookAt(0,1.25,-0.6)}
     else{S_=sB;crowd.forEach((q,i)=>{if(q.z)zPose(q.p,t,0);else standPose(q.p)});
       books.forEach((g,i)=>{const k=pop((t-TB-0.1-i*0.15)/0.3);g.scale.setScalar(Math.max(0.001,k))});scaleBubble(badge,t<TE?pop((t-TB-0.7)/0.3):0);
       const k=ease((t-TB)/2.5);C.fov=44;C.updateProjectionMatrix();C.position.set(0,2.4,4.6-k*0.8);C.lookAt(0,1.35,-0.4)}
