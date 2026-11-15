@@ -161,7 +161,7 @@ def calm(dur, vol=0.09):
 SC = [
     [('n1', 0.0), ('a1', 0.45), ('s1', 0.7), ('n2', 0.55)],
     [('n3', 0.9), ('s2', 0.6)],
-    [('z3', 3.3), ('z1', 0.15), ('s3', 0.55), ('n4', 1.2)],
+    [('z3', 4.3), ('s3', 0.35), ('z1', 1.7), ('n4', 0.45)],
     [('s4', 2.3), ('z2', 0.35), ('s5', 0.4), ('n5', 0.6)],
     [('s7', 2.4), ('n6', 0.45), ('s8', 0.6), ('z5', 0.35)],
     [('n7', 1.0)],
@@ -198,18 +198,19 @@ def sfx(si, ev):
         place(b, ding(0.15), D['app']); place(b, hum(1.8, 0.03), D['fridge']); place(b, whoosh(0.4, 0.12), D['fridge'])
         place(b, epic(T - D['hood'], 0.16), D['hood'])
     elif si == 2:
-        ENC = vt('z3', -1.0); PASS = ve('s3', 0.35)
-        D = {'enc': ENC, 'sniff': vt('z3', 0.2), 'pass': PASS, 'ding': PASS + 0.55}
+        ENC = LEAD + 2.3
+        D = {'enc': ENC, 'k1': ENC + 0.6, 'k2': vt('z3', -0.45), 'k3': vt('s3', -0.35), 'k4': ve('s3', 0.1), 'lost': vt('z1', -0.1), 'ding': ve('z1', 0.15)}
         ev.update({k: round(x, 3) for k, x in D.items()})
         h, times = hb_track(T, 0.1, ENC, 70, 115, 0.5); b += h
-        h2, times2 = hb_track(T, ENC + 0.2, PASS, 58, 58, 0.62); b += h2; ev['beats'] = times + times2
-        k1 = np.clip((ENC - tt) / 0.05, 0, 1)  # 마주치는 순간 BGM 뚝
+        h2, times2 = hb_track(T, ENC + 0.2, D['lost'], 62, 62, 0.6); b += h2; ev['beats'] = times + times2
+        k1 = np.clip((ENC - tt) / 0.05, 0, 1)
         b += (scrape(T, 0.1) + drone(T, 0.16, 46)) * k1
+        b += drone(T, 0.07, 52) * np.clip((tt - ENC) / 0.5, 0, 1) * np.clip((D['lost'] - tt) / 0.3, 0, 1)
         for i in range(int((ENC - 0.3) / 0.42)): place(b, step(0.1), 0.3 + i * 0.42)
-        place(b, gunshot(0.0), 0)
-        place(b, filt(whoosh(0.3, 0.25), 'lowpass', 1500), ENC - 0.05)  # 휙 마주침 스팅
+        place(b, filt(whoosh(0.3, 0.25), 'lowpass', 1500), ENC - 0.05)
         place(b, sine(150, 140, 1.2, 0.5) * 0.25, ENC - 0.05)
-        place(b, sine(330, 220, 0.6, 0.25) * 0.12, PASS)  # 맥 빠지는 '뿌우'
+        for k in ('k1', 'k2', 'k3', 'k4'): place(b, blip(880, 0.12), D[k]); place(b, blip(1320, 0.1), D[k] + 0.08)
+        for i in range(6): place(b, step(0.09), D['k4'] + 0.2 + i * 0.38)
         place(b, ding(0.3), D['ding'])
     elif si == 3:
         TURN = vt('s4', -0.5); LAB = vt('n5', -0.15)
