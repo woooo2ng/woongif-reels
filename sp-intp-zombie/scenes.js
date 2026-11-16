@@ -430,7 +430,7 @@ S[4]=()=>{
   // 주인공 집: 가운데, 문 + 경고 표지
   const door=new THREE.Mesh(new THREE.BoxGeometry(0.8,1.5,0.06),lamb(0x6a4a3a));door.position.set(0,0.75,-0.28);sc.add(door);
   const signT=canvasTex(512,360,(x,w,h)=>{x.fillStyle='#ffd84d';rr(x,6,6,w-12,h-12,30);x.fill();x.lineWidth=12;x.strokeStyle='#2b2b3a';rr(x,6,6,w-12,h-12,30);x.stroke();
-    x.fillStyle='#2b2b3a';x.textAlign='center';x.textBaseline='middle';x.font=`900 92px ${FONT}`;x.fillText('⚠ 주의',w/2,90);x.font=`900 62px ${FONT}`;x.fillText('이 집 사람',w/2,190);x.fillText('물면 질문함',w/2,280)});
+    x.textAlign='center';x.textBaseline='middle';x.fillStyle='#e23b3b';x.font=`900 70px ${FONT}`;x.fillText('⚠ 질문 폭탄',w/2,95);x.fillText('주의',w/2,175);x.fillStyle='#2b2b3a';x.font=`900 50px ${FONT}`;x.fillText('이 집 사람',w/2,250);x.fillText('물지 마세요',w/2,305)});
   const sign=new THREE.Mesh(new THREE.PlaneGeometry(0.66,0.46),new THREE.MeshBasicMaterial({map:signT}));sign.position.set(0,1.05,-0.24);sc.add(sign);
   const win=new THREE.Mesh(new THREE.PlaneGeometry(0.6,0.55),basic(0xffe39a));win.position.set(0.85,1.45,-0.28);sc.add(win);
   lamp(sc,-1.9,0.6);
