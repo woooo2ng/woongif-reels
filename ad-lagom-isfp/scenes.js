@@ -439,7 +439,7 @@ S[6]=()=>{
   const cam=new THREE.PerspectiveCamera(40,W/H,0.1,100);
   const ck=chip('');
   return t=>{
-    const a=lineT(6,'f1'),b=lineT(6,'f2');
+    const a=lineT(6,'f1'),b={t0:a.t1+0.15,t1:a.t1+0.15};
     // 주인공: 오른쪽에서 뛰어 들어와 숨 고르기
     const run=clamp01(t/0.9);standPose(p);p.rotation.y=run<1?-Math.PI/2:-0.25+ (t>3.5?0.25:0);p.position.set(3.4-run*2.5,0,0.25);
     if(run<1)walkPose(p,t*16,0.9);else{u.hip.rotation.x=0.25*(1-clamp01((t-1.6)/0.6));p.position.y=Math.sin(t*10)*0.015}
@@ -447,15 +447,15 @@ S[6]=()=>{
     drops.forEach((d,i)=>{d.visible=t>0.8&&t<2.4;const lt=((t*1.6+i/3)%1);d.position.set(p.position.x+0.25+i*0.04,2.15-lt*0.4,0.35)});
     // 친구1: 팔짱 + 발 구르기 → 친구2: 다가와서 얼굴 들여다봄
     standPose(f1);f1.userData.arms.forEach((ar,i)=>{ar.rotation.x=-1.4;ar.rotation.z=(i?-0.9:0.9)});f1.position.y=t>a.t0&&t<a.t1?Math.abs(Math.sin(t*12))*0.03:0;
-    standPose(f2);const lean=ease((t-b.t0+0.2)/0.6);f2.position.set(-0.35+lean*0.55,0,-0.5+lean*0.2);f2.rotation.y=0.3+lean*0.9;f2.userData.hip.rotation.x=lean*0.28;
+    standPose(f2);const lean=0;f2.position.set(-0.35+lean*0.55,0,-0.5+lean*0.2);f2.rotation.y=0.3+lean*0.9;f2.userData.hip.rotation.x=lean*0.28;
     standPose(f3);f3.userData.arms[1].rotation.x=t>0.6&&t<1.6?-2.6:0;
     // 칭찬 받고 수줍음: 볼 커짐 + 머리 긁기
     const shy=clamp01((t-b.t1+0.2)/0.4);blush(p,1+shy*0.9);u.smile.visible=shy>0;
-    if(shy>0){u.arms[1].rotation.x=-2.7*ease(shy);u.arms[1].rotation.z=0.5;u.head.rotation.z=Math.sin(t*5)*0.05}
+    if(shy>0){u.arms[1].rotation.x=-2.7*ease(shy);u.arms[1].rotation.z=-0.4*ease(shy);u.head.rotation.z=Math.sin(t*5)*0.05}
     updSprk(sp,t,b.t0+0.3);sp.forEach(q=>q.x=q.x);
-    ex.visible=t>b.t0&&t<b.t0+0.8;ex.position.set(f2.position.x,2.15,f2.position.z);ex.scale.set(ex.userData.base[0]*pop((t-b.t0)/0.2),ex.userData.base[1]*pop((t-b.t0)/0.2),1);
-    const zk=ease((t-b.t0+0.3)/1.0);
-    cam.position.set(0.2+zk*1.4,2.3-zk*0.15,5.6-zk*2.4);cam.lookAt(-0.3+zk*0.8,1.25+zk*0.5,-0.2);
+    ex.visible=false;ex.position.set(f2.position.x,2.15,f2.position.z);ex.scale.set(ex.userData.base[0]*pop((t-b.t0)/0.2),ex.userData.base[1]*pop((t-b.t0)/0.2),1);
+    const zk=0.75*ease((t-b.t0+0.1)/1.0);
+    cam.position.set(0.3+zk*0.9,2.3-zk*0.15,5.8-zk*2.6);cam.lookAt(0.0+zk*0.9,1.25+zk*0.55,-0.2);
     ck.innerHTML='PM 12:15 · 지각 <b>15분</b>';chipPop(ck,t,0.1);
     caption(6,t);renderer.render(scene,cam);
   };
