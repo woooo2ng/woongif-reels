@@ -4,18 +4,12 @@ const C_T='#e0b3ff';
 const TM=await (await fetch('audio/timing.json')).json();
 // 줄 이름 -> 자막. 조각이 [문장, 시작오프셋(초)]이면 그 시각에, 문자열이면 글자 수 비율로 나눔
 const TXT={
- n0:[''],
- k0:['오늘 골 넣는 사람이 영웅이다!','8만 명이, 너 하나만 본다!!'],
- n1:['감독은 몰랐습니다.','그게 이 나라에서 제일 무서운 말이라는 걸.'],
- d0:['와… 드리블 진짜 예쁘게 하시네요.'],s0:['아… 아니에요…'],
- s1:['그쪽도 태클 자세 엄청 정갈하세요.'],d1:['헉… 진짜요?'],
- n2:['이 나라에서 가장 강한 수비는,','칭찬이었습니다.'],
- c0:['좋은 기회!'],c1:['아~ 이건 좀 아쉽네요.'],
- c2:['…아, 아니에요.','제가 말을 너무 세게 했네요.','죄송합니다…'],
- n3:['그날 경기는, 해설위원이','선수한테 사과하느라 3분 멈췄습니다.'],
+ n0:[''],k1:['형, 괜찮아요.','저만 보고 걸어요.'],
+ c7:['…아, 저도 지금 좀…'],n7:['이 나라의 응원가는,','상대 팀까지 울렸습니다.'],
+ c6:['아, 이건 퇴장입니다!'],y0:['…흑, 네…'],n8:['이 나라에선,','퇴장도 다정하게 시켰습니다.'],
  c3:['1대1! 이건 골입니다!!'],
  n4:['골 넣고 할 세리머니는 다 준비했는데,','골 넣을 용기는 없었습니다.'],
- c4:['…어디로 가는 거죠?'],
+ r0:['…저, 이거 어떡해요?'],c4:['…어디로 가는 거죠?'],
  c5:['승부차기, 아직 0 대 0!','이 공 하나로, 우승이 결정됩니다!'],
  g0:['…저 이거 못 막으면,','엄마가 TV로 보고 계세요.'],
  s2:['…저도요.','저희 할머니, 오늘 처음 경기장 오셨어요.'],
@@ -63,4 +57,9 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .who2{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(255,255,255,.95);color:#3b3466;font-weight:900;font-size:40px;padding:6px 26px;border-radius:999px}
 .cont1{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:120px;letter-spacing:-3px}
 .cont2{position:absolute;left:0;right:0;top:680px;text-align:center;font-size:56px}
+.lyric{position:absolute;left:60px;right:60px;top:360px;text-align:center;font-size:62px;line-height:1.35;color:#fff;font-weight:900;text-shadow:0 0 18px rgba(255,150,220,.9),0 4px 0 #6a3b8f}
+.letter{position:absolute;left:110px;top:230px;width:860px;background:#fff7fa;border-radius:24px;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:56px 60px 60px;box-sizing:border-box;color:#5a3a4a;border:6px solid #f6b6cf}
+.letter h2{margin:0 0 26px;font-size:46px;color:#d6336c;font-weight:900}
+.letter p{margin:0 0 20px;font-size:50px;line-height:1.5;font-weight:700}
+.letter .sg{text-align:right;font-size:40px;color:#a0607a;font-weight:800}
 `;document.head.appendChild(st)}

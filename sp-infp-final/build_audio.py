@@ -51,16 +51,15 @@ def sadtone(vol=0.12):
 
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
-    [('n0', 0.7)],
-    [('k0', 0.35), ('n1', 0.55)],
-    [('d0', 0.9), ('s0', 0.25), ('s1', 0.7), ('d1', 0.3), ('n2', 0.6)],
-    [('c0', 0.25), ('c1', 0.9), ('c2', 0.9), ('n3', 0.45)],
-    [('c3', 0.55), ('n4', 3.1), ('c4', 0.35)],
+    [('n0', 0.5), ('k1', 0.6)],
+    [('c7', 6.6), ('n7', 0.35)],
+    [('c6', 0.7), ('y0', 4.3), ('n8', 0.9)],
+    [('c3', 0.55), ('n4', 3.5), ('r0', 2.4), ('c4', 0.9)],
     [('c5', 2.3)],
     [('g0', 0.5), ('s2', 0.95), ('g1', 0.7), ('n5', 0.55)],
     [('n6', 1.8)],
 ]
-POST = {0: 0.3, 1: 0.9, 2: 0.3, 3: 0.4, 4: 0.6, 5: 1.3, 6: 0.5, 7: 2.0}
+POST = {0: 0.9, 1: 0.5, 2: 0.6, 3: 0.5, 4: 1.3, 5: 0.5, 6: 2.0}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []
@@ -81,43 +80,47 @@ def sfx(si, ev):
     b = np.zeros(int(T * SR)); N = len(b); tt = np.arange(N) / SR
     def D_(**d):
         ev.update({k: round(x, 3) for k, x in d.items()}); return {k: x for k, x in d.items()}
-    if si == 0:
-        b += crowd(T, 0.08, 3); place(b, roar(2.5, 0.22, 4), 0.1)
-        D = D_(fw1=0.35, fw2=1.4, fw3=2.6)
-        for k in ('fw1', 'fw2', 'fw3'): place(b, boom(0.18), D[k])
-    elif si == 1:
-        D = D_(bang=vt('k0', -0.25), stiff=ve('k0', -1.4), go=vt('n1', 0.2))
-        b += filt(crowd(T, 0.05, 5), 'lowpass', 400)  # 벽 너머 함성
-        place(b, bang(0.55), D['bang'])
-        locks = [round(D['go'] + i * (L['n1'][1] - 0.2) / 11, 3) for i in range(11)]; ev['locks'] = locks
-        for i, x in enumerate(locks): place(b, step(0.08), x - 0.15); place(b, lock(0.22), x)
-    elif si == 2:
-        b += crowd(T, 0.07, 6)
-        D = D_(drib=0.25, face=vt('d0', -0.3), blush=vt('s0', -0.1), steal=ve('s0', 0.2), blush2=vt('d1', -0.05), back=ve('d1', 0.15))
-        for i in range(5): place(b, kick(0.18), 0.3 + i * 0.32)
-        place(b, roar(1.6, 0.15, 7), 0.3)
-        place(b, sparkle(0.12), D['blush']); place(b, kick(0.2), D['steal']); place(b, sparkle(0.12), D['blush2']); place(b, kick(0.2), D['back'])
-        ping = [round(ve('d1', 0.6) + i * 0.32, 3) for i in range(int((T - ve('d1', 0.6)) / 0.32))]; ev['ping'] = ping
-        for x in ping: place(b, kick(0.12), x)
-    elif si == 3:
-        b += crowd(T, 0.07, 8) * np.clip(1 - (tt - ve('c1', 0.3)) / 0.6, 0.15, 1)
-        D = D_(cross=0.2, whiff=ve('c0', 0.45), sit=ve('c1', 0.25), booth=vt('c2', -0.35), stop=ve('c2', 0.1))
-        place(b, kick(0.25), D['cross']); place(b, whoosh(0.5, 0.18), D['whiff'] - 0.25); place(b, roar(1.2, 0.12, 9), D['whiff'])
-        place(b, sadtone(0.1), D['sit']); place(b, whistle(0.16, 0.8), D['stop'])
-    elif si == 4:
+    if si == 0:  # 입장 터널
+        b += filt(crowd(T, 0.07, 3), 'lowpass', 900); place(b, roar(3.5, 0.08, 4), 0)
+        D = D_(walk=0.2, comfort=vt('k1', -0.1))
+        for i in range(int(T / 0.45)): place(b, step(0.06), 0.2 + i * 0.45)
+    elif si == 1:  # 응원가
+        b += crowd(T, 0.06, 5) * np.clip(1 - (tt - 2.2) / 0.5, 0.25, 1)
+        D = D_(run=0.2, song=2.35, stop1=3.6, stop2=5.3, sob=vt('c7', -0.1))
+        for i in range(int(2.2 / 0.3)): place(b, sine(70, 45, 0.25, 0.08) * 0.35, 0.2 + i * 0.3)  # 북소리
+        for i in range(7): place(b, step(0.1), 0.25 + i * 0.28)
+        sg = load('song')
+        ch = sg * 0.55
+        for rate, dl, g in ((40000, 0.03, 0.45), (55000, 0.06, 0.35), (44000, 0.09, 0.3)):
+            raw = subprocess.check_output(['ffmpeg', '-loglevel', 'error', '-i', 'lines/song.wav', '-af', f'asetrate={rate},aresample=48000,atempo={48000/rate:.4f}', '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'])
+            x = np.frombuffer(raw, np.float32).copy(); y = np.zeros(len(ch) + int(0.2 * SR)); y[int(dl * SR):int(dl * SR) + len(x)] += x[:len(y) - int(dl * SR)] * g; ch = np.pad(ch, (0, len(y) - len(ch))) + y
+        ch = filt(ch, 'lowpass', 5000); rv = np.zeros(len(ch) + int(0.6 * SR))
+        for k, g in ((0.0, 1), (0.11, 0.35), (0.23, 0.22), (0.37, 0.12)): rv[int(k * SR):int(k * SR) + len(ch)] += ch * g
+        place(b, rv / (np.abs(rv).max() + 1e-9) * 0.42, D['song'])
+        place(b, pad(T - D['song'], [261.6, 329.6, 392], 0.08, 0.6, 1.0), D['song'])
+        place(b, pad(T - D['song'] - 2.6, [220, 277, 330], 0.07, 0.6, 1.0), D['song'] + 2.6)
+    elif si == 2:  # 손편지
+        b += crowd(T, 0.06, 6)
+        D = D_(tackle=0.35, whistle=0.6, run=ve('c6', 0.05), pocket=ve('c6', 0.9), letter=ve('c6', 1.5), cry=vt('y0', -0.1), wave=ve('y0', 0.3))
+        place(b, kick(0.4), D['tackle']); place(b, whoosh(0.4, 0.2), D['tackle'] - 0.1); place(b, whistle(0.22, 0.7), D['whistle'])
+        for i in range(4): place(b, step(0.12), D['run'] + i * 0.22)
+        place(b, sine(180, 120, 0.8, 0.4) * 0.12, D['pocket'] - 0.1)
+        place(b, sparkle(0.12), D['letter']); place(b, filt(noise(0.25), 'bandpass', [2000, 6000], 2) * env(int(0.25 * SR), 0.01, 0.08) * 0.06, D['letter'])
+        place(b, pad(T - D['letter'], [349, 440, 523], 0.07, 0.5, 0.8), D['letter'])
+        place(b, roar(2.0, 0.1, 7), D['wave'])
+    elif si == 3:  # 1대1
         b += crowd(T, 0.08, 10)
-        D = D_(run=0.2, slow=ve('c3', 0.05), real=ve('c3', 2.3), pass1=vt('n4', 0.7), keep=ve('n4', -0.4), boot=ve('n4', 0.05))
+        D = D_(run=0.2, slow=ve('c3', 0.05), real=ve('c3', 2.1), pass1=vt('n4', -0.1), ref=vt('r0', -0.6), boot=ve('r0', 0.2))
         place(b, roar(2.0, 0.2, 11), 0.2)
         for i in range(6): place(b, kick(0.16), 0.25 + i * 0.3)
         place(b, slowmo(0.25), D['slow']); place(b, dream(D['real'] - D['slow'] - 0.2, 0.1), D['slow'] + 0.2)
         h = np.zeros(N)
-        for i in range(4): place(h, heartbeat(0.45), D['real'] + i * 0.42)
-        b += h
-        for i in range(5): place(b, shutter(0.12), D['real'] + 0.1 + i * 0.13)
-        passes = [round(D['pass1'] + i * 0.55, 3) for i in range(int((D['keep'] - D['pass1']) / 0.55) + 1)]; ev['passes'] = passes
+        for i in range(3): place(h, heartbeat(0.45), D['real'] + i * 0.42)
+        b += h; place(b, boom(0.12), D['real'])
+        passes = [round(D['pass1'] + i * 0.62, 3) for i in range(int((D['ref'] - D['pass1']) / 0.62) + 1)]; ev['passes'] = passes
         for x in passes: place(b, kick(0.2), x)
-        place(b, kick(0.4), D['boot']); place(b, whoosh(0.7, 0.2), D['boot'])
-    elif si == 5:
+        place(b, kick(0.45), D['boot']); place(b, whoosh(0.7, 0.2), D['boot']); place(b, roar(1.0, 0.12, 12), D['boot'] + 0.3)
+    elif si == 4:
         b += crowd(T, 0.06, 12) * np.clip(1 - (tt - vt('c5', -0.6)) / 0.5, 0.0, 1) + crowd(T, 0.012, 13)
         D = D_(m1=0.25, m2=0.95, m3=1.65, walk=2.35, place=ve('c5', 0.25), breath=ve('c5', 0.8))
         for k in ('m1', 'm2', 'm3'): place(b, kick(0.3), D[k] + 0.25); place(b, roar(0.6, 0.08, 14), D[k] + 0.3)
@@ -125,7 +128,7 @@ def sfx(si, ev):
         h = np.zeros(N)
         for i in range(int((T - D['place']) / 0.75)): place(h, heartbeat(0.4), D['place'] + i * 0.75)
         b += h
-    elif si == 6:
+    elif si == 5:
         b += crowd(T, 0.012, 15) + drone(T, 0.05, 55)
         D = D_(mom=ve('g0', 0.2), gran=ve('s2', -0.6), both=ve('g1', 0.1))
         h = np.zeros(N)
@@ -133,7 +136,7 @@ def sfx(si, ev):
         b += h
         place(b, pad(D['gran'] - D['mom'] + 1.5, [392, 494, 587], 0.07, 0.4, 0.6), D['mom'])
         place(b, pad(T - D['gran'], [349, 440, 523], 0.07, 0.5, 0.8), D['gran'])
-    elif si == 7:
+    elif si == 6:
         D = D_(run=0.25, shot=1.35, freeze=vt('n6', L['n6'][1] + 0.35))
         for i in range(4): place(b, step(0.12), D['run'] + i * 0.26)
         place(b, kick(0.55), D['shot']); place(b, slowmo(0.3), D['shot'] + 0.05)

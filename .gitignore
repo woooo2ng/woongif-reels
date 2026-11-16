@@ -3,3 +3,7 @@ frames/
 out/
 *.tmp
 __pycache__/
+node_modules/
+__pycache__/
+out/
+shots/
