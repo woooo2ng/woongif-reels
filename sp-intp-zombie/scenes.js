@@ -306,7 +306,7 @@ S[2]=()=>{
   const bCall=bubH(H,'아 네네~',{size:0.0022,y:2.25}),bZ=bubZ(ZL,'으어…?',{size:0.0024,y:2.2});
   const qs=Z.slice(0,5).map(q=>bubZ(q.z,'?',{size:0.0026,y:2.15,bg:'#f1f1f4',fg:'#555'}));
   const C=cam(50);const vig=div('vig');
-  const ch=chip('PM 11:40 · 편의점까지 200m');const ch2=chip('아는 사람 회피 경력 15년');
+  const ch=chip('PM 11:40 · 편의점까지 200m');const ch2=chip('어색한 사람 회피 경력 15년');
   const sk=div('judge','');sk.style.background='#ffffff';sk.style.color='#3d2a6b';sk.style.fontSize='60px';
   const jd=div('judge','회피 성공 ✔ · 성공률 100%');
   const SK=['기술 1 · 폰 보는 척','기술 2 · 신발 끈 묶는 척','기술 3 · 통화하는 척','기술 4 · 자연스럽게 꺾기'];
