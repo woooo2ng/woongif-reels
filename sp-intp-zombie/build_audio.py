@@ -93,6 +93,9 @@ def place(buf, x, t):
 
 _load = load
 def load(name):
+    if name == 'q1':
+        raw = subprocess.check_output(['ffmpeg', '-loglevel', 'error', '-i', 'lines/q1.wav', '-af', 'atempo=1.1', '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'])
+        x = np.frombuffer(raw, np.float32).copy(); a = np.where(np.abs(x) > 0.01)[0]; return x[max(0, a[0] - 600):a[-1] + 2400]
     if name[0] != 'z': return _load(name)
     raw = subprocess.check_output(['ffmpeg', '-loglevel', 'error', '-i', f'lines/{name}.wav', '-af', 'asetrate=39000,aresample=48000,aecho=0.6:0.5:35:0.25', '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'])
     x = np.frombuffer(raw, np.float32).copy()
@@ -162,7 +165,7 @@ SC = [
     [('n1', 0.0), ('a1', 0.45), ('s1', 0.7), ('n2', 0.55)],
     [('n3', 0.9), ('s2', 0.6)],
     [('z3', 4.3), ('s3', 0.35), ('z1', 1.7), ('n4', 0.45)],
-    [('s4', 2.3), ('z2', 0.35), ('s5', 0.4), ('q1', 0.3), ('zs', 0.2)],
+    [('s4', 2.3), ('z2', 0.35), ('q1', 1.1), ('zs', 0.2)],
     [('n8', 2.6)],
 ]
 POST = {1: 0.9, 3: 1.1, 4: 1.8}
@@ -214,9 +217,8 @@ def sfx(si, ev):
         place(b, ding(0.3), D['ding'])
     elif si == 3:
         TURN = vt('s4', -0.5)
-        Q = [12, 10, 8, 12]; tot = sum(Q); qs = []; acc = vt('q1')
-        for q in Q: qs.append(round(acc, 3)); acc += L['q1'][1] * q / tot
-        D = {'turn': TURN, 'spark': vt('q1', -0.25), 'flee': vt('zs')}; ev.update({k: round(x, 3) for k, x in D.items()}); ev['qs'] = qs
+        qs = [round(vt('q1', o), 3) for o in (1.52, 3.49, 4.77, 5.8)]
+        D = {'turn': TURN, 'spark': vt('q1', -0.95), 'barr': vt('q1', 1.35), 'flee': vt('zs')}; ev.update({k: round(x, 3) for k, x in D.items()}); ev['qs'] = qs
         for i in range(int((TURN - 0.3) / 0.5)): place(b, step(0.09), 0.3 + i * 0.5 + 0.22)
         h, times = hb_track(T, 0.25, TURN + 0.3, 80, 105, 0.45); b += h; ev['beats'] = times
         b += drone(T, 0.12, 46) * np.clip((TURN + 0.3 - tt) / 0.05, 0, 1)

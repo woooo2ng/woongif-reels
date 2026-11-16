@@ -144,7 +144,7 @@ const TXT={
  n4:['아는 사람을 피하던 기술은,','좀비한테도 통했습니다.'],
  s4:['…근데 님은 배고파서 무는 거예요,','아니면 본능이에요?'],z2:['…으어.'],s5:['…저도 그게 궁금했어요.'],
  n5:[''],
- q1:[['근데 물면 왜 감염돼요?',0],['뇌는 무슨 맛이에요?',1.54],['좀비도 꿈 꿔요?',2.83],['그럼 좀비가 좀비 물면요?',3.85]],zs:['으, 으어어…!!'],
+ q1:[['…근데요.',0],['물면 왜 감염돼요?',1.52],['뇌는 무슨 맛이에요?',3.49],['좀비도 꿈 꿔요?',4.77],['그럼 좀비가 좀비 물면요?!',5.8]],zs:['으, 으어어…!!'],
  n8:[['좀비 사태 1년째.',0],['좀비들이 유일하게 피해 다니는 사람이 생겼습니다.',1.35]],
  s7:['…근데 좀비가 꼭 나쁜 건가?'],n6:['치료법을 거의 알아냈지만,','더 궁금한 게 생겨 버렸습니다.'],
  s8:['으어어… 으어? (번역: 배고파서 그런 거예요?)'],z5:['으어어!! (번역: 드디어 말이 통하네!!)'],
@@ -701,7 +701,7 @@ S[3]=()=>{
   const Zm=zombie(r,{shirt:0x9a8a78});sc.add(Zm);
   const basket=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.25,0.3),lamb(0xe85a5a));basket.position.set(0,-0.62,0.1);H.userData.arms[0].add(basket);
   const ramen=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.08,0.14,14),lamb(0xffe08a));ramen.position.set(0,-0.62,0.08);H.userData.arms[1].add(ramen);
-  const bH=bubH(H,'근데 왜 물어요?',{size:0.0013,y:2.2}),bZ=bubZ(Zm,'…으어.',{size:0.0013,y:2.2}),bH2=bubH(H,'…저도요.',{size:0.0013,y:2.2});
+  const bH=bubH(H,'근데 왜 물어요?',{size:0.0013,y:2.2}),bZ=bubZ(Zm,'…으어.',{size:0.0013,y:2.2}),bH2=bubH(H,'…!',{size:0.0016,y:2.2});
   const spk=textSprite('✦',90,'#fff5a0',0.004);spk.position.set(0.22,0.42,0.25);H.userData.head.add(spk);
   // 질문 폭탄: 좀비 주위에 쌓이는 말풍선
   const QT=['물면 왜 감염돼요?','뇌는 무슨 맛이에요?','좀비도 꿈 꿔요?','좀비가 좀비 물면요?','배고픔은 몇 시간마다?','달리기는 왜 못 해요?','혈액형 바뀌어요?','말은 왜 못 해요?','좀비끼리 친구 있어요?','잠은 자요?','양치는 해요?','MBTI 뭐예요?'];
@@ -711,35 +711,35 @@ S[3]=()=>{
   const C=cam(50);const vig=div('vig');
   const ch=chip('AM 12:05 · 편의점');const qc=chip('질문 1개');
   return t=>{
-    const TT=E.turn,QS=E.qs,TF=E.flee,TQ=E.spark;
+    const TT=E.turn,QS=E.qs,TF=E.flee,TQ=E.spark,TB=E.barr;
     // 좀비: 등 뒤로 접근 → 멈춤 → 질문 받으며 뒷걸음 → 도주
     const zk=clamp01(t/TT);let zx=0.15,zz=-4.2+zk*3.45;Zm.rotation.y=0;zPose(Zm,t,t<TT?0.7:0);
     if(t>TT)Zm.userData.arms.forEach(a=>a.rotation.x=-1.0);
-    if(t>TQ){const bk=ease((t-TQ)/(TF-TQ));zz-=bk*0.9;Zm.userData.head.rotation.x=-0.15*bk;Zm.userData.arms.forEach(a=>{a.rotation.x=-1.0+0.6*bk})}
+    if(t>QS[0]){const bk=ease((t-QS[0])/(TF-QS[0]));zz-=bk*0.9;Zm.userData.head.rotation.x=-0.15*bk;Zm.userData.arms.forEach(a=>{a.rotation.x=-1.0+0.6*bk})}
     if(t>TF){const k=(t-TF);Zm.rotation.y=Math.PI;zz-=0.9+k*2.4;zx=0.15+Math.sin(k*5)*0.25;walkPose(Zm,t*11,0.8);Zm.userData.arms.forEach((a,i)=>{a.rotation.x=-2.6;a.rotation.z=(i?0.4:-0.4)})}
     Zm.position.set(zx,0,zz);exm.visible=t>TF-0.1;
     const tk=ease((t-TT)/0.4);H.rotation.y=Math.PI*tk;standPose(H);slouch(H);
     if(t<TT){H.userData.arms[1].rotation.x=-0.9-Math.sin(t*3)*0.3;H.userData.arms[0].rotation.x=-0.4}
     else{H.userData.arms[1].rotation.x=-0.2;H.userData.arms[0].rotation.x=-0.4;
-      const cu=ease((t-at(3,'s4'))/0.3);const qq=ease((t-TQ)/0.3);eyeOpen(H,0.42+0.45*cu+0.35*qq);H.userData.head.rotation.z=-0.18*cu*(1-qq);
-      if(t>TQ&&t<TF+0.5){H.position.z=0.6-ease((t-TQ)/(TF-TQ))*0.5;H.userData.arms[1].rotation.x=-1.2+Math.sin(t*9)*0.4}}
-    spk.visible=(t>at(3,'s4')&&t<endOf(3,'s5',0.3)&&Math.sin(t*10)>-0.3)||(t>TQ&&Math.sin(t*14)>-0.5);
+      const cu=ease((t-at(3,'s4'))/0.3);const qq=ease((t-TQ)/0.8);eyeOpen(H,0.42+0.3*cu*(1-qq)+0.75*qq);H.userData.head.rotation.z=-0.18*cu*(1-qq);
+      if(t>QS[0]&&t<TF+0.5){H.position.z=0.6-ease((t-QS[0])/(TF-QS[0]))*0.5;H.userData.arms[1].rotation.x=-1.2+Math.sin(t*9)*0.4}}
+    spk.visible=t>TQ&&(t<TQ+0.8||Math.sin(t*14)>-0.5);spk.scale.setScalar(0.3+0.45*ease((t-TQ)/0.8));
     if(t<TT)eyeOpen(H,0.42);
-    show(bH,t,at(3,'s4'),endOf(3,'s4',0.2));show(bZ,t,at(3,'z2'),endOf(3,'z2',0.3));show(bH2,t,at(3,'s5'),TQ);
+    show(bH,t,at(3,'s4'),endOf(3,'s4',0.2));show(bZ,t,at(3,'z2'),endOf(3,'z2',0.3));show(bH2,t,TQ+0.15,TB);
     // 질문 말풍선
-    let n=0;QB.forEach((b,i)=>{const t0=i<4?QS[i]:QS[3]+0.5+(i-4)*0.18;const on=t>=t0&&t<TF;if(on)n++;
+    let n=0;QB.forEach((b,i)=>{const t0=i<4?QS[i]:QS[3]+0.45+(i-4)*0.12;const on=t>=t0&&t<TF;if(on)n++;
       const [px,py]=QP[i];b.position.set(Zm.position.x+0.1,py+0.1,(Zm.position.z+H.position.z)/2-0.2+px*0.75);scaleBubble(b,on?pop((t-t0)/0.22):0)});
-    const cnt=t<TQ?0:Math.round(t<QS[3]+0.5?n:Math.min(47,4+(t-QS[3]-0.5)*22));
+    const cnt=t<QS[0]?0:Math.round(t<QS[3]+0.45?n:Math.min(47,4+(t-QS[3]-0.45)*30));
     if(qc.dataset.n!=cnt){qc.dataset.n=cnt;qc.textContent=`질문 ${cnt}개`}
     // 카메라
     if(t<TT){C.fov=40;C.updateProjectionMatrix();C.position.set(0.5,1.7,3.6-t*0.15);C.lookAt(0.1,1.5,-1.5)}
-    else if(t<TQ){if(t<at(3,'z2')-0.1||t>=at(3,'s5')-0.1){C.fov=52;C.updateProjectionMatrix();C.position.set(1.55,1.9,-1.7);C.lookAt(0.0,1.75,0.6)}else{C.fov=52;C.updateProjectionMatrix();C.position.set(1.5,1.9,2.3);C.lookAt(0.15,1.75,-0.75)}}
-    else if(t<TF){const k=ease((t-TQ)/3);C.fov=62;C.updateProjectionMatrix();C.position.set(3.25+k*0.3,2.1,-0.55);C.lookAt(-0.1,1.95,-0.6)}
+    else if(t<TB){if(t<at(3,'z2')-0.1||t>=endOf(3,'z2',0.25)){C.fov=52;C.updateProjectionMatrix();C.position.set(1.55,1.9,-1.7);C.lookAt(0.0,1.75,0.6)}else{C.fov=52;C.updateProjectionMatrix();C.position.set(1.5,1.9,2.3);C.lookAt(0.15,1.75,-0.75)}}
+    else if(t<TF){const k=ease((t-TB)/3);C.fov=62;C.updateProjectionMatrix();C.position.set(3.25+k*0.3,2.1,-0.55);C.lookAt(-0.1,1.95,-0.6)}
     else{const k=ease((t-TF)/1.5);C.fov=50;C.updateProjectionMatrix();C.position.set(0.75,2.0,2.6-k*0.3);C.lookAt(0.0,1.3,-3.5)}
-    sc.userData.rightShelf.visible=t<TQ||t>=TF;
+    sc.userData.rightShelf.visible=t<TB||t>=TF;
     const bp=beatPulse(3,t);vig.style.opacity=t<TT+0.3?0.3+0.5*bp:0;
     renderer.setClearColor(0x000000,0);setSky('#e8eef6','#c9d6e6');renderer.render(sc,C);
-    chipPop(ch,t,0.1);ch.style.opacity=t<TT?1:0;chipPop(qc,t,TQ+0.1);qc.style.opacity=t>TQ+0.1?1:0;
+    chipPop(ch,t,0.1);ch.style.opacity=t<TT?1:0;chipPop(qc,t,QS[0]);qc.style.opacity=t>=QS[0]?1:0;
     caption(3,t)};
 };
 function scene_store(sc,r){
