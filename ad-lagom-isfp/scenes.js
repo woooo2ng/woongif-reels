@@ -358,14 +358,17 @@ S[5]=()=>{
   const chat=document.createElement('div');chat.className='chat';chat.innerHTML='<div class="hd">우리 넷 (4)</div><div class="ms"><div class="r"><div class="av"></div><div class="b">어디야?</div></div><div class="r me" style="display:none"><div class="b">거의 다 왔어!</div></div></div><div class="in"></div>';ui.appendChild(chat);
   const inp=chat.querySelector('.in'),mine=chat.querySelector('.me');
   return t=>{
-    const SIT=2.05,LIE0=3.5,LIE1=4.4,UP=6.45,BX=-1.0,BZ=0.98;
+    const SIT=2.05,LIE0=3.5,LIE1=5.3,TOP=5.75,UP=7.25,BX=-1.0,BZ=0.98;
     standPose(p);u.hip.rotation.set(0,0,0);p.rotation.set(0,0,0);
     if(t<1.0){p.position.set(-0.2+t*1.3,0,1.1);p.rotation.y=Math.PI/2;walkPose(p,t*9,0.5)}
     else if(t<SIT){const k=ease((t-1.15)/0.85);p.rotation.y=Math.PI/2+k*Math.PI*0.5+(t<1.15?0:0);p.position.set(1.1+(BX-1.1)*k,0,1.1+(BZ-1.1)*k);
       if(k<0.85)walkPose(p,t*8,0.4);if(k>0.5)p.rotation.y=Math.PI*1.0+ (k-0.5)*2*Math.PI; }
-    const LYING=t>=LIE0+0.45&&t<UP;
-    if(t>=SIT&&t<UP&&!LYING){p.rotation.y=0;sitPose(p);p.position.set(BX,0.08,BZ);
-      const lk=ease((t-LIE0)/0.45)*0.7;p.rotation.z=lk;p.position.x=BX-lk*0.4;p.position.y=0.08+lk*0.3}
+    const LYING=t>=TOP&&t<UP;
+    // 스르륵: 천천히 기울다 → 멈칫 버티기 → 다시 스르륵 → 털썩
+    const sl=clamp01((t-LIE0)/(LIE1-LIE0));let th;
+    if(sl<0.35)th=0.38*ease(sl/0.35);else if(sl<0.55)th=0.38-0.07*Math.sin((sl-0.35)/0.2*Math.PI);else{const q=(sl-0.55)/0.45;th=0.38+1.07*q*q*q}
+    if(t>LIE1)th=1.45+0.05*Math.sin(clamp01((t-LIE1)/0.25)*Math.PI)*Math.exp(-(t-LIE1)*6);
+    if(t>=SIT&&t<UP&&!LYING){p.rotation.y=0;sitPose(p);const hx=BX-0.1*th/1.45,hy=0.64+0.19*th/1.45;p.rotation.z=th;p.position.set(hx+0.56*Math.sin(th),hy-0.56*Math.cos(th),BZ)}
     else if(LYING){standPose(p);lieBack(p,-2.72,0.74);u.legs[0].rotation.x=0.15;u.legs[1].rotation.x=-0.1;
       u.arms[1].rotation.x=-1.25;u.arms[1].rotation.z=-0.25;u.arms[0].rotation.z=0.4;if(!phn.parent){phn.position.set(0,-0.68,0.1);u.arms[1].add(phn)}}
     if(t>=UP&&phn.parent)phn.parent.remove(phn);
@@ -373,19 +376,19 @@ S[5]=()=>{
     if(t>=UP){const k=ease((t-UP)/0.2);const run=clamp01((t-UP-0.25)/1.1);
       if(t<UP+0.25){p.rotation.y=0;sitPose(p);p.position.set(BX,0.08+Math.sin(k*Math.PI)*0.3,BZ)}
       else{p.rotation.y=Math.PI/2;p.position.set(BX+run*5.4,0,BZ+run*0.2);walkPose(p,t*16,0.9)}}
-    const lk2=ease((t-LIE0)/(LIE1-LIE0));eyesK(p,t<LIE0?1:t<UP?1-0.75*lk2:1);eyesW(p,t>=UP?1.5:1);u.mouth.visible=t>=UP;u.smile.visible=t>SIT&&t<UP;
+    const lk2=clamp01((t-LIE0)/(LIE1-LIE0));eyesK(p,t<LIE0?1:t<UP?Math.max(0.15,1-0.85*lk2):1);eyesW(p,t>=UP?1.5:1);u.mouth.visible=t>=UP;u.smile.visible=t>SIT&&t<UP;
     const hk=t>1.1&&t<UP?pop((t-1.1)/0.4):0;halo.material.opacity=hk*0.55*(t<LIE0?1:0.5);halo.scale.setScalar(3.0+Math.sin(t*3)*0.15);
     rays.forEach((ry,i)=>{ry.visible=hk>0.05;const a=i/8*Math.PI*2+t*0.4;ry.position.set(-2.0+Math.cos(a)*1.1*hk,1.2+Math.sin(a)*1.1*hk,0.2);ry.rotation.z=a-Math.PI/2;ry.material.opacity=0.45*hk*(t<LIE0?1:0.4)})
     scaleBubble(think,0);
     ex.visible=t>UP&&t<UP+0.5;ex.position.set(BX-0.3,1.9,BZ);
     // 채팅: 4.7 '어디야?' → 5.15부터 입력 → 5.85 전송 → 6.6 사라짐
-    const cIn=t>4.6&&t<6.6;chat.style.opacity=cIn?1:0;chat.style.transform=`scale(${0.7+0.3*pop((t-4.6)/0.3)})`;
-    const msg='거의 다 왔어!';const nch=Math.max(0,Math.min(msg.length,Math.floor((t-5.15)/0.085)));
-    inp.innerHTML=t<5.85?(msg.slice(0,nch)+'<span class="cur"></span>'):'<span class="cur"></span>';mine.style.display=t>=5.85?'flex':'none';
+    const cIn=t>5.4&&t<7.4;chat.style.opacity=cIn?1:0;chat.style.transform=`scale(${0.7+0.3*pop((t-5.4)/0.3)})`;
+    const msg='거의 다 왔어!';const nch=Math.max(0,Math.min(msg.length,Math.floor((t-5.95)/0.085)));
+    inp.innerHTML=t<6.65?(msg.slice(0,nch)+'<span class="cur"></span>'):'<span class="cur"></span>';mine.style.display=t>=6.65?'flex':'none';
     const left=t<1.0?8:t<LIE0?6:t<UP?Math.max(0,Math.round(5-5*clamp01((t-LIE0)/(UP-0.25-LIE0)))):0;
     ck.innerHTML=`약속까지 <b>${left}분</b>`;chipPop(ck,t,0.1);
     const zk=t<1.0?0:ease((t-1.0)/1.2)*(1-ease((t-UP)/0.5));
-    if(LYING){const k=ease((t-LIE0-0.45)/2.0);cam.position.set(-1.75,3.2-k*0.35,2.6-k*0.3);cam.lookAt(-2.45,0.85,-0.1)}else{cam.position.set(1.3-zk*2.1,2.7-zk*0.1,6.0-zk*0.6);cam.lookAt(-0.3-zk*1.6,0.95-zk*0.05,0.3)}
+    if(LYING){const k=ease((t-TOP)/1.5);cam.position.set(-1.75,3.2-k*0.35,2.6-k*0.3);cam.lookAt(-2.45,0.85,-0.1)}else{cam.position.set(1.3-zk*1.8,2.7-zk*0.1,6.0-zk*0.6);cam.lookAt(-0.3-zk*1.3,0.95-zk*0.05,0.3)}
     caption(5,t);renderer.render(scene,cam);
   };
 };
