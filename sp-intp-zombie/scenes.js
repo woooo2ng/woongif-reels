@@ -312,9 +312,9 @@ S[2]=()=>{
   const SK=['기술 1 · 폰 보는 척','기술 2 · 신발 끈 묶는 척','기술 3 · 통화하는 척','기술 4 · 자연스럽게 꺾기'];
   return t=>{
     const TE=E.enc,K=[E.k1,E.k2,E.k3,E.k4],TL=E.lost,TD=E.ding;
-    const fl=t<TE?(Math.sin(t*23)>0.85||Math.sin(t*7.3)>0.95?0:1):1;lampOn(lamps[0],fl);lampOn(lamps[1],1);lampOn(lamps[2],1);lampOn(lamps[3],1);
+    const fl=t<TE?(Math.sin(t*23)>0.85||Math.sin(t*7.3)>0.95?0:1):1;lampOn(lamps[0],fl);lampOn(lamps[1],t<TE?(Math.sin(t*17+1)>0.3||Math.sin(t*5.1)>0.9?1:0):1);lampOn(lamps[2],1);lampOn(lamps[3],1);
     // 좀비 무리: 처음부터 골목 안쪽에 있음(주인공이 모퉁이를 돌기 전엔 어둠 속)
-    Z.forEach((q,i)=>{const k=clamp01((t-TE)/3);q.z.position.z=q.z0+k*0.5;zPose(q.z,t,t>TE&&t<TE+3?0.45:0);q.z.rotation.y=0;q.z.visible=t>=TE});
+    Z.forEach((q,i)=>{const k=clamp01((t-TE)/3);q.z.position.z=q.z0+k*0.5;zPose(q.z,t,t>TE&&t<TE+3?0.45:0);q.z.rotation.y=0;q.z.visible=true});
     standPose(H);slouch(H);ph.visible=false;phGl.intensity=0;lace.visible=false;const U=H.userData;U.hip.position.y=0.8;U.hip.rotation.x=0;U.head.rotation.x=0.12;
     U.legs.forEach(l=>l.visible=true);KL.forEach(k=>k.th.visible=false);
     if(t<TE){const k=t/TE;H.position.set(0.1,0,4.6-k*2.6);walkPose(H,t*5.5,0.4)}
@@ -340,7 +340,7 @@ S[2]=()=>{
     if(t>=TL){ZL.userData.head.rotation.y=Math.sin((t-TL)*3)*0.7;Z.forEach((q,i)=>{q.z.userData.head.rotation.y=Math.sin((t-TL)*2.5+i)*0.6})}
     show(bCall,t,K[2]+0.3,K[3]+0.6);show(bZ,t,TL,TD+1.2);qs.forEach((b,i)=>show(b,t,TL+0.2+i*0.12,TD+1.2));
     // 카메라
-    if(t<TE){C.fov=46;C.updateProjectionMatrix();C.position.set(1.0,2.0,H.position.z+4.4);C.lookAt(-0.1,1.3,H.position.z-3)}
+    if(t<TE){C.fov=48;C.updateProjectionMatrix();C.position.set(1.5,2.6,H.position.z+4.6);C.lookAt(-0.5,1.1,H.position.z-4)}
     else if(t<K[0]){// 좀비 무리 공개: 주인공 어깨 너머
       const k=ease((t-TE)/(K[0]-TE));C.fov=50-k*4;C.updateProjectionMatrix();C.position.set(1.0,2.5,5.8);C.lookAt(-0.5,1.2,-2.0)}
     else if(t>=K[1]&&t<K[2]){// 신발 끈: 쪼그려 앉은 주인공 쪽으로 다가감
