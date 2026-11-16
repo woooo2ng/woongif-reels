@@ -51,7 +51,7 @@ async function comboBoard(db, kind, voter, all) {
   if (!all) items.splice(0, items.length, ...items.filter((i) => i.status !== "hidden"));
   items.sort((x, y) => y.votes - x.votes);
   const out = {
-    ranking: items.filter((i) => i.status === "open").slice(0, all ? 300 : 100),
+    ranking: items.filter((i) => i.status === "open"), // 자르면 하트 적은 조합이 안 보이는데 신청하면 "이미 있음"이 됨
     making: items.filter((i) => i.status === "making" || i.status === "today"),
     done: items.filter((i) => i.status === "done"),
     todayLikes: mine.results.map((r) => r.key),
