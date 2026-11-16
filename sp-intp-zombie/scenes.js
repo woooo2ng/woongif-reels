@@ -303,11 +303,11 @@ S[2]=()=>{
   const Z=[];const ZL=zombie(r,{shirt:0x8a94a6});sc.add(ZL);
   const spots=[[-1.5,-1.2],[-0.7,-1.0],[0.1,-1.6],[-1.9,-2.2],[-1.0,-2.1],[-0.1,-2.3],[-1.5,-3.2],[-0.5,-3.1],[-2.1,-3.3],[-1.0,-4.1],[0.0,-4.2]];
   spots.forEach(([x,z])=>{const q=zombie(r);q.position.set(x,0,z);sc.add(q);Z.push({z:q,x0:x,z0:z})});
-  const bCall=bubH(H,'아 네네~',{size:0.0022,y:2.25}),bZ=bubZ(ZL,'으어…?',{size:0.0024,y:2.2});
-  const qs=Z.slice(0,5).map(q=>bubZ(q.z,'?',{size:0.0026,y:2.15,bg:'#f1f1f4',fg:'#555'}));
+  const bCall=bubH(H,'아 네네~',{size:0.0022,y:1.75}),bZ=bubZ(ZL,'으어…?',{size:0.0024,y:2.2});
+  bCall.position.x=-0.4;const qs=Z.slice(0,5).map(q=>bubZ(q.z,'?',{size:0.0026,y:2.15,bg:'#f1f1f4',fg:'#555'}));
   const C=cam(50);const vig=div('vig');
-  const ch=chip('PM 11:40 · 편의점까지 200m');const ch2=chip('어색한 사람 회피 경력 15년');
-  const sk=div('judge','');sk.style.background='#ffffff';sk.style.color='#3d2a6b';sk.style.fontSize='60px';
+  const ch=chip('PM 11:40 · 편의점까지 200m');const ch2=chip('어색한 사람 회피 경력 15년');ch2.style.background='#3d2a6b';ch2.style.color='#ffd84d';ch2.style.fontSize='66px';ch2.style.boxShadow='0 10px 30px rgba(0,0,0,.45)';
+  const sk=div('judge','');sk.style.background='#ffffff';sk.style.color='#3d2a6b';sk.style.fontSize='60px';sk.style.top='370px';
   const jd=div('judge','회피 성공 ✔ · 성공률 100%');
   const SK=['기술 1 · 폰 보는 척','기술 2 · 신발 끈 묶는 척','기술 3 · 통화하는 척','기술 4 · 자연스럽게 꺾기'];
   return t=>{
@@ -351,7 +351,7 @@ S[2]=()=>{
     const bp=beatPulse(2,t);vig.style.opacity=t<TL?0.35+0.5*bp:0;
     renderer.setClearColor(0x000000,0);setSky('#0e1022','#262a48');renderer.render(sc,C);
     chipPop(ch,t,0.1);ch.style.opacity=t<TE?1:0;
-    chipPop(ch2,t,TE+0.3);ch2.style.opacity=t>TE+0.3&&t<TD?1:0;
+    {const k=(t-TE-0.3)/0.35;ch2.style.transform=`translateX(-50%) scale(${k<1?pop(k)*1.15-0.15*ease(k):1})`;ch2.style.opacity=clamp01((t-TE-0.3)/0.08)}ch2.style.opacity=t>TE+0.3&&t<TD?1:0;
     let idx=-1;K.forEach((k,i)=>{if(t>=k)idx=i});
     if(idx>=0&&t<TL){sk.style.display='';if(sk.dataset.i!=idx){sk.dataset.i=idx;sk.textContent=SK[idx]}popEl(sk,t,K[idx],'translateX(-50%)')}else sk.style.display='none';
     popEl(jd,t,TD,'translateX(-50%)');jd.style.opacity=t>TD?1:0;
