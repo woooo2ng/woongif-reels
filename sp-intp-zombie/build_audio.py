@@ -162,17 +162,17 @@ SC = [
     [('n1', 0.0), ('a1', 0.45), ('s1', 0.7), ('n2', 0.55)],
     [('n3', 0.9), ('s2', 0.6)],
     [('z3', 4.3), ('s3', 0.35), ('z1', 1.7), ('n4', 0.45)],
-    [('s4', 2.3), ('z2', 0.35), ('s5', 0.4), ('n5', 0.6)],
-    [('s7', 2.4), ('n6', 0.45), ('s8', 0.6), ('z5', 0.35)],
-    [('n7', 1.0)],
+    [('s4', 2.3), ('z2', 0.35), ('s5', 0.4), ('q1', 0.3), ('zs', 0.2)],
+    [('n8', 2.6)],
 ]
-POST = {1: 0.9, 3: 0.6, 4: 0.9, 5: 1.6}
+POST = {1: 0.9, 3: 1.1, 4: 1.8}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []
     for name, gap in lines:
         x = load(name)
         if name == 'z3': x = fadeout(x[:int(2.7 * SR)], 0.4)
+        if name == 'zs': x = fadeout(x[:int(2.5 * SR)], 0.3)
         t += gap; starts[name] = [round(t, 3), round(len(x) / SR, 3)]; xs.append((x, t, name)); t += len(x) / SR
     T = t + POST.get(si, 0)
     v = np.zeros(int(T * SR) + 1)
@@ -213,26 +213,24 @@ def sfx(si, ev):
         for i in range(6): place(b, step(0.09), D['k4'] + 0.2 + i * 0.38)
         place(b, ding(0.3), D['ding'])
     elif si == 3:
-        TURN = vt('s4', -0.5); LAB = vt('n5', -0.15)
-        D = {'turn': TURN, 'lab': LAB}; ev.update({k: round(x, 3) for k, x in D.items()})
-        for i in range(int((TURN - 0.3) / 0.5)): place(b, step(0.09), 0.3 + i * 0.5 + 0.22)  # 등 뒤 발소리
+        TURN = vt('s4', -0.5)
+        Q = [12, 10, 8, 12]; tot = sum(Q); qs = []; acc = vt('q1')
+        for q in Q: qs.append(round(acc, 3)); acc += L['q1'][1] * q / tot
+        D = {'turn': TURN, 'spark': vt('q1', -0.25), 'flee': vt('zs')}; ev.update({k: round(x, 3) for k, x in D.items()}); ev['qs'] = qs
+        for i in range(int((TURN - 0.3) / 0.5)): place(b, step(0.09), 0.3 + i * 0.5 + 0.22)
         h, times = hb_track(T, 0.25, TURN + 0.3, 80, 105, 0.45); b += h; ev['beats'] = times
         b += drone(T, 0.12, 46) * np.clip((TURN + 0.3 - tt) / 0.05, 0, 1)
-        place(b, calm(T - LAB, 0.07), LAB)
-        for i in range(8): place(b, tap(0.12), LAB + 0.4 + i * 0.27)  # 화이트보드 마커
+        place(b, ding(0.22), D['spark'])
+        for i, q in enumerate(qs): place(b, blip(990 + i * 120, 0.12), q); place(b, blip(1320 + i * 120, 0.1), q + 0.07)
+        for i in range(16): place(b, blip(1500 + (i % 4) * 150, 0.05), qs[-1] + 0.5 + i * 0.09)
+        place(b, whoosh(0.8, 0.3), D['flee'] + 0.3)
+        for i in range(8): place(b, step(0.12), D['flee'] + 0.4 + i * 0.18)
     elif si == 4:
-        EU = LEAD + 0.5; CUT = vt('s7', -0.25)
-        D = {'eureka': EU, 'cut': CUT, 'cross': vt('n6', 0.15), 'talk': vt('s8', -0.45), 'yay': vt('z5')}
-        ev.update({k: round(x, 3) for k, x in D.items()})
-        place(b, ding(0.3), EU)
-        place(b, epic(CUT - EU + 0.02, 0.24), EU)
-        place(b, filt(noise(0.25), 'bandpass', [1500, 5000], 2) * env(int(0.25 * SR), 0.005, 0.08) * 0.12, D['cross'])  # 지우개 쓱
-        for i in range(10): place(b, tap(0.12), D['cross'] + 0.5 + i * 0.22)
-        place(b, calm(T - D['talk'], 0.07), D['talk'])
-        place(b, ding(0.25), D['yay'] + 0.1)
-    elif si == 5:
-        b += birds(T, 0.05) + calm(T, 0.06)
-        BK = vt('n7', 2.55); ev['books'] = round(BK, 3); place(b, whoosh(0.5, 0.15), BK - 0.15); place(b, ding(0.25), BK + 0.2)
+        b += wind(T, 0.05)
+        mo = load('z4'); place(b, filt(mo, 'lowpass', 900) * 0.35, 0.6); place(b, filt(load('z3')[:int(2.0 * SR)], 'lowpass', 900) * 0.3, 2.2)
+        D = {'veer': vt('n8', -1.2), 'sign': vt('n8', 1.25)}; ev.update({k: round(x, 3) for k, x in D.items()})
+        place(b, sine(330, 220, 0.6, 0.25) * 0.12, D['veer'] + 0.3)
+        place(b, ding(0.28), D['sign'])
     save(b, f'audio/x{si + 1}.wav')
 
 for si in range(len(SC)):
