@@ -72,15 +72,15 @@ function tubeLabel(){
     x.fillStyle='#f4f4f2';x.fillRect(0,0,w,h);
     {const g=x.createLinearGradient(0,0,w*0.5,0);g.addColorStop(0,'rgba(0,0,0,0.10)');g.addColorStop(0.2,'rgba(255,255,255,0)');g.addColorStop(0.3,'rgba(255,255,255,0.85)');g.addColorStop(0.36,'rgba(255,255,255,0.15)');g.addColorStop(0.75,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(0,0,0,0.12)');x.fillStyle=g;x.fillRect(0,0,w*0.5,h)}
     // 정면은 u=0.25(가로 512px 부근) — 아래에서 x 좌표를 u로 맞춰 그림
-    const cx=w*0.25;x.fillStyle='#111';x.textAlign='center';x.textBaseline='middle';
+    const cx=w*0.25;x.fillStyle='#000';x.textAlign='center';x.textBaseline='middle';
     x.font=`${LOGO.w} ${LOGO.fs}px "Noto Sans CJK KR"`;x.letterSpacing=LOGO.ls+'px';x.fillText('LAGOM',cx+LOGO.ls/2,h*0.30);
-    x.font=`500 30px "Noto Sans CJK KR"`;x.letterSpacing='2px';x.fillText('NOT TOO LITTLE, NOT TOO MUCH',cx,h*0.38);
-    x.font=`700 40px "Noto Sans CJK KR"`;x.letterSpacing='3px';x.fillText('CELLUP',cx,h*0.555);x.fillText('MICRO FOAM CLEANSER',cx,h*0.595);
+    x.font=`700 34px "Noto Sans CJK KR"`;x.letterSpacing='1.5px';x.fillText('NOT TOO LITTLE, NOT TOO MUCH',cx,h*0.385);
+    x.font=`900 46px "Noto Sans CJK KR"`;x.letterSpacing='2px';x.fillText('CELLUP',cx,h*0.55);x.fillText('MICRO FOAM CLEANSER',cx,h*0.597);
     // 저울 아이콘
     x.strokeStyle='#111';x.lineWidth=5;const iy=h*0.70;
     x.beginPath();x.moveTo(cx-46,iy);x.lineTo(cx+46,iy);x.moveTo(cx,iy-14);x.lineTo(cx,iy+30);x.moveTo(cx-20,iy+30);x.lineTo(cx+20,iy+30);x.stroke();
     for(const s of[-1,1]){x.beginPath();x.arc(cx+s*42,iy+14,16,0,Math.PI);x.stroke();x.beginPath();x.moveTo(cx+s*42-16,iy+14);x.lineTo(cx+s*42,iy);x.lineTo(cx+s*42+16,iy+14);x.stroke()}
-    x.font=`500 26px "Noto Sans CJK KR"`;x.letterSpacing='1px';x.fillText('150mL · 5.07 FL.OZ.',cx,h*0.80);
+    x.font=`700 30px "Noto Sans CJK KR"`;x.letterSpacing='1px';x.fillText('150mL · 5.07 FL.OZ.',cx,h*0.80);
     x.letterSpacing='0px';
   });
 }

@@ -362,9 +362,9 @@ S[5]=()=>{
   const fly=(o,t,t0,to,rot)=>{const k=ease((t-t0)/0.35);o.position.lerpVectors(o.userData.home,to,k);o.position.y+=Math.sin(k*Math.PI)*0.6;if(rot)o.rotation.y=k*rot};
   // 세안 파트(별도 공간, x=40)
   const HR=makeHero({shirt:0xd98c8c,pants:0x55506a});HR.position.set(40,0,0);scene.add(HR);const M=messy(HR);eyesK(HR,0.35);
-  const rk2=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.86,12),lamb(0x9a7652));rk2.scale.set(1,1.15,1);rk2.position.set(39.58,0.495,1.85);scene.add(rk2);const rkTop=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.02,12),lamb(0xd9b98a));rkTop.position.set(39.58,0.995,1.85);scene.add(rkTop);
-  const tube2=makeTube();tube2.scale.setScalar(0.3);tube2.position.set(39.58,1.0,1.85);scene.add(tube2);// 참고 이미지처럼: 밝게 날리지 않는 연회색 튜브 + 진한 글씨
-  tube2.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshStandardMaterial){o.material=o.material.clone();o.material.color=new THREE.Color(0xcfcfcc);o.material.emissive=new THREE.Color(0x101010);o.material.roughness=0.75}});
+  const rk2=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.86,12),lamb(0x9a7652));rk2.scale.set(1,1.15,1);rk2.position.set(39.58,0.495,1.95);scene.add(rk2);const rkTop=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.02,12),lamb(0xd9b98a));rkTop.position.set(39.58,0.975,1.95);scene.add(rkTop);
+  const tube2=makeTube();tube2.scale.setScalar(0.33);tube2.position.set(39.58,0.98,1.95);tube2.rotation.y=0.11;scene.add(tube2);// 참고 이미지처럼: 밝게 날리지 않는 연회색 튜브 + 진한 글씨
+  tube2.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshStandardMaterial){o.material=o.material.clone();o.material.color=new THREE.Color(0xdedede);o.material.emissive=new THREE.Color(0x141414);o.material.roughness=0.75}});
   const kl2=new THREE.PointLight(0xffffff,0.0,1.4,1.6);kl2.position.set(39.25,1.6,2.5);scene.add(kl2);
   const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.5,2.2,4),lamb(0x4ba05c));leaf.scale.z=0.2;leaf.rotation.set(0,0,-1.35);leaf.position.set(40.95,2.75,0.4);scene.add(leaf);
   const p3=palm(scene,41.9,-1.2,1.35,-0.3,2.0);
@@ -399,7 +399,7 @@ S[5]=()=>{
       // 세안: 0.15 손 모으기 → 0.5 펌프 → 0.75 거품 → 1.55 얼굴 거품 → 2.25 헹굼(물 튐) → 깨끗
       const C2=1.55,R=2.25;
       const hu=ease((lt-0.05)/0.35);u.arms.forEach((a,i)=>{a.rotation.x=-1.5*hu-(lt>=C2&&lt<R?0.45+Math.sin(lt*14+i)*0.12:0);a.rotation.z=(i?-0.42:0.42)*hu});
-      const press=lt>0.45&&lt<0.7?Math.sin((lt-0.45)/0.25*Math.PI):0;tube2.scale.set(0.3*(1+press*0.06),0.3*(1-press*0.05),0.3);
+      const press=lt>0.45&&lt<0.7?Math.sin((lt-0.45)/0.25*Math.PI):0;tube2.scale.set(0.33*(1+press*0.06),0.33*(1-press*0.05),0.33);
       fh.visible=lt<C2+0.3;fh.position.set(40,1.62,0.42);foamK(fh,lt<C2?clamp01((lt-0.75)/0.7):1-clamp01((lt-C2)/0.3));
       const fk=lt<C2?0:lt<R?clamp01((lt-C2)/0.5):1-clamp01((lt-R)/0.15);ff.forEach(f=>foamK(f,fk));
       const clean=lt>R+0.05;M.hair.visible=!clean;M.dirt.visible=!clean;
@@ -569,5 +569,5 @@ S[8]=()=>{
 
 let curUpd=null,cur=-1;
 window.renderFrame=(si,t)=>{if(si!==cur){ui.innerHTML='';const ss=si===5?2:1;renderer.setPixelRatio(ss);renderer.setSize(W,H,false);curUpd=S[si]();cur=si}curUpd(t)};  // 제품 장면만 2배 슈퍼샘플링
-document.fonts.load(`900 60px ${FONT}`).then(()=>document.fonts.load(`500 40px ${FONT}`)).then(()=>document.fonts.load(`500 150px ${FONT}`)).then(()=>document.fonts.load(`300 100px ${FONT}`)).then(()=>{window.ready=true});
+document.fonts.load(`900 60px ${FONT}`).then(()=>document.fonts.load(`500 40px ${FONT}`)).then(()=>document.fonts.load(`500 150px ${FONT}`)).then(()=>document.fonts.load(`700 40px ${FONT}`)).then(()=>document.fonts.load(`300 100px ${FONT}`)).then(()=>{window.ready=true});
 </script></body></html>
