@@ -93,6 +93,9 @@ def place(buf, x, t):
 
 _load = load
 def load(name):
+    if name == 'n1':  # 제목 멘트: 쉬는 틈 압축 + 1.3배속
+        raw = subprocess.check_output(['ffmpeg', '-loglevel', 'error', '-i', 'lines/n1.wav', '-filter_complex', '[0]atrim=0:1.88,asetpts=N/SR/TB[a];[0]atrim=2.42,asetpts=N/SR/TB[b];[a][b]concat=n=2:v=0:a=1,atempo=1.3', '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'])
+        x = np.frombuffer(raw, np.float32).copy(); a = np.where(np.abs(x) > 0.01)[0]; return x[max(0, a[0] - 600):a[-1] + 2400]
     if name == 'q1':
         raw = subprocess.check_output(['ffmpeg', '-loglevel', 'error', '-i', 'lines/q1.wav', '-af', 'atempo=1.1', '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'])
         x = np.frombuffer(raw, np.float32).copy(); a = np.where(np.abs(x) > 0.01)[0]; return x[max(0, a[0] - 600):a[-1] + 2400]
