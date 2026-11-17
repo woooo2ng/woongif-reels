@@ -362,8 +362,8 @@ S[5]=()=>{
   const fly=(o,t,t0,to,rot)=>{const k=ease((t-t0)/0.35);o.position.lerpVectors(o.userData.home,to,k);o.position.y+=Math.sin(k*Math.PI)*0.6;if(rot)o.rotation.y=k*rot};
   // 세안 파트(별도 공간, x=40)
   const HR=makeHero({shirt:0xd98c8c,pants:0x55506a});HR.position.set(40,0,0);scene.add(HR);const M=messy(HR);eyesK(HR,0.35);
-  const rk2=rock(scene,39.5,1.15,1.2,0xb7bcc2);
-  const tube2=makeTube();tube2.scale.setScalar(0.26);tube2.position.set(39.52,0.62,1.15);scene.add(tube2);const kl2=new THREE.PointLight(0xffffff,1.4,1.4,1.6);kl2.position.set(39.25,1.05,1.75);scene.add(kl2);
+  const rk2=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.86,12),lamb(0x9a7652));rk2.scale.set(1,1.15,1);rk2.position.set(39.58,0.495,1.85);scene.add(rk2);const rkTop=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.02,12),lamb(0xd9b98a));rkTop.position.set(39.58,0.995,1.85);scene.add(rkTop);
+  const tube2=makeTube();tube2.scale.setScalar(0.3);tube2.position.set(39.58,1.0,1.85);scene.add(tube2);const kl2=new THREE.PointLight(0xffffff,1.4,1.4,1.6);kl2.position.set(39.25,1.6,2.5);scene.add(kl2);
   const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.5,2.2,4),lamb(0x4ba05c));leaf.scale.z=0.2;leaf.rotation.set(0,0,-1.35);leaf.position.set(40.95,2.75,0.4);scene.add(leaf);
   const p3=palm(scene,41.9,-1.2,1.35,-0.3,2.0);
   const drops=[];for(let i=0;i<14;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.013,8,6),basic(0x8fd0ee));d.scale.y=1.8;scene.add(d);drops.push({d,ph:i/14,x:40.0+(r()-0.5)*0.1})}
@@ -397,7 +397,7 @@ S[5]=()=>{
       // 세안: 0.15 손 모으기 → 0.5 펌프 → 0.75 거품 → 1.55 얼굴 거품 → 2.25 헹굼(물 튐) → 깨끗
       const C2=1.55,R=2.25;
       const hu=ease((lt-0.05)/0.35);u.arms.forEach((a,i)=>{a.rotation.x=-1.5*hu-(lt>=C2&&lt<R?0.45+Math.sin(lt*14+i)*0.12:0);a.rotation.z=(i?-0.42:0.42)*hu});
-      const press=lt>0.45&&lt<0.7?Math.sin((lt-0.45)/0.25*Math.PI):0;tube2.scale.set(0.26*(1+press*0.06),0.26*(1-press*0.05),0.26);
+      const press=lt>0.45&&lt<0.7?Math.sin((lt-0.45)/0.25*Math.PI):0;tube2.scale.set(0.3*(1+press*0.06),0.3*(1-press*0.05),0.3);
       fh.visible=lt<C2+0.3;fh.position.set(40,1.62,0.42);foamK(fh,lt<C2?clamp01((lt-0.75)/0.7):1-clamp01((lt-C2)/0.3));
       const fk=lt<C2?0:lt<R?clamp01((lt-C2)/0.5):1-clamp01((lt-R)/0.15);ff.forEach(f=>foamK(f,fk));
       const clean=lt>R+0.05;M.hair.visible=!clean;M.dirt.visible=!clean;
@@ -405,7 +405,7 @@ S[5]=()=>{
       drops.forEach(q=>{const k=((lt*2.2+q.ph)%1);q.d.visible=lt<C2;q.d.position.set(q.x+0.42-k*0.37,2.6-k*0.95,0.6)});
       spl.forEach(q=>{const s=lt-R;q.d.visible=s>0&&s<0.8;q.d.position.set(40+q.vx*s,2.15+q.vy*s-3*s*s,0.3+q.vz*s)});
       updSprk(sp2,lt,R+0.4);
-      const ck3=ease(lt/4);cam.fov=40;cam.position.set(39.8,1.9,4.05-ck3*0.25);cam.lookAt(39.8,1.15,0);
+      const ck3=ease(lt/4);cam.fov=40;cam.position.set(39.82,1.9,4.05-ck3*0.08);cam.lookAt(39.8,1.15,0);
     }
     cam.updateProjectionMatrix();chipPop(ck,t,0.05);ck.style.display=t<2.0||t>CUT?'block':'none';
     caption(5,t);renderer.render(scene,cam);
