@@ -71,6 +71,9 @@ function blanket(scene,col=0xb7a6e6){const m=new THREE.Mesh(new THREE.BoxGeometr
 function windowPlane(scene,x,y,z,w,h,col,ry=0){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),basic(col));m.position.set(x,y,z);m.rotation.y=ry;scene.add(m);
   const fr=new THREE.Mesh(new THREE.BoxGeometry(w+0.12,h+0.12,0.04),lamb(0xe8e2d6));fr.position.set(x,y,z-0.03);fr.rotation.y=ry;scene.add(fr);return m}
 // ---------- ENFP 좀비편 전용 ----------
+const teeCache={};
+function teeTex(col){if(teeCache[col])return teeCache[col];return teeCache[col]=canvasTex(256,320,(c,w,h)=>{c.fillStyle=col;c.fillRect(0,0,w,h);c.fillStyle='#ffffff';c.textAlign='center';c.textBaseline='middle';c.font=`900 54px ${FONT}`;c.fillText('좀비 잡는',w/2,120);c.font=`900 58px ${FONT}`;c.fillText('귀요미들',w/2,185);c.font=`900 50px ${FONT}`;c.fillStyle='#ffe066';c.fillText('♥',w/2,250)})}
+function tee(p,col='#ff8fc8'){const body=p.userData.hip.children[0];const base=lamb(new THREE.Color(col).getHex());const front=new THREE.MeshLambertMaterial({map:teeTex(col)});body.material=[base,base,base,base,front,base];p.userData.arms.forEach(a=>a.children[0].material=base);return p}
 function beatPulse(si,t){const B=EV(si).beats||[];let k=0;for(const b of B){const d=t-b;if(d>=0&&d<0.35)k=Math.max(k,1-d/0.35)}return k}
 const PINK='#ffe0f0',PINKF='#7a1f52';
 function bubE(p,text,o={}){return topB(bub(p,text,{y:o.y??2.3,bg:o.bg||PINK,fg:o.fg||PINKF,fs:o.fs||64,size:o.size||0.0026}))}
@@ -207,7 +210,7 @@ S[0]=()=>{
   garland(sD,-3,3,3.4,-3.1,12);
   const C=cam(50);const tUpd=titleEls();
   const al=div('alertb','<div class="h"><i>긴급재난문자</i> 지금</div><div class="m">[행정안전부] 전국 좀비 사태 발생. 생존자는 <b style="color:#e2332d">각자</b> 조용히 숨으십시오.</div>');
-  const RP=[['301호','헐 무서워요ㅠㅠ 다들 괜찮으세요?'],['302호','저 302호인데 같이 숨으실 분!'],['504호','저요!!'],['1203호','저도요!! 과자 가져갈게요'],['807호','잠옷 입고 가도 돼요?'],['205호','몇 시까지 가면 돼요?'],['1102호','헐 저 혼자 있었는데ㅠㅠ'],['403호','베개 챙겨요?'],['907호','저 보드게임 있어요!!'],['601호','ㅋㅋㅋ 다들 302호로!!'],['1001호','저도 가요!!!'],['303호','옆집이에요 지금 갈게요']];
+  const RP=[['301호','헐 무서워요ㅠㅠ 다들 괜찮으세요?'],['302호','저 302호인데 같이 숨으실 분!'],['504호','저요!!'],['1203호','저도요!! 과자 가져갈게요'],['807호','잠옷 입고 가도 돼요?'],['205호','몇 시까지 가면 돼요?'],['1102호','헐 저 혼자 있었는데ㅠㅠ'],['403호','베개 챙겨요?'],['907호','저 보드게임 있어요!!'],['601호','ㅋㅋㅋ 다들 302호로!!'],['1001호','저도 가요!!!'],['303호','옆집이에요 지금 갈게요'],['708호','헐 저도 혼자예요ㅠㅠ'],['1504호','라면 챙겨 갈게요!!'],['202호','302호 몇 층이에요?'],['906호','ㄱㄱㄱㄱ'],['1302호','저 담요 3개 있어요'],['401호','나도나도!!'],['1110호','엘베 타고 가도 돼요?'],['804호','친구도 데려가도 돼요?'],['505호','지금 출발!!'],['1205호','헐 다 모이네ㅋㅋㅋ'],['306호','과자 뭐 좋아하세요?'],['1404호','저도 갈래요!!!'],['703호','우와 파티다'],['1001호','가는 중~'],['209호','302호 문 열어 주세요!!'],['1506호','ㅋㅋㅋㅋㅋ'],['610호','저도요!!'],['1108호','잠깐만요 머리 말리고 갈게요'],['402호','저 기타 가져가요'],['807호','이불 챙겼어요!!']];
   const rows=RP.map(([w,m],i)=>`<div class="row"><div class="av" style="background:${['#ffb3d4','#ffd98a','#a8dcff','#c9b4ff','#a8ecc4'][i%5]}"></div><div><div class="who">${w}</div><div class="b">${m}</div></div></div>`).join('');
   const kp=div('kp',`<div class="screen"><div class="head">긴급재난문자 <small>#행정안전부</small></div><div class="msgs"><div class="inner"><div class="row" style="justify-content:center"><div class="b" style="background:#eef0f4;font-size:38px;max-width:640px">[행정안전부] 생존자는 각자 조용히 숨으십시오.</div></div>${rows}<div class="row nr" style="justify-content:center"><div class="b" style="background:rgba(0,0,0,.45);color:#fff;font-size:38px">회신이 불가능한 번호입니다</div></div></div></div><div class="inp"><div class="box">메시지 입력</div></div></div>`);
   kp.querySelectorAll('.kp .av').forEach(a=>a.classList.add('h'));
@@ -232,8 +235,8 @@ S[0]=()=>{
     sh(kp,t>=TS&&t<TH);
     if(t>=TS&&t<TH){const k=ease((t-TS)/0.3);kp.style.transform=`translateY(${(1-k)*1100}px)`;
       const R1=at(0,'r1'),R2=at(0,'r2');
-      rws.forEach((rw,i)=>{let t0;if(i==0)t0=TS;else if(i==1)t0=R1;else if(i==2)t0=R2;else if(i==rws.length-1)t0=TN;else t0=TF+(i-3)*Math.max(0.12,0.38-(i-3)*0.03);rw.style.display=t>=t0?'':'none';if(t>=t0){const kk=pop((t-t0)/0.22);rw.style.transform=`scale(${kk})`;rw.style.transformOrigin=i==rws.length-1?'center':'left bottom'}})}
-    if(t>=TS&&t<TH){const kk=clamp01((t-TF)/(TN-TF));const n=t<R2c()?Math.max(0,Math.round((t-TS)/(R2c()-TS)*2)):Math.round(2+Math.pow(kk,2.2)*299998);const s2=`답장 ${fmt(n)}개`;if(ch.textContent!=s2)ch.textContent=s2;chipPop(ch,t,TS+0.2);ch.style.opacity=1}else ch.style.opacity=0;
+      const RT=E.rows;rws.forEach((rw,i)=>{let t0;if(i==rws.length-1)t0=TN;else t0=i<RT.length?RT[i]:999;rw.style.display=t>=t0?'':'none';if(t>=t0){const kk=pop((t-t0)/0.22);rw.style.transform=`scale(${kk})`;rw.style.transformOrigin=i==rws.length-1?'center':'left bottom'}})}
+    if(t>=TS&&t<TH){const kk=clamp01((t-TF)/(TN-TF));const shown=E.rows.filter(x=>t>=x).length-1;const n=t<TF?Math.max(0,shown):Math.round(Math.max(shown,2+Math.pow(kk,2.2)*299998));const s2=`답장 ${fmt(n)}개`;if(ch.textContent!=s2)ch.textContent=s2;chipPop(ch,t,TS+0.2);ch.style.opacity=1}else ch.style.opacity=0;
     popEl(st,t,TR+0.4,'translateX(-50%)');st.style.opacity=t>TR+0.4?1:0;
     caption(0,t)};
   function R2c(){return at(0,'r2')+0.3}
@@ -248,15 +251,15 @@ S[1]=()=>{
   const sofa=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.7,0.8),lamb(0xff9fc8));sofa.position.set(0,0.35,-1.9);sc.add(sofa);
   const G=garland(sc,-1.4,1.4,2.3,-2.15,9),G2=garland(sc,-2.2,2.2,2.9,-2.3,14),G3=garland(sc,-1.6,1.6,1.25,-2.05,10);
   banner(sc,'좀비 잡는 귀요미들 ♥',0,3.4,-3.15,4.4,0.85);
-  const ppl=[];[-1.6,-0.55,0.55,1.6].forEach((x,i)=>{const p=enfp(r,{});p.position.set(x,0,-0.4+Math.abs(x)*0.2);p.rotation.y=-x*0.12;sc.add(p);ppl.push(p)});
+  const ppl=[];[-1.6,-0.55,0.55,1.6].forEach((x,i)=>{const p=tee(enfp(r,{}));p.position.set(x,0,-0.4+Math.abs(x)*0.2);p.rotation.y=-x*0.12;sc.add(p);ppl.push(p)});
   const bE=bubE(ppl[1],'우리 진짜 완벽하게 살아남자!!',{size:0.003,y:2.3});bE.position.x=0.4;
   const C=cam(50);
   const dia=div('diary','');const pg=div('pg','',dia);
   const PG=[
-   `<h2>생존 일지 <small>1일 차 ★</small></h2><div class="l" data-t="0.35">06:00 기상 &amp; 스트레칭 <i>✔</i></div><div class="l" data-t="0.71">07:00 체력 훈련 (스쿼트 100개) <i>✔</i></div><div class="l" data-t="1.07">09:00 식량 체크 <i>✔✔</i></div><div class="l" data-t="1.43">10:00 바리케이드 꾸미기 <b>♥</b></div><div class="l" data-t="1.79">12:00 팀 회의 → 팀 이름 정함!!</div><div class="l" data-t="2.15">14:00 생존 브이로그 촬영 ★</div><div class="l" data-t="2.51">16:00 다 같이 화이팅 구호 연습</div><div class="team pp" data-t="2.95">좀비 잡는 귀요미들 ♥</div><div class="stk pp" data-t="3.0" style="right:60px;top:40px;color:#ff8fc8;transform:rotate(14deg)">♥</div><div class="stk pp" data-t="3.1" style="right:90px;top:430px;color:#ffd84d">★</div><div class="stk pp" data-t="3.2" style="right:50px;bottom:60px;color:#8fd3ff;transform:rotate(-10deg)">★</div><div class="stk pp" data-t="3.3" style="left:420px;bottom:110px;color:#ff8f8f;transform:rotate(-14deg)">♥</div>`,
+   `<h2>생존 일지 <small>1일 차 ★</small></h2><div class="l" data-t="0.20">06:00 기상 &amp; 스트레칭 <i>✔</i></div><div class="l" data-t="0.33">07:00 체력 훈련 (스쿼트 100개) <i>✔</i></div><div class="l" data-t="0.46">09:00 식량 체크 <i>✔✔</i></div><div class="l" data-t="0.59">10:00 바리케이드 꾸미기 <b>♥</b></div><div class="l" data-t="0.72">12:00 팀 회의 → 팀 이름 정함!!</div><div class="l" data-t="0.85">14:00 단체티 제작 <b>♥♥</b></div><div class="l" data-t="0.98">16:00 다 같이 화이팅 구호 연습</div><div class="team pp" data-t="1.4">좀비 잡는 귀요미들 ♥</div><div class="stk pp" data-t="1.5" style="right:60px;top:40px;color:#ff8fc8;transform:rotate(14deg)">♥</div><div class="stk pp" data-t="1.6" style="right:90px;top:430px;color:#ffd84d">★</div><div class="stk pp" data-t="1.7" style="right:50px;bottom:60px;color:#8fd3ff;transform:rotate(-10deg)">★</div><div class="stk pp" data-t="1.8" style="left:420px;bottom:110px;color:#ff8f8f;transform:rotate(-14deg)">♥</div>`,
    `<h2>생존 일지 <small>2일 차</small></h2><div class="l" data-t="0.3" style="transform:rotate(-1deg)">09:30 기상 (조금 늦음)</div><div class="l" data-t="0.95" style="position:relative;display:inline-block">체력 훈련<span class="strike" data-t="1.25"></span></div> <span class="l late" data-t="1.4" style="color:#e2332d;transform:rotate(-4deg);display:inline-block">→ 내일부터</span><div class="l" data-t="1.7" style="font-size:52px;color:#e0408f">바리케이드에 전구 추가 ♥♥♥</div>`,
    `<h2>생존 일지 <small>3일 차</small></h2><div class="big wipe" data-t="0.35">배고파</div><div class="crumb pp" data-t="1.3" style="left:220px;top:640px"></div><div class="crumb pp" data-t="1.4" style="left:520px;top:700px;width:60px;height:40px"></div><div class="crumb pp" data-t="1.5" style="left:380px;top:780px;width:40px;height:30px"></div>`,
-   `<h2>생존 일지 <small>4일 차</small></h2><svg viewBox="0 0 300 300" style="display:block;margin:110px auto 0;width:440px"><circle class="sv" data-t="0.3" cx="150" cy="140" r="90" fill="none" stroke="#5a8a4a" stroke-width="10"/><circle class="sv" data-t="0.58" cx="118" cy="125" r="14" fill="#5a8a4a"/><circle class="sv" data-t="0.76" cx="182" cy="125" r="14" fill="#5a8a4a"/><path class="sv" data-t="1.0" d="M110 185 Q150 165 190 185" fill="none" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="1.28" d="M60 250 L100 215" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="1.5" d="M240 250 L200 215" stroke="#5a8a4a" stroke-width="10"/></svg><div class="l pp" data-t="2.0" style="text-align:center;color:#9a8a8a;font-size:52px">(잘 그림)</div>`,
+   `<h2>생존 일지 <small>4일 차</small></h2><svg viewBox="0 0 300 300" style="display:block;margin:110px auto 0;width:440px"><circle class="sv" data-t="0.2" cx="150" cy="140" r="90" fill="none" stroke="#5a8a4a" stroke-width="10"/><circle class="sv" data-t="0.36" cx="118" cy="125" r="14" fill="#5a8a4a"/><circle class="sv" data-t="0.5" cx="182" cy="125" r="14" fill="#5a8a4a"/><path class="sv" data-t="0.66" d="M110 185 Q150 165 190 185" fill="none" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="0.82" d="M60 250 L100 215" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="0.98" d="M240 250 L200 215" stroke="#5a8a4a" stroke-width="10"/></svg><div class="l pp" data-t="1.3" style="text-align:center;color:#9a8a8a;font-size:52px">(잘 그림)</div>`,
   ];
   {const s2=document.createElement('style');s2.textContent=`.diary .l i{font-style:normal;color:#2fae5a;font-weight:900}.diary .strike{position:absolute;left:0;top:50%;height:6px;background:#e2332d;width:0}.diary .crumb{position:absolute;width:80px;height:56px;border-radius:50%;background:rgba(190,140,80,.35)}.diary .wipe{white-space:nowrap}`;dia.appendChild(s2)}
   const ch=chip('생존 일지: 4일 · 바리케이드 꾸미기: 진행 중',80);ch.style.fontSize='46px';
@@ -402,7 +405,7 @@ S[4]=()=>{
   const E=EV(4);const r=rng(541);
   const sc=new THREE.Scene();warmLights(sc);sc.children[0].intensity=1.2;room(sc,{wall:0xc9b4c4,wall2:0xb8a4b4,floor:0x9a8478});garland(sc,-3,3,3.4,-3.1,12);
   banner(sc,'좀비 잡는 귀요미들 ♥',0,2.5,-3.15,4.4,0.85);
-  const Z=[];for(let i=0;i<14;i++){const row=Math.floor(i/5),col=i%5;const z=zombie(r,{shirt:pick(r,[0xd98aa8,0xd8b070,0x80b0d0,0xa890d0,0x88c0a0])});z.position.set((col-2)*1.15+(row%2)*0.5,0,-1.8+row*1.1);sc.add(z);
+  const Z=[];for(let i=0;i<14;i++){const row=Math.floor(i/5),col=i%5;const z=tee(zombie(r,{shirt:0xc98aa4}),'#c98aa4');z.position.set((col-2)*1.15+(row%2)*0.5,0,-1.8+row*1.1);sc.add(z);
     const ph=phoneMesh(0x9fd0ff);ph.userData.rec.visible=false;z.userData.hip.add(ph);ph.position.set(0,0.42,0.42);ph.rotation.set(0.75,0,0);
     Z.push({z,ph:r()*6})}
   const C=cam(50);const ch=chip('1년 후');const ch2=chip('생존자: 0명',345);ch2.style.background='#2b2b3a';ch2.style.color='#ffd84d';

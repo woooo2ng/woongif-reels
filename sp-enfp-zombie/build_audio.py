@@ -227,7 +227,7 @@ GROUP = {
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
     [('n1', 0.0), ('a1', 0.35), ('r1', 0.45), ('r2', 0.25), ('n2', 3.0)],
-    [('e2', 0.5), ('n3', 9.6)],
+    [('e2', 0.5), ('n3', 10.6)],
     [('w1', 0.6), ('G1', 0.9), ('G1b', 1.7), ('g3', 1.7), ('G2', 1.3), ('z1', 0.5), ('n7', 1.35)],
     [('S', 0.15), ('z2', 2.6), ('e6', 0.3), ('n5', 0.35)],
     [('z4', 1.4), ('n6', 0.1)],
@@ -257,24 +257,26 @@ def sfx(si, ev):
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += siren(T, 0.06) * np.clip((D['sms'] + 0.3 - tt) / 0.4, 0, 1)
         place(b, drone(D['sms'], 0.08, 49), 0.0); place(b, buzz(0.3), D['alert'])
-        n = 0; t0 = D['sms'] + 0.2
-        while t0 < D['noreply']:
-            place(b, kakao(0.1 + 0.05 * (n % 2)), t0); n += 1; t0 += max(0.07, 0.45 - n * 0.04)
+        rows = [D['sms'] + 0.15, vt('r1'), vt('r2')]; t0 = D['flood']; n = 0
+        while t0 < D['noreply'] - 0.15:
+            rows.append(t0); n += 1; t0 += max(0.09, 0.42 - n * 0.03)
+        ev['rows'] = [round(x, 3) for x in rows]
+        for i, t0 in enumerate(rows): place(b, kakao(0.11 + 0.04 * (i % 2)), t0)
         place(b, sine(440, 300, 0.4, 0.15) * 0.12, D['noreply'])
         place(b, murmur(T - D['hall'], 0.05), D['hall']); place(b, cute(T - D['hall'], 0.06), D['hall'])
     elif si == 1:
-        P0 = ve('e2', 0.3); D = {'p1': P0, 'p2': P0 + 3.1, 'p3': P0 + 5.4, 'p4': P0 + 7.3, 'flip': P0 + 9.5, 'pull': P0 + 10.6}
+        P0 = ve('e2', 0.3); D = {'p1': P0, 'p2': P0 + 4.1, 'p3': P0 + 6.4, 'p4': P0 + 8.3, 'flip': P0 + 10.5, 'pull': P0 + 11.6}
         ev.update({k: round(x, 3) for k, x in D.items()})
         place(b, cute(T, 0.06), 0.0)
         for k in ('p1', 'p2', 'p3', 'p4'): place(b, page(0.2), D[k])
         def scribble(t0, dur, vol=0.05):
             n = noise(dur); tt2 = np.arange(len(n)) / SR
             x = filt(n, 'bandpass', [2000, 7000], 2) * (0.4 + 0.6 * (np.sin(2 * np.pi * 7 * tt2) > 0)); place(b, x * vol, t0)
-        for i in range(7): scribble(D['p1'] + 0.35 + i * 0.36, 0.25); place(b, blip(1320, 0.07), D['p1'] + 0.6 + i * 0.36)
-        place(b, pop(0.35), D['p1'] + 2.95)
+        for i in range(8): scribble(D['p1'] + 0.2 + i * 0.13, 0.11); place(b, blip(1320, 0.06), D['p1'] + 0.3 + i * 0.13)
+        place(b, pop(0.35), D['p1'] + 1.4)
         scribble(D['p2'] + 0.3, 0.5); scribble(D['p2'] + 0.95, 0.5, 0.07); scribble(D['p2'] + 1.6, 0.6)
         scribble(D['p3'] + 0.35, 1.0, 0.09)
-        for i in range(6): scribble(D['p4'] + 0.3 + i * 0.28, 0.22)
+        for i in range(6): scribble(D['p4'] + 0.2 + i * 0.16, 0.14)
         for i in range(14): place(b, page(0.12), D['flip'] + i * 0.075)
         place(b, ding(0.2), D['pull'])
     elif si == 2:
