@@ -165,10 +165,9 @@ SC = [
     [('e1', 0.35), ('g2', -0.2), ('e2', 0.3), ('g3', 0.3), ('n5', 0.3)],
     [('r1', 0.4), ('g4', 0.3), ('e3', 0.1), ('g5', 0.1), ('e4', 0.1), ('n6', 0.35)],
     [('g6', 0.7), ('s6', 0.5), ('f3', 0.05), ('s7', 0.05), ('n7', 0.35)],
-    [('g7', 0.7), ('e5', 0.1), ('g8', 0.4), ('e6', 0.3)],
     [('n8', 1.2)],
 ]
-POST = {1: 0.3, 2: 0.2, 4: 0.2, 6: 0.7, 7: 1.8}
+POST = {1: 0.3, 2: 0.2, 4: 0.2, 6: 1.8}
 MEGA = {'s6', 'f3', 's7'}
 info = []
 for si, lines in enumerate(SC):
@@ -190,7 +189,7 @@ def sfx(si, ev):
     L = info[si]['lines']; vt = lambda name, k=0: LEAD + L[name][0] + k
     end = lambda name, k=0: LEAD + L[name][0] + L[name][1] + k
     b = np.zeros(int(T * SR))
-    if si not in (6, 7): b += wind(T, 0.04)
+    b += wind(T, 0.04)
     if si == 0:
         for tt in (0.1, 1.7): place(b, boom(0.55), tt)
         for i in range(10): place(b, tap(0.2), vt('g1', 0.2) + i * 0.42)  # 지휘봉 탁탁
@@ -221,13 +220,9 @@ def sfx(si, ev):
         for i in range(6): place(b, thump(0.35), ev['fire'] + i * 0.08)
         place(b, screech(0.08), ev['fire'] + 0.5)
     elif si == 6:
-        b += sizzle(T, 0.05)
-        ev['grab'] = round(vt('e5', -0.1), 3); place(b, stick(0.3), ev['grab'])
-        ev['flip'] = round(vt('g8', 0.6), 3)
-        for k in (0, 1.6, 3.2): place(b, sizzle(0.5, 0.12), ev['flip'] + k)
-    elif si == 7:
-        b += sizzle(T, 0.05)
         for k in range(4): place(b, whoosh(0.8, 0.12), LEAD + 0.2 + k * 1.15)
+        for k in range(9): place(b, thump(0.18), LEAD + 0.1 + k * 0.62); 
+        for k in range(3): place(b, screech(0.04), LEAD + 0.5 + k * 1.7)
         ev['stat'] = round(vt('n8', 0.1), 3); place(b, stamp(0.5), ev['stat'])
         ev['stat2'] = round(vt('n8', 2.7), 3); place(b, stamp(0.4), ev['stat2'])
         ev['end'] = round(end('n8', 0.6), 3); place(b, fanfare(0.1), ev['end'])
