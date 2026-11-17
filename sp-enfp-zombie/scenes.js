@@ -323,9 +323,9 @@ S[2]=()=>{
   const ban32=banner(sc,'환영해요 32번째 생존자님 ♥',3.5,3.1,-1.2,2.6,0.5,-0.6);ban32.visible=false;const b32=div('stage','환영해요 32번째 생존자님 ♥');b32.style.top='380px';b32.style.fontSize='66px';b32.style.border='8px solid #ff8fc8';b32.style.padding='10px 40px';b32.style.display='none';
   // 꽃가루
   const conf=[];for(let i=0;i<90;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(0.07,0.11),new THREE.MeshBasicMaterial({color:pick(r,[0xff8fc8,0xffd84d,0x8fd3ff,0x9df2c8,0xc9a8ff,0xff8f8f]),side:THREE.DoubleSide}));sc.add(m);conf.push({m,x:2.6+(r()-0.5)*2.4,z:0.2+(r()-0.5)*3,y0:3.4+r()*0.8,sp:0.9+r()*0.7,rx:r()*6,ry:r()*6,d:r()*0.4})}
-  const knock=textSprite('똑똑',100,'#ff4d9a',0.0045);knock.position.set(4.2,2.1,0.2);sc.add(knock);
-  const kung=textSprite('쿵…',120,'#ffffff',0.005);kung.position.set(4.2,2.0,0.2);sc.add(kung);
-  const ppop=textSprite('뿅',90,'#ffd84d',0.004);sc.add(ppop);
+  const knock=topB(textSprite('똑똑',100,'#ff4d9a',0.0045));knock.position.set(3.7,2.1,0.2);sc.add(knock);
+  const kung=topB(textSprite('쿵…',120,'#ffffff',0.005));kung.position.set(3.7,2.0,0.2);sc.add(kung);
+  const ppop=topB(textSprite('뿅',90,'#ffd84d',0.004));sc.add(ppop);
   const C=cam(50);const vig=div('vig');
   const c1=chip('31번째 생존자 · 환영식: 박수');const c2=chip('32번째 생존자 · 환영식: 현수막 + 폭죽');c2.style.fontSize='50px';
   const c3=div('judge','33번째 손님: 좀비');c3.style.background='#2b2b3a';c3.style.color='#9df27a';
