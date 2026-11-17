@@ -103,9 +103,20 @@ function garland(scene,x0,x1,y,z,n=10){const g=new THREE.Group();const cols=[0xf
   for(let i=0;i<n;i++){const k=i/(n-1);const x=x0+(x1-x0)*k,yy=y-Math.sin(k*Math.PI)*0.35;const f=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.24,3),lamb(cols[i%5]));f.rotation.x=Math.PI;f.position.set(x,yy-0.12,z);g.add(f)}
   const bulbs=[];for(let i=0;i<n*2;i++){const k=i/(n*2-1);const b=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,6),basic(cols[(i+2)%5]));b.position.set(x0+(x1-x0)*k,y+0.12-Math.sin(k*Math.PI)*0.3,z+0.02);g.add(b);bulbs.push(b)}
   scene.add(g);g.userData.bulbs=bulbs;return g}
-function banner(scene,text,x,y,z,w=4.2,h=0.8,ry=0){const T=canvasTex(1024,200,(c,W2,H2)=>{c.fillStyle='#ffffff';rr(c,6,6,W2-12,H2-12,40);c.fill();c.lineWidth=10;c.strokeStyle='#ff8fc8';rr(c,6,6,W2-12,H2-12,40);c.stroke();
-  c.fillStyle='#e0408f';c.font=`900 96px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText(text,W2/2,H2/2+6)});
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:T,transparent:true}));m.position.set(x,y,z);m.rotation.y=ry;scene.add(m);return m}
+function banner(scene,text,x,y,z,w=4.2,h=0.8,ry=0){
+  // 가로 현수막: 천 느낌(진분홍 바탕 + 흰 글씨 + 노란 테두리), 모서리 고리와 끈, 살짝 처지고 주름진 천
+  const T=canvasTex(1600,300,(c,W2,H2)=>{const g=c.createLinearGradient(0,0,0,H2);g.addColorStop(0,'#ff4f8b');g.addColorStop(1,'#e23a78');c.fillStyle=g;c.fillRect(0,0,W2,H2);
+    c.strokeStyle='#ffe066';c.lineWidth=14;c.strokeRect(22,22,W2-44,H2-44);
+    for(let i=0;i<14;i++){c.fillStyle='rgba(255,255,255,0.06)';c.fillRect(i*120+40,0,30,H2)}
+    c.font=`900 150px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.lineWidth=16;c.strokeStyle='#b0144f';c.strokeText(text,W2/2,H2/2+8);c.fillStyle='#ffffff';c.fillText(text,W2/2,H2/2+8);
+    for(const gx of[46,W2-46])for(const gy of[46,H2-46]){c.fillStyle='#d9d9d9';c.beginPath();c.arc(gx,gy,18,0,Math.PI*2);c.fill();c.fillStyle='#6a2040';c.beginPath();c.arc(gx,gy,9,0,Math.PI*2);c.fill()}});
+  const geo=new THREE.PlaneGeometry(w,h,24,4);const P=geo.attributes.position;
+  for(let i=0;i<P.count;i++){const px=P.getX(i),py=P.getY(i);const u=px/w+0.5;P.setY(i,py-Math.sin(u*Math.PI)*h*0.12);P.setZ(i,Math.sin(u*Math.PI*7)*0.025+Math.sin(u*Math.PI)*0.04)}
+  geo.computeVertexNormals();
+  const g=new THREE.Group();const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({map:T,side:THREE.DoubleSide}));g.add(m);
+  for(const s2 of[-1,1]){const rope=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.45,6),lamb(0xf5f0e0));rope.position.set(s2*(w/2+0.12),h/2+0.12,0);rope.rotation.z=-s2*0.6;g.add(rope);
+    const nail=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,6),lamb(0x888888));nail.position.set(s2*(w/2+0.28),h/2+0.3,0);g.add(nail)}
+  g.position.set(x,y,z+0.05);g.rotation.y=ry;scene.add(g);return g}
 function door3(scene,x,z,ry=0){const g=new THREE.Group();const fr=new THREE.Mesh(new THREE.BoxGeometry(1.4,2.5,0.14),lamb(0xf2f2f2));fr.position.y=1.25;g.add(fr);
   const d=new THREE.Group();const dm=new THREE.Mesh(new THREE.BoxGeometry(1.15,2.25,0.12),lamb(0x8a6a8a));dm.position.set(0.575,1.13,0);d.add(dm);
   const kn=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),lamb(0xe8c050));kn.position.set(1.0,1.1,0.08);d.add(kn);d.position.set(-0.575,0,0.08);g.add(d);
