@@ -306,18 +306,22 @@ S[4]=()=>{
   const scene=IS();const r=rng(941);const B=beach(scene,r,{shore:-9});
   const ps=[makeHero({shirt:0xd98c8c,pants:0x55506a}),makeHero({shirt:0x8cc9a0,pants:0x3d3a36}),makeHero({shirt:0xa58cd0,pants:0x2c4058})];
   const ws=ps.map((p,i)=>{const w=lie(p,(i-1)*0.78,0,0,{});scene.add(w);const tw=new THREE.Mesh(new THREE.BoxGeometry(0.66,0.03,2.0),lamb([0xff9fb8,0x9fd8ff,0xffe08a][i]));tw.position.set((i-1)*0.78,0.015,0.1);scene.add(tw);messy(p);eyesK(p,0.35);return w});
-  const fingers=ps.map(p=>{const f=new THREE.Mesh(new THREE.BoxGeometry(0.035,0.12,0.035),lamb(SKIN0));f.position.set(0,-0.72,0);p.userData.arms[1].add(f);return f});
-  const kk=ps.map(p=>bub(p,'(까딱)',{x:0.45,y:0.6,z:0.5,size:0.0026,fs:64}));for(let i=0;i<8;i++)shell(scene,-1.6+i*0.45,1.4+Math.sin(i*2)*0.3,[0xffb3c6,0xfff0b3,0xb3e6ff][i%3],1.3);
+  const flagTex=canvasTex(256,180,(x,w,h)=>{x.fillStyle='#ffffff';x.fillRect(0,0,w,h);x.fillStyle='#e2335a';x.font=`900 92px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillText('SOS',w/2,h/2+6)});
+  const fingers=ps.map(p=>{const g=new THREE.Group();g.position.set(0,-0.62,0.02);p.userData.arms[1].add(g);
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.75,6),lamb(0x8a6846));st.rotation.x=Math.PI/2;st.position.z=0.33;g.add(st);
+    const cl=new THREE.Mesh(new THREE.PlaneGeometry(0.34,0.24),new THREE.MeshLambertMaterial({map:flagTex,side:THREE.DoubleSide}));cl.rotation.x=Math.PI/2;cl.position.set(0.18,0,0.58);g.add(cl);
+    return g});
+  const kk=ps.map(p=>bub(p,'(휘적휘적)',{x:0.0,y:0.4,z:1.0,size:0.0024,fs:60}));for(let i=0;i<8;i++)shell(scene,-1.6+i*0.45,1.4+Math.sin(i*2)*0.3,[0xffb3c6,0xfff0b3,0xb3e6ff][i%3],1.3);
   palm(scene,-3.4,-1.5,1.4,0.35,0.8);palm(scene,3.2,-2.2,1.3,-0.3,2.2);
   const pl=plane();scene.add(pl);const cl=[cloud(scene,-6,9,-14,1.2),cloud(scene,5,11,-18,1.4)];
   const ck=chip('무인도 3일째');const CUT=1.7;
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,300);
   return t=>{B.upd(t);
     // 손가락 까딱(팔이 아주 살짝만 들림)
-    ps.forEach((p,i)=>{const t0=2.5+i*0.25;const k=t>t0?Math.abs(Math.sin((t-t0)*7))*ease((t-t0)/0.2):0;const a=p.userData.arms[1];a.rotation.x=-0.35*k;fingers[i].rotation.x=-0.6*k;showB(kk[i],t,t0+0.05)});
+    ps.forEach((p,i)=>{const t0=2.3+i*0.2;const on=t>t0;const a=p.userData.arms[1];a.rotation.x=-0.25*ease((t-t0)/0.3);fingers[i].rotation.y=on?Math.sin((t-t0)*(5+i*1.3)+i)*0.55*ease((t-t0)/0.3):0;showB(kk[i],t,t0+0.05)});
     const pt=(t-1.6)/3.4;pl.position.set(-12+pt*24,7.2,-10);pl.rotation.y=0;pl.visible=t>1.6;pl.userData.trail.scale.y=8;pl.userData.trail.position.x=-5.5;
     if(t<CUT){cam.fov=40;cam.position.set(0,3.2,2.6);cam.lookAt(0,0.1,-0.35);}
-    else{cam.fov=56;cam.position.set(0,2.6,5.4);cam.lookAt(0,2.2,-0.3)}
+    else{cam.fov=56;cam.position.set(0,2.3,4.6);cam.lookAt(0,2.5,-1.5)}
     cam.updateProjectionMatrix();chipPop(ck,t,0.05);
     caption(4,t);renderer.render(scene,cam);
   };
