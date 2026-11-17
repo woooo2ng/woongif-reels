@@ -110,6 +110,9 @@ function restaurant(scene,r){ground(scene,0x9a7a5c,60);
 function sideTable(scene,r,x,z){table(scene,x,z,1.3,1.0,0x8a6a4a);grill(scene,x,z);const P=[];
   [[-0.85,0,Math.PI/2],[0.85,0,-Math.PI/2]].forEach(([dx,dz,ry],i)=>{const p=estjS(r,i?FOE:ALLY);p.position.set(x+dx,0,z+dz);p.rotation.y=ry;sitPose(p);scene.add(p);P.push(p)});return P}
 
+
+// 진영 이름표 (ENTJ 전쟁편 방식)
+function sideTag(p,ally,y=1.95,o={}){const l=labelSprite(ally?'아군':'적군',{bg:ally?'#5f7f3a':'#5b5199',fg:'#fff',fs:64,size:o.size||0.0034});l.center.set(0.5,0);l.material.depthTest=false;l.renderOrder=9;l.position.set(0,y,0.3);p.add(l);return l}
 // ===== 0. 작전 회의 3초 (타이틀) =====
 S[0]=()=>{
   setSky('#a9c9e8','#eef4f8 70%');
@@ -168,7 +171,7 @@ S[1]=()=>{
     const a=estjS(r,ALLY),b=estjS(r,FOE);scene.add(a);scene.add(b);a.rotation.y=Math.PI;
     pairs.push({a,b,x,ph:r()*6,who:r()<0.5})}
   const back=[];for(let row=1;row<3;row++)for(let c=0;c<NC;c++){const a=estjS(r,ALLY),b=estjS(r,FOE);a.rotation.y=Math.PI;scene.add(a);scene.add(b);back.push({a,b,x:(c-6)*1.25+0.5,row,ph:r()*6})}
-  const A=pairs[6].a,Bf=pairs[6].b;dogtag(A);
+  const A=pairs[6].a,Bf=pairs[6].b;dogtag(A);const tA=sideTag(A,1,1.92,{size:0.0022}),tB=sideTag(Bf,0,1.92,{size:0.0022});
   const zA=0.5,zB=-0.5;
   const bA1=sb(scene,'잠깐. 턱끈.',0,2.4,0.2,{size:0.0016}),bB1=sb(scene,'네?',0,2.4,-0.3,{c:FB,size:0.0016}),
         bA2=sb(scene,'다치면 누가 책임져요?',0,2.4,0.1,{size:0.0015}),bB2=sb(scene,'그쪽은 군번줄!',0,2.4,-0.2,{c:FB,size:0.0016}),
@@ -194,6 +197,7 @@ S[1]=()=>{
     if(run){const kk=ease(t/STOP);setCam(C,[0.6,4.2,17-kk*6],[0,1.2,-4],55)}
     else if(t<E.zoom){const kk=ease((t-STOP)/0.35);setCam(C,lerp3([0.6,4.2,11],[4.0,1.9,0],kk),lerp3([0,1.2,-4],[0,1.75,0],kk),46)}
     else{const kk=ease((t-E.zoom)/2.4);setCam(C,lerp3([4.0,1.9,0],[11,9,6],kk),lerp3([0,1.75,0],[0,0.6,-1],kk),46+kk*8)}
+    tA.visible=tB.visible=!run&&t<E.zoom;
     chipPop(ch,t,E.zoom+0.3);ch.style.opacity=t>E.zoom+0.3?1:0;
     caption(1,t);renderer.render(scene,C);
   };
@@ -206,7 +210,7 @@ S[2]=()=>{
   const r=rng(31);ground(scene,0xa6ba86,300);for(let i=0;i<10;i++)tree(scene,(i-4.5)*4+r(),-9-r()*4,1.1,0x7aa866);
   sandbags(scene,-0.2,0.9,2.2,2,0xbfa880);
   const Bf=estjS(r,FOE);Bf.position.set(0,0,0);Bf.rotation.y=Math.PI/2;scene.add(Bf);
-  const A=estjS(r,ALLY);scene.add(A);
+  const A=estjS(r,ALLY);scene.add(A);sideTag(A,1,1.95,{size:0.0028});sideTag(Bf,0,1.95,{size:0.0028});
   const TX=3.1;const E=EV(2);const SH=E.shot;
   const fl=glowSprite('rgba(255,220,120,1)',0.6);scene.add(fl);const tr=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.025,0.025),basic(0xfff0a0));scene.add(tr);
   const spk=glowSprite('rgba(255,250,200,1)',0.9);scene.add(spk);const ting=textSprite('팅!',110,'#ffd84d',0.0032);scene.add(ting);
@@ -253,11 +257,11 @@ S[3]=()=>{
   const pod=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.8,1.2),lamb(0x6d62ad));pod.position.set(0,0.4,-8);scene.add(pod);
   const ban=new THREE.Mesh(new THREE.PlaneGeometry(6,2.2),new THREE.MeshBasicMaterial({map:canvasTex(1200,440,(x,w,h)=>{x.fillStyle='#5b5199';x.fillRect(0,0,w,h);x.strokeStyle='#ffd84d';x.lineWidth=16;x.strokeRect(20,20,w-40,h-40);x.fillStyle='#fff';x.font=`900 120px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillText('대국민 선전포고',w/2,h/2+6)})}));
   ban.position.set(0,3.6,-10.5);scene.add(ban);flag(scene,-3.6,-10,0x7c74b8,4.6,1.4);flag(scene,3.6,-10,0x7c74b8,4.6,1.4);
-  const EJ=estjG(r,ENEMYG);EJ.position.set(0,0.8,-8);scene.add(EJ);const m1=holdIn(EJ,megaphone(),1,0,-0.62,0.05);
+  const EJ=estjG(r,ENEMYG);EJ.position.set(0,0.8,-8);scene.add(EJ);const tE3=sideTag(EJ,0,2.15,{size:0.0022});const m1=holdIn(EJ,megaphone(),1,0,-0.62,0.05);
   for(let row=0;row<3;row++)for(let c=0;c<10;c++){const p=estjS(r,FOE);p.position.set((c-4.5)*1.1,0,-12-row*1.3);scene.add(p)}
-  const G=estjG(r,GEN);G.position.set(0,0,3);G.rotation.y=Math.PI;scene.add(G);const m2=holdIn(G,megaphone(),1,0,-0.62,0.05);
+  const G=estjG(r,GEN);G.position.set(0,0,3);G.rotation.y=Math.PI;scene.add(G);const tG3=sideTag(G,1,1.95,{size:0.0017});const m2=holdIn(G,megaphone(),1,0,-0.62,0.05);
   for(let row=0;row<2;row++)for(let c=0;c<8;c++){const p=estjS(r,ALLY);p.position.set((c-3.5)*1.1,0,5+row*1.3);p.rotation.y=Math.PI;scene.add(p)}
-  const bE=sb(scene,'유구한 역사와 전통에…',0,3.35,-8,{c:FB,size:0.0024}),bG=sb(scene,'결론이 뭔데. 세 줄로.',0,2.75,3,{size:0.0019}),bG2=sb(scene,'진작 그렇게 말하지.',0,2.75,3,{size:0.0019});
+  const bE=sb(scene,'유구한 역사와 전통에…',0,3.8,-8,{c:FB,size:0.0024}),bG=sb(scene,'결론이 뭔데. 세 줄로.',0,2.9,3,{size:0.0019}),bG2=sb(scene,'진작 그렇게 말하지.',0,2.9,3,{size:0.0019});
   const E=EV(3),e1=at(3,'e1'),CU=E.cut,TH=E.three,g3=at(3,'g3'),n5=at(3,'n5');const e2l=LN(3,'e2')[1];
   const card=cardEl(['1. 내일 공격','2. 05시','3. 정면']);card.style.top='150px';const rows=[...card.children];
   const ch=chip('연설 30초 경과');const C=cam(50);
@@ -289,6 +293,7 @@ S[4]=()=>{
   const line=new THREE.Mesh(new THREE.PlaneGeometry(0.12,20),basic(0xffffff));line.rotation.x=-Math.PI/2;line.position.set(0,0.01,0);scene.add(line);
   const G=estjG(r,GEN);G.position.set(-1.0,0,0);G.rotation.y=Math.PI/2;scene.add(G);
   const EJ=estjG(r,ENEMYG);EJ.position.set(1.0,0,0);EJ.rotation.y=-Math.PI/2;scene.add(EJ);
+  sideTag(G,1,1.95,{size:0.0024});sideTag(EJ,0,1.95,{size:0.0024});
   const R=estjS(r,FOE);R.scale.setScalar(0.88);R.position.set(0,0,0.45);scene.add(R);
   for(const [x,sd] of [[-2.2,ALLY],[-2.9,ALLY],[2.2,FOE],[2.9,FOE]]){const p=estjS(r,sd);p.position.set(x,0,-0.8);p.rotation.y=x<0?Math.PI/2:-Math.PI/2;scene.add(p);stern(p)}
   const soul=new THREE.Group();const sm=new THREE.Mesh(new THREE.CapsuleGeometry(0.17,0.25,8,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.75}));soul.add(sm);
@@ -363,6 +368,7 @@ function bbq(r,o={}){
   const G=estjG(r,GEN);G.position.set(-0.8,0,0);G.rotation.y=Math.PI/2-0.45;sitPose(G);scene.add(G);
   const EJ=estjG(r,ENEMYG);EJ.position.set(0.8,0,0);EJ.rotation.y=-Math.PI/2+0.45;sitPose(EJ);scene.add(EJ);
   const M=[-0.15,0,0.15].map((z,i)=>{const m=meat();m.position.set(i===1?0:(i?0.1:-0.1),1.0,z);scene.add(m);return m});
+  sideTag(G,1,1.8,{size:0.0016});sideTag(EJ,0,1.8,{size:0.0016});
   const T=tongs();T.position.set(0,1.32,0);T.rotation.y=Math.PI/2;scene.add(T);
   const side=[];[[-3.2,1.2],[3.2,1.2],[-3.4,-2.2],[3.4,-2.2]].forEach(([x,z])=>side.push(...sideTable(scene,r,x,z)));
   return {scene,G,EJ,M,T,side};
@@ -373,8 +379,8 @@ function flipMeat(M,t,t0,dur=0.45){M.forEach((m,i)=>{const lt=t-t0-i*0.12;const 
 S[6]=()=>{
   setSky('#c98a5a','#f2c995 70%');const r=rng(71);const {scene,G,EJ,M,T,side}=bbq(r);
   const E=EV(6),g7=at(6,'g7'),GR=E.grab;
-  const bG=sb(scene,'제가 구울게요.',-0.45,2.0,0.1,{size:0.0014}),bE=sb(scene,'아뇨, 제가요.',0.3,2.0,0.1,{c:FB,size:0.0014}),
-        bG2=sb(scene,'고기는 한 번만 뒤집는 겁니다.',-0.3,2.0,0.1,{size:0.0013}),bE2=sb(scene,'합리적이네요.',0.4,2.0,0.1,{c:FB,size:0.0014}),bE3=sb(scene,'근데 지금 제 차례예요.',0.3,2.0,0.1,{c:FB,size:0.0013});
+  const bG=sb(scene,'제가 구울게요.',-0.45,2.32,0.1,{size:0.0014}),bE=sb(scene,'아뇨, 제가요.',0.3,2.32,0.1,{c:FB,size:0.0014}),
+        bG2=sb(scene,'고기는 한 번만 뒤집는 겁니다.',-0.3,2.32,0.1,{size:0.0013}),bE2=sb(scene,'합리적이네요.',0.4,2.32,0.1,{c:FB,size:0.0014}),bE3=sb(scene,'근데 지금 제 차례예요.',0.3,2.32,0.1,{c:FB,size:0.0013});
   const e6=at(6,'e6'),e6l=LN(6,'e6')[1];
   const ch=chip('집게 점유율 50 : 50');const C=cam(50);
   return t=>{
@@ -407,7 +413,7 @@ S[7]=()=>{
   const yr=div('yr');const stat=div('statbox','<div><small>전쟁</small><b>3년째</b></div><div><small>사상자</small><b>0명</b></div>');
   const stat2=div('statbox','<div><small>주고받은 잔소리</small><b>2,676번</b></div>');stat2.style.top='600px';
   const dim=div('dim');const e1=div('end1 out','다음 전쟁편은?'),e2=div('end2 out','팔로우하고 기다려 주세요');e1.style.top='560px';e2.style.top='720px';
-  const bG=sb(scene,'제 차례입니다.',-0.4,2.0,0.1,{size:0.0013}),bE=sb(scene,'합리적이네요.',0.4,2.0,0.1,{c:FB,size:0.0013});
+  const bG=sb(scene,'제 차례입니다.',-0.25,2.32,0.1,{size:0.0013}),bE=sb(scene,'합리적이네요.',0.15,2.32,0.1,{c:FB,size:0.0013});
   const C=cam(50);
   return t=>{
     stern(G);stern(EJ);sitPose(G);sitPose(EJ);holdTongs(G,EJ,1);
@@ -425,7 +431,7 @@ S[7]=()=>{
     stat.style.opacity=t>ST&&t<END?1:0;stat.style.transform=`translateX(-50%) scale(${pop((t-ST)/0.3)})`;
     stat2.style.opacity=t>ST2&&t<END?1:0;stat2.style.transform=`translateX(-50%) scale(${pop((t-ST2)/0.3)})`;
     dim.style.opacity=t>END?clamp01((t-END)/0.3):0;e1.style.opacity=t>END?1:0;e2.style.opacity=t>END+0.2?1:0;popEl(e1,t,END);popEl(e2,t,END+0.2);
-    const k=ease(t/6);setCam(C,[-1.2+k*1.2,2.1,4.4+k*0.4],[-0.6+k*0.6,1.5,-1],50);
+    const k=ease(t/6);setCam(C,[-0.6+k*0.6,2.1,4.4+k*0.4],[-0.3+k*0.3,1.5,-1],50);
     caption(7,t);renderer.render(scene,C);
   };
 };
