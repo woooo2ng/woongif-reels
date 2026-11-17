@@ -934,7 +934,7 @@ S[8]=()=>{
     const k=ease(t/5);cam.position.set(0.95,2.15,3.2-k*0.3);cam.lookAt(0.9,1.05,-1.15);
     dim.style.background=`rgba(10,10,25,${0.55*clamp01((t-TE)/0.3)})`;[[e1,TE],[e2,TE+0.25]].forEach(([e,t0])=>{e.style.opacity=clamp01((t-t0)/0.1);e.style.transform=`scale(${pop((t-t0)/0.35)})`});
     if(t>TE){call.style.opacity=0;ck.style.opacity=0}
-    chipPop(ck,t,0.05);caption(8,t);renderer.render(scene,cam);
+    chipPop(ck,t,0.05);if(t>TE)ck.style.opacity=0;caption(8,t);renderer.render(scene,cam);
   };
 };
 
