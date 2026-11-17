@@ -83,6 +83,11 @@ function messy(p,hair=0x1d1d24){const h=p.userData.head;const g=new THREE.Group(
   const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.2,4),lamb(0x5fb36a));leaf.scale.z=0.3;leaf.position.set(0.12,0.55,0.05);leaf.rotation.z=-0.9;g.add(leaf);
   const dirt=new THREE.Group();h.add(dirt);
   for(const [x,y,s] of [[-0.12,0.31,1],[0.1,0.12,1.3],[0.15,0.3,0.8],[-0.06,0.08,0.9],[0.02,0.38,0.7]]){const d=new THREE.Mesh(new THREE.CircleGeometry(0.028*s,10),basic(0xd8b98a));const n=new THREE.Vector3(x,y-0.24,Math.sqrt(Math.max(0.0001,0.0625-x*x-(y-0.24)**2))).normalize();d.position.copy(n.clone().multiplyScalar(0.252)).add(new THREE.Vector3(0,0.24,0));d.lookAt(d.position.clone().add(n));dirt.add(d)}
+  // 모래알 덕지덕지(얼굴 앞쪽 반구에 작은 알갱이)
+  const gr=rng(77+(p.id||0));const gm=[smooth(0xe3c690),smooth(0xd6b47a),smooth(0xf0dcae)];
+  for(let i=0;i<70;i++){const th=(gr()-0.5)*2.2,ph=(gr()-0.35)*1.5;const n=new THREE.Vector3(Math.sin(th)*Math.cos(ph),Math.sin(ph),Math.cos(th)*Math.cos(ph));if(n.z<0.25)continue;
+    if(Math.abs(n.x)<0.42&&Math.abs(n.y-0.04)<0.12&&gr()<0.7)continue;
+    const g2=new THREE.Mesh(new THREE.SphereGeometry(0.007+gr()*0.01,6,5),gm[i%3]);g2.position.copy(n.multiplyScalar(0.252)).add(new THREE.Vector3(0,0.24,0));dirt.add(g2)}
   return {hair:g,dirt}}
 function rescuer(r){const p=makePerson(r,{shirt:0xf28a3c,pants:0xf28a3c});const h=new THREE.Mesh(new THREE.SphereGeometry(0.285,40,20,0,Math.PI*2,0,Math.PI*0.52),smooth(0xfafafa));h.position.y=0.27;p.userData.head.add(h);
   const st=new THREE.Mesh(new THREE.BoxGeometry(0.53,0.06,0.33),lamb(0xfff2a8));st.position.y=0.42;p.userData.hip.add(st);return p}
@@ -357,8 +362,8 @@ S[5]=()=>{
   const fly=(o,t,t0,to,rot)=>{const k=ease((t-t0)/0.35);o.position.lerpVectors(o.userData.home,to,k);o.position.y+=Math.sin(k*Math.PI)*0.6;if(rot)o.rotation.y=k*rot};
   // 세안 파트(별도 공간, x=40)
   const HR=makeHero({shirt:0xd98c8c,pants:0x55506a});HR.position.set(40,0,0);scene.add(HR);const M=messy(HR);eyesK(HR,0.35);
-  const rk2=rock(scene,39.4,1.25,0.95,0xb7bcc2);
-  const tube2=makeTube();tube2.scale.setScalar(0.26);tube2.position.set(39.4,0.48,1.3);scene.add(tube2);const kl2=new THREE.PointLight(0xffffff,1.4,1.4,1.6);kl2.position.set(39.1,0.9,1.9);scene.add(kl2);
+  const rk2=rock(scene,39.5,1.15,1.2,0xb7bcc2);
+  const tube2=makeTube();tube2.scale.setScalar(0.26);tube2.position.set(39.52,0.62,1.15);scene.add(tube2);const kl2=new THREE.PointLight(0xffffff,1.4,1.4,1.6);kl2.position.set(39.25,1.05,1.75);scene.add(kl2);
   const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.5,2.2,4),lamb(0x4ba05c));leaf.scale.z=0.2;leaf.rotation.set(0,0,-1.35);leaf.position.set(40.95,2.75,0.4);scene.add(leaf);
   const p3=palm(scene,41.9,-1.2,1.35,-0.3,2.0);
   const drops=[];for(let i=0;i<14;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.013,8,6),basic(0x8fd0ee));d.scale.y=1.8;scene.add(d);drops.push({d,ph:i/14,x:40.0+(r()-0.5)*0.1})}
@@ -400,7 +405,7 @@ S[5]=()=>{
       drops.forEach(q=>{const k=((lt*2.2+q.ph)%1);q.d.visible=lt<C2;q.d.position.set(q.x+0.42-k*0.37,2.6-k*0.95,0.6)});
       spl.forEach(q=>{const s=lt-R;q.d.visible=s>0&&s<0.8;q.d.position.set(40+q.vx*s,2.15+q.vy*s-3*s*s,0.3+q.vz*s)});
       updSprk(sp2,lt,R+0.4);
-      const ck3=ease(lt/4);cam.fov=40;cam.position.set(39.75,1.9,3.95-ck3*0.3);cam.lookAt(39.75,1.3,0);
+      const ck3=ease(lt/4);cam.fov=40;cam.position.set(39.8,1.9,4.05-ck3*0.25);cam.lookAt(39.8,1.15,0);
     }
     cam.updateProjectionMatrix();chipPop(ck,t,0.05);ck.style.display=t<2.0||t>CUT?'block':'none';
     caption(5,t);renderer.render(scene,cam);
