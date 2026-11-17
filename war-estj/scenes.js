@@ -261,7 +261,7 @@ S[3]=()=>{
   for(let row=0;row<3;row++)for(let c=0;c<10;c++){const p=estjS(r,FOE);p.position.set((c-4.5)*1.1,0,-12-row*1.3);scene.add(p)}
   const G=estjG(r,GEN);G.position.set(0,0,3);G.rotation.y=Math.PI;scene.add(G);const tG3=sideTag(G,1,1.95,{size:0.0017});const m2=holdIn(G,megaphone(),1,0,-0.62,0.05);
   for(let row=0;row<2;row++)for(let c=0;c<8;c++){const p=estjS(r,ALLY);p.position.set((c-3.5)*1.1,0,5+row*1.3);p.rotation.y=Math.PI;scene.add(p)}
-  const bE=sb(scene,'유구한 역사와 전통에…',0,3.8,-8,{c:FB,size:0.0024}),bG=sb(scene,'결론이 뭔데. 세 줄로.',0,2.9,3,{size:0.0019}),bG2=sb(scene,'진작 그렇게 말하지.',0,2.9,3,{size:0.0019});
+  const bE=sb(scene,'유구한 역사와 전통에…',0,3.55,-8,{c:FB,size:0.0024}),bG=sb(scene,'결론이 뭔데. 세 줄로.',0,2.9,3,{size:0.0019}),bG2=sb(scene,'진작 그렇게 말하지.',0,2.9,3,{size:0.0019});
   const E=EV(3),e1=at(3,'e1'),CU=E.cut,TH=E.three,g3=at(3,'g3'),n5=at(3,'n5');const e2l=LN(3,'e2')[1];
   const card=cardEl(['1. 내일 공격','2. 05시','3. 정면']);card.style.top='150px';const rows=[...card.children];
   const ch=chip('연설 30초 경과');const C=cam(50);
@@ -299,7 +299,7 @@ S[4]=()=>{
   const soul=new THREE.Group();const sm=new THREE.Mesh(new THREE.CapsuleGeometry(0.17,0.25,8,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.75}));soul.add(sm);
   for(const s of[-1,1]){const e=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.06,0.01),basic(0x333333));e.position.set(s*0.06,0.06,0.17);soul.add(e)}soul.scale.setScalar(1.6);scene.add(soul);
   const E=EV(4);const r1=at(4,'r1');
-  const bR=sb(scene,'…좀 힘드네요.',0,2.2,0.45,{c:FB,size:0.0018});
+  const bR=sb(scene,'…좀 힘드네요.',0,2.5,0.45,{c:FB,size:0.0018});
   const L4=[['g4','나 때는 포탄 맨손으로!',AB,-0.3,0.0018],['e3','나 때는 철조망 이로!',FB,0.3,0.002],['g5','군화 한 켤레로 3년!!',AB,-0.2,0.0023],['e4','나 때는 군화가 없었어!!!',FB,0.05,0.0025]];
   const LB=L4.map(([nm,tx,c,x,s])=>({nm,b:sb(scene,tx,x,2.75,0.1,{c,size:s})}));
   const small=[['나 때는…',AB,-0.6],['나 때는…!',FB,0.6]].map(([tx,c,x])=>sb(scene,tx,x,2.6,0.1,{c,size:0.0016}));
