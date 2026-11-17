@@ -816,60 +816,110 @@ S[6]=()=>{
   };
 };
 
-// ---------- S7 구조대도 같이 누움 → 인구 47 → 52 ----------
+// ---------- S7 구조대: "헬기 타실래요…?" → ISFP "해먹 한 번만 누워 보실래요…?" → 해먹에 누운 구조대장 "…이거 왜 이렇게 편해요?" → 대원들 줄 서다 눕기 ----------
 S[7]=()=>{
-  const scene=IS();const r=rng(1271);const B=beach(scene,r,{shore:-5,sea:0x7fb6cf,sea2:0x6a9cc4});
-  scene.children.filter(c=>c.isLight).forEach(l=>{if(l.isDirectionalLight){l.color.set(0xffd2a8);l.position.set(-2,4,-10)}});
-  const sun=glowSprite('rgba(255,210,150,1)',14);sun.position.set(0,2.2,-40);scene.add(sun);
-  const sd=new THREE.Mesh(new THREE.CircleGeometry(2.2,32),basic(0xffd9a0));sd.position.set(0,2.0,-41);scene.add(sd);
-  palm(scene,-3.6,-1.8,1.4,0.3,0.4);palm(scene,3.6,-2.2,1.35,-0.3,2.2);
-  const hm=new THREE.Group();hm.position.set(-2.4,1.5,1.6);scene.add(hm);const net=new THREE.Mesh(new THREE.SphereGeometry(1,24,10,0,Math.PI*2,Math.PI*0.62,Math.PI*0.38),new THREE.MeshLambertMaterial({color:0xff9fb8,side:THREE.DoubleSide}));net.scale.set(1.3,0.6,0.5);net.position.y=0.45;hm.add(net);
-  const hp=makePerson(r,{shirt:0x8cc9a0});const hw=lie(hp,0,0,Math.PI/2,{arms:'head'});hw.position.set(0,-0.08,0);hw.scale.setScalar(0.85);hm.add(hw);
-  const isf=crowd(r,4);isf.forEach((p,i)=>{const w=lie(p,1.5+i*1.1,2.4+(i%2)*0.7,-0.3+r()*0.6,{arms:'head'});scene.add(w)});
-  const rs_=[];for(let i=0;i<5;i++){const p=rescuer(rng(1200+i));scene.add(p);rs_.push({p,x:-1.6+i*0.8,z:0.2+(i%2)*0.6,t0:[2.6,3.2,3.8,4.3,4.7][i]})}
-  const bags=rs_.map(()=>{const b=new THREE.Mesh(new THREE.BoxGeometry(0.4,0.45,0.22),lamb(0xd96a2a));scene.add(b);return b});
-  ui.insertAdjacentHTML('beforeend','<div class="big">무인도 인구 <b>47</b>명</div>');const big=ui.querySelector('.big'),bn=big.querySelector('b');
-  const cam=new THREE.PerspectiveCamera(44,W/H,0.1,300);
-  bgEl.style.background='linear-gradient(#9f8fd0,#ffb38a 50%,#ffd9a8)';
-  return t=>{B.upd(t*0.7);hm.rotation.x=Math.sin(t*1.4)*0.1;
-    rs_.forEach((q,i)=>{const p=q.p;const look=Math.sin(t*1.3+i)*0.6;
-      const s=t-q.t0;const k=ease(s/0.5);
-      if(s<0){riseK(p,q.x,q.z,1,Math.PI+look*0.5);standPose(p);p.userData.head.rotation.y=look;bags[i].position.set(q.x+0.0,1.1,q.z-0.2);bags[i].visible=true}
-      else{riseK(p,q.x,q.z,1-k,Math.PI);p.userData.head.rotation.y=0;p.userData.arms.forEach(a=>{a.rotation.x=-2.9*k});bags[i].position.set(q.x+0.5,0.22,q.z+0.3);}});
-    // 인구 카운터
-    const ck=t>5.3;big.style.opacity=t>5.25?1:0;big.style.transform=`translateX(-50%) scale(${pop((t-5.25)/0.3)})`;bn.textContent=ck?(t>5.4?'52':'47'):'47';
-    const k=ease(t/7);cam.position.set(Math.sin(k*0.5-0.25)*7.5,3.2,Math.cos(k*0.5-0.25)*7.5+1);cam.lookAt(0,1.0,0.6);
+  sky('#7fc6ef','#c9eef6','#eafaf8');
+  const scene=IS();const r=rng(1271);const B=beach(scene,r,{shore:-5});
+  const tm=TM.tm7;
+  // 해먹(왼쪽 뒤)
+  palm(scene,-2.5,-1.6,1.3,-0.15,0);palm(scene,0.75,-1.6,1.3,0.15,Math.PI);
+  const hm=new THREE.Group();hm.position.set(-0.88,1.3,-1.6);scene.add(hm);
+  const net=new THREE.Mesh(new THREE.SphereGeometry(1,32,12,0,Math.PI*2,Math.PI*0.62,Math.PI*0.38),new THREE.MeshLambertMaterial({color:0xffffff,side:THREE.DoubleSide,map:canvasTex(256,256,(x,w,h)=>{const c=['#ff9fb8','#ffe08a','#9fd8ff','#b8f0c8'];for(let k=0;k<8;k++){x.fillStyle=c[k%4];x.fillRect(k*32,0,32,h)}})}));
+  net.scale.set(1.45,0.85,0.65);net.position.y=0.55;hm.add(net);
+  for(const sd of[-1,1]){const rope=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.75,5),lamb(0xd9c39a));rope.position.set(sd*1.52,0.82,0);rope.rotation.z=sd*0.75;hm.add(rope)}
+  // 헬기(오른쪽 뒤에 착륙)
+  const hc=heli();hc.scale.setScalar(0.7);hc.position.set(2.7,0.85,-3.6);hc.rotation.y=-0.5;scene.add(hc);
+  // ISFP 리더(해먹 옆 모래에 누움) + 다른 ISFP들
+  const IL=makeHero({shirt:0x7fb7c9,pants:0x55506a});const wIL=lie(IL,-1.35,0.55,0.25,{});scene.add(wIL);
+  const isf=crowd(r,3);[[-0.35,1.5,0.1],[1.45,1.8,-0.2],[-1.85,1.9,0.3]].forEach(([x,z,y],i)=>{const w=lie(isf[i],x,z,y,{arms:i===1?'head':null});scene.add(w)});
+  const dots=[IL,...isf].map((p,i)=>{const b=bub(p,'…',{y:0,size:0.0022,fs:66});p.remove(b);scene.add(b);p.updateMatrixWorld(true);return b});
+  scene.updateMatrixWorld(true);[IL,...isf].forEach((p,i)=>{const v=p.userData.head.getWorldPosition(new THREE.Vector3());dots[i].position.copy(v).add(new THREE.Vector3(0,0.45,0))});
+  const ilB=bub(IL,'해먹 어때요…?',{y:0,size:0.0032,fs:64});IL.remove(ilB);scene.add(ilB);ilB.position.copy(dots[0].position).add(new THREE.Vector3(0.3,0.25,0));
+  // 구조대 5명
+  const rs_=[];for(let i=0;i<5;i++){const p=rescuer(rng(1200+i));scene.add(p);rs_.push(p)}
+  const st=[[0.35,0.55],[1.05,0.0],[1.55,0.6],[0.85,1.0],[1.7,-0.5]];
+  const Q=[[0.05,-0.75],[0.2,-0.05],[0.35,0.65],[0.5,1.35]]; // 해먹 대기줄(해먹 오른쪽 끝에서 앞으로)
+  const r0B=bub(rs_[0],'헬기 타실래요…?',{y:2.15,size:0.0032,fs:64,bg:'#ffe0c2',fg:'#7a3a10'});
+  const r0C=bub(rs_[0],'편하다…',{y:0,size:0.0034,fs:64,bg:'#ffe0c2',fg:'#7a3a10'});rs_[0].remove(r0C);scene.add(r0C);r0C.position.set(-0.9,2.6,-1.6);
+  const qL=labelSprite('해먹 대기줄',{bg:'#ffe08a',fg:'#2b2b3a',fs:60,size:0.0036});qL.position.set(0.55,2.35,-0.2);scene.add(qL);scaleBubble(qL,0);
+  const zz=rs_.map(()=>{const z=textSprite('Zz',70,'#ffffff',0.005);scene.add(z);z.visible=false;return z});
+  ui.insertAdjacentHTML('beforeend','<div class="big" style="top:300px">무인도 인구 <b>47</b>명</div>');const big=ui.querySelector('.big'),bn=big.querySelector('b');
+  const r1=ln(7,'r1'),l4=ln(7,'l4'),r2=ln(7,'r2'),n5=ln(7,'n5');
+  const cam=new THREE.PerspectiveCamera(46,W/H,0.1,300);
+  return t=>{B.upd(t);hc.userData.rot.rotation.y=t*2*Math.max(0,1-t/3);
+    const sw=t>tm.go+0.75?Math.sin((t-tm.go)*1.8)*0.1:Math.sin(t*1.2)*0.03;hm.rotation.x=sw;
+    // ISFP 반응: 조용(…) → 리더가 고개 들고 해먹 가리킴
+    dots.forEach((b,i)=>showB(b,t,tm.silent+0.05+i*0.1,l4.t0+0.2));
+    const ik=ease((t-l4.t0+0.1)/0.4)*(1-ease((t-tm.go-0.6)/0.4));IL.userData.head.rotation.x=-0.6*ik;IL.userData.arms[0].rotation.x=-1.6*ik;IL.userData.arms[0].rotation.z=-0.7*ik;
+    showB(ilB,t,l4.t0+0.3,tm.go+0.3);
+    rs_.forEach((p,i)=>{standPose(p);const [sx,sz]=st[i];
+      if(i===0){
+        const wk=ease((t-tm.go)/0.7);
+        if(t<tm.go+0.75){const x=sx+(0.0-sx)*wk,z=sz+(-1.2-sz)*wk;p.rotation.set(0,wk>0&&wk<1?Math.atan2(0.0-sx,-1.2-sz):(t<tm.go?-0.5:Math.PI),0,'YXZ');p.position.set(x,0,z);if(wk>0&&wk<1)walkPose(p,t*12,0.6);
+          if(t>r1.t0&&t<tm.go){p.userData.arms[1].rotation.x=-1.4;p.userData.arms[1].rotation.z=0.6;p.userData.head.rotation.y=Math.sin(t*0.8)*0.2}}
+        else{const lk=ease((t-tm.go-0.75)/0.25);riseK(p,-0.02,-1.6,1-lk,Math.PI/2);p.position.y+=1.12*lk;p.position.x+=0;
+          p.userData.arms.forEach(a=>a.rotation.x=-2.9*lk);}
+        showB(r0B,t,r1.t0+0.2,tm.go);showB(r0C,t,r2.t0+0.2);
+        return}
+      // 대원들: 구경 → 해먹 줄 서기 → 줄 선 채로 하나씩 눕기
+      const qk=ease((t-tm.go-1.0-i*0.12)/0.8);const [qx,qz]=Q[i-1];const x=sx+(qx-sx)*qk,z=sz+(qz-sz)*qk;
+      const dk=ease((t-tm.down-(i-1)*0.3)/0.35);
+      if(dk<=0){p.position.set(x,0,z);p.rotation.set(0,qk>0&&qk<1?Math.atan2(qx-sx,qz-sz):(qk>=1?Math.PI:-0.5),0,'YXZ');if(qk>0&&qk<1)walkPose(p,t*12+i,0.6);p.userData.head.rotation.y=qk>=1?Math.sin(t*1.5+i)*0.3:0}
+      else{riseK(p,qx,qz,1-dk,Math.PI*0.08);p.userData.arms.forEach(a=>a.rotation.x=-2.9*dk)}
+      const z0=zz[i];z0.visible=dk>0.8;const lt=((t*0.6)+i*0.23)%1;z0.position.set(qx+0.2,0.6+lt*0.7,qz-0.6);const sk=Math.sin(lt*Math.PI);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)});
+    {const z0=zz[0];z0.visible=t>r2.t1;const lt=((t*0.6))%1;z0.position.set(-0.6,2.3+lt*0.6,-1.6);const sk=Math.sin(lt*Math.PI);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)}
+    scaleBubble(qL,t>tm.go+1.4&&t<tm.down+1.0?pop((t-tm.go-1.4)/0.3):0);
+    big.style.opacity=t>n5.t0?1:0;big.style.transform=`translateX(-50%) scale(${pop((t-n5.t0)/0.3)})`;bn.textContent=t>n5.t1?'52':'47';
+    if(t>n5.t1){bn.style.display='inline-block';bn.style.transform=`scale(${pop((t-n5.t1)/0.25)})`}
+    cam.position.set(0.15,5.6,9.4);cam.lookAt(-0.1,0.9,-1.5);
     caption(7,t);renderer.render(scene,cam);
   };
 };
 
-// ---------- S8 쿠키: 구조본부 무전 → "…내일 보내자." ----------
+// ---------- S8 쿠키: 구조본부 — 소파에 누운 본부장에게 전화 → 누운 채 받음 → "2차 구조대 보낼까요?" → "…내일 보내자." ----------
+{const st=document.createElement('style');st.textContent=`
+.call{position:absolute;left:170px;right:170px;top:330px;border-radius:44px;background:rgba(32,34,44,.93);color:#fff;padding:30px 34px;box-shadow:0 24px 60px rgba(20,20,40,.4);text-align:center}
+.call .nm{font-size:56px;font-weight:900}.call .st{font-size:36px;color:#b8c0d0;margin-top:6px;font-weight:700}
+.call .bt{display:flex;justify-content:center;gap:120px;margin-top:26px}.call .bt i{width:110px;height:110px;border-radius:50%;display:block}
+.call .bt .n{background:#ff5a5f}.call .bt .y{background:#34c759}`;document.head.appendChild(st)}
 S[8]=()=>{
   bgEl.style.background='linear-gradient(#cfd8e8,#e6ecf5)';
   const scene=new THREE.Scene();addLights(scene,{hemi:1.5,ground:0x9a9aa8,dir:1.2,dpos:[3,6,6]});const r=rng(1381);
   const fl=new THREE.Mesh(new THREE.PlaneGeometry(30,30),lamb(0xc9c1b4));fl.rotation.x=-Math.PI/2;scene.add(fl);
   const wall=new THREE.Mesh(new THREE.BoxGeometry(30,8,0.2),lamb(0xdfe6f0));wall.position.set(0,4,-2.4);scene.add(wall);
-  const sign=labelSprite('해양 구조본부',{bg:'#2c4058',fg:'#ffffff',fs:64,size:0.0042});sign.position.set(0.6,2.65,-2.2);
-  const map=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.3),new THREE.MeshLambertMaterial({map:canvasTex(440,260,(x,w,h)=>{x.fillStyle='#bfe3f2';x.fillRect(0,0,w,h);x.fillStyle='#f3deb0';x.beginPath();x.ellipse(w*0.6,h*0.55,40,26,0.3,0,7);x.fill();x.fillStyle='#e2335a';x.beginPath();x.arc(w*0.6,h*0.5,9,0,7);x.fill();x.strokeStyle='#7fa8c0';x.lineWidth=3;x.strokeRect(6,6,w-12,h-12)})}));map.position.set(-1.8,2.0,-2.28);scene.add(map);
+  const map=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.3),new THREE.MeshLambertMaterial({map:canvasTex(440,260,(x,w,h)=>{x.fillStyle='#bfe3f2';x.fillRect(0,0,w,h);x.fillStyle='#f3deb0';x.beginPath();x.ellipse(w*0.6,h*0.55,40,26,0.3,0,7);x.fill();x.fillStyle='#e2335a';x.beginPath();x.arc(w*0.6,h*0.5,9,0,7);x.fill();x.strokeStyle='#7fa8c0';x.lineWidth=3;x.strokeRect(6,6,w-12,h-12)})}));map.position.set(-0.6,2.1,-2.28);scene.add(map);
   const sofa=new THREE.Group();scene.add(sofa);const seat=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.45,1.0),lamb(0x7a8fb8));seat.position.y=0.3;sofa.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.7,0.25),lamb(0x6a7fa8));back.position.set(0,0.75,-0.4);sofa.add(back);
-  for(const s of[-1,1]){const arm=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.6,1.0),lamb(0x6a7fa8));arm.position.set(s*1.4,0.5,0);sofa.add(arm)}sofa.position.set(0.6,0,-1.2);
-  const chief=makePerson(r,{shirt:0x4f74a8,pants:0x3d5a80});const w=lie(chief,0.0,0,-Math.PI/2,{});w.position.set(0.6,0.55,-1.15);scene.add(w);
+  for(const sd of[-1,1]){const arm=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.6,1.0),lamb(0x6a7fa8));arm.position.set(sd*1.4,0.5,0);sofa.add(arm)}sofa.position.set(0.6,0,-1.2);
+  const chief=makeHero({shirt:0x4f74a8,pants:0x3d5a80});const w=lie(chief,0.0,0,-Math.PI/2,{});w.position.set(0.6,0.55,-1.15);scene.add(w);
   const cap=new THREE.Mesh(new THREE.SphereGeometry(0.28,32,16,0,Math.PI*2,0,Math.PI*0.5),smooth(0x1f2c40));cap.position.y=0.28;chief.userData.head.add(cap);
   const badge=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.08,0.02),lamb(0xffd84d));badge.position.set(0,0.42,0.22);chief.userData.head.add(badge);
-  const radio=new THREE.Group();const rb=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.32,0.08),lamb(0x333338));radio.add(rb);const an=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.25,5),lamb(0x222));an.position.set(0.05,0.28,0);radio.add(an);
-  radio.position.set(0,-0.62,0.06);chief.userData.arms[1].add(radio);
-  const desk=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.8,0.8),lamb(0xb98a62));desk.position.set(-2.1,0.4,-1.4);scene.add(desk);
-  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.08,0.18,12),lamb(0xffffff));cup.position.set(-2.4,0.9,-1.3);scene.add(cup);
-  const rbub=bub(chief,'치직… 2차 구조대?',{x:0,y:0,z:0,size:0.0026,fs:62,bg:'#fff1b8',fg:'#5a4300'});chief.remove(rbub);scene.add(rbub);rbub.position.set(0.5,2.0,-0.9);
-  const zz=bub(chief,'…내일',{size:0.0026,fs:66});chief.remove(zz);scene.add(zz);zz.position.set(1.15,1.6,-0.9);
+  // 스마트폰(오른손)
+  const ph=new THREE.Group();const pb=new THREE.Mesh(new THREE.BoxGeometry(0.11,0.2,0.025),lamb(0x22222a));ph.add(pb);const scr=new THREE.Mesh(new THREE.PlaneGeometry(0.09,0.17),basic(0x34c759));scr.position.z=0.014;ph.add(scr);
+  ph.position.set(0,-0.66,0.08);chief.userData.arms[1].add(ph);
+  const waves=[];for(let i=0;i<3;i++){const s=textSprite(')',90,'#34c759',0.004);scene.add(s);waves.push(s)}
+  const callB=bub(chief,'2차 구조대 보낼까요?',{y:0,size:0.0019,fs:58,bg:'#fff1b8',fg:'#5a4300'});chief.remove(callB);scene.add(callB);
+  const zz=bub(chief,'…내일 보내자',{y:0,size:0.0024,fs:62});chief.remove(zz);scene.add(zz);
+  const Zz=textSprite('Zz',80,'#5a6a8a',0.0024);scene.add(Zz);Zz.visible=false;
+  ui.insertAdjacentHTML('beforeend','<div class="call"><div class="nm">구조 2팀</div><div class="st">전화 왔어요</div><div class="bt"><i class="n"></i><i class="y"></i></div></div>');
+  const call=ui.querySelector('.call'),cst=call.querySelector('.st'),cbt=call.querySelector('.bt');
   const ck=chip('같은 시각 · 구조본부');
-  const y1=ln(8,'y1'),b1=ln(8,'b1');
+  const y1=ln(8,'y1'),b1=ln(8,'b1');const ANS=1.5,HANG=b1.t1+0.35;
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,100);
   return t=>{
-    chief.userData.arms[1].rotation.x=-2.3;chief.userData.arms[1].rotation.z=0.3;
-    showB(rbub,t,y1.t0,y1.t1+0.4);showB(zz,t,b1.t0+0.1);
-    radio.rotation.z=t>y1.t0&&t<y1.t1?Math.sin(t*40)*0.05:0;
-    const k=ease(t/5);cam.position.set(0.6,2.3,3.9-k*0.4);cam.lookAt(0.6,1.2,-1.2);
+    const u=chief.userData;
+    // 울림: 폰이 가슴 위에서 떨림 → 받기(귀로) → 끊기(다시 가슴 위로)
+    const up=ease((t-ANS)/0.3)*(1-ease((t-HANG)/0.3));
+    u.arms[1].rotation.x=-0.6-1.9*up;u.arms[1].rotation.z=0.25+0.35*up;
+    ph.rotation.set(0,0,t<ANS?Math.sin(t*60)*0.12:0);scr.material.color.set(t<HANG?0x34c759:0x22222a);
+    scene.updateMatrixWorld(true);const pp=ph.getWorldPosition(new THREE.Vector3());
+    waves.forEach((s,i)=>{const on=t<ANS&&t>0.15;const lt=((t*2)+i/3)%1;s.visible=on;s.position.set(pp.x+0.1+lt*0.35,pp.y+0.05+lt*0.1,pp.z+0.05);const k=Math.sin(lt*Math.PI);s.scale.set(s.userData.base[0]*k,s.userData.base[1]*k,1)});
+    callB.position.set(pp.x-0.75,pp.y+0.45,pp.z);{const hp=u.head.getWorldPosition(new THREE.Vector3());zz.position.set(hp.x-0.55,hp.y+0.55,hp.z)}showB(callB,t,y1.t0,y1.t1+0.3);showB(zz,t,b1.t0+0.05,HANG+0.6);
+    eyesK(chief,t>b1.t0?0.15:(t<ANS?0.15:0.6));
+    Zz.visible=t>HANG+0.35;{const hp=u.head.getWorldPosition(new THREE.Vector3());Zz.position.set(hp.x-0.25,hp.y+0.45+((t*0.5)%1)*0.2,hp.z)}
+    // 통화 UI
+    call.style.transform=`scale(${pop((t-0.15)/0.3)})`;call.style.opacity=t<HANG+0.7?1:Math.max(0,1-(t-HANG-0.7)/0.2);
+    if(t<ANS){cst.textContent='전화 왔어요';cbt.style.display='flex'}else if(t<HANG){cst.textContent='통화 중 00:0'+Math.min(9,Math.floor(t-ANS));cbt.style.display='none'}else{cst.textContent='통화 종료';cbt.style.display='none'}
+    const k=ease(t/5);cam.position.set(0.95,2.15,3.2-k*0.3);cam.lookAt(0.9,1.05,-1.15);
     chipPop(ck,t,0.05);caption(8,t);renderer.render(scene,cam);
   };
 };

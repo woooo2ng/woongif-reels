@@ -31,6 +31,10 @@ L = {
  'b1': cutp('raw/kang.mp3', 0.00, 1.35),
  'l3': cutp('raw/jivin.mp3', 10.76, 14.44, 1.2, squeeze=True),
  'n4': cutp('raw/nar2.mp3', 0.00, 2.66, 1.1),
+ 'r1': cutp('raw/kkc2.mp3', 0.00, 3.68, 1.2, squeeze=True),
+ 'r2': cutp('raw/kkc2.mp3', 4.15, 5.66, 1.1),
+ 'l4': cutp('raw/jivin2.mp3', 0.00, 4.29, 1.25, squeeze=True),
+ 'n5': cutp('raw/nar3.mp3', 0.00, 2.50, 1.1),
 }
 # 군중 '네!' / '119! 119에 전화해!' — 4개 목소리 × 피치 변형 겹치기
 NE = [('raw/ne_jh.mp3', 0.19, 0.87), ('raw/ne_kkc.mp3', 0.15, 0.89), ('raw/ne_yh.mp3', 0.0, 0.95), ('raw/jivin.mp3', 14.94, 15.52)]
@@ -53,8 +57,12 @@ TXT = {
  'l3': ['"뗏목… 다 만들었는데…"', '"탈출… 해 볼까요…?"'],
  'c1b': ['"네에…"'],
  'n4': ['뗏목은 아주 좋은 침대가 됐어요.'],
+ 'r1': ['"저… 다들 헬기에… 타실래요…?"'],
+ 'l4': ['"저… 해먹…"', '"한 번만 누워 보실래요…?"'],
+ 'r2': ['"…이거 왜 이렇게 편해요?"'],
+ 'n5': ['구조대도 ISFP였거든요.'],
 }
-WHO = {'n1': 'n', 'n2': 'n', 'n3': 'n', 'n4': 'n', 'y1': 'f'}
+WHO = {'n1': 'n', 'n2': 'n', 'n3': 'n', 'n4': 'n', 'n5': 'n', 'y1': 'f', 'r1': 'f', 'r2': 'f'}
 L['c1b'] = L['c1']
 dur = {k: len(v) / SR for k, v in L.items()}
 
@@ -156,15 +164,34 @@ D.append(e + 1.0)
 X += [(6, waves(7.5, 0.03), 0.0), (6, gasp(0.18), 0.2), (6, steps(8, 0.09), 0.7), (6, swoosh(0.12), 1.6), (6, fire(5.2), 2.2), (6, heli(4.8), 2.6), (6, thud(0.3), 4.6), (6, thud(0.3), 4.8)]
 e = place(6, 'k1', 5.1)
 D.append(e + 0.9)
-# 7 구조대도 해먹·노을 → 같이 누움 → 인구 47 → 52
-X += [(7, waves(7.5, 0.035), 0.0), (7, marimba(7.5, 0.05), 0.0), (7, thud(0.15), 2.6), (7, thud(0.15), 3.2), (7, thud(0.15), 3.8), (7, thud(0.15), 4.3), (7, thud(0.15), 4.7), (7, ping(0.12), 5.4)]
-D.append(7.0)
-# 8 쿠키: 구조본부 무전 → "…내일 보내자."
-X += [(8, static(0.4, 0.05), 0.35), (8, static(0.25, 0.04), 0.4 + dur['y1'] + 0.05)]
-e = place(8, 'y1', 0.45)
-e = place(8, 'b1', e + 0.75)
-D.append(e + 1.2)
-
+# 7 구조대: "헬기에 타실래요…?" → 아무도 안 움직임 → ISFP "해먹 한 번만 누워 보실래요…?" → 구조대장 해먹에 누움 "…이거 왜 이렇게 편해요?" → 대원들 해먹 줄 서다 하나씩 눕기 → "구조대도 ISFP였거든요." → 인구 47→52
+def creak(vol=0.06):
+    n = int(0.5 * SR); t = np.arange(n) / SR; f = 300 + 80 * np.sin(2 * np.pi * 3 * t)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / 0.5) * vol
+X += [(7, waves(14.0, 0.035), 0.0), (7, marimba(14.0, 0.04), 0.0)]
+e = place(7, 'r1', 0.3)
+T_SILENT = e
+e = place(7, 'l4', e + 0.3)
+T_GO = e + 0.15
+X += [(7, steps(5, 0.12), T_GO), (7, thud(0.2), T_GO + 0.75), (7, creak(), T_GO + 0.85), (7, creak(), T_GO + 1.6)]
+e = place(7, 'r2', T_GO + 0.95)
+T_DOWN = e + 0.1
+X += [(7, steps(6, 0.1, 0.18), T_GO + 1.0)] + [(7, thud(0.15), T_DOWN + i * 0.3) for i in range(4)]
+e = place(7, 'n5', T_DOWN + 0.6)
+X += [(7, ping(0.12), e + 0.05)]
+D.append(e + 0.9)
+TM7 = dict(silent=T_SILENT, go=T_GO, down=T_DOWN)
+# 8 쿠키: 구조본부 — 소파에 누운 본부장 폰이 울림 → 누운 채 받음 → "2차 구조대 보낼까요?" → "…내일 보내자." → 뚝
+def ring(vol=0.1):
+    out = np.zeros(int(1.0 * SR))
+    for k in range(8):
+        x = tone([1320, 1660][k % 2], 0.05, 0.02, vol, (0.2, 0.0)); i = int(k * 0.055 * SR); out[i:i + len(x)] += x
+    return out
+X += [(8, ring(), 0.2), (8, ring(), 0.95), (8, click(0.3), 1.5)]
+e = place(8, 'y1', 1.7)
+e = place(8, 'b1', e + 0.45)
+X += [(8, click(0.25), e + 0.35), (8, tone(440, 0.25, 0.1, 0.06), e + 0.4)]
+D.append(e + 1.0)
 nf = [round(d * 30) for d in D]
 starts = [sum(nf[:i]) / 30 for i in range(len(nf))]; T = sum(nf) / 30
 full = np.zeros(int((T + 1) * SR), np.float32)
@@ -175,6 +202,6 @@ for si, x, t in X: put(x, starts[si] + t)
 full = full[:int(T * SR)]
 subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'f32le', '-ar', str(SR), '-ac', '1', '-i', '-', 'audio/full.wav'], input=np.clip(full, -1, 1).astype(np.float32).tobytes(), check=True)
 lines = [{'s': si, 'k': k, 't0': round(t, 3), 't1': round(t + dur[k], 3), 'who': WHO.get(k, 'i'), 'parts': TXT[k]} for si, k, t in P]
-json.dump({'durs': [n / 30 for n in nf], 'lines': lines, 'cut1': CUT1, 'shot': T_SHOT}, open('timing.json', 'w'), ensure_ascii=False, indent=1)
+json.dump({'durs': [n / 30 for n in nf], 'lines': lines, 'cut1': CUT1, 'shot': T_SHOT, 'tm7': TM7}, open('timing.json', 'w'), ensure_ascii=False, indent=1)
 print('scenes', [round(n / 30, 2) for n in nf], 'total', round(T, 2))
 print({k: round(v, 2) for k, v in dur.items()})
