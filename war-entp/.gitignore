@@ -1,0 +1,8 @@
+node_modules/
+out/
+shots/
+tile.jpg
+video.mp4
+voice.m4a
+list.txt
+*.log
