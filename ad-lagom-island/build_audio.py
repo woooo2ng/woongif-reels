@@ -1,8 +1,9 @@
 # 라곰 협업 2차: 온 세상이 ISFP인데 무인도에 떨어진다면? — 음성 자르기 + 장면 배치 + 효과음 → audio/full.wav, timing.json
 exec(open('fx_base.py').read())
 
-def cutp(src, a, b, tempo=1.0, pitch=1.0, radio=False):
+def cutp(src, a, b, tempo=1.0, pitch=1.0, radio=False, squeeze=False):
     af = f'atrim={max(0,a-0.03):.3f}:{b+0.06:.3f},asetpts=PTS-STARTPTS'
+    if squeeze: af += ',silenceremove=stop_periods=-1:stop_duration=0.28:stop_threshold=-40dB:stop_silence=0.2'
     if pitch != 1.0: af += f',asetrate={int(SR*pitch)},aresample={SR}'
     t2 = tempo / pitch
     if abs(t2 - 1) > 0.001: af += f',atempo={t2:.4f}'
@@ -22,26 +23,26 @@ L = {
  'n1': cutp('raw/nar.mp3', 0.00, 3.39, 1.1),
  'n2': cutp('raw/nar.mp3', 3.99, 6.33, 1.1),
  'n3': cutp('raw/nar.mp3', 6.87, 8.90, 1.1),
- 'l1': cutp('raw/lead.mp3', 0.00, 2.15, 1.05),
- 'l2': cutp('raw/lead.mp3', 2.65, 5.97, 1.1),
+ 'l1': cutp('raw/jivin.mp3', 0.00, 4.20, 1.2, squeeze=True),
+ 'l2': cutp('raw/jivin.mp3', 4.76, 10.19, 1.22, squeeze=True),
  'j1': cutp('raw/jh.mp3', 0.00, 1.78),
  'k1': cutp('raw/kkc.mp3', 0.00, 1.16),
  'y1': cutp('raw/yh.mp3', 0.00, 1.46, 1.05, radio=True),
  'b1': cutp('raw/kang.mp3', 0.00, 1.35),
- 'l3': cutp('raw/lead2.mp3', 0.00, 2.00, 1.05),
+ 'l3': cutp('raw/jivin.mp3', 10.76, 14.44, 1.2, squeeze=True),
  'n4': cutp('raw/nar2.mp3', 0.00, 2.66, 1.1),
 }
 # 군중 '네!' / '119! 119에 전화해!' — 4개 목소리 × 피치 변형 겹치기
-NE = [('raw/jh.mp3', 2.27, 2.65), ('raw/kkc.mp3', 1.48, 1.86), ('raw/yh.mp3', 1.81, 2.16), ('raw/lead.mp3', 2.65, 2.95)]
-L['c1'] = mixl([(cutp(s, a, b, 1.0, p), o) for (s, a, b), p, o in zip(NE * 2, [1, 1, 1, 1, 1.08, 0.93, 1.12, 0.9], [0, .03, .05, .02, .07, .04, .09, .06])])
+NE = [('raw/ne_jh.mp3', 0.19, 0.87), ('raw/ne_kkc.mp3', 0.15, 0.89), ('raw/ne_yh.mp3', 0.0, 0.95), ('raw/jivin.mp3', 14.94, 15.52)]
+L['c1'] = mixl([(cutp(s, a, b, 1.2, p), o) for (s, a, b), p, o in zip(NE * 2, [1, 1, 1, 1, 1.08, 0.93, 1.12, 0.9], [0, .03, .05, .02, .07, .04, .09, .06])])
 L['c1'][:] = L['c1'] * 1.0
 S119 = [('raw/jh.mp3', 2.93, 4.79), ('raw/kkc.mp3', 2.18, 3.82), ('raw/yh.mp3', 2.47, 4.44), ('raw/lead.mp3', 6.40, 8.13)]
 L['c2'] = mixl([(cutp(s, a, b, 1.1, p), o) for (s, a, b), p, o in zip(S119 * 2, [1, 1, 1, 1, 1.07, 0.94, 1.1, 0.92], [0, .05, .02, .08, .1, .04, .12, .06])])
 TXT = {
  'n1': ['온 세상이 ISFP인데', '무인도에 떨어진다면?'],
- 'l1': ['"일단… 살아남아야 합니다!"'],
- 'l2': ['"집 짓는 팀, 불 피우는 팀,"', '"구조 신호 팀! 흩어져!"'],
- 'c1': ['"네!"'],
+ 'l1': ['"저기… 일단…"', '"살아남아야 하지 않을까요…?"'],
+ 'l2': ['"집 짓는 팀… 불 피우는 팀…"', '"구조 신호 팀…"', '"하고 싶은 사람만 해요…"'],
+ 'c1': ['"네에…"'],
  'n2': ['흩어지긴 했어요.', '누울 자리 찾으러요.'],
  'c2': ['"119! 119에 전화해!"'],
  'n3': ['좋아요는 32개 받았어요.'],
@@ -49,8 +50,8 @@ TXT = {
  'k1': ['"모두 무사하십니까!"'],
  'y1': ['"2차 구조대 보낼까요?"'],
  'b1': ['"…내일 보내자."'],
- 'l3': ['"뗏목 완성! 탈출한다!"'],
- 'c1b': ['"네!"'],
+ 'l3': ['"뗏목… 다 만들었는데…"', '"탈출… 해 볼까요…?"'],
+ 'c1b': ['"네에…"'],
  'n4': ['뗏목은 아주 좋은 침대가 됐어요.'],
 }
 WHO = {'n1': 'n', 'n2': 'n', 'n3': 'n', 'n4': 'n', 'y1': 'f'}
@@ -108,7 +109,7 @@ def place(si, key, t): P.append((si, key, t)); return t + dur[key]
 # 0 타이틀: 폭풍우 난파 → 해변에 떠밀려옴 → 리더 "일단 살아남아야 합니다!"
 X += [(0, storm(2.6), 0.0), (0, thunder(), 0.3), (0, waves(5.5, 0.06), 2.0), (0, thud(0.25), 2.3), (0, thud(0.2), 2.6)]
 e = place(0, 'n1', 0.25)
-e = place(0, 'l1', e + 0.55)
+e = place(0, 'l1', e + 0.3)
 D.append(e + 0.9)
 # 1 팀 나누기 → "네!" → 컷: 전원 누움
 X += [(1, waves(8.0, 0.04), 0.0)]
@@ -116,7 +117,7 @@ e = place(1, 'l2', 0.3)
 e = place(1, 'c1', e + 0.15)
 CUT1 = e + 0.35
 X += [(1, swoosh(0.1), CUT1 - 0.1), (1, thud(0.2), CUT1 + 0.2)]
-e = place(1, 'n2', CUT1 + 0.6)
+e = place(1, 'n2', CUT1 + 0.35)
 D.append(e + 0.9)
 # 2 SOS 꾸미기 + 감성 해먹 (BGM)
 X += [(2, waves(5.6, 0.035), 0.0), (2, marimba(5.6, 0.05), 0.0)] + [(2, click(0.18), 0.9 + i * 0.35) for i in range(6)] + [(2, sparkle(0.07), 3.0), (2, sparkle(0.06), 5.0)]
@@ -127,7 +128,7 @@ e = place(3, 'l3', 0.3)
 e = place(3, 'c1b', e + 0.1)
 T_PUSH = e + 0.35
 X += [(3, steps(6, 0.1), T_PUSH), (3, swoosh(0.12), T_PUSH + 0.5), (3, splash(0.22), T_PUSH + 0.75), (3, marimba(4.8, 0.045), T_PUSH + 1.2)]
-e = place(3, 'n4', T_PUSH + 2.0)
+e = place(3, 'n4', T_PUSH + 1.7)
 T_LAND = e + 0.4
 X += [(3, thud(0.3), T_LAND), (3, splash(0.1), T_LAND)]
 D.append(T_LAND + 1.1)

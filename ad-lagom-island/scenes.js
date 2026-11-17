@@ -138,7 +138,7 @@ S[0]=()=>{
   const spots=[[-2.6,0.2],[-1.2,1.2],[0.6,0.5],[2.0,1.4],[3.0,0.2],[-3.4,1.6],[1.2,2.3],[-0.4,2.8],[2.8,2.9],[-2.0,3.2],[0.2,-0.6],[-1.6,-0.4],[1.8,-0.5]];
   ppl.forEach((p,i)=>{const [x,z]=spots[i];const w=lie(p,x,z,r()*Math.PI*2,{star:i%3===0});scene.add(w);lay.push({w,p,z,x,del:r()*0.6})});
   // 리더(앞줄 가운데)
-  const L=makeHero({shirt:0x7fb7c9,pants:0x55506a});scene.add(L);const Lb=bub(L,'일단 생존!',{y:2.1,size:0.0026,fs:72});
+  const L=makeHero({shirt:0x7fb7c9,pants:0x55506a});scene.add(L);const Lb=bub(L,'살아남아 볼까요…?',{y:2.1,size:0.0024,fs:68});
   const nods=[];
   const l1=ln(0,'l1');const T1=LEAD+0,TS=l1.t0-0.6;
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,300);
@@ -151,7 +151,7 @@ S[0]=()=>{
     B.upd(t*(1.6-k*0.8));
     lay.forEach(q=>{const sl=1-ease((t-q.del)/2.0);q.w.position.z=q.z-sl*2.2;q.w.position.y=-0.05*sl});
     // 리더 일어섬
-    const rk=ease((t-TS)/0.55);riseK(L,0,4.2,rk,0);standPose(L);if(rk>=1){const lt=t-l1.t0;L.userData.arms[1].rotation.x=-2.6*ease(lt/0.3);L.userData.arms[1].rotation.z=0.2}
+    const rk=ease((t-TS)/0.55);riseK(L,0,4.2,rk,0);standPose(L);if(rk>=1){const lt=t-l1.t0;L.userData.arms[1].rotation.x=-1.1*ease(lt/0.4);L.userData.arms[1].rotation.z=0.15;L.userData.head.rotation.z=0.12*ease(lt/0.4)}
     showB(Lb,t,l1.t0+0.2);
     // 다들 고개 끄덕(누운 채 머리만 들고)
     lay.forEach((q,i)=>{const hk=ease((t-(l1.t1+0.05+i*0.03))/0.25);q.p.userData.head.rotation.x=-0.7*hk+Math.sin(Math.max(0,t-l1.t1-0.3)*12)*0.15*hk});
@@ -168,7 +168,7 @@ S[1]=()=>{
   palm(scene,-4.2,-2.5,1.3,0.3,0.4);palm(scene,4.0,-2.0,1.25,-0.35,2.2);rock(scene,-3,-3.5,0.8);
   const L=makeHero({shirt:0x7fb7c9,pants:0x55506a});L.position.set(0,0,-1.6);scene.add(L);
   const front=crowd(r,10);const fr=[];
-  front.forEach((p,i)=>{const row=i<5?0:1;const x=(i%5-2)*1.15+(row?0.55:0);p.position.set(x,0,2.0+row*1.2);p.rotation.y=Math.PI+(r()-0.5)*0.2;scene.add(p);const b=bub(p,'네!',{y:2.05,size:0.0026,fs:72});fr.push({p,b,i})});
+  front.forEach((p,i)=>{const row=i<5?0:1;const x=(i%5-2)*1.15+(row?0.55:0);p.position.set(x,0,2.0+row*1.2);p.rotation.y=Math.PI+(r()-0.5)*0.2;scene.add(p);const b=bub(p,'네에…',{y:2.05,size:0.0024,fs:68});fr.push({p,b,i})});
   const labs=[['집 짓는 팀',-1.25,'#ffe0a8'],['불 피우는 팀',1.25,'#ffc2b0'],['구조 신호 팀',0,'#cfe3ff']].map(([tx,x,bg],i)=>{const s=labelSprite(tx,{bg,fg:'#2b2b3a',fs:66,size:0.0040});s.position.set(x,i===2?4.1:3.4,-2.2);scene.add(s);scaleBubble(s,0);return s});
   // 컷 뒤: 부감 — 팀별로 둥글게 누워 있음
   const top=new THREE.Group();top.visible=false;scene.add(top);
@@ -182,16 +182,16 @@ S[1]=()=>{
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,300);
   return t=>{B.upd(t);
     const u=L.userData;standPose(L);
-    const d=l2.t1-l2.t0;const seg=[l2.t0,l2.t0+d*0.36,l2.t0+d*0.7,l2.t0+d*0.86];
+    const d=l2.t1-l2.t0;const seg=[l2.t0,l2.t0+d*0.24,l2.t0+d*0.48,l2.t0+d*0.66];
     // 왼쪽 → 오른쪽 → 위(가운데) → 양팔 '흩어져!'
     let ax0=0,az0=0,ax1=0,az1=0;
-    if(t>seg[0]&&t<seg[1]){ax0=-1.6;az0=-0.9}
-    else if(t>=seg[1]&&t<seg[2]){ax1=-1.6;az1=0.9}
-    else if(t>=seg[2]&&t<seg[3]){ax1=-2.9;az1=0.2}
-    else if(t>=seg[3]&&t<CUT){ax0=-1.4;az0=-1.3;ax1=-1.4;az1=1.3}
+    if(t>seg[0]&&t<seg[1]){ax0=-1.0;az0=-0.6}
+    else if(t>=seg[1]&&t<seg[2]){ax1=-1.0;az1=0.6}
+    else if(t>=seg[2]&&t<seg[3]){ax1=-1.5;az1=0.2}
+    else if(t>=seg[3]&&t<CUT){ax0=-0.5;az0=-0.55;ax1=-0.5;az1=0.55}
     u.arms[0].rotation.set(ax0,0,az0);u.arms[1].rotation.set(ax1,0,az1);u.mouth.visible=t>l2.t0&&t<l2.t1&&Math.sin(t*22)>0;
     labs.forEach((s,i)=>scaleBubble(s,pop((t-seg[i]-0.05)/0.3)));
-    fr.forEach(q=>{const k=ease((t-c1.t0+0.05-q.i*0.01)/0.15);armUp(q.p,1,k);standPose(q.p);if(k>0)armUp(q.p,1,k);showB(q.b,t,c1.t0+q.i*0.015)});
+    fr.forEach(q=>{const k=ease((t-c1.t0+0.05-q.i*0.03)/0.4)*0.45;standPose(q.p);if(k>0)armUp(q.p,1,k);showB(q.b,t,c1.t0+q.i*0.04)});
     const after=t>=CUT;top.visible=after;[L,...front].forEach(p=>p.visible=!after);labs.forEach(s=>s.visible=s.visible&&!after);
     if(!after){cam.fov=42;cam.position.set(0,4.4,8.6);cam.lookAt(0,1.7,-1.6)}
     else{const k=ease((t-CUT)/3);cam.fov=46;cam.position.set(0,15-k*1.2,7.5);cam.lookAt(0,0,1.0);
@@ -272,7 +272,7 @@ S[3]=()=>{
   const L=makeHero({shirt:0x7fb7c9,pants:0x55506a});const Lg=new THREE.Group();Lg.position.y=TOP;raft.add(Lg);Lg.add(L);
   const ps=crowd(r,4);const riders=[{p:L,g:Lg,sx:0,hx:0,hz:0.2}];
   const xs=[-1.05,-0.52,0.52,1.05];
-  ps.forEach((p,i)=>{const g=new THREE.Group();raft.add(g);g.add(p);riders.push({p,g,sx:xs[i]*1.15,hx:xs[i],hz:1.85,b:bub(p,'네!',{y:2.05,size:0.0026,fs:72})})});
+  ps.forEach((p,i)=>{const g=new THREE.Group();raft.add(g);g.add(p);riders.push({p,g,sx:xs[i]*1.15,hx:xs[i],hz:1.85,b:bub(p,'네에…',{y:2.05,size:0.0024,fs:68})})});
   const zz=riders.map(q=>{const z=textSprite('Zz',70,'#ffffff',0.005);raft.add(z);return z});
   const l3=ln(3,'l3'),c1=ln(3,'c1b'),n4=ln(3,'n4');const TP=c1.t1+0.35,TL=n4.t1+0.4;
   const ck=chip('탈출 시도 1회차');
@@ -294,9 +294,9 @@ S[3]=()=>{
       if(lk<1){riseK(p,i===0?0:lx,lz,lk,0);p.position.y+=(i===0?0:TOP)}
       else{p.rotation.set(0,0,0);p.position.set(x,y,z);}
       standPose(p);
-      if(i===0&&t>l3.t0&&t<TP){p.userData.arms[1].rotation.x=-2.8;p.userData.arms[1].rotation.z=0.2;p.userData.mouth.visible=t<l3.t1&&Math.sin(t*22)>0}
+      if(i===0&&t>l3.t0&&t<TP){p.userData.arms[1].rotation.x=-1.0;p.userData.arms[1].rotation.z=0.15;p.userData.mouth.visible=t<l3.t1&&Math.sin(t*22)>0}
       if(i>0){const push=t>TP&&t<TP+0.95;if(push){walkPose(p,t*12,0.6);p.userData.arms.forEach(a=>a.rotation.x=-1.4)}
-        if(t>c1.t0-0.05&&t<TP){armUp(p,1,ease((t-c1.t0+0.05)/0.15))}
+        if(t>c1.t0-0.05&&t<TP){armUp(p,1,0.45*ease((t-c1.t0+0.05)/0.4))}
         p.rotation.y=lk<1?0:Math.PI;if(lk>=1)p.rotation.y=Math.PI;showB(q.b,t,c1.t0+i*0.03,TP)}
       const z0=zz[i];const on=lk<0.2;z0.visible=on;const lt=((t*0.6)+i*0.23)%1;z0.position.set((i===0?0:lx)+0.2,0.9+lt*0.7,0.6);const sk=Math.sin(lt*Math.PI)*(on?1:0);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)});
     const fz=raft.position.z;cam.fov=46;cam.position.set(5.2,7.0,6.0+fz*0.5);cam.lookAt(-0.2,0.5,fz*0.8-0.4);
