@@ -205,17 +205,15 @@ S[1]=()=>{
 S[2]=()=>{
   sky('#7fc6ef','#c9eef6','#eafaf8');
   const scene=IS();const r=rng(721);const B=beach(scene,r,{shore:-4});
-  // A: 모래 위 S
+  // A: 구조 신호 대신 모래에 '집에 / 가고 / 싶다' → 다 쓰자마자 그 위에 눕기
   const A=new THREE.Group();scene.add(A);
-  const pts=[[0.9,0.9],[0.2,1.2],[-0.6,0.9],[-0.7,0.3],[0,0],[0.7,-0.3],[0.6,-0.9],[-0.2,-1.2],[-0.9,-0.9]].map(([x,z])=>new THREE.Vector3(x,0.0,z));
-  const curve=new THREE.CatmullRomCurve3(pts);const groove=new THREE.Mesh(new THREE.TubeGeometry(curve,60,0.1,8,false),lamb(0xc9ad7a));groove.scale.y=0.25;A.add(groove);
-  const decos=[];const along=[0.02,0.2,0.38,0.55,0.72,0.9];
-  along.forEach((u,i)=>{const p=curve.getPoint(u);const tg=curve.getTangent(u);const nx=-tg.z,nz=tg.x;const side=i%2?1:-1;
-    const d=i%2?shell(scene,0,0,[0xffb3c6,0xfff0b3,0xb3e6ff][i%3],1.6):flower(scene,0,0,[0xff8fb3,0xffb84d,0xc79bff][i%3],1.5);A.add(d);d.position.set(p.x+nx*0.32*side,0.05,p.z+nz*0.32*side);decos.push(d)});
-  const extra=[];for(let i=0;i<10;i++){const u=i/9;const p=curve.getPoint(u);const tg=curve.getTangent(u);const f=flower(scene,0,0,[0xff8fb3,0xffd166,0xffffff][i%3],0.8);A.add(f);f.position.set(p.x-tg.z*0.32*(i%2?-1:1)*1.3,0.03,p.z+tg.x*0.32*(i%2?-1:1)*1.3);extra.push(f)}
-  const dec=makePerson(r,{shirt:0xc7a3c9});dec.position.set(0.95,0,-0.55);dec.rotation.y=-1.3;sitPose(dec);dec.userData.hip.position.y=0.42;A.add(dec);
-  const db=bub(dec,'예쁘다…',{y:2.0,size:0.0024});
-  const sTag=labelSprite('구조 신호',{bg:'#cfe3ff',fg:'#2b2b3a',fs:60,size:0.0045});sTag.position.set(-0.2,0.6,2.0);
+  const CH=['집','에','가','고','싶','다'];const chars=[];
+  CH.forEach((c,k)=>{const tx=canvasTex(256,256,(x,w,h)=>{x.clearRect(0,0,w,h);x.font=`900 200px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(150,112,62,0.9)';x.fillText(c,w/2,h/2+10);x.strokeStyle='rgba(255,240,210,0.6)';x.lineWidth=5;x.strokeText(c,w/2-4,h/2+6)});
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(0.95,0.95),new THREE.MeshLambertMaterial({map:tx,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;
+    const row=Math.floor(k/2),col=k%2;m.position.set(-0.5+col*1.0,0.006,-1.05+row*1.05);A.add(m);chars.push(m)});
+  const wr=makePerson(r,{shirt:0xc7a3c9});A.add(wr);const stick=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.9,5),lamb(0x8a6846));stick.position.set(0,-0.75,0.25);stick.rotation.x=0.9;wr.userData.arms[1].add(stick);
+  const wb=bub(wr,'후…',{y:0,size:0.0026,fs:64});wr.remove(wb);A.add(wb);wb.position.set(0.0,1.1,-0.35);
+  const TW=[0.3,0.55,0.85,1.1,1.4,1.65],TL=2.0;
   // B: 해먹
   const Bg=new THREE.Group();Bg.position.set(30,0,0);scene.add(Bg);
   const p1=palm(scene,0,0,1.25,-0.15,0);Bg.add(p1);p1.position.set(-1.9,0,0);const p2=palm(scene,0,0,1.25,0.15,Math.PI);Bg.add(p2);p2.position.set(1.9,0,0);
@@ -229,12 +227,17 @@ S[2]=()=>{
   for(let i=0;i<7;i++){const f=flower(scene,0,0,[0xff8fb3,0xffd166,0xc79bff][i%3],1.3);Bg.add(f);f.position.set(-1.6+i*0.55,0.0,0.9+Math.sin(i)*0.3)}
   const hb=labelSprite('완벽한 집',{bg:'#ffe0a8',fg:'#2b2b3a',fs:66,size:0.0055});hb.position.set(0,3.6,0);Bg.add(hb);
   const sp=sprk(scene,10,r,{x:30,y:2.4,z:0.4,w:3.2,h:1.6,col:'#fffbd8',size:0.004});
-  const ck=chip('');const CUT=2.75;
+  const ck=chip('');const CUT=3.0;
   const cam=new THREE.PerspectiveCamera(40,W/H,0.1,200);
   return t=>{B.upd(t);
-    if(t<CUT){decos.forEach((d,i)=>{const k=pop((t-0.65-i*0.35)/0.25);d.scale.setScalar(k*2.3);d.visible=k>0.01});extra.forEach((f,i)=>{const k=pop((t-1.0-i*0.12)/0.25);f.scale.setScalar(0.8*k);f.visible=k>0.01});
-      const u=dec.userData;u.arms[1].rotation.x=-1.0-Math.max(0,Math.sin(t*6))*0.5;u.head.rotation.x=0.35;showB(db,t,1.6);
-      cam.fov=40;cam.position.set(0.3,3.9,3.9-t*0.12);cam.lookAt(0.2,0.2,0.0);ck.textContent='구조 신호 팀';}
+    if(t<CUT){
+      chars.forEach((m,k)=>{const kk=pop((t-TW[k])/0.2);m.scale.setScalar(Math.max(0.001,kk));m.visible=t>TW[k]});
+      // 쓰는 사람: 글자 옆으로 이동하며 막대기로 긁기 → 다 쓰자마자 글씨 위에 털썩
+      const ci=Math.min(5,Math.max(0,TW.findIndex(x=>x>t)-1<0?5:TW.findIndex(x=>x>t)-1));const tc=chars[t<TW[0]?0:ci].position;
+      if(t<TL){standPose(wr);wr.position.set(tc.x+0.7,0,tc.z+0.1);wr.rotation.set(0,-1.45,0,'YXZ');wr.userData.arms[1].rotation.x=-0.9-Math.max(0,Math.sin(t*14))*0.35;wr.userData.head.rotation.x=0.5}
+      else{const lk=ease((t-TL)/0.3);standPose(wr);riseK(wr,0.0,1.55,1-lk,0);wr.userData.arms.forEach(a=>{a.rotation.x=-2.9*lk;a.rotation.z=0});}
+      showB(wb,t,TL+0.35);
+      cam.fov=40;cam.position.set(0.15,6.8,4.4);cam.lookAt(0.1,0,-0.2);ck.textContent='구조 신호 팀';}
     else{const lt=t-CUT;hm.rotation.x=Math.sin(lt*1.6)*0.12;scaleBubble(hb,pop((lt-0.3)/0.3));updSprk(sp,t,CUT+0.3);
       cam.fov=40;cam.position.set(30+Math.sin(lt*0.3)*0.4,4.6,9.6-lt*0.3);cam.lookAt(30,1.9,0);ck.textContent='집 짓는 팀';}
     cam.updateProjectionMatrix();chipPop(ck,t<CUT?t:t-CUT,0.05);
