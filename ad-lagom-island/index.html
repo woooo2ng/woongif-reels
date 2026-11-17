@@ -608,35 +608,51 @@ function scenery(cv,k){const x=cv.getContext('2d');const w=cv.width,h=cv.height;
 }
 S[3]=()=>{
   sky('#7fc6ef','#c9eef6','#eafaf8');
-  const scene=IS();const r=rng(831);const B=beach(scene,r,{shore:-6});palm(scene,-3.5,-3,1.3,0.3,0.5);palm(scene,3.6,-3.5,1.2,-0.3,2);
-  const holder=makeHero({shirt:0xe0c070,pants:0x55506a});holder.position.set(0,0,0);scene.add(holder);
-  const pm=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.3,0.03),lamb(0x22222a));pm.position.set(0,-0.66,0.06);holder.userData.arms[1].add(pm);
-  const others=crowd(r,6);const ring=[];others.forEach((p,i)=>{const a=-0.2+i*0.42+(i>2?2.35:0);const x=Math.sin(a)*1.5,z=Math.cos(a)*1.0-0.2;p.position.set(x,0,z);p.lookAt(0,0,0);scene.add(p);ring.push({p,b:bub(p,i%2?'119!!':'전화!!',{y:2.05,size:0.0021,fs:70,bg:'#ffd6d6',fg:'#7a1f2b'}),d:bub(p,'…',{y:2.05,size:0.0021,fs:70}),i})});
-  const hb1=bub(holder,'찰칵',{y:2.1,size:0.0022,fs:70,bg:'#fff1b8',fg:'#5a4300'});
-  ui.insertAdjacentHTML('beforeend',`<div class="ph"><div class="sc">
-    <div class="lk1"><div class="lock"><div class="tm">14:20</div></div><div class="warn"><b>배터리 1%</b><small>곧 전원이 꺼집니다</small></div><div class="batbig"><i></i></div><div class="bat">1%</div></div>
-    <div class="cm" style="display:none"><img class="cmi" style="position:absolute;left:0;top:0;width:100%;height:100%"><div class="shut"><i></i></div></div>
-    <div class="post" style="display:none"><div class="toast">게시 완료!</div><div class="hd"><i></i>isfp_island</div><img class="im" style="width:100%"><div class="lk">♥ 좋아요 <b>0</b>개</div><div class="cp">무인도 뷰 미쳤다… 여기 살래</div></div>
-    <div class="off"></div><div class="fl"></div></div></div>`);
-  const ph=ui.querySelector('.ph'),lk1=ph.querySelector('.lk1'),cm=ph.querySelector('.cm'),post=ph.querySelector('.post'),off=ph.querySelector('.off'),fl=ph.querySelector('.fl'),bat=ph.querySelector('.bat'),bb=ph.querySelector('.batbig'),lkn=ph.querySelector('.lk b'),toast=ph.querySelector('.toast');
-  {const tmp=document.createElement('canvas');tmp.width=440;tmp.height=864;scenery(tmp);cm.querySelector('img').src=tmp.toDataURL();const c=document.createElement('canvas');c.width=c.height=444;c.getContext('2d').drawImage(tmp,0,200,440,440,0,0,444,444);post.querySelector('img').src=c.toDataURL()}
-  const c2=ln(3,'c2'),TS=TM.shot;
-  const cam=new THREE.PerspectiveCamera(44,W/H,0.1,200);
+  const scene=IS();const r=rng(833);const B=beach(scene,r,{shore:-2.6});
+  palm(scene,-3.6,0.6,1.3,0.3,0.5);palm(scene,-4.6,-1.2,1.2,0.2,1.6);rock(scene,2.9,-1.6,0.7);
+  // 출발 지점 팻말
+  const post=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.1,0.08),lamb(0x8a6846));post.position.set(2.0,0.55,0.0);scene.add(post);
+  const sign=labelSprite('출발 지점',{bg:'#f2d9a8',fg:'#5a3a1a',fs:60,size:0.0036});sign.position.set(2.0,1.25,0.0);scene.add(sign);
+  // 뗏목
+  const raft=new THREE.Group();scene.add(raft);const TOP=0.32;
+  for(let i=0;i<9;i++){const lg=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,3.0,8),lamb(i%2?0x9a7652:0x8a6846));lg.rotation.x=Math.PI/2;lg.position.set(-1.4+i*0.35,0.16,0);raft.add(lg)}
+  for(const z of[-1.15,1.15]){const rp=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.06,0.12),lamb(0xd9c39a));rp.position.set(0,0.33,z);raft.add(rp)}
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,2.4,6),lamb(0x6b4a2f));mast.position.set(1.25,1.4,-1.2);raft.add(mast);
+  const sail=new THREE.Mesh(new THREE.ConeGeometry(0.7,1.5,4),new THREE.MeshLambertMaterial({color:0x5fb36a,side:THREE.DoubleSide}));sail.scale.z=0.12;sail.position.set(0.75,1.75,-1.2);sail.rotation.z=-0.15;raft.add(sail);
+  const flag=labelSprite('탈출호',{bg:'#ffe08a',fg:'#2b2b3a',fs:60,size:0.0036});flag.position.set(1.25,2.85,-1.2);raft.add(flag);
+  // 리더(뗏목 위) + 미는 사람들(뗏목 뒤 모래)
+  const L=makeHero({shirt:0x7fb7c9,pants:0x55506a});const Lg=new THREE.Group();Lg.position.y=TOP;raft.add(Lg);Lg.add(L);
+  const ps=crowd(r,4);const riders=[{p:L,g:Lg,sx:0,hx:0,hz:0.2}];
+  const xs=[-1.05,-0.52,0.52,1.05];
+  ps.forEach((p,i)=>{const g=new THREE.Group();raft.add(g);g.add(p);riders.push({p,g,sx:xs[i]*1.15,hx:xs[i],hz:1.85,b:bub(p,'네!',{y:2.05,size:0.0026,fs:72})})});
+  const zz=riders.map(q=>{const z=textSprite('Zz',70,'#ffffff',0.005);raft.add(z);return z});
+  const l3=ln(3,'l3'),c1=ln(3,'c1b'),n4=ln(3,'n4');const TP=c1.t1+0.35,TL=n4.t1+0.4;
+  const ck=chip('탈출 시도 1회차');
+  const cam=new THREE.PerspectiveCamera(44,W/H,0.1,300);
   return t=>{B.upd(t);
-    const blink=Math.floor(t*3)%2;bat.style.opacity=blink?1:0.3;bb.style.opacity=t<0.35?0:blink?1:0.4;
-    const mode=t<c2.t1-0.25?0:t<TS+0.35?1:t<TS+1.3?2:3;
-    lk1.style.display=mode===0?'block':'none';cm.style.display=mode===1?'block':'none';post.style.display=mode>=2?'block':'none';
-    fl.style.opacity=t>TS&&t<TS+0.25?1-(t-TS)/0.25:0;
-    if(mode>=2){const k=clamp01((t-TS-0.7)/0.5);lkn.textContent=Math.round(32*k);toast.style.opacity=clamp01((t-TS-0.35)/0.1)}
-    off.style.opacity=t>TS+1.3?clamp01((t-TS-1.3)/0.12):0;
-    {const pk=pop((t-0.05)/0.3);const sh=t>TS+1.3&&t<TS+2.0?Math.sin((t-TS-1.3)*40)*3*Math.exp(-(t-TS-1.3)*6):0;ph.style.transform=(pk<0.999||Math.abs(sh)>0.01)?`scale(${pk}) translateY(${sh}px)`:'none';}
-    // 3D: 들고 있는 사람 팔 올림, 주변 패닉 → 꺼진 뒤 '…'
-    standPose(holder);const ak=ease((t-c2.t1+0.4)/0.3);holder.userData.arms[1].rotation.x=-0.9-1.5*ak;holder.userData.arms[1].rotation.z=0.15;
-    showB(hb1,t,TS-0.05,TS+0.6);
-    ring.forEach(q=>{standPose(q.p);const pan=t>c2.t0&&t<c2.t1+0.3;q.p.userData.arms.forEach((a,j)=>{a.rotation.x=pan?-2.6+Math.sin(t*14+q.i+j)*0.3:0});q.p.userData.hip.position.y=0.8+(pan?Math.abs(Math.sin(t*12+q.i))*0.08:0);
-      showB(q.b,t,c2.t0+q.i*0.06,c2.t1+0.2);showB(q.d,t,TS+1.5+q.i*0.05)});
-    holder.userData.head.rotation.x=-0.25;
-    cam.position.set(0,3.0,4.4);cam.lookAt(0,3.0,0);
+    // 뗏목 위치: 모래 → 바다(-5) → 밀려서 해변(-2.3) 복귀
+    const pk=ease((t-TP)/1.2);const back=ease((t-(n4.t0-0.2))/(TL-n4.t0+0.2));
+    let rz=0-4.8*pk;rz=rz+(2.4)*back;const onW=pk>0.4&&t<TL;
+    raft.position.set(0,onW?-0.08+Math.sin(t*2.2)*0.04:0,rz);raft.rotation.set(onW?Math.sin(t*1.7)*0.04:0,0,onW?Math.sin(t*2.1)*0.05:0);
+    if(t>TL){const j=Math.max(0,1-(t-TL)/0.25);raft.position.z+=Math.sin((t-TL)*30)*0.05*j}
+    riders.forEach((q,i)=>{const p=q.p;
+      // 미는 사람: 뗏목 뒤에서 걷다가(0.0~0.9) 올라탐(0.9~1.25)
+      let y=0,x=q.hx,z=q.hz;
+      if(i>0){const hop=ease((t-TP-0.9-i*0.06)/0.35);x=q.hx+(q.sx-q.hx)*hop;z=q.hz+(1.15-q.hz)*hop;y=TOP*hop+Math.sin(hop*Math.PI)*0.45}
+      else{x=0;z=0.2;y=0}
+      q.g.position.set(0,i===0?TOP:0,0);
+      const lk=1-ease((t-(TP+1.4+(i===0?0.7:i*0.18)))/0.4); // 1 서 있음 → 0 누움
+      const lx=i===0?0:q.sx,lz=i===0?1.15:1.15;
+      if(lk<1){riseK(p,i===0?0:lx,lz,lk,0);p.position.y+=(i===0?0:TOP)}
+      else{p.rotation.set(0,0,0);p.position.set(x,y,z);}
+      standPose(p);
+      if(i===0&&t>l3.t0&&t<TP){p.userData.arms[1].rotation.x=-2.8;p.userData.arms[1].rotation.z=0.2;p.userData.mouth.visible=t<l3.t1&&Math.sin(t*22)>0}
+      if(i>0){const push=t>TP&&t<TP+0.95;if(push){walkPose(p,t*12,0.6);p.userData.arms.forEach(a=>a.rotation.x=-1.4)}
+        if(t>c1.t0-0.05&&t<TP){armUp(p,1,ease((t-c1.t0+0.05)/0.15))}
+        p.rotation.y=lk<1?0:Math.PI;if(lk>=1)p.rotation.y=Math.PI;showB(q.b,t,c1.t0+i*0.03,TP)}
+      const z0=zz[i];const on=lk<0.2;z0.visible=on;const lt=((t*0.6)+i*0.23)%1;z0.position.set((i===0?0:lx)+0.2,0.9+lt*0.7,0.6);const sk=Math.sin(lt*Math.PI)*(on?1:0);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)});
+    const fz=raft.position.z;cam.fov=46;cam.position.set(5.2,7.0,6.0+fz*0.5);cam.lookAt(-0.2,0.5,fz*0.8-0.4);
+    chipPop(ck,t,0.05);ck.innerHTML=t>TL+0.15?'탈출 시도 1회차 · <b>원위치</b>':'탈출 시도 1회차';
     caption(3,t);renderer.render(scene,cam);
   };
 };
