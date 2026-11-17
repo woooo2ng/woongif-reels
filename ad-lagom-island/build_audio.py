@@ -34,7 +34,7 @@ L = {
  'r1': cutp('raw/kkc2.mp3', 0.00, 3.68, 1.2, squeeze=True),
  'r2': cutp('raw/kkc2.mp3', 4.15, 5.66, 1.1),
  'l4': cutp('raw/jivin2.mp3', 0.00, 4.29, 1.25, squeeze=True),
- 'n5': cutp('raw/nar3.mp3', 0.00, 2.50, 1.1),
+ 'n5': cutp('raw/nar4.mp3', 0.00, 2.25, 1.1),
 }
 # 군중 '네!' / '119! 119에 전화해!' — 4개 목소리 × 피치 변형 겹치기
 NE = [('raw/ne_jh.mp3', 0.19, 0.87), ('raw/ne_kkc.mp3', 0.15, 0.89), ('raw/ne_yh.mp3', 0.0, 0.95), ('raw/jivin.mp3', 14.94, 15.52)]
@@ -60,7 +60,7 @@ TXT = {
  'r1': ['"저… 다들 헬기에… 타실래요…?"'],
  'l4': ['"저… 해먹…"', '"한 번만 누워 보실래요…?"'],
  'r2': ['"…이거 왜 이렇게 편해요?"'],
- 'n5': ['구조대도 ISFP였거든요.'],
+ 'n5': ['그렇게 무인도 인구가 늘었어요.'],
 }
 WHO = {'n1': 'n', 'n2': 'n', 'n3': 'n', 'n4': 'n', 'n5': 'n', 'y1': 'f', 'r1': 'f', 'r2': 'f'}
 L['c1b'] = L['c1']
@@ -176,11 +176,12 @@ T_GO = e + 0.15
 X += [(7, steps(5, 0.12), T_GO), (7, thud(0.2), T_GO + 0.75), (7, creak(), T_GO + 0.85), (7, creak(), T_GO + 1.6)]
 e = place(7, 'r2', T_GO + 0.95)
 T_DOWN = e + 0.1
-X += [(7, steps(6, 0.1, 0.18), T_GO + 1.0)] + [(7, thud(0.15), T_DOWN + i * 0.3) for i in range(4)]
+S0 = T_DOWN + 0.15; SL = 0.9  # 해먹 차례대로: 한 사람당 0.9초
+X += [(7, steps(6, 0.1, 0.18), T_GO + 1.0)] + [(7, creak(0.05), S0 + k * SL + 0.3) for k in range(5)] + [(7, steps(3, 0.1, 0.12), S0 + k * SL) for k in range(5)]
 e = place(7, 'n5', T_DOWN + 0.6)
 X += [(7, ping(0.12), e + 0.05)]
-D.append(e + 0.9)
-TM7 = dict(silent=T_SILENT, go=T_GO, down=T_DOWN)
+D.append(max(e + 0.9, S0 + 4.7))
+TM7 = dict(silent=T_SILENT, go=T_GO, down=T_DOWN, s0=S0, sl=SL)
 # 8 쿠키: 구조본부 — 소파에 누운 본부장 폰이 울림 → 누운 채 받음 → "2차 구조대 보낼까요?" → "…내일 보내자." → 뚝
 def ring(vol=0.1):
     out = np.zeros(int(1.0 * SR))

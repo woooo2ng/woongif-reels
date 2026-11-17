@@ -481,10 +481,10 @@ S[7]=()=>{
   // 구조대 5명
   const rs_=[];for(let i=0;i<5;i++){const p=rescuer(rng(1200+i));scene.add(p);rs_.push(p)}
   const st=[[0.35,0.55],[1.05,0.0],[1.55,0.6],[0.85,1.0],[1.7,-0.5]];
-  const Q=[[0.05,-0.75],[0.2,-0.05],[0.35,0.65],[0.5,1.35]]; // 해먹 대기줄(해먹 오른쪽 끝에서 앞으로)
+  const Q=[[0.3,-1.0],[0.8,-0.55],[1.25,-0.1],[1.65,0.35]]; // 해먹 대기줄(해먹 오른쪽 끝에서 앞으로)
   const r0B=bub(rs_[0],'헬기 타실래요…?',{y:2.15,size:0.0032,fs:64,bg:'#ffe0c2',fg:'#7a3a10'});
   const r0C=bub(rs_[0],'편하다…',{y:0,size:0.0034,fs:64,bg:'#ffe0c2',fg:'#7a3a10'});rs_[0].remove(r0C);scene.add(r0C);r0C.position.set(-0.9,2.6,-1.6);
-  const qL=labelSprite('해먹 대기줄',{bg:'#ffe08a',fg:'#2b2b3a',fs:60,size:0.0036});qL.position.set(0.55,2.35,-0.2);scene.add(qL);scaleBubble(qL,0);
+  const qL=labelSprite('해먹 대기줄',{bg:'#ffe08a',fg:'#2b2b3a',fs:60,size:0.0036});qL.position.set(1.0,2.45,-0.4);scene.add(qL);scaleBubble(qL,0);
   const zz=rs_.map(()=>{const z=textSprite('Zz',70,'#ffffff',0.005);scene.add(z);z.visible=false;return z});
   ui.insertAdjacentHTML('beforeend','<div class="big" style="top:300px">무인도 인구 <b>47</b>명</div>');const big=ui.querySelector('.big'),bn=big.querySelector('b');
   const r1=ln(7,'r1'),l4=ln(7,'l4'),r2=ln(7,'r2'),n5=ln(7,'n5');
@@ -503,15 +503,24 @@ S[7]=()=>{
         else{const lk=ease((t-tm.go-0.75)/0.25);riseK(p,-0.02,-1.6,1-lk,Math.PI/2);p.position.y+=1.12*lk;p.position.x+=0;
           p.userData.arms.forEach(a=>a.rotation.x=-2.9*lk);}
         showB(r0B,t,r1.t0+0.2,tm.go);showB(r0C,t,r2.t0+0.2);
-        return}
-      // 대원들: 구경 → 해먹 줄 서기 → 줄 선 채로 하나씩 눕기
-      const qk=ease((t-tm.go-1.0-i*0.12)/0.8);const [qx,qz]=Q[i-1];const x=sx+(qx-sx)*qk,z=sz+(qz-sz)*qk;
-      const dk=ease((t-tm.down-(i-1)*0.3)/0.35);
-      if(dk<=0){p.position.set(x,0,z);p.rotation.set(0,qk>0&&qk<1?Math.atan2(qx-sx,qz-sz):(qk>=1?Math.PI:-0.5),0,'YXZ');if(qk>0&&qk<1)walkPose(p,t*12+i,0.6);p.userData.head.rotation.y=qk>=1?Math.sin(t*1.5+i)*0.3:0}
-      else{riseK(p,qx,qz,1-dk,Math.PI*0.08);p.userData.arms.forEach(a=>a.rotation.x=-2.9*dk)}
-      const z0=zz[i];z0.visible=dk>0.8;const lt=((t*0.6)+i*0.23)%1;z0.position.set(qx+0.2,0.6+lt*0.7,qz-0.6);const sk=Math.sin(lt*Math.PI);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)});
-    {const z0=zz[0];z0.visible=t>r2.t1;const lt=((t*0.6))%1;z0.position.set(-0.6,2.3+lt*0.6,-1.6);const sk=Math.sin(lt*Math.PI);z0.scale.set(z0.userData.base[0]*sk,z0.userData.base[1]*sk,1)}
-    scaleBubble(qL,t>tm.go+1.4&&t<tm.down+1.0?pop((t-tm.go-1.4)/0.3):0);
+        if(t<tm.s0)return}
+      // 대원들: 구경 → 해먹 대기줄 → 차례대로 한 번씩 해먹에 눕기(내려오면 줄 맨 뒤로)
+      const HM=[0.0,-1.2];
+      const inHam=(p,lk)=>{riseK(p,-0.02,-1.6,1-lk,Math.PI/2);p.position.y+=1.12*lk;p.userData.arms.forEach(a=>a.rotation.x=-2.9*lk)};
+      const stand=(p,x,z,face,walk)=>{p.position.set(x,0,z);p.rotation.set(0,face,0,'YXZ');if(walk)walkPose(p,t*12+i,0.6);};
+      if(t<tm.s0){const qk=ease((t-tm.go-1.0-i*0.12)/0.8);const [qx,qz]=Q[i-1];const x=sx+(qx-sx)*qk,z=sz+(qz-sz)*qk;
+        stand(p,x,z,qk>0&&qk<1?Math.atan2(qx-sx,qz-sz):(qk>=1?Math.PI:-0.5),qk>0&&qk<1);p.userData.head.rotation.y=qk>=1?Math.sin(t*1.5+i)*0.3:0;return}
+      standPose(p);p.rotation.set(0,0,0);
+      const k=Math.floor((t-tm.s0)/tm.sl),uu=(t-tm.s0)-k*tm.sl;const occ=(k+1)%5;
+      if(i===occ){
+        if(uu<0.25){const w=ease(uu/0.25);stand(p,Q[0][0]+(HM[0]-Q[0][0])*w,Q[0][1]+(HM[1]-Q[0][1])*w,Math.atan2(HM[0]-Q[0][0],HM[1]-Q[0][1]),true)}
+        else if(uu<0.75){inHam(p,ease((uu-0.25)/0.12))}
+        else{const w=ease((uu-0.75)/0.15);stand(p,HM[0]+(Q[3][0]-HM[0])*w,HM[1]+(Q[3][1]-HM[1])*w,Math.atan2(Q[3][0]-HM[0],Q[3][1]-HM[1]),true)}
+      }else if(i===0&&k===0&&uu<0.25){const w=ease(uu/0.25);stand(p,HM[0]+(Q[3][0]-HM[0])*w,HM[1]+(Q[3][1]-HM[1])*w,Math.atan2(Q[3][0]-HM[0],Q[3][1]-HM[1]),true)
+      }else{const d=((i-(k+1))%5+5)%5;const q=d-1;const from=Q[Math.min(3,q+1)],to=Q[q];const w=ease(uu/0.25);
+        stand(p,from[0]+(to[0]-from[0])*w,from[1]+(to[1]-from[1])*w,Math.PI,w<1&&q<3);p.userData.head.rotation.y=Math.sin(t*1.5+i)*0.25}
+      zz[i].visible=false});
+    scaleBubble(qL,t>tm.go+1.4?pop((t-tm.go-1.4)/0.3):0);
     big.style.opacity=t>n5.t0?1:0;big.style.transform=`translateX(-50%) scale(${pop((t-n5.t0)/0.3)})`;bn.textContent=t>n5.t1?'52':'47';
     if(t>n5.t1){bn.style.display='inline-block';bn.style.transform=`scale(${pop((t-n5.t1)/0.25)})`}
     cam.position.set(0.15,5.6,9.4);cam.lookAt(-0.1,0.9,-1.5);
