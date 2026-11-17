@@ -224,18 +224,20 @@ GROUP = {
     'G1': lambda: mixlines([('yc', 1.0), ('jc', 1.0), ('yc', 1.1), ('jc', 0.92), ('yc', 0.94)], [0, 0.04, 0.09, 0.13, 0.06]),
     'G1b': lambda: mixlines([('yc', 1.04), ('jc', 0.97), ('yc', 1.14), ('jc', 0.9), ('yc', 0.92), ('jc', 1.06), ('yc', 1.0)], [0, 0.05, 0.08, 0.12, 0.03, 0.1, 0.15]),
     'G2': lambda: mixlines([('yd', 1.0), ('jd', 1.0), ('yd', 1.1), ('jd', 0.92), ('yd', 0.94), ('jd', 1.07)], [0, 0.04, 0.09, 0.13, 0.06, 0.11]),
+    'G3': lambda: mixlines([('ya', 1.0), ('ja', 1.0), ('ya', 1.1), ('ja', 0.92), ('ya', 0.94), ('ja', 1.07)], [0, 0.03, 0.07, 0.1, 0.05, 0.12]),
+    'G4': lambda: mixlines([('yb', 1.0), ('jb', 1.0), ('yb', 1.1), ('jb', 0.92), ('yb', 0.94), ('jb', 1.07)], [0, 0.03, 0.07, 0.1, 0.05, 0.12]),
     'S': lambda: mixlines([('e5', 1.0), ('j3', 1.0), ('e5', 1.1), ('j3', 0.92), ('e5', 0.9)], [0, 0.05, 0.1, 0.14, 0.2]),
 }
 
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
     [('n1', 0.0), ('a1', 0.35), ('r1', 0.45), ('r2', 0.25), ('n2', 3.0)],
-    [('e2', 0.5), ('n3', 10.6)],
-    [('w1', 0.6), ('G1', 0.9), ('G1b', 1.7), ('g3', 1.7), ('G2', 1.3), ('z1', 0.5), ('n7', 1.35)],
+    [('e2', 0.5), ('i1', 0.55), ('i2', 0.2), ('i3', 0.2), ('i4', 0.2), ('G3', 0.25), ('f1', 0.8), ('t1', 1.15), ('G4', 0.15), ('nw', 1.15)],
+    [('G1', 1.5), ('G1b', 1.7), ('g3', 1.7), ('G2', 1.3), ('z1', 0.5), ('n7', 1.35)],
     [('S', 0.15), ('z2', 2.6), ('e6', 0.3), ('n5', 0.35)],
     [('z4', 1.4), ('n6', 0.1)],
 ]
-POST = {0: 0.2, 1: 0.9, 2: 0.5, 4: 2.2}
+POST = {0: 0.2, 1: 0.35, 2: 0.5, 4: 2.2}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []; sg = {}
@@ -268,24 +270,18 @@ def sfx(si, ev):
         place(b, sine(440, 300, 0.4, 0.15) * 0.12, D['noreply'])
         place(b, murmur(T - D['hall'], 0.05), D['hall']); place(b, cute(T - D['hall'], 0.06), D['hall'])
     elif si == 1:
-        P0 = ve('e2', 0.3); D = {'p1': P0, 'p2': P0 + 4.1, 'p3': P0 + 6.4, 'p4': P0 + 8.3, 'flip': P0 + 10.5, 'pull': P0 + 11.6}
+        D = {'meet': ve('e2', 0.15), 'quiet': ve('f1', 0.05), 'turn': ve('f1', 0.3), 'knock': vt('nw', -0.85)}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        place(b, cute(T, 0.06), 0.0)
-        for k in ('p1', 'p2', 'p3', 'p4'): place(b, page(0.2), D[k])
-        def scribble(t0, dur, vol=0.05):
-            n = noise(dur); tt2 = np.arange(len(n)) / SR
-            x = filt(n, 'bandpass', [2000, 7000], 2) * (0.4 + 0.6 * (np.sin(2 * np.pi * 7 * tt2) > 0)); place(b, x * vol, t0)
-        for i in range(8): scribble(D['p1'] + 0.2 + i * 0.13, 0.11); place(b, blip(1320, 0.06), D['p1'] + 0.3 + i * 0.13)
-        place(b, pop(0.35), D['p1'] + 1.4)
-        scribble(D['p2'] + 0.3, 0.5); scribble(D['p2'] + 0.95, 0.5, 0.07); scribble(D['p2'] + 1.6, 0.6)
-        scribble(D['p3'] + 0.35, 1.0, 0.09)
-        for i in range(6): scribble(D['p4'] + 0.2 + i * 0.16, 0.14)
-        for i in range(14): place(b, page(0.12), D['flip'] + i * 0.075)
-        place(b, ding(0.2), D['pull'])
+        place(b, cute(vt('f1', -0.1), 0.06), 0.0)
+        for k in ('i1', 'i2', 'i3', 'i4'): place(b, pop(0.3), vt(k, 0.05)); place(b, blip(1320, 0.07), vt(k, 0.12))
+        for i in range(12): place(b, blip(1500 + (i % 4) * 120, 0.05), ve('i4', 0.05) + i * 0.05)
+        place(b, whoosh(0.3, 0.12), D['turn'])
+        place(b, cute(T - ve('t1'), 0.06), ve('t1', 0.1))
+        place(b, knock(0.5), D['knock'])
     elif si == 2:
-        D = {'k1': vt('w1', -0.75), 'open1': ve('w1', 0.15), 'k2': vt('G1b', -1.2), 'open2': vt('G1b', -0.35), 'k3': vt('g3', -1.35), 'gather': ve('g3', 0.05), 'open3': ve('G2', 0.05), 'pop': ve('z1', 0.25), 'horde': ve('z1', 0.6)}
+        D = {'k1': -10, 'open1': vt('G1', -0.7), 'k2': vt('G1b', -1.2), 'open2': vt('G1b', -0.35), 'k3': vt('g3', -1.35), 'gather': ve('g3', 0.05), 'open3': ve('G2', 0.05), 'pop': ve('z1', 0.25), 'horde': ve('z1', 0.6)}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        place(b, knock(0.45), D['k1']); place(b, knock(0.5), D['k2'])
+        place(b, knock(0.5), D['k2'])
         for k in (0, 0.6): place(b, thudk(0.6), D['k3'] + k)
         for k in ('open1', 'open2', 'open3'): place(b, whoosh(0.35, 0.1), D[k])
         for i in range(10): place(b, tap(0.25), ve('G1', 0.05) + i * 0.11 + (i % 3) * 0.02)

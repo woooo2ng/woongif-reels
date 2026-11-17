@@ -253,50 +253,71 @@ S[0]=()=>{
   function R2c(){return at(0,'r2')+0.3}
 };
 
-// ===== 1. 생존 일지: 한 장씩 자세히 (1일 차 빽빽 → 2일 차 대충 → 3일 차 '배고파' → 4일 차 낙서 → 30일 차까지 빈 페이지) =====
+// ===== 1. 1일 차 생존 회의: 아이디어 폭발 → '…근데 식량은?' → '그건 내일 하자~' → 똑똑 '새 손님 왔나 봐!!' =====
 S[1]=()=>{
   const E=EV(1);const r=rng(511);
   const sc=new THREE.Scene();warmLights(sc);room(sc);
   door3(sc,0,-3.12);
   [[-0.9,0.4,0],[0,0.4,0.1],[0.9,0.4,0],[-0.45,1.05,0.05],[0.45,1.05,0.05],[0,1.65,0.05]].forEach(([x,y,z],i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.62,0.6),lamb(i%2?0xc9a070:0xd8b080));b.position.set(x,y,-2.5+z);sc.add(b)});
   const sofa=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.7,0.8),lamb(0xff9fc8));sofa.position.set(0,0.35,-1.9);sc.add(sofa);
-  const G=garland(sc,-1.4,1.4,2.3,-2.15,9),G2=garland(sc,-2.2,2.2,2.9,-2.3,14),G3=garland(sc,-1.6,1.6,1.25,-2.05,10);
+  const G=garland(sc,-1.4,1.4,2.3,-2.15,9);
   banner(sc,'좀비 잡는 귀요미들 ♥',0,3.4,-3.15,4.4,0.85);
   const ppl=[];[-1.6,-0.55,0.55,1.6].forEach((x,i)=>{const p=tee(enfp(r,{}));p.position.set(x,0,-0.4+Math.abs(x)*0.2);p.rotation.y=-x*0.12;sc.add(p);ppl.push(p)});
-  const bE=bubE(ppl[1],'우리 진짜 완벽하게 살아남자!!',{size:0.003,y:2.3});bE.position.x=0.4;
+  const sit=[];[[-2.3,-1.3],[-1.2,-1.5],[1.2,-1.5],[2.3,-1.3],[-2.6,0.3],[2.7,0.4]].forEach(([x,z],i)=>{const p=tee(enfp(r,{}));p.position.set(x,0,z);sitPose(p);p.position.y=-0.42;p.rotation.y=-x*0.25;sc.add(p);sit.push(p)});
+  // 식량 묻는 사람: 오른쪽 앞 구석 바닥, 빈 과자 봉지
+  const F=tee(enfp(r,{}));F.position.set(2.3,0,1.6);sitPose(F);F.position.y=-0.42;F.rotation.y=-0.7;sc.add(F);setFace(F,false);
+  const bag=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.3,0.06),lamb(0xffd84d));bag.position.set(0,-0.62,0.05);F.userData.arms[1].add(bag);
+  // 좀비 키링
+  const key=new THREE.Group();const kh=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),smooth(0xa6c494));kh.position.y=-0.16;key.add(kh);
+  for(const s2 of[-1,1]){const e=new THREE.Mesh(new THREE.BoxGeometry(0.018,0.018,0.01),basic(0xf4f6e6));e.position.set(s2*0.025,-0.15,0.068);key.add(e)}
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.006,6,12),lamb(0xdddddd));ring.position.y=-0.06;key.add(ring);
+  const str=new THREE.Mesh(new THREE.BoxGeometry(0.006,0.06,0.006),lamb(0xdddddd));str.position.y=-0.03;key.add(str);
+  key.position.set(0,-0.68,0.02);ppl[1].userData.arms[1].add(key);
+  const A=ppl[1],B=ppl[2];
+  const BB={e2:[A,'우리 진짜 완벽하게 살아남자!!'],i1:[A,'우리 생존 브이로그 찍자!!'],i2:[B,'좀비랑 친해지는 법도 연구하자!'],i3:[A,'생존 굿즈 만들자! 좀비 키링!!'],i4:[B,'헐 이거 나중에 책으로 내자!!'],t1:[A,'그건 내일 하자~'],nw:[A,'어? 새 손님 왔나 봐!!']};
+  const bubs={};for(const [k,[p,txt]] of Object.entries(BB)){const b=bubE(p,txt,{size:0.0027,y:2.3});b.position.x=p===A?0.45:-0.35;bubs[k]=b}
+  const bF=bubE(F,'…근데 식량은?',{size:0.0016,y:1.6,bg:'#ffffff',fg:'#555'});
+  const knk=topB(textSprite('똑똑',100,'#ff4d9a',0.0045));knk.position.set(3.0,2.3,-1.0);sc.add(knk);
   const C=cam(50);
-  const dia=div('diary','');const pg=div('pg','',dia);
-  const PG=[
-   `<h2>생존 일지 <small>1일 차 ★</small></h2><div class="l" data-t="0.20">06:00 기상 &amp; 스트레칭 <i>✔</i></div><div class="l" data-t="0.33">07:00 체력 훈련 (스쿼트 100개) <i>✔</i></div><div class="l" data-t="0.46">09:00 식량 체크 <i>✔✔</i></div><div class="l" data-t="0.59">10:00 바리케이드 꾸미기 <b>♥</b></div><div class="l" data-t="0.72">12:00 팀 회의 → 팀 이름 정함!!</div><div class="l" data-t="0.85">14:00 단체티 제작 <b>♥♥</b></div><div class="l" data-t="0.98">16:00 다 같이 화이팅 구호 연습</div><div class="team pp" data-t="1.4">좀비 잡는 귀요미들 ♥</div><div class="stk pp" data-t="1.5" style="right:60px;top:40px;color:#ff8fc8;transform:rotate(14deg)">♥</div><div class="stk pp" data-t="1.6" style="right:90px;top:430px;color:#ffd84d">★</div><div class="stk pp" data-t="1.7" style="right:50px;bottom:60px;color:#8fd3ff;transform:rotate(-10deg)">★</div><div class="stk pp" data-t="1.8" style="left:420px;bottom:110px;color:#ff8f8f;transform:rotate(-14deg)">♥</div>`,
-   `<h2>생존 일지 <small>2일 차</small></h2><div class="l" data-t="0.3" style="transform:rotate(-1deg)">09:30 기상 (조금 늦음)</div><div class="l" data-t="0.95" style="position:relative;display:inline-block">체력 훈련<span class="strike" data-t="1.25"></span></div> <span class="l late" data-t="1.4" style="color:#e2332d;transform:rotate(-4deg);display:inline-block">→ 내일부터</span><div class="l" data-t="1.7" style="font-size:52px;color:#e0408f">바리케이드에 전구 추가 ♥♥♥</div>`,
-   `<h2>생존 일지 <small>3일 차</small></h2><div class="big wipe" data-t="0.35">배고파</div><div class="crumb pp" data-t="1.3" style="left:220px;top:640px"></div><div class="crumb pp" data-t="1.4" style="left:520px;top:700px;width:60px;height:40px"></div><div class="crumb pp" data-t="1.5" style="left:380px;top:780px;width:40px;height:30px"></div>`,
-   `<h2>생존 일지 <small>4일 차</small></h2><svg viewBox="0 0 300 300" style="display:block;margin:110px auto 0;width:440px"><circle class="sv" data-t="0.2" cx="150" cy="140" r="90" fill="none" stroke="#5a8a4a" stroke-width="10"/><circle class="sv" data-t="0.36" cx="118" cy="125" r="14" fill="#5a8a4a"/><circle class="sv" data-t="0.5" cx="182" cy="125" r="14" fill="#5a8a4a"/><path class="sv" data-t="0.66" d="M110 185 Q150 165 190 185" fill="none" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="0.82" d="M60 250 L100 215" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="0.98" d="M240 250 L200 215" stroke="#5a8a4a" stroke-width="10"/></svg><div class="l pp" data-t="1.3" style="text-align:center;color:#9a8a8a;font-size:52px">(잘 그림)</div>`,
-  ];
-  {const s2=document.createElement('style');s2.textContent=`.diary .l i{font-style:normal;color:#2fae5a;font-weight:900}.diary .strike{position:absolute;left:0;top:50%;height:6px;background:#e2332d;width:0}.diary .crumb{position:absolute;width:80px;height:56px;border-radius:50%;background:rgba(190,140,80,.35)}.diary .wipe{white-space:nowrap}`;dia.appendChild(s2)}
-  const ch=chip('생존 일지: 4일 · 바리케이드 꾸미기: 진행 중',80);ch.style.fontSize='46px';
-  const dayc=div('stage','');dayc.style.top='1240px';dayc.style.display='none';
+  const ch=chip('1일 차 · 생존 회의');
+  const cards=div('ideas','');{const st=document.createElement('style');st.textContent=`.ideas{position:absolute;left:60px;right:60px;top:330px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center}.ideas .cd{background:#fff;border-radius:22px;padding:12px 26px;font-size:46px;font-weight:900;color:#e0408f;box-shadow:0 8px 20px rgba(0,0,0,.18);white-space:nowrap}.ideas .cd.food{background:#2b2b3a;color:#ffd84d}`;cards.appendChild(st)}
+  const CT=['▶ 생존 브이로그 채널','좀비랑 친해지기 연구','좀비 키링 굿즈','생존 일지 출판'];
+  const cds=CT.map(c=>div('cd',c,cards));const food=div('cd food','식량 계획: 0개',cards);
+  const cnt=chip('아이디어 0개',230);cnt.style.background='#ff8fc8';cnt.style.color='#4a0f2e';
   return t=>{
-    const P=[E.p1,E.p2,E.p3,E.p4],TF=E.flip,TP=E.pull;
-    ppl.forEach((p,i)=>{standPose(p);const j=Math.abs(Math.sin(t*6+i));p.position.y=t<P[0]?j*0.12:0;armUp(p,i%2,t<P[0]?0.9:0);mouth(p,t>at(1,'e2')&&t<endOf(1,'e2'))});
-    [G,G2,G3].forEach(g=>g.userData.bulbs.forEach((b,i)=>b.visible=Math.floor(t*4+i)%3!==0));G2.visible=G3.visible=t>TP;
-    if(t<TP){C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.3,6.2-t*0.1);C.lookAt(0,1.6,-2)}
-    else{const k=ease((t-TP)/1.2);C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.0,5.4-k*1.2);C.lookAt(0,1.4,-2.3)}
+    const I=['i1','i2','i3','i4'].map(k=>at(1,k)),TG=at(1,'G3'),TF=at(1,'f1'),TQ=E.quiet,TT=E.turn,T1=at(1,'t1'),T4=at(1,'G4'),TK=E.knock,TN=at(1,'nw');
+    const all=[...ppl,...sit];
+    ppl.forEach((p,i)=>{standPose(p);const j=Math.abs(Math.sin(t*6+i));p.position.y=0;mouth(p,false);
+      if(t<E.meet){p.position.y=j*0.12;armUp(p,i%2,0.9)}
+      p.rotation.y=-p.position.x*0.12});
+    sit.forEach(p=>{standPose(p);sitPose(p);p.position.y=-0.42});
+    // 말하는 사람: 손 번쩍
+    [['i1',A],['i2',B],['i3',A],['i4',B],['t1',A]].forEach(([k,p])=>{if(t>=at(1,k)&&t<endOf(1,k,0.2)){armUp(p,1,1);mouth(p,true);p.position.y=Math.abs(Math.sin(t*8))*0.08}});
+    key.visible=t>=at(1,'i3')-0.1;
+    if(t>=TG&&t<endOf(1,'G3',0.4)||t>=T4&&t<endOf(1,'G4',0.4)){all.forEach((p,i)=>{if(sit.includes(p)){standPose(p);p.position.y=0}armUp(p,0,1);armUp(p,1,1);mouth(p,true);p.position.y=Math.abs(Math.sin(t*9+i))*0.15})}
+    // 식량 질문 → 정적 → 다 같이 돌아봄
+    standPose(F);sitPose(F);F.position.y=-0.42;F.userData.arms[1].rotation.x=-1.3;
+    const look=t>=TT&&t<T1+0.3;all.forEach(p=>{p.userData.head.rotation.y=0});
+    if(look){const k=ease((t-TT)/0.2);all.forEach(p=>{const dx=F.position.x-p.position.x,dz=F.position.z-p.position.z;p.userData.head.rotation.y=(Math.atan2(dx,dz)-p.rotation.y)*k*0.8;setFace(p,false)})}
+    else if(t<TQ)all.forEach(p=>{if(!p.userData.om.visible)setFace(p,true)});
+    // 노크 → 문 쪽(오른쪽) 돌아봄, A가 달려감
+    const kk=t>TK&&t<TK+0.6?pop((t-TK)/0.2):0;knk.visible=kk>0.01;knk.scale.set(knk.userData.base[0]*kk,knk.userData.base[1]*kk,1);
+    if(t>=TK+0.2){all.forEach(p=>{p.userData.head.rotation.y=0.8;setFace(p,true)});if(t>=endOf(1,'nw',-0.2)){const k=clamp01((t-endOf(1,'nw',-0.2))/1.2);A.rotation.y=Math.PI/2;A.position.x=-0.55+k*3.4;walkPose(A,t*8,0.6);armUp(A,1,0.9)}}
+    G.userData.bulbs.forEach((b,i)=>b.visible=Math.floor(t*4+i)%3!==0);
+    for(const k in bubs){const k2=k;show(bubs[k],t,at(1,k2),endOf(1,k2,0.35))}
+    show(bF,t,TF,TT);
+    // 카메라
+    if(t>=TF-0.1&&t<TT){C.fov=40;C.updateProjectionMatrix();C.position.set(1.2,1.6,3.6);C.lookAt(2.3,0.9,1.6)}
+    else if(t>=TT&&t<T1){const k=ease((t-TT)/1.2);C.fov=50;C.updateProjectionMatrix();C.position.set(3.3,1.9-k*0.1,3.4);C.lookAt(-0.4,1.2,-0.8)}
+    else{C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.3,6.4-Math.min(t,10)*0.05);C.lookAt(0,1.6,-2)}
     renderer.setClearColor(0x000000,0);setSky('#f6e8f0','#e8d4e0');renderer.render(sc,C);
-    sh(dia,t>=P[0]-0.05&&t<TP+0.4);
-    let idx=-1;P.forEach((p,i)=>{if(t>=p)idx=i});
-    if(t>=TF){const fl=Math.min(25,Math.floor((t-TF)/0.075));const d=5+fl;const k=fl<25?((t-TF)/0.075)%1:0;
-      if(pg.dataset.i!='f'+d){pg.dataset.i='f'+d;pg.innerHTML=`<h2>생존 일지 <small>${d}일 차</small></h2>`}
-      pg.style.transformOrigin='left center';pg.style.transform=`perspective(1600px) rotateY(${-k*80}deg)`}
-    else if(idx>=0){if(pg.dataset.i!=idx){pg.dataset.i=idx;pg.innerHTML=PG[idx]}const k=ease((t-P[idx])/0.18);pg.style.transformOrigin='left center';pg.style.transform=`perspective(1600px) rotateY(${(1-k)*-70}deg)`;
-      const lt=t-P[idx];
-      pg.querySelectorAll('[data-t]').forEach(el=>{const t0=+el.dataset.t;const on=lt>=t0;
-        if(el.classList.contains('strike')){el.style.width=`${clamp01((lt-t0)/0.25)*100}%`;return}
-        if(el.classList.contains('wipe')){el.style.clipPath=`inset(0 ${100-clamp01((lt-t0)/0.9)*100}% 0 0)`;return}
-        if(el.classList.contains('sv')){el.style.opacity=on?1:0;return}
-        if(el.classList.contains('pp')){el.style.opacity=on?1:0;const kk=pop((lt-t0)/0.25);el.style.scale=`${kk}`;return}
-        el.style.opacity=on?1:0;el.style.clipPath=`inset(0 ${100-clamp01((lt-t0)/0.3)*100}% 0 0)`})}
-    if(t>=P[0]){const k=ease((t-P[0]+0.05)/0.25);const o=t>TP?ease((t-TP)/0.4):0;dia.style.transform=`translateY(${(1-k)*900+o*1300}px) rotate(${(1-k)*8+o*6}deg)`}
-    chipPop(ch,t,TP+0.2);ch.style.opacity=t>TP+0.2?1:0;
+    chipPop(ch,t,E.meet);ch.style.opacity=t>E.meet&&t<I[0]?1:0;ch.style.top='230px';
+    const n=t<endOf(1,'i4')?I.filter(x=>t>=x).length:Math.min(47,Math.round(4+(t-endOf(1,'i4'))*60));
+    if(cnt.dataset.n!=n){cnt.dataset.n=n;cnt.textContent=t>=TT?'아이디어 47개 · 식량 계획 0개':`아이디어 ${n}개`}
+    if(t>=I[0])chipPop(cnt,t,I[0]);cnt.style.opacity=t>=I[0]&&t<TK?1:0;
+    const inFood=t>=TF-0.1&&t<TT;
+    cds.forEach((c,i)=>{const on=t>=I[i]&&t<TK&&!inFood;c.style.display=on?'':'none';if(on)c.style.transform=`scale(${pop((t-I[i])/0.25)})`});
+    food.style.display=t>=TT+0.2&&t<T1?'':'none';if(t>=TT+0.2)food.style.transform=`scale(${pop((t-TT-0.2)/0.25)})`;
     caption(1,t)};
 };
 
@@ -368,7 +389,7 @@ S[2]=()=>{
     sh(b32,t>=O2+0.1&&t<endOf(2,'G1b',0.6));if(t>=O2+0.1)popEl(b32,t,O2+0.1,'translateX(-50%) rotate(-3deg)');
     conf.forEach(c=>{const lt=t-O2-0.1-c.d;c.m.visible=lt>0&&lt<3.2;if(lt>0){c.m.position.set(c.x+Math.sin(lt*3+c.rx)*0.2,c.y0-lt*c.sp,c.z);c.m.rotation.set(c.rx+lt*5,c.ry+lt*4,0)}});
     {const lt=t-PP;ppop.visible=lt>0&&lt<0.6;ppop.position.set(3.4,2.4+lt*0.4,0.3);const kk=pop(lt/0.2);ppop.scale.set(ppop.userData.base[0]*kk,ppop.userData.base[1]*kk,1)}
-    show(bW,t,at(2,'w1'),endOf(2,'w1',0.4));bG.forEach((b,i)=>{show(b,t,at(2,'G1')+i*0.05,endOf(2,'G1',0.3));if(t>=at(2,'G1b'))show(b,t,at(2,'G1b')+i*0.05,endOf(2,'G1b',0.3));if(t>=at(2,'G2'))show(b,t,at(2,'G2')+i*0.05,O3+0.4)});
+    bG.forEach((b,i)=>{show(b,t,at(2,'G1')+i*0.05,endOf(2,'G1',0.3));if(t>=at(2,'G1b'))show(b,t,at(2,'G1b')+i*0.05,endOf(2,'G1b',0.3));if(t>=at(2,'G2'))show(b,t,at(2,'G2')+i*0.05,O3+0.4)});
     show(bO,t,at(2,'g3'),endOf(2,'g3',0.5));show(bZ,t,at(2,'z1'),endOf(2,'z1',1.0));
     // 카메라
     if(t<GA){C.fov=54;C.updateProjectionMatrix();C.position.set(-2.6,3.1,5.8);C.lookAt(2.4,1.1,-0.3)}
