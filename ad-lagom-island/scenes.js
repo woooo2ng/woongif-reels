@@ -556,6 +556,9 @@ S[8]=()=>{
   const call=ui.querySelector('.call'),cst=call.querySelector('.st'),cbt=call.querySelector('.bt');
   const ck=chip('같은 시각 · 구조본부');
   const y1=ln(8,'y1'),b1=ln(8,'b1');const ANS=1.5,HANG=b1.t1+0.35;
+  const dim=document.createElement('div');dim.className='fl';dim.style.background='rgba(10,10,25,0)';dim.style.opacity=1;ui.appendChild(dim);
+  const e1=document.createElement('div');e1.className='end1 out';e1.textContent='다음 만약에는?';ui.appendChild(e1);
+  const e2=document.createElement('div');e2.className='end2 out';e2.textContent='팔로우하고 기다려 주세요';ui.appendChild(e2);const TE=HANG+1.0;
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,100);
   return t=>{
     const u=chief.userData;
@@ -572,6 +575,8 @@ S[8]=()=>{
     call.style.transform=`scale(${pop((t-0.15)/0.3)})`;call.style.opacity=t<HANG+0.7?1:Math.max(0,1-(t-HANG-0.7)/0.2);
     if(t<ANS){cst.textContent='전화 왔어요';cbt.style.display='flex'}else if(t<HANG){cst.textContent='통화 중 00:0'+Math.min(9,Math.floor(t-ANS));cbt.style.display='none'}else{cst.textContent='통화 종료';cbt.style.display='none'}
     const k=ease(t/5);cam.position.set(0.95,2.15,3.2-k*0.3);cam.lookAt(0.9,1.05,-1.15);
+    dim.style.background=`rgba(10,10,25,${0.55*clamp01((t-TE)/0.3)})`;[[e1,TE],[e2,TE+0.25]].forEach(([e,t0])=>{e.style.opacity=clamp01((t-t0)/0.1);e.style.transform=`scale(${pop((t-t0)/0.35)})`});
+    if(t>TE){call.style.opacity=0;ck.style.opacity=0}
     chipPop(ck,t,0.05);caption(8,t);renderer.render(scene,cam);
   };
 };

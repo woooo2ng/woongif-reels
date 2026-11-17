@@ -191,8 +191,8 @@ def ring(vol=0.1):
 X += [(8, ring(), 0.2), (8, ring(), 0.95), (8, click(0.3), 1.5)]
 e = place(8, 'y1', 1.7)
 e = place(8, 'b1', e + 0.45)
-X += [(8, click(0.25), e + 0.35), (8, tone(440, 0.25, 0.1, 0.06), e + 0.4)]
-D.append(e + 1.0)
+X += [(8, click(0.25), e + 0.35), (8, tone(440, 0.25, 0.1, 0.06), e + 0.4), (8, sparkle(0.07), e + 1.3)]
+D.append(e + 3.2)  # 끝: 팔로우 엔딩 카드
 nf = [round(d * 30) for d in D]
 starts = [sum(nf[:i]) / 30 for i in range(len(nf))]; T = sum(nf) / 30
 full = np.zeros(int((T + 1) * SR), np.float32)
