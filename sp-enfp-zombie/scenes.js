@@ -274,25 +274,25 @@ S[1]=()=>{
   const str=new THREE.Mesh(new THREE.BoxGeometry(0.006,0.06,0.006),lamb(0xdddddd));str.position.y=-0.03;key.add(str);
   key.position.set(0,-0.68,0.02);ppl[1].userData.arms[1].add(key);
   const A=ppl[1],B=ppl[2];
-  const BB={e2:[A,'우리 진짜 완벽하게 살아남자!!'],i1:[A,'우리 생존 브이로그 찍자!!'],i2:[B,'좀비랑 친해지는 법도 연구하자!'],i3:[A,'생존 굿즈 만들자! 좀비 키링!!'],i4:[B,'헐 이거 나중에 책으로 내자!!'],i5:[B,'새 생존자 오면 환영 파티 하자!!'],nw:[A,'어? 새 손님 왔나 봐!!']};
+  const BB={e2:[A,'우리 진짜 완벽하게 살아남자!!'],i1:[A,'우리 생존 브이로그 찍자!!'],i2:[B,'좀비랑 친해지는 법도 연구하자!'],i3:[A,'생존 굿즈 만들자! 좀비 키링!!'],i5:[B,'새 생존자 오면 환영 파티 하자!!'],nw:[A,'어? 새 손님 왔나 봐!!']};
   const bubs={};for(const [k,[p,txt]] of Object.entries(BB)){const b=bubE(p,txt,{size:0.0027,y:2.3});b.position.x=p===A?0.45:-0.35;bubs[k]=b}
   
   const knk=topB(textSprite('똑똑',100,'#ff4d9a',0.0045));knk.position.set(3.0,2.3,-1.0);sc.add(knk);
   const C=cam(50);
   const ch=chip('1일 차 · 생존 회의');
   const cards=div('ideas','');{const st=document.createElement('style');st.textContent=`.ideas{position:absolute;left:60px;right:60px;top:330px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center}.ideas .cd{background:#fff;border-radius:22px;padding:12px 26px;font-size:46px;font-weight:900;color:#e0408f;box-shadow:0 8px 20px rgba(0,0,0,.18);white-space:nowrap}.ideas .cd.food{background:#2b2b3a;color:#ffd84d}`;cards.appendChild(st)}
-  const CT=['▶ 생존 브이로그 채널','좀비랑 친해지기 연구','좀비 키링 굿즈','생존 일지 출판','새 손님 환영 파티 ★'];
+  const CT=['▶ 생존 브이로그 채널','좀비랑 친해지기 연구','좀비 키링 굿즈','새 손님 환영 파티 ★'];
   const cds=CT.map(c=>div('cd',c,cards));
   const cnt=chip('아이디어 0개',230);cnt.style.background='#ff8fc8';cnt.style.color='#4a0f2e';
   return t=>{
-    const I=['i1','i2','i3','i4','i5'].map(k=>at(1,k)),TG=at(1,'G3'),TK=E.knock,TN=at(1,'nw');
+    const I=['i1','i2','i3','i5'].map(k=>at(1,k)),TG=at(1,'G3'),TK=E.knock,TN=at(1,'nw');
     const all=[...ppl,...sit];
     ppl.forEach((p,i)=>{standPose(p);const j=Math.abs(Math.sin(t*6+i));p.position.y=0;mouth(p,false);
       if(t<E.meet){p.position.y=j*0.12;armUp(p,i%2,0.9)}
       p.rotation.y=-p.position.x*0.12});
     sit.forEach(p=>{standPose(p);sitPose(p);p.position.y=-0.42});
     // 말하는 사람: 손 번쩍
-    [['i1',A],['i2',B],['i3',A],['i4',B],['i5',B]].forEach(([k,p])=>{if(t>=at(1,k)&&t<endOf(1,k,0.2)){armUp(p,1,1);mouth(p,true);p.position.y=Math.abs(Math.sin(t*8))*0.08}});
+    [['i1',A],['i2',B],['i3',A],['i5',B]].forEach(([k,p])=>{if(t>=at(1,k)&&t<endOf(1,k,0.2)){armUp(p,1,1);mouth(p,true);p.position.y=Math.abs(Math.sin(t*8))*0.08}});
     key.visible=t>=at(1,'i3')-0.1;
     if(t>=TG&&t<endOf(1,'G3',0.4)){all.forEach((p,i)=>{if(sit.includes(p)){standPose(p);p.position.y=0}armUp(p,0,1);armUp(p,1,1);mouth(p,true);p.position.y=Math.abs(Math.sin(t*9+i))*0.15})}
     // 식량 질문 → 정적 → 다 같이 돌아봄
@@ -308,7 +308,7 @@ S[1]=()=>{
     {C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.3,6.4-Math.min(t,10)*0.05);C.lookAt(0,1.6,-2)}
     renderer.setClearColor(0x000000,0);setSky('#f6e8f0','#e8d4e0');renderer.render(sc,C);
     chipPop(ch,t,E.meet);ch.style.opacity=t>E.meet&&t<I[0]?1:0;ch.style.top='230px';
-    const n=t<endOf(1,'i5')?I.filter(x=>t>=x).length:Math.min(47,Math.round(5+(t-endOf(1,'i5'))*60));
+    const n=t<endOf(1,'i5')?I.filter(x=>t>=x).length:Math.min(47,Math.round(4+(t-endOf(1,'i5'))*60));
     if(cnt.dataset.n!=n){cnt.dataset.n=n;cnt.textContent=`아이디어 ${n}개`}
     if(t>=I[0])chipPop(cnt,t,I[0]);cnt.style.opacity=t>=I[0]&&t<TK?1:0;
         cds.forEach((c,i)=>{const on=t>=I[i]&&t<TK;c.style.display=on?'':'none';if(on)c.style.transform=`scale(${pop((t-I[i])/0.25)})`});
