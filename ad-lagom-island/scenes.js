@@ -333,12 +333,28 @@ S[5]=()=>{
   const scene=IS();const r=rng(1051);const B=beach(scene,r,{shore:-2.2});
   palm(scene,-3.6,-0.6,1.35,0.3,0.4);palm(scene,3.8,0.2,1.3,-0.3,2.4);rock(scene,3.0,-1.0,0.8);
   const sc=suitcase();scene.add(sc);
-  const tube=makeTube();tube.scale.setScalar(0.3);scene.add(tube);const kl=new THREE.PointLight(0xffffff,1.0,1.0,1.6);scene.add(kl);
-  const glow=glowSprite('rgba(255,248,200,1)',1.4);glow.material.opacity=0.55;scene.add(glow);
-  const sp=sprk(scene,12,r,{x:0,y:1.0,z:0.2,w:1.6,h:1.0,col:'#fffbd8',size:0.0022});sp.forEach(q=>{if(Math.abs(q.x)<0.45)q.x=(q.x<0?-1:1)*(0.45+Math.abs(q.x))});
-  // 주변에서 기어 오는 사람들(고개만)
-  const gaze=crowd(r,6);const gz=gaze.map((p,i)=>{const a=(i<3?-1:1)*(0.9+(i%3)*0.45);const w=lie(p,Math.sin(a)*2.3,Math.cos(a)*1.6+0.4,a+Math.PI,{});scene.add(w);
-    const b=bub(p,i%2?'보물이다…':'!!',{x:0,y:2.15,size:0.0022,fs:66});return {w,p,b,a,i}});
+  const tube=makeTube();tube.scale.setScalar(0.27);scene.add(tube);const kl=new THREE.PointLight(0xffffff,0.9,1.0,1.6);scene.add(kl);
+  // 가방 속 잡동사니
+  const hat=new THREE.Group();{const b=new THREE.Mesh(new THREE.CylinderGeometry(0.34,0.34,0.03,24),lamb(0xe8d29a));hat.add(b);const c=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.2,0.16,20),lamb(0xe8d29a));c.position.y=0.09;hat.add(c);const bd=new THREE.Mesh(new THREE.CylinderGeometry(0.205,0.205,0.04,20),lamb(0xe2557a));bd.position.y=0.04;hat.add(bd)}
+  const duck=new THREE.Group();{const b=new THREE.Mesh(new THREE.SphereGeometry(0.14,16,12),smooth(0xffd84d));b.scale.set(1.2,0.85,1);duck.add(b);const h=new THREE.Mesh(new THREE.SphereGeometry(0.09,16,12),smooth(0xffd84d));h.position.set(0.12,0.13,0);duck.add(h);const bk=new THREE.Mesh(new THREE.ConeGeometry(0.035,0.08,8),lamb(0xff8a3c));bk.rotation.z=-Math.PI/2;bk.position.set(0.22,0.12,0);duck.add(bk);for(const z of[-0.045,0.045]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.013,8,6),basic(0x1a1a1a));e.position.set(0.17,0.16,z);duck.add(e)}}
+  const uke=new THREE.Group();{for(const [y,r_] of [[0,0.13],[0.15,0.1]]){const b=new THREE.Mesh(new THREE.CylinderGeometry(r_,r_,0.06,20),lamb(0xc98a4a));b.rotation.x=Math.PI/2;b.position.y=y;uke.add(b)}const hole=new THREE.Mesh(new THREE.CircleGeometry(0.035,12),basic(0x4a2a14));hole.position.set(0,0.06,0.031);uke.add(hole);const nk=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.32,0.03),lamb(0x7a5230));nk.position.y=0.38;uke.add(nk)}
+  const ball=new THREE.Mesh(new THREE.SphereGeometry(0.13,20,14),new THREE.MeshLambertMaterial({map:canvasTex(256,128,(x,w,h)=>{const c=['#ff6b6b','#ffffff','#4fb9ff','#ffffff','#ffd84d','#ffffff'];for(let k=0;k<6;k++){x.fillStyle=c[k];x.fillRect(k*w/6,0,w/6,h)}})}));
+  const book=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.06,0.34),lamb(0x7fb7c9));
+  const glass=new THREE.Group();for(const x of[-0.07,0.07]){const g=new THREE.Mesh(new THREE.BoxGeometry(0.11,0.07,0.02),lamb(0x22222a));g.position.x=x;glass.add(g)}
+  const towel=new THREE.Mesh(new THREE.BoxGeometry(0.32,0.08,0.26),lamb(0xff9fb8));
+  const items=[[hat,0.33,0.33,-0.12],[duck,-0.3,0.4,0.12],[uke,-0.22,0.36,-0.18],[ball,0.36,0.43,0.2],[book,0.02,0.33,0.24],[glass,0.12,0.34,-0.27],[towel,-0.45,0.34,0.05]];
+  items.forEach(([o,x,y,z])=>{scene.add(o);o.position.set(x,y,z);o.userData.home=new THREE.Vector3(x,y,z);o.visible=false});uke.rotation.set(-Math.PI/2,0,0.4);
+  // 주변에 누운 셋(모자·오리·우쿨렐레) + 클렌저 고르는 주인공(가방 뒤)
+  const pA=makePerson(r,{shirt:0x8cc9a0}),pB=makePerson(r,{shirt:0xc7a3c9}),pC=makePerson(r,{shirt:0xe0c070});
+  const wA=lie(pA,1.0,-0.45,0,{}),wB=lie(pB,-0.75,1.55,0,{}),wC=lie(pC,0.8,1.55,0,{});[wA,wB,wC].forEach(w=>scene.add(w));
+  const H0=makeHero({shirt:0xd98c8c,pants:0x55506a});H0.position.set(-0.85,0,-0.8);H0.rotation.y=0.55;scene.add(H0);messy(H0);eyesK(H0,0.35);
+  scene.updateMatrixWorld(true);const wp=o=>o.getWorldPosition(new THREE.Vector3());
+  const hA=wp(pA.userData.head).add(new THREE.Vector3(0,0.3,0)),hB=wp(pB.userData.hip).add(new THREE.Vector3(0,0.25,0)),hC=wp(pC.userData.hip).add(new THREE.Vector3(0,0.28,0));
+  const bA=bub(pA,'완벽해',{y:0,size:0.0028,fs:64});pA.remove(bA);scene.add(bA);bA.position.copy(hA).add(new THREE.Vector3(-0.1,0.45,0));
+  const bB=bub(pB,'귀여워…',{y:0,size:0.0028,fs:64});pB.remove(bB);scene.add(bB);bB.position.copy(hB).add(new THREE.Vector3(0.15,0.5,0));
+  const bC=bub(pC,'띵~',{y:0,size:0.0028,fs:64});pC.remove(bC);scene.add(bC);bC.position.copy(hC).add(new THREE.Vector3(-0.1,0.55,0));
+  const bH=bub(H0,'음…',{y:2.1,size:0.0028,fs:64});
+  const fly=(o,t,t0,to,rot)=>{const k=ease((t-t0)/0.35);o.position.lerpVectors(o.userData.home,to,k);o.position.y+=Math.sin(k*Math.PI)*0.6;if(rot)o.rotation.y=k*rot};
   // 세안 파트(별도 공간, x=40)
   const HR=makeHero({shirt:0xd98c8c,pants:0x55506a});HR.position.set(40,0,0);scene.add(HR);const M=messy(HR);eyesK(HR,0.35);
   const rk2=rock(scene,39.4,1.25,0.95,0xb7bcc2);
@@ -350,18 +366,26 @@ S[5]=()=>{
   const u=HR.userData;const ff=[];for(const [x,y,z,rad,n] of [[-0.12,0.2,0.2,0.09,60],[0.12,0.2,0.2,0.09,60],[0,0.36,0.2,0.08,50],[0,0.08,0.22,0.07,40],[0,0.24,0.25,0.05,25]]){const f=makeFoam(r,n,rad,{min:0.012,max:0.028});f.position.set(x,y,z);u.head.add(f);ff.push(f)}
   const spl=[];for(let i=0;i<16;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.025,8,6),basic(0xa9dcf2));scene.add(d);spl.push({d,vx:(r()-0.5)*1.6,vy:0.5+r()*1.2,vz:0.4+r()*0.6})}
   const sp2=sprk(scene,9,r,{x:40,y:2.15,z:0.3,w:0.9,h:0.6,col:'#fffbd8',size:0.0013});
-  const j1=ln(5,'j1');const CUT=3.45;
+  const j1=ln(5,'j1');const CUT=4.2;
   const ck=chip('무인도 3일째');
   const cam=new THREE.PerspectiveCamera(40,W/H,0.1,200);
   return t=>{B.upd(t);
     if(t<CUT){
-      // 가방: 파도 타고 굴러와 착지(0.7) → 1.7 뚜껑 열림 → 2.1 클렌저가 반짝이며 올라옴
+      // 가방: 굴러와 착지(0.7) → 1.45 열림 → 잡동사니를 하나씩 집어 감 → 주인공은 클렌저를 고름
       const k=ease(t/0.7);sc.position.set(0,Math.max(0,Math.sin(Math.min(t/0.7,1)*Math.PI)*0.3)-0.02*(1-k),-3.4+3.4*k);sc.rotation.set(0,(1-k)*1.2,(1-k)*0.8);
-      const lk=ease((t-1.65)/0.35);sc.userData.lid.rotation.x=-1.9*lk;
-      const tk=ease((t-2.05)/0.5);tube.position.set(0,0.28+0.55*tk,0.02);tube.visible=t>1.8;tube.rotation.y=0;
-      glow.position.set(0,0.75,-0.5);const gk=clamp01((t-1.95)/0.3)*(1-0.6*clamp01((t-2.5)/0.4));glow.scale.setScalar(1.6*gk*(1+Math.sin(t*6)*0.05));glow.visible=gk>0;updSprk(sp,t,2.1);kl.position.set(-0.35,tube.position.y+0.5,0.75);kl.visible=t>1.9;
-      gz.forEach(q=>{q.p.userData.head.rotation.x=-0.8*ease((t-1.9-q.i*0.08)/0.3);showB(q.b,t,2.3+q.i*0.08)});
-      const ck2=ease((t-2.1)/1.0);cam.fov=40-ck2*10;cam.position.set(0,2.4-ck2*1.15,5.2-ck2*2.25);cam.lookAt(0,0.55+ck2*0.25,0);
+      const lk=ease((t-1.4)/0.35);sc.userData.lid.rotation.x=-1.9*lk;
+      const open=t>1.5;items.forEach(([o])=>o.visible=open);tube.visible=open;
+      [pA,pB,pC].forEach((p,i)=>{p.userData.head.rotation.x=-0.7*ease((t-1.7-i*0.08)/0.25)*(1-ease((t-2.3-i*0.35)/0.3))});
+      fly(hat,t,2.0,hA,0);if(t>2.35){hat.rotation.set(0,0,0)}
+      fly(duck,t,2.35,hB,0);fly(uke,t,2.7,hC,0);if(t>3.05){uke.rotation.set(-Math.PI/2,0,0.4+Math.sin(t*20)*0.04);pC.userData.arms[1].rotation.x=-0.6+Math.sin(t*18)*0.25}
+      showB(bA,t,2.45);showB(bB,t,2.8);showB(bC,t,3.1);
+      // 주인공: 가방 뒤에서 잡동사니 보다가(음…) 클렌저 집어 들기
+      standPose(H0);const u0=H0.userData;u0.head.rotation.x=0.35*(1-ease((t-3.6)/0.3));showB(bH,t,3.0,3.5);
+      const reach=ease((t-3.15)/0.25)*(1-ease((t-3.45)/0.25)*0.35);u0.arms[1].rotation.x=-1.3*reach;u0.arms[1].rotation.z=0.25*reach;
+      const tk=ease((t-3.4)/0.3);const hand=wp(u0.arms[1].children[1]);
+      const homeT=new THREE.Vector3(0.08,0.29,0.02);tube.position.lerpVectors(homeT,hand.clone().add(new THREE.Vector3(0,-0.12,0.1)),tk);tube.rotation.set(0,0,0);
+      kl.position.copy(tube.position).add(new THREE.Vector3(-0.3,0.45,0.7));kl.visible=open;
+      cam.fov=46;const ck2=ease((t-1.2)/1.2);cam.position.set(0.5,4.8-ck2*0.4,6.6-ck2*0.6);cam.lookAt(0,0.3,0.15);
       fh.visible=false;
     }else{
       const lt=t-CUT;
