@@ -202,6 +202,9 @@ def cute(dur, vol=0.09):  # 통통 튀는 실로폰
     while t < dur - 0.3:
         place(out, (sine(notes[i % 8], notes[i % 8], 0.3, 0.09) + 0.3 * sine(notes[i % 8] * 2, notes[i % 8] * 2, 0.3, 0.05)) * vol, t); t += 0.25; i += 1
     return out
+def thudk(vol=0.6): return filt(sine(70, 45, 0.35, 0.09, 0.001), 'lowpass', 300) * vol + 0
+def popper(vol=0.35):
+    c = filt(noise(0.12), 'highpass', 1500) * env(int(0.12 * SR), 0.0005, 0.025); return c * vol
 def sad(dur, vol=0.07): return pad(dur, [220, 261.6, 329.6], vol, 0.8, 0.5)
 
 def mixlines(names, shifts):
@@ -215,18 +218,21 @@ def mixlines(names, shifts):
     return out / (np.abs(out).max() + 1e-9) * 0.85
 GROUP = {
     'L': lambda: mixlines([('e4', 1.0), ('j2', 1.0), ('e4', 1.12), ('j2', 0.9), ('e4', 0.93)], [0, 0.08, 0.2, 0.3, 0.12]),
+    'G1': lambda: mixlines([('yc', 1.0), ('jc', 1.0), ('yc', 1.1), ('jc', 0.92), ('yc', 0.94)], [0, 0.04, 0.09, 0.13, 0.06]),
+    'G1b': lambda: mixlines([('yc', 1.04), ('jc', 0.97), ('yc', 1.14), ('jc', 0.9), ('yc', 0.92), ('jc', 1.06), ('yc', 1.0)], [0, 0.05, 0.08, 0.12, 0.03, 0.1, 0.15]),
+    'G2': lambda: mixlines([('yd', 1.0), ('jd', 1.0), ('yd', 1.1), ('jd', 0.92), ('yd', 0.94), ('jd', 1.07)], [0, 0.04, 0.09, 0.13, 0.06, 0.11]),
     'S': lambda: mixlines([('e5', 1.0), ('j3', 1.0), ('e5', 1.1), ('j3', 0.92), ('e5', 0.9)], [0, 0.05, 0.1, 0.14, 0.2]),
 }
 
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
-    [('n1', 0.0), ('a1', 0.35), ('e1', 2.6), ('j4', 2.0), ('n2', 1.3)],
-    [('e2', 0.5), ('n3', 2.9)],
-    [('z1', 0.9), ('e3', 3.3), ('j1', 0.2), ('L', 0.5), ('n4', 0.1), ('z3', 0.4)],
+    [('n1', 0.0), ('a1', 0.35), ('r1', 0.45), ('r2', 0.25), ('n2', 3.0)],
+    [('e2', 0.5), ('n3', 9.6)],
+    [('w1', 0.6), ('G1', 0.9), ('G1b', 1.7), ('g3', 1.7), ('G2', 1.3), ('z1', 0.5), ('n7', 1.35)],
     [('S', 0.15), ('z2', 2.6), ('e6', 0.3), ('n5', 0.35)],
     [('z4', 1.4), ('n6', 0.1)],
 ]
-POST = {0: 0.3, 2: 1.0, 4: 2.2}
+POST = {0: 0.2, 1: 0.9, 2: 0.5, 4: 2.2}
 info = []
 for si, lines in enumerate(SC):
     t = 0; starts = {}; xs = []; sg = {}
@@ -247,32 +253,43 @@ def sfx(si, ev):
     ve = lambda name, k=0: LEAD + L[name][0] + L[name][1] + k
     b = np.zeros(int(T * SR)); N = len(b); tt = np.arange(N) / SR
     if si == 0:
-        D = {'alert': vt('a1', -0.3), 'hide': ve('a1', 0.15), 'lonely': ve('a1', 1.0), 'knock': vt('e1', -0.55), 'cascade': ve('e1', 0.15), 'gather': ve('j4', 0.2)}
+        D = {'alert': vt('a1', -0.3), 'sms': ve('a1', 0.05), 'flood': vt('r2', 0.2), 'noreply': ve('r2', 1.25), 'hall': ve('r2', 1.95), 'room': vt('n2', 0.9)}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        b += siren(T, 0.06) * np.clip((D['hide'] + 0.3 - tt) / 0.4, 0, 1)
-        place(b, drone(D['hide'], 0.08, 49), 0.0); place(b, buzz(0.3), D['alert'])
-        for i in range(int((D['knock'] - D['hide']) / 0.5)): place(b, tick(0.1), D['hide'] + 0.2 + i * 0.5)
-        place(b, knock(0.5), D['knock'])
-        for i in range(9): place(b, knock(0.32 - i * 0.02), D['cascade'] + 0.05 + i * 0.22 + (i % 3) * 0.04)
-        place(b, murmur(T - D['gather'], 0.05), D['gather']); place(b, cute(T - D['gather'], 0.06), D['gather'])
+        b += siren(T, 0.06) * np.clip((D['sms'] + 0.3 - tt) / 0.4, 0, 1)
+        place(b, drone(D['sms'], 0.08, 49), 0.0); place(b, buzz(0.3), D['alert'])
+        n = 0; t0 = D['sms'] + 0.2
+        while t0 < D['noreply']:
+            place(b, kakao(0.1 + 0.05 * (n % 2)), t0); n += 1; t0 += max(0.07, 0.45 - n * 0.04)
+        place(b, sine(440, 300, 0.4, 0.15) * 0.12, D['noreply'])
+        place(b, murmur(T - D['hall'], 0.05), D['hall']); place(b, cute(T - D['hall'], 0.06), D['hall'])
     elif si == 1:
-        P0 = ve('e2', 0.25); D = {'p1': P0, 'p2': P0 + 0.75, 'p3': P0 + 1.4, 'p4': P0 + 2.0, 'flip': P0 + 2.6}
+        P0 = ve('e2', 0.3); D = {'p1': P0, 'p2': P0 + 3.1, 'p3': P0 + 5.4, 'p4': P0 + 7.3, 'flip': P0 + 9.5, 'pull': P0 + 10.6}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        place(b, cute(D['p2'], 0.07), 0.0)
+        place(b, cute(T, 0.06), 0.0)
         for k in ('p1', 'p2', 'p3', 'p4'): place(b, page(0.2), D[k])
-        for i in range(8): place(b, page(0.12), D['flip'] + i * 0.08)
-        place(b, sine(330, 200, 0.7, 0.3) * 0.1, D['flip'] + 0.8)
+        def scribble(t0, dur, vol=0.05):
+            n = noise(dur); tt2 = np.arange(len(n)) / SR
+            x = filt(n, 'bandpass', [2000, 7000], 2) * (0.4 + 0.6 * (np.sin(2 * np.pi * 7 * tt2) > 0)); place(b, x * vol, t0)
+        for i in range(7): scribble(D['p1'] + 0.35 + i * 0.36, 0.25); place(b, blip(1320, 0.07), D['p1'] + 0.6 + i * 0.36)
+        place(b, pop(0.35), D['p1'] + 2.95)
+        scribble(D['p2'] + 0.3, 0.5); scribble(D['p2'] + 0.95, 0.5, 0.07); scribble(D['p2'] + 1.6, 0.6)
+        scribble(D['p3'] + 0.35, 1.0, 0.09)
+        for i in range(6): scribble(D['p4'] + 0.3 + i * 0.28, 0.22)
+        for i in range(14): place(b, page(0.12), D['flip'] + i * 0.075)
+        place(b, ding(0.2), D['pull'])
     elif si == 2:
-        ST = vt('z1', 0.9); D = {'tape': ST, 's30': ST + 0.8, 's60': ST + 1.7, 's120': ST + 2.6, 'burst': vt('L'), 'turn': vt('n4', 0.6), 'bang': vt('z3', 0.5)}
+        D = {'k1': vt('w1', -0.75), 'open1': ve('w1', 0.15), 'k2': vt('G1b', -1.2), 'open2': vt('G1b', -0.35), 'k3': vt('g3', -1.35), 'gather': ve('g3', 0.05), 'open3': ve('G2', 0.05), 'pop': ve('z1', 0.25), 'horde': ve('z1', 0.6)}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        h, times = hb_track(T, 0.2, D['burst'], 68, 92, 0.45); b += h; ev['beats'] = times
-        b += drone(T, 0.1, 46) * np.clip((D['burst'] - tt) / 0.05, 0, 1)
-        for i in range(10): place(b, step(0.08), 0.3 + i * 0.55)
-        for k in ('s30', 's60', 's120'): place(b, blip(880, 0.08), D[k])
-        place(b, murmur(D['burst'] - vt('e3'), 0.04) * np.linspace(0.2, 1, int((D['burst'] - vt('e3')) * SR)), vt('e3'))
-        place(b, murmur(1.6, 0.1), D['burst'])
-        place(b, sine(150, 140, 1.0, 0.4) * 0.25, D['turn']); place(b, bang(0.75), D['bang'])
-        h2, _ = hb_track(T, D['turn'], D['bang'], 110, 140, 0.4); b += h2
+        place(b, knock(0.45), D['k1']); place(b, knock(0.5), D['k2'])
+        for k in (0, 0.6): place(b, thudk(0.6), D['k3'] + k)
+        for k in ('open1', 'open2', 'open3'): place(b, whoosh(0.35, 0.1), D[k])
+        for i in range(10): place(b, tap(0.25), ve('G1', 0.05) + i * 0.11 + (i % 3) * 0.02)
+        for i in range(16): place(b, tap(0.28), ve('G1b', 0.05) + i * 0.09)
+        for i in range(5): place(b, popper(0.4), D['open2'] + 0.1 + i * 0.12)
+        place(b, cute(D['k3'], 0.05), 0.2)
+        place(b, popper(0.3), D['pop']); place(b, sine(150, 140, 1.4, 0.6) * 0.25, D['horde'])
+        b += drone(T, 0.1, 46) * np.clip((tt - D['horde']) / 0.3, 0, 1)
+        h2, times = hb_track(T, D['horde'], T, 100, 120, 0.4); b += h2; ev['beats'] = times
     elif si == 3:
         D = {'top': vt('S', 1.25), 'sniff': vt('z2', -0.7)}
         ev.update({k: round(x, 3) for k, x in D.items()})

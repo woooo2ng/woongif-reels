@@ -138,8 +138,10 @@ const TM=await (await fetch('audio/timing.json')).json();
 // 줄 이름 -> 자막. 조각이 [문장, 시작오프셋(초)]이면 그 시각에, 문자열이면 글자 수 비율로 나눔
 const TXT={
  n1:[''],a1:[['속보입니다.',0],['생존자는 각자,',1],['조용히 숨어 계십시오!',2.05]],
- e1:['…저기요.','살아 계세요?'],j4:['헐 대박!! 다들 같이 숨어요!!'],
+ r1:['헐 무서워요ㅠㅠ 다들 괜찮으세요?'],r2:['저 302호인데 같이 숨으실 분!'],
  n2:['좀비보다 무서운 게 있었어요.','혼자 있는 거요.'],
+ w1:['새 생존자다!!'],G1:['어서 오세요!!'],G1b:['어서 오세요!!'],g3:['오늘 손님 많다!!'],G2:['어서 오세요~!!'],
+ n7:[['새 손님은 늘 반가웠어요.',0],['33번째 손님만 빼고요.',2.08]],
  e2:['우리 진짜 완벽하게 살아남자!!'],n3:['생존 계획은 완벽했어요.','4일 동안은요.'],
  z1:['으어…!'],e3:['(속닥) 근데 있잖아…'],j1:['(속닥) 헐 진짜??'],L:['푸핫!! 아하하하!!'],
  n4:[['침묵은,',0],['2분 47초 만에 깨졌어요.',1.22]],z3:['으어어어!!'],
@@ -163,7 +165,7 @@ function caption(si,t){if(window.noCap)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
   let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
   // 다음 줄 전까지는 이전 자막 유지(null은 짧은 공백 뒤 다음 줄이 없을 때만 숨김)
-  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6){idx--;}else break}
+  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6&&nx[0]-L[idx][0]<0.8){idx--;}else break}
   if(idx<0||!L[idx][1]){el.style.opacity=0;return}
   if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=L[idx][1]}
   const st=LEAD+L[idx][0];
@@ -514,181 +516,189 @@ function titleEls(){ui.insertAdjacentHTML('beforeend',`<div class="tag">ENFP × 
     t2.style.transform=`scale(${pop((t-T0-0.35)/0.4)*os})`;t2.style.opacity=clamp01((t-T0-0.35)/0.1)*os;
     t3.style.transform=`scale(${pop((t-T0-0.7)/0.4)*os})`;t3.style.opacity=clamp01((t-T0-0.7)/0.1)*os}}
 
-// ===== 0. 좀비 떼(타이틀) → 각자 숨으라는 재난문자 → 혼자 3시간 → 벽 똑똑 → 아파트 전체 똑똑 → 한 집에 30명 =====
+// ===== 0. 좀비 떼(타이틀) → '각자 숨으십시오' → 재난문자에 답장 폭주 → 회신 불가 → 302호로 줄 서기 → 거실 30명 =====
 S[0]=()=>{
   const E=EV(0);const r=rng(501);
   const {sA,upd}=cityHorde(r);
-  // B: 혼자 숨은 방
-  const sB=new THREE.Scene();warmLights(sB);sB.children[0].intensity=0.9;sB.children[1].intensity=0.35;
-  room(sB,{wall:0x9a86a8,wall2:0x8a7698,floor:0x8a7468});bed(sB,0.3,-1.3);
-  const moon=windowPlane(sB,1.6,2.5,-3.15,1.3,1.1,0x23305a);
-  const H=enfp(r,{shirt:0xff9fc8,cape:0xffc2dc});H.position.set(0.3,0.42,-1.4);sitPose(H);sB.add(H);
-  const tear=[];for(const s of[-1,1]){const d=new THREE.Mesh(new THREE.SphereGeometry(0.025,10,8),basic(0x8fd3ff));d.scale.y=1.4;d.position.set(s*0.09,0.2,0.25);H.userData.head.add(d);tear.push(d)}
-  const lampL=new THREE.PointLight(0xffd0a0,3,4,1.5);lampL.position.set(-1,1.6,-0.5);sB.add(lampL);
-  const kn1=textSprite('똑똑',90,'#ffffff',0.004);kn1.position.set(-1.0,1.7,-1.4);sB.add(kn1);
-  const bE=bubE(H,'…저기요. 살아 계세요?',{size:0.0016,y:1.8});bE.position.x=-0.35;
-  // C: 아파트 단면(인형의 집)
-  const sC=new THREE.Scene();warmLights(sC);
-  const units=[];const UW=3.0,UH=2.6;
-  for(let fl=0;fl<4;fl++)for(let c=0;c<3;c++){const x=(c-1)*UW,y=fl*UH;const col=pick(r,[0xf0d9e4,0xfff0c8,0xd9ecff,0xe4dcff,0xdff5e6]);
-    const bw=new THREE.Mesh(new THREE.PlaneGeometry(UW,UH),lamb(col));bw.position.set(x,y+UH/2,-1);sC.add(bw);
-    const fl2=new THREE.Mesh(new THREE.BoxGeometry(UW,0.14,2.2),lamb(0xb5a090));fl2.position.set(x,y,0.1);sC.add(fl2);
-    const p=enfp(r,{cape:pick(r,BLK)});p.position.set(x+(r()-0.5)*0.6,y+0.07,0);sitPose(p);p.position.y=y+0.07-0.42;sC.add(p);
-    const k=textSprite('똑똑',80,'#ff4d9a',0.0032);k.position.set(x+(c<2?UW/2-0.2:-UW/2+0.2),y+1.7,0);sC.add(k);
-    units.push({p,k,c,fl,d:(fl*3+(fl%2?2-c:c))})}
-  for(let fl=0;fl<=4;fl++){const s=new THREE.Mesh(new THREE.BoxGeometry(UW*3+0.3,0.2,2.4),lamb(0xe8e0d6));s.position.set(0,fl*UH-0.08,0.1);sC.add(s)}
-  for(let c=0;c<=3;c++){const w=new THREE.Mesh(new THREE.BoxGeometry(0.18,UH*4,2.4),lamb(0xe8e0d6));w.position.set((c-1.5)*UW,UH*2,0.1);sC.add(w)}
-  const roof=new THREE.Mesh(new THREE.ConeGeometry(6.6,2.2,4),lamb(0xc97a8a));roof.rotation.y=Math.PI/4;roof.scale.z=0.3;roof.position.set(0,UH*4+1.1,0);sC.add(roof);
-  ground(sC,0x3a4050,100);
-  const loud=units.find(u=>u.fl==1&&u.c==1);const bJ=bubE(loud.p,'헐 대박!! 다들 같이 숨어요!!',{size:0.0042,y:1.7});
-  // D: 거실에 30명
+  // B: 밤 아파트 — 답장할 때마다 창문에 폰 불빛
+  const sB=new THREE.Scene();nightLights(sB,{hemi:1.0});ground(sB,0x2e3040,100);
+  const fac=new THREE.Mesh(new THREE.BoxGeometry(11,16,1),lamb(0x4a4868));fac.position.set(0,8,-1);sB.add(fac);
+  const wins=[];const r2=rng(9);for(let c=0;c<7;c++)for(let row=0;row<10;row++){const m=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.85),basic(0x23263a));m.position.set((c-3)*1.45,1.3+row*1.45,-0.48);sB.add(m);wins.push({m,d:r2()})}
+  // C: 302호 앞 복도 줄
+  const sC=new THREE.Scene();warmLights(sC);sC.children[0].intensity=1.3;
+  const hf=new THREE.Mesh(new THREE.PlaneGeometry(10,40),lamb(0xb8aab0));hf.rotation.x=-Math.PI/2;sC.add(hf);
+  const hw=new THREE.Mesh(new THREE.PlaneGeometry(40,5),lamb(0xe8dce4));hw.rotation.y=Math.PI/2;hw.position.set(-1.6,2.5,-8);sC.add(hw);
+  const hw2=new THREE.Mesh(new THREE.PlaneGeometry(40,5),lamb(0xddd0d8));hw2.rotation.y=-Math.PI/2;hw2.position.set(1.6,2.5,-8);sC.add(hw2);
+  const d302=door3(sC,-1.55,-6,Math.PI/2);d302.userData.d.rotation.y=1.4;
+  const pl=canvasTex(256,110,(c,w,h)=>{c.fillStyle='#fff';rr(c,4,4,w-8,h-8,16);c.fill();c.fillStyle='#e0408f';c.font=`900 80px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText('302',w/2,h/2+4)});
+  const plate=new THREE.Mesh(new THREE.PlaneGeometry(0.55,0.24),new THREE.MeshBasicMaterial({map:pl}));plate.position.set(-1.52,2.35,-6);plate.rotation.y=Math.PI/2;sC.add(plate);
+  for(const z of[-1,-11]){const dd=door3(sC,-1.55,z,Math.PI/2)}
+  const q=[];for(let i=0;i<12;i++){const p=enfp(r,{cape:pick(r,BLK)});p.position.set(0.1+(i%2)*0.35,0,-5.2+i*1.0);p.rotation.y=Math.PI;sC.add(p);
+    const it=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.3,0.2),lamb(i%3==0?0xffffff:pick(r,[0xffd84d,0xff8f8f,0x8fd3ff])));it.position.set(0,0.5,0.3);p.userData.hip.add(it);q.push({p,z0:p.position.z,ph:r()*6})}
+  const qb=[bubE(q[2].p,'과자 가져왔어요!!',{size:0.0022}),bubE(q[5].p,'저 잠옷인데 괜찮죠?',{size:0.0022})];
+  // D: 거실 30명
   const sD=new THREE.Scene();warmLights(sD);room(sD);
   const crowd=[];for(let i=0;i<30;i++){const row=Math.floor(i/6),col=i%6;const p=enfp(r,{cape:pick(r,BLK)});p.position.set((col-2.5)*0.95+(row%2)*0.35+(r()-0.5)*0.15,0,-2.0+row*0.85);sitPose(p);p.position.y=-0.42;p.rotation.y=(r()-0.5)*0.4;sD.add(p);crowd.push({p,ph:r()*6})}
   garland(sD,-3,3,3.4,-3.1,12);
   const C=cam(50);const tUpd=titleEls();
   const al=div('alertb','<div class="h"><i>긴급재난문자</i> 지금</div><div class="m">[행정안전부] 전국 좀비 사태 발생. 생존자는 <b style="color:#e2332d">각자</b> 조용히 숨으십시오.</div>');
-  const ch=chip('혼자 있은 시간: 0분');const st=div('stat','<div><small>각자 숨은 사람</small><b>0명</b></div><div><small>한 집에 숨은 사람</small><b>30명</b></div>');
+  const RP=[['301호','헐 무서워요ㅠㅠ 다들 괜찮으세요?'],['302호','저 302호인데 같이 숨으실 분!'],['504호','저요!!'],['1203호','저도요!! 과자 가져갈게요'],['807호','잠옷 입고 가도 돼요?'],['205호','몇 시까지 가면 돼요?'],['1102호','헐 저 혼자 있었는데ㅠㅠ'],['403호','베개 챙겨요?'],['907호','저 보드게임 있어요!!'],['601호','ㅋㅋㅋ 다들 302호로!!'],['1001호','저도 가요!!!'],['303호','옆집이에요 지금 갈게요']];
+  const rows=RP.map(([w,m],i)=>`<div class="row"><div class="av" style="background:${['#ffb3d4','#ffd98a','#a8dcff','#c9b4ff','#a8ecc4'][i%5]}"></div><div><div class="who">${w}</div><div class="b">${m}</div></div></div>`).join('');
+  const kp=div('kp',`<div class="screen"><div class="head">긴급재난문자 <small>#행정안전부</small></div><div class="msgs"><div class="inner"><div class="row" style="justify-content:center"><div class="b" style="background:#eef0f4;font-size:38px;max-width:640px">[행정안전부] 생존자는 각자 조용히 숨으십시오.</div></div>${rows}<div class="row nr" style="justify-content:center"><div class="b" style="background:rgba(0,0,0,.45);color:#fff;font-size:38px">회신이 불가능한 번호입니다</div></div></div></div><div class="inp"><div class="box">메시지 입력</div></div></div>`);
+  kp.querySelectorAll('.kp .av').forEach(a=>a.classList.add('h'));
+  {const st=document.createElement('style');st.textContent='.kp .av.h:after{display:none}';kp.appendChild(st)}
+  const rws=[...kp.querySelectorAll('.inner .row')];const inner=kp.querySelector('.inner');
+  const ch=chip('답장 0개',95);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
+  const st=div('stat','<div><small>각자 숨은 사람</small><b>0명</b></div><div><small>302호에 숨은 사람</small><b>30명</b></div>');
   return t=>{
-    const TA=E.alert,TH=E.hide,TL=E.lonely,TK=E.knock,TC=E.cascade,TG=E.gather;let sc;
-    if(t<TH){sc=sA;upd(t);C.fov=50;C.updateProjectionMatrix();const k=t/TH;C.position.set(0.3,1.9,6.2-k*0.6);C.lookAt(0,1.2,-6)}
-    else if(t<TC){sc=sB;const k=ease((t-TH)/(TC-TH));
-      standPose(H);sitPose(H);shake(H,t,t<TK?1:0.3);
-      const turn=ease((t-TK+0.4)/0.4);H.rotation.y=turn*0.9;
-      if(t>=TK-0.2&&t<TK+0.6){const a=H.userData.arms[1];a.rotation.x=-1.6;a.rotation.z=-0.2;a.rotation.y=0;H.userData.arms[1].rotation.x=-1.6+Math.sin((t-TK)*25)*0.25}
-      tear.forEach(d=>{d.visible=t>TL+1.0;d.position.y=0.2-((t*0.6)%0.12)});
-      eyeOpen(H,1);
-      kn1.visible=(t>TK&&t<TK+0.6);kn1.scale.set(kn1.userData.base[0]*pop((t-TK)/0.2),kn1.userData.base[1]*pop((t-TK)/0.2),1);
-      C.fov=46;C.updateProjectionMatrix();C.position.set(1.3-k*0.3,2.0,2.9-k*0.5);C.lookAt(-0.1,1.5,-1.4);
-      show(bE,t,at(0,'e1'),endOf(0,'e1',0.3))}
-    else if(t<TG){sc=sC;const k=ease((t-TC)/(TG-TC));
-      units.forEach(u=>{const t0=TC+u.d*0.17;const on=t>t0;standPose(u.p);sitPose(u.p);u.p.position.y=u.fl*UH+0.07-0.24;shake(u.p,t,on?0:1);
-        u.p.rotation.y=on?(u.c<2?1.0:-1.0)*ease((t-t0)/0.25):0;
-        if(on&&t<t0+0.5){u.p.userData.arms[1].rotation.x=-1.6+Math.sin((t-t0)*25)*0.25}
-        const kk=t>t0&&t<t0+0.7?pop((t-t0)/0.2):0;u.k.visible=kk>0.01;u.k.scale.set(u.k.userData.base[0]*kk,u.k.userData.base[1]*kk,1);
-        if(u===loud&&t>at(0,'j4')){u.p.rotation.y=0;armUp(u.p,0,1);armUp(u.p,1,1);mouth(u.p,true)}});
-      C.fov=48;C.updateProjectionMatrix();C.position.set(0,5.4,13.5-k*1.5);C.lookAt(0,4.9,0);
-      show(bJ,t,at(0,'j4'),endOf(0,'j4',0.3))}
-    else{sc=sD;const k=ease((t-TG)/3);crowd.forEach(q=>{standPose(q.p);sitPose(q.p);q.p.position.y=-0.42;q.p.userData.hip.position.y=0.56+Math.abs(Math.sin(t*4+q.ph))*0.03;q.p.userData.head.rotation.z=Math.sin(t*2+q.ph)*0.1});
+    const TA=E.alert,TS=E.sms,TF=E.flood,TN=E.noreply,TH=E.hall,TR=E.room;let sc;
+    if(t<TS){sc=sA;upd(t);C.fov=50;C.updateProjectionMatrix();const k=t/TS;C.position.set(0.3,1.9,6.2-k*0.6);C.lookAt(0,1.2,-6)}
+    else if(t<TH){sc=sB;const k=clamp01((t-TS)/(TN-TS));wins.forEach(w=>w.m.material.color.setHex(k>w.d*0.9?0xbfe3ff:0x23263a));C.fov=52;C.updateProjectionMatrix();C.position.set(0,8,17-k);C.lookAt(0,8,-1)}
+    else if(t<TR){sc=sC;const k=(t-TH);q.forEach((o,i)=>{standPose(o.p);walkPose(o.p,t*6+o.ph,0.4);o.p.position.z=o.z0-k*0.9});C.fov=52;C.updateProjectionMatrix();C.position.set(1.0,2.5,-8.6+k*0.2);C.lookAt(0,1.2,-1.5);
+      qb.forEach((b,i)=>show(b,t,TH+0.2+i*0.5,TR))}
+    else{sc=sD;const k=ease((t-TR)/3);crowd.forEach(o=>{standPose(o.p);sitPose(o.p);o.p.position.y=-0.42;o.p.userData.hip.position.y=0.56+Math.abs(Math.sin(t*4+o.ph))*0.03;o.p.userData.head.rotation.z=Math.sin(t*2+o.ph)*0.1});
       C.fov=50;C.updateProjectionMatrix();C.position.set(0,3.4-k*0.4,6.5-k*1.2);C.lookAt(0,0.9,-1.2)}
     renderer.setClearColor(0x000000,0);
-    if(sc===sA)setSky('#141a3a','#3a3f72 80%');else if(sc===sB)setSky('#1a1830','#2e2c50 80%');else if(sc===sC)setSky('#151a38','#3a3c6a 80%');else setSky('#f6e8f0','#e8d4e0');
+    if(sc===sA||sc===sB)setSky('#141a3a','#3a3f72 80%');else setSky('#f6e8f0','#e8d4e0');
     renderer.render(sc,C);
     tUpd(t,TA);
-    sh(al,t>=TA&&t<TH);if(t>=TA){const k=ease((t-TA)/0.25);al.style.transform=`translateY(${(1-k)*-300}px) translateX(${Math.sin(t*60)*(t<TA+0.6?6:0)}px)`}
-    if(t>=TL&&t<TC){const m=Math.min(180,Math.round(Math.pow(clamp01((t-TL)/(TK-TL-0.2)),1.6)*180));const s=m<60?`${m}분`:`${Math.floor(m/60)}시간${m%60?' '+m%60+'분':''}`;if(ch.dataset.s!=s){ch.dataset.s=s;ch.textContent='혼자 있은 시간: '+s}chipPop(ch,t,TL);ch.style.opacity=1}else ch.style.opacity=0;
-    popEl(st,t,TG+0.4,'translateX(-50%)');st.style.opacity=t>TG+0.4?1:0;
+    sh(al,t>=TA&&t<TS);if(t>=TA){const k=ease((t-TA)/0.25);al.style.transform=`translateY(${(1-k)*-300}px) translateX(${Math.sin(t*60)*(t<TA+0.6?6:0)}px)`}
+    // 답장 폭주
+    sh(kp,t>=TS&&t<TH);
+    if(t>=TS&&t<TH){const k=ease((t-TS)/0.3);kp.style.transform=`translateY(${(1-k)*1100}px)`;
+      const R1=at(0,'r1'),R2=at(0,'r2');
+      rws.forEach((rw,i)=>{let t0;if(i==0)t0=TS;else if(i==1)t0=R1;else if(i==2)t0=R2;else if(i==rws.length-1)t0=TN;else t0=TF+(i-3)*Math.max(0.12,0.38-(i-3)*0.03);rw.style.display=t>=t0?'':'none';if(t>=t0){const kk=pop((t-t0)/0.22);rw.style.transform=`scale(${kk})`;rw.style.transformOrigin=i==rws.length-1?'center':'left bottom'}})}
+    if(t>=TS&&t<TH){const kk=clamp01((t-TF)/(TN-TF));const n=t<R2c()?Math.max(0,Math.round((t-TS)/(R2c()-TS)*2)):Math.round(2+Math.pow(kk,2.2)*299998);const s2=`답장 ${fmt(n)}개`;if(ch.textContent!=s2)ch.textContent=s2;chipPop(ch,t,TS+0.2);ch.style.opacity=1}else ch.style.opacity=0;
+    popEl(st,t,TR+0.4,'translateX(-50%)');st.style.opacity=t>TR+0.4?1:0;
     caption(0,t)};
+  function R2c(){return at(0,'r2')+0.3}
 };
 
-// ===== 1. 생존 일지: 1일 차 빽빽 → 4일 만에 끝 =====
+// ===== 1. 생존 일지: 한 장씩 자세히 (1일 차 빽빽 → 2일 차 대충 → 3일 차 '배고파' → 4일 차 낙서 → 30일 차까지 빈 페이지) =====
 S[1]=()=>{
   const E=EV(1);const r=rng(511);
-  const sc=new THREE.Scene();warmLights(sc);const R=room(sc);
-  const dr=door3(sc,0,-3.12);
-  // 바리케이드(소파·박스) + 가랜드·꼬마전구
-  const boxes=[];[[-0.9,0.4,0],[0,0.4,0.1],[0.9,0.4,0],[-0.45,1.05,0.05],[0.45,1.05,0.05],[0,1.65,0.05]].forEach(([x,y,z],i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.62,0.6),lamb(i%2?0xc9a070:0xd8b080));b.position.set(x,y,-2.5+z);sc.add(b);boxes.push(b)});
+  const sc=new THREE.Scene();warmLights(sc);room(sc);
+  door3(sc,0,-3.12);
+  [[-0.9,0.4,0],[0,0.4,0.1],[0.9,0.4,0],[-0.45,1.05,0.05],[0.45,1.05,0.05],[0,1.65,0.05]].forEach(([x,y,z],i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(0.85,0.62,0.6),lamb(i%2?0xc9a070:0xd8b080));b.position.set(x,y,-2.5+z);sc.add(b)});
   const sofa=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.7,0.8),lamb(0xff9fc8));sofa.position.set(0,0.35,-1.9);sc.add(sofa);
-  const G=garland(sc,-1.4,1.4,2.3,-2.15,9);
-  const ban=banner(sc,'좀비 잡는 귀요미들 ♥',0,3.4,-3.15,4.4,0.85);
+  const G=garland(sc,-1.4,1.4,2.3,-2.15,9),G2=garland(sc,-2.2,2.2,2.9,-2.3,14),G3=garland(sc,-1.6,1.6,1.25,-2.05,10);
+  banner(sc,'좀비 잡는 귀요미들 ♥',0,3.4,-3.15,4.4,0.85);
   const ppl=[];[-1.6,-0.55,0.55,1.6].forEach((x,i)=>{const p=enfp(r,{});p.position.set(x,0,-0.4+Math.abs(x)*0.2);p.rotation.y=-x*0.12;sc.add(p);ppl.push(p)});
   const bE=bubE(ppl[1],'우리 진짜 완벽하게 살아남자!!',{size:0.003,y:2.3});bE.position.x=0.4;
   const C=cam(50);
   const dia=div('diary','');const pg=div('pg','',dia);
   const PG=[
-   `<h2>생존 일지 <small>1일 차 ★</small></h2><div class="l">06:00 기상 &amp; 스트레칭 ✔</div><div class="l">07:00 체력 훈련 (스쿼트 100개) ✔</div><div class="l">09:00 식량 체크 ✔✔</div><div class="l">10:00 바리케이드 꾸미기 <b>♥</b></div><div class="l">12:00 팀 회의 → 팀 이름 정함!!</div><div class="team">좀비 잡는 귀요미들 ♥</div><div class="l">14:00 생존 브이로그 촬영 ★</div><div class="l">16:00 다 같이 화이팅 구호 연습</div><div class="stk" style="right:60px;top:40px;color:#ff8fc8;transform:rotate(14deg)">♥</div><div class="stk" style="right:90px;top:430px;color:#ffd84d">★</div><div class="stk" style="right:50px;bottom:60px;color:#8fd3ff;transform:rotate(-10deg)">★</div>`,
-   `<h2>생존 일지 <small>2일 차</small></h2><div class="l">09:30 기상 (조금 늦음)</div><div class="l">체력 훈련 → 내일부터</div><div class="l">바리케이드에 전구 추가 <b>♥</b></div>`,
-   `<h2>생존 일지 <small>3일 차</small></h2><div class="big">배고파</div>`,
-   `<h2>생존 일지 <small>4일 차</small></h2><svg viewBox="0 0 300 300" style="display:block;margin:120px auto 0;width:420px"><circle cx="150" cy="140" r="90" fill="none" stroke="#5a8a4a" stroke-width="10"/><circle cx="118" cy="125" r="14" fill="#5a8a4a"/><circle cx="182" cy="125" r="14" fill="#5a8a4a"/><path d="M110 185 Q150 165 190 185" fill="none" stroke="#5a8a4a" stroke-width="10"/><path d="M60 250 L100 215 M240 250 L200 215" stroke="#5a8a4a" stroke-width="10"/></svg><div class="l" style="text-align:center;color:#9a8a8a">(좀비 그림)</div>`,
+   `<h2>생존 일지 <small>1일 차 ★</small></h2><div class="l" data-t="0.35">06:00 기상 &amp; 스트레칭 <i>✔</i></div><div class="l" data-t="0.71">07:00 체력 훈련 (스쿼트 100개) <i>✔</i></div><div class="l" data-t="1.07">09:00 식량 체크 <i>✔✔</i></div><div class="l" data-t="1.43">10:00 바리케이드 꾸미기 <b>♥</b></div><div class="l" data-t="1.79">12:00 팀 회의 → 팀 이름 정함!!</div><div class="l" data-t="2.15">14:00 생존 브이로그 촬영 ★</div><div class="l" data-t="2.51">16:00 다 같이 화이팅 구호 연습</div><div class="team pp" data-t="2.95">좀비 잡는 귀요미들 ♥</div><div class="stk pp" data-t="3.0" style="right:60px;top:40px;color:#ff8fc8;transform:rotate(14deg)">♥</div><div class="stk pp" data-t="3.1" style="right:90px;top:430px;color:#ffd84d">★</div><div class="stk pp" data-t="3.2" style="right:50px;bottom:60px;color:#8fd3ff;transform:rotate(-10deg)">★</div><div class="stk pp" data-t="3.3" style="left:420px;bottom:110px;color:#ff8f8f;transform:rotate(-14deg)">♥</div>`,
+   `<h2>생존 일지 <small>2일 차</small></h2><div class="l" data-t="0.3" style="transform:rotate(-1deg)">09:30 기상 (조금 늦음)</div><div class="l" data-t="0.95" style="position:relative;display:inline-block">체력 훈련<span class="strike" data-t="1.25"></span></div> <span class="l late" data-t="1.4" style="color:#e2332d;transform:rotate(-4deg);display:inline-block">→ 내일부터</span><div class="l" data-t="1.7" style="font-size:52px;color:#e0408f">바리케이드에 전구 추가 ♥♥♥</div>`,
+   `<h2>생존 일지 <small>3일 차</small></h2><div class="big wipe" data-t="0.35">배고파</div><div class="crumb pp" data-t="1.3" style="left:220px;top:640px"></div><div class="crumb pp" data-t="1.4" style="left:520px;top:700px;width:60px;height:40px"></div><div class="crumb pp" data-t="1.5" style="left:380px;top:780px;width:40px;height:30px"></div>`,
+   `<h2>생존 일지 <small>4일 차</small></h2><svg viewBox="0 0 300 300" style="display:block;margin:110px auto 0;width:440px"><circle class="sv" data-t="0.3" cx="150" cy="140" r="90" fill="none" stroke="#5a8a4a" stroke-width="10"/><circle class="sv" data-t="0.58" cx="118" cy="125" r="14" fill="#5a8a4a"/><circle class="sv" data-t="0.76" cx="182" cy="125" r="14" fill="#5a8a4a"/><path class="sv" data-t="1.0" d="M110 185 Q150 165 190 185" fill="none" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="1.28" d="M60 250 L100 215" stroke="#5a8a4a" stroke-width="10"/><path class="sv" data-t="1.5" d="M240 250 L200 215" stroke="#5a8a4a" stroke-width="10"/></svg><div class="l pp" data-t="2.0" style="text-align:center;color:#9a8a8a;font-size:52px">(잘 그림)</div>`,
   ];
+  {const s2=document.createElement('style');s2.textContent=`.diary .l i{font-style:normal;color:#2fae5a;font-weight:900}.diary .strike{position:absolute;left:0;top:50%;height:6px;background:#e2332d;width:0}.diary .crumb{position:absolute;width:80px;height:56px;border-radius:50%;background:rgba(190,140,80,.35)}.diary .wipe{white-space:nowrap}`;dia.appendChild(s2)}
   const ch=chip('생존 일지: 4일 · 바리케이드 꾸미기: 진행 중',80);ch.style.fontSize='46px';
+  const dayc=div('stage','');dayc.style.top='1240px';dayc.style.display='none';
   return t=>{
-    const P=[E.p1,E.p2,E.p3,E.p4],TF=E.flip;
-    // 3D: 팀 결성
-    ppl.forEach((p,i)=>{standPose(p);const j=Math.abs(Math.sin(t*6+i));p.position.y=j*0.12;armUp(p,i%2,0.9);mouth(p,t>at(1,'e2')&&t<endOf(1,'e2'))});
-    G.userData.bulbs.forEach((b,i)=>b.visible=Math.floor(t*4+i)%3!==0);
-    C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.3,6.2-t*0.25);C.lookAt(0,1.6,-2);
-    show(bE,t,at(1,'e2'),P[0]);
+    const P=[E.p1,E.p2,E.p3,E.p4],TF=E.flip,TP=E.pull;
+    ppl.forEach((p,i)=>{standPose(p);const j=Math.abs(Math.sin(t*6+i));p.position.y=t<P[0]?j*0.12:0;armUp(p,i%2,t<P[0]?0.9:0);mouth(p,t>at(1,'e2')&&t<endOf(1,'e2'))});
+    [G,G2,G3].forEach(g=>g.userData.bulbs.forEach((b,i)=>b.visible=Math.floor(t*4+i)%3!==0));G2.visible=G3.visible=t>TP;
+    if(t<TP){C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.3,6.2-t*0.1);C.lookAt(0,1.6,-2)}
+    else{const k=ease((t-TP)/1.2);C.fov=54;C.updateProjectionMatrix();C.position.set(0.2,2.0,5.4-k*1.2);C.lookAt(0,1.4,-2.3)}
     renderer.setClearColor(0x000000,0);setSky('#f6e8f0','#e8d4e0');renderer.render(sc,C);
-    sh(dia,t>=P[0]-0.05);
+    sh(dia,t>=P[0]-0.05&&t<TP+0.4);
     let idx=-1;P.forEach((p,i)=>{if(t>=p)idx=i});
-    if(t>=TF){const n=Math.floor((t-TF)/0.09);const d=5+n;const k=((t-TF)/0.09)%1;
+    if(t>=TF){const fl=Math.min(25,Math.floor((t-TF)/0.075));const d=5+fl;const k=fl<25?((t-TF)/0.075)%1:0;
       if(pg.dataset.i!='f'+d){pg.dataset.i='f'+d;pg.innerHTML=`<h2>생존 일지 <small>${d}일 차</small></h2>`}
-      pg.style.transform=`perspective(1600px) rotateY(${-k*80}deg)`;pg.style.transformOrigin='left center';
-      if(t>TF+0.8){pg.style.transform='';if(pg.dataset.i!='end'){pg.dataset.i='end';pg.innerHTML=`<h2>생존 일지 <small>${d}일 차</small></h2>`}}}
-    else if(idx>=0){if(pg.dataset.i!=idx){pg.dataset.i=idx;pg.innerHTML=PG[idx]}const k=ease((t-P[idx])/0.18);pg.style.transformOrigin='left center';pg.style.transform=`perspective(1600px) rotateY(${(1-k)*-70}deg)`}
-    if(t>=P[0]){const k=ease((t-P[0]+0.05)/0.25);dia.style.transform=`translateY(${(1-k)*900}px) rotate(${(1-k)*8}deg)`}
-    chipPop(ch,t,TF+0.3);ch.style.opacity=t>TF+0.3?1:0;
+      pg.style.transformOrigin='left center';pg.style.transform=`perspective(1600px) rotateY(${-k*80}deg)`}
+    else if(idx>=0){if(pg.dataset.i!=idx){pg.dataset.i=idx;pg.innerHTML=PG[idx]}const k=ease((t-P[idx])/0.18);pg.style.transformOrigin='left center';pg.style.transform=`perspective(1600px) rotateY(${(1-k)*-70}deg)`;
+      const lt=t-P[idx];
+      pg.querySelectorAll('[data-t]').forEach(el=>{const t0=+el.dataset.t;const on=lt>=t0;
+        if(el.classList.contains('strike')){el.style.width=`${clamp01((lt-t0)/0.25)*100}%`;return}
+        if(el.classList.contains('wipe')){el.style.clipPath=`inset(0 ${100-clamp01((lt-t0)/0.9)*100}% 0 0)`;return}
+        if(el.classList.contains('sv')){el.style.opacity=on?1:0;return}
+        if(el.classList.contains('pp')){el.style.opacity=on?1:0;const kk=pop((lt-t0)/0.25);el.style.scale=`${kk}`;return}
+        el.style.opacity=on?1:0;el.style.clipPath=`inset(0 ${100-clamp01((lt-t0)/0.3)*100}% 0 0)`})}
+    if(t>=P[0]){const k=ease((t-P[0]+0.05)/0.25);const o=t>TP?ease((t-TP)/0.4):0;dia.style.transform=`translateY(${(1-k)*900+o*1300}px) rotate(${(1-k)*8+o*6}deg)`}
+    chipPop(ch,t,TP+0.2);ch.style.opacity=t>TP+0.2?1:0;
     caption(1,t)};
 };
 
-// ===== 2. 침묵 미션: 문밖 좀비 → '절대 말하지 말 것' → 눈빛·손짓·귓속말 → 빵 터짐(2분 47초) → 문 쾅 =====
+// ===== 2. 새 생존자 환영식: 31번째 박수 → 32번째 현수막·폭죽 → 33번째 손님은 좀비 =====
 S[2]=()=>{
   const E=EV(2);const r=rng(521);
-  // 복도(문밖)
-  const sH=new THREE.Scene();sH.fog=new THREE.Fog(0x2a2a3a,6,22);nightLights(sH,{hemi:0.9});
-  ground(sH,0x5a5560,60);const hw=new THREE.Mesh(new THREE.PlaneGeometry(40,6),lamb(0x7a7488));hw.position.set(0,3,-1.6);sH.add(hw);
-  const hdoor=new THREE.Mesh(new THREE.BoxGeometry(1.2,2.3,0.1),lamb(0x8a6a8a));hdoor.position.set(0,1.15,-1.5);sH.add(hdoor);
-  const plate=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.2),basic(0xf2e8c8));plate.position.set(0,2.0,-1.44);sH.add(plate);
-  const hlamp=lamp(sH,2.6,-0.6,2.8);
-  const HZ=[];for(let i=0;i<9;i++){const z=zombie(r);z.position.set(-3.6+i*0.9+(r()-0.5)*0.3,0,0.2+(i%3)*0.7);sH.add(z);HZ.push({z,x0:z.position.x})}
-  const bZ1=bubZ(HZ[4].z,'으어…!',{size:0.0024,y:2.2});const bZ3=bubZ(HZ[4].z,'으어어어!!',{size:0.0028,y:2.2});
-  // 거실 30명
-  const sc=new THREE.Scene();warmLights(sc);room(sc);garland(sc,-3,3,3.4,-3.1,12);
-  const dr=door3(sc,4.35,0.2,-Math.PI/2);
-  const crowd=[];for(let i=0;i<30;i++){const row=Math.floor(i/6),col=i%6;const p=enfp(r,{cape:pick(r,BLK)});p.position.set((col-2.5)*0.95+(row%2)*0.35+(r()-0.5)*0.15,0,-2.0+row*0.85);p.rotation.y=(r()-0.5)*0.4;sc.add(p);
-    const brow=[];for(const s of[-1,1]){const b=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.018,0.01),basic(0x3a2a2a));b.position.set(s*0.09,0.33,0.245);b.rotation.z=-s*0.15;p.userData.head.add(b);brow.push(b)}
-    crowd.push({p,ph:r()*6,row,col,brow,dsec:Math.abs(col-2.5)+row*0.6})}
-  const A=crowd[14],B=crowd[15];
-  const bA=bubE(A.p,'(속닥) 근데 있잖아…',{size:0.0018,y:1.75});const bB=bubE(B.p,'(속닥) 헐 진짜??',{size:0.0018,y:2.2});bA.position.x=0.5;bB.position.x=-0.45;
-  const wh=crowd.filter((q,i)=>i%3==0&&q!==A&&q!==B).map(q=>({q,b:bubE(q.p,'속닥속닥',{size:0.0013,y:1.7,fs:56})}));
-  const ha=crowd.filter((q,i)=>i%4==1).map(q=>({q,b:bubE(q.p,pick(r,['푸핫!!','아하하하!!','ㅋㅋㅋㅋ!!']),{size:0.0016,y:1.75})}));
+  const sc=new THREE.Scene();warmLights(sc);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(16,16),lamb(0xc9a888));fl.rotation.x=-Math.PI/2;sc.add(fl);
+  const bw=new THREE.Mesh(new THREE.PlaneGeometry(16,6),lamb(0xf0d9e4));bw.position.set(0,3,-3.2);sc.add(bw);
+  const lw=new THREE.Mesh(new THREE.PlaneGeometry(16,6),lamb(0xe6cad8));lw.rotation.y=Math.PI/2;lw.position.set(-4.4,3,0);sc.add(lw);
+  const WM=lamb(0xe6cad8);// 오른쪽 벽(문 구멍)
+  const wa=new THREE.Mesh(new THREE.BoxGeometry(0.1,6,7.6),WM);wa.position.set(4.45,3,-0.4-3.8);sc.add(wa);
+  const wb2=new THREE.Mesh(new THREE.BoxGeometry(0.1,6,7.6),WM);wb2.position.set(4.45,3,0.8+3.8);sc.add(wb2);
+  const wc=new THREE.Mesh(new THREE.BoxGeometry(0.1,3.7,1.2),WM);wc.position.set(4.45,2.3+1.85,0.2);sc.add(wc);
+  garland(sc,-3,3,3.4,-3.1,12);banner(sc,'좀비 잡는 귀요미들 ♥',-1.2,2.5,-3.15,3.6,0.7);
+  const dr=door3(sc,4.4,0.2,-Math.PI/2);const D=dr.userData.d;dr.children[0].visible=false;
+  [[0,2.33,0,1.4,0.16],[-0.65,1.15,0,0.1,2.3],[0.65,1.15,0,0.1,2.3]].forEach(([x,y,z,w,h])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,0.16),lamb(0xf2f2f2));m.position.set(x,y,z);dr.add(m)});
+  // 문밖 복도 + 좀비 떼
+  const cf=new THREE.Mesh(new THREE.PlaneGeometry(10,20),lamb(0x6a6470));cf.rotation.x=-Math.PI/2;cf.position.set(9.5,0.005,0);sc.add(cf);
+  const cw=new THREE.Mesh(new THREE.PlaneGeometry(20,6),lamb(0x5a5468));cw.rotation.y=-Math.PI/2;cw.position.set(8.2,3,0);sc.add(cw);
+  const hl=new THREE.PointLight(0x9ab0ff,4,8,1.5);hl.position.set(6.2,2.6,0.2);sc.add(hl);
+  const Z33=zombie(r,{shirt:0x8a94a6});Z33.position.set(5.0,0,0.2);Z33.rotation.y=-Math.PI/2;sc.add(Z33);
+  const ZH=[];for(let i=0;i<14;i++){const z=zombie(r);z.position.set(5.6+(i%4)*0.55+r()*0.2,0,-1.6+Math.floor(i/4)*0.9+(i%2)*0.3+r()*0.2);z.rotation.y=-Math.PI/2+(r()-0.5)*0.4;sc.add(z);ZH.push(z)}
+  // 30명 + 손님
+  const crowd=[];for(let i=0;i<30;i++){const row=Math.floor(i/6),col=i%6;const p=enfp(r,{cape:pick(r,BLK)});const x=-2.4+row*0.75+(r()-0.5)*0.15,z=-2.4+col*0.85+(row%2)*0.3;p.position.set(x,0,z);sc.add(p);
+    const hat=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.42,12),smooth(pick(r,[0xff8fc8,0xffd84d,0x8fd3ff,0x9df2c8,0xc9a8ff])));hat.position.set(0,0.66,0);hat.rotation.z=(r()-0.5)*0.3;p.userData.head.add(hat);hat.visible=false;
+    crowd.push({p,x0:x,z0:z,hat,ph:r()*6,gx:1.3+(i%5)*0.5+r()*0.15,gz:0.2+(i%2?1:-1)*(0.85+Math.floor(i/10)*0.5+((i>>1)%5)*0.04)})}
+  const G31=enfp(r,{cape:0xfff0a8}),G32=enfp(r,{cape:0xbfe6ff});sc.add(G31,G32);
+  [G31,G32].forEach(g=>{const it=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.3,0.2),lamb(0xffffff));it.position.set(0,0.5,0.3);g.userData.hip.add(it)});
+  const nearTo=(x,z)=>crowd.map((q,i)=>[Math.hypot(q.x0-x,q.z0-z),i]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);const nA=nearTo(0.6,0.6),nB=nearTo(0.6,-1.2);
+  const bW=bubE(crowd[nA[0]].p,'새 생존자다!!',{size:0.0032,y:2.2});
+  const bG=[[0.9,2.35,0.9],[1.7,2.65,-0.5]].map(([x,y,z])=>{const b=bubE(crowd[0].p,'어서 오세요!!',{size:0.003,y:0});crowd[0].p.remove(b);b.position.set(x,y,z);sc.add(b);return b});
+  const bO=bubE(crowd[nA[1]].p,'오늘 손님 많다!!',{size:0.0032,y:2.25});
+  const bZ=bubZ(Z33,'으어…!',{size:0.0034,y:2.2});
+  const ban32=banner(sc,'환영해요 32번째 생존자님 ♥',3.5,3.1,-1.2,2.6,0.5,-0.6);ban32.visible=false;const b32=div('stage','환영해요 32번째 생존자님 ♥');b32.style.top='380px';b32.style.fontSize='66px';b32.style.border='8px solid #ff8fc8';b32.style.padding='10px 40px';b32.style.display='none';
+  // 꽃가루
+  const conf=[];for(let i=0;i<90;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(0.07,0.11),new THREE.MeshBasicMaterial({color:pick(r,[0xff8fc8,0xffd84d,0x8fd3ff,0x9df2c8,0xc9a8ff,0xff8f8f]),side:THREE.DoubleSide}));sc.add(m);conf.push({m,x:2.6+(r()-0.5)*2.4,z:0.2+(r()-0.5)*3,y0:3.4+r()*0.8,sp:0.9+r()*0.7,rx:r()*6,ry:r()*6,d:r()*0.4})}
+  const knock=textSprite('똑똑',100,'#ff4d9a',0.0045);knock.position.set(4.2,2.1,0.2);sc.add(knock);
+  const kung=textSprite('쿵…',120,'#ffffff',0.005);kung.position.set(4.2,2.0,0.2);sc.add(kung);
+  const ppop=textSprite('뿅',90,'#ffd84d',0.004);sc.add(ppop);
   const C=cam(50);const vig=div('vig');
-  const sign=div('sign','<div class="a">좀비는 소리에 반응함</div><div class="b">절대 말하지 말 것!!</div>');
-  const tm=div('timer','침묵 유지 <b>00:00</b>');const tb=tm.querySelector('b');const sg=div('stage','');
-  const rec=div('judge','침묵 유지: 2분 47초 (역대 최고 기록)');rec.style.fontSize='54px';rec.style.top='150px';
-  const fl=div('flash');
+  const c1=chip('31번째 생존자 · 환영식: 박수');const c2=chip('32번째 생존자 · 환영식: 현수막 + 폭죽');c2.style.fontSize='50px';
+  const c3=div('judge','33번째 손님: 좀비');c3.style.background='#2b2b3a';c3.style.color='#9df27a';
   return t=>{
-    const TZ=E.tape,S3=[E.s30,E.s60,E.s120],TB=E.burst,TT=E.turn,TG=E.bang;const ZT=at(2,'z1')-0.6;
-    const inHall=t<TZ||(t>=TT&&t<TT+1.3)||t>=TG-0.6;
-    let sc0;
-    if(inHall){sc0=sH;HZ.forEach((q,i)=>{zPose(q.z,t,t<TZ?0.5:0.2);q.z.position.x=q.x0+(t<TZ?Math.sin(t*0.6+i)*0.2:0);q.z.rotation.y=t>=TT?Math.PI*(1-ease((t-TT-0.1)/0.4)):Math.PI*0.5*(i%2?1:-1);
-        if(t>=TG-0.6){q.z.rotation.y=Math.PI;q.z.position.z=0.2+(i%3)*0.7-ease((t-TG+0.6)/0.6)*0.8}});
-      lampOn(hlamp,Math.sin(t*19)>0.9?0:1);
-      if(t<TZ){C.fov=54;C.updateProjectionMatrix();C.position.set(0.3,2.0,7.4-t*0.3);C.lookAt(0,1.2,-1)}
-      else if(t<TG-0.6){C.fov=40;C.updateProjectionMatrix();C.position.set(0,1.7,4.2);C.lookAt(0,1.4,-1)}
-      else{C.fov=52;C.updateProjectionMatrix();C.position.set(0,1.7,-4.2);C.lookAt(0,1.3,1.5);const g=t-TG;hdoor.position.set(Math.sin(t*50)*(g<0?0.03:0),1.15,-1.5-Math.max(0,g)*5);hdoor.rotation.x=Math.max(0,g)*3;hdoor.rotation.z=Math.max(0,g)*1.5}
-      show(bZ1,t,at(2,'z1'),endOf(2,'z1',0.4));show(bZ3,t,at(2,'z3'),99)}
-    else{sc0=sc;
-      crowd.forEach((q,i)=>{const p=q.p;standPose(p);sitPose(p);p.position.y=-0.42;mouth(p,false);q.brow.forEach(b=>{b.position.y=0.33;b.visible=t>S3[0]});
-        // 단계별: 눈빛 → 손짓 → 귓속말 → 폭발
-        if(t>=S3[0]&&t<TB){q.brow.forEach((b,k)=>b.position.y=0.33+Math.max(0,Math.sin(t*12+q.ph+k))*0.04)}
-        if(t>=S3[1]&&t<TB){const u=p.userData;u.arms[1].rotation.x=-1.3+Math.sin(t*10+q.ph)*0.5;u.arms[1].rotation.z=Math.sin(t*7+q.ph)*0.3;u.arms[0].rotation.x=-0.9+Math.sin(t*9+q.ph+1)*0.4}
-        if(t>=S3[2]&&t<TB){p.userData.hip.rotation.z=Math.sin(q.ph)*0.25;p.userData.head.rotation.z=Math.sin(q.ph)*0.25}
-        else{p.userData.hip.rotation.z=0;p.userData.head.rotation.z=0}
-        if(t>=TB){const k=clamp01((t-TB-q.dsec*0.05)/0.2);if(k>0){laughPose(p,t,k,q.ph);mouth(p,true);p.userData.hip.position.y=0.56+Math.abs(Math.sin(t*9+q.ph))*0.08*k}}
-        if(t>=TT-0.1&&t<TT+1.3)p.rotation.y=Math.PI/2*0}
-      );
-      // A·B 귓속말
-      if(t>=at(2,'e3')-0.2&&t<TB){A.p.userData.head.rotation.z=-0.35;A.p.userData.hip.rotation.z=-0.2;A.p.userData.arms[0].rotation.x=-2.2;A.p.userData.arms[0].rotation.z=0.6}
-      if(t>=at(2,'j1')&&t<TB){mouth(B.p,true);B.p.userData.arms.forEach(a=>{a.rotation.x=-2.4;a.rotation.z=0})}
-      show(bA,t,at(2,'e3'),TB);show(bB,t,at(2,'j1'),TB);
-      wh.forEach((w,i)=>show(w.b,t,endOf(2,'j1',-0.3)+i*0.06,TB));
-      ha.forEach((h,i)=>show(h.b,t,TB+0.1+i*0.05,TG));
-      // 카메라
-      if(t<S3[0]){C.fov=40;C.updateProjectionMatrix();C.position.set(0,2.3,5.5);C.lookAt(0,0.9,-0.8)}
-      else if(t<at(2,'e3')-0.2){const k=ease((t-S3[0])/(at(2,'e3')-S3[0]));C.fov=46;C.updateProjectionMatrix();C.position.set(0,3.4-k*0.6,6.4-k*1.4);C.lookAt(0,0.8,-0.8)}
-      else if(t<TB){C.fov=42;C.updateProjectionMatrix();const cx=(A.p.position.x+B.p.position.x)/2;C.position.set(cx+0.3,2.3,A.p.position.z+4.2);C.lookAt(cx,1.2,A.p.position.z)}
-      else{const k=ease((t-TB)/2);C.fov=50;C.updateProjectionMatrix();C.position.set(0,3.4,6.6+k*0.3);C.lookAt(0,0.9,-0.8)}}
-    const bp=beatPulse(2,t);vig.style.opacity=t<TB?0.25+0.4*bp:(t>TT?0.5:0);
-    renderer.setClearColor(0x000000,0);if(sc0===sH)setSky('#1a1a2a','#3a3650');else setSky('#f6e8f0','#e8d4e0');renderer.render(sc0,C);
-    // DOM
-    sh(sign,t>=TZ&&t<S3[0]);popEl(sign,t,TZ,'translateX(-50%) rotate(-2deg)');
-    const inRoom=!inHall&&t>=S3[0];
-    sh(tm,inRoom&&t<TB);if(inRoom&&t<TB){const secs=Math.min(166,Math.floor(Math.pow(clamp01((t-S3[0])/(TB-S3[0])),1.25)*167));const s=`0${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;if(tb.textContent!=s)tb.textContent=s}
-    let si=-1;S3.forEach((s,i)=>{if(t>=s)si=i});const SL=['눈빛 대화 중','손짓 수다 중','귓속말 퍼지는 중'];
-    sh(sg,inRoom&&si>=0&&t<TB);if(si>=0&&t<TB){if(sg.dataset.i!=si){sg.dataset.i=si;sg.textContent=SL[si]}popEl(sg,t,S3[si],'translateX(-50%)')}
-    sh(rec,t>=TB+0.3&&!inHall);popEl(rec,t,TB+0.3,'translateX(-50%)');
-    fl.style.background=`rgba(255,255,255,${0.9*clamp01(1-(t-TG)/0.25)*(t>=TG?1:0)})`;
+    const K1=E.k1,O1=E.open1,K2=E.k2,O2=E.open2,K3=E.k3,GA=E.gather,O3=E.open3,PP=E.pop,HO=E.horde;
+    // 문
+    const op=t<O1?0:t<O1+2.6?ease((t-O1)/0.35)*(1-ease((t-O1-2.2)/0.35)):t<O2?0:t<O2+2.4?ease((t-O2)/0.35)*(1-ease((t-O2-2.0)/0.35)):t<O3?0:ease((t-O3)/0.4);
+    D.rotation.y=-1.7*op;
+    // 노크 표시
+    {const kk=t>K1&&t<K1+0.6?pop((t-K1)/0.2):t>K2&&t<K2+0.6?pop((t-K2)/0.2):0;knock.visible=kk>0.01;knock.scale.set(knock.userData.base[0]*kk,knock.userData.base[1]*kk,1);
+     const ku=(t>K3&&t<K3+0.5)||(t>K3+0.6&&t<K3+1.1)?1:0;kung.visible=!!ku}
+    // 손님
+    const guest=(g,t0,t1)=>{const k=clamp01((t-t0-0.2)/1.4);g.visible=t>t0&&t<t1;g.position.set(5.3-k*2.4,0,0.2+k*0.3);g.rotation.y=-Math.PI/2;standPose(g);if(k<1)walkPose(g,t*6,0.4);else{armUp(g,1,0.8)}};
+    guest(G31,O1,K2);guest(G32,O2,K3);
+    // 좀비
+    Z33.visible=t>=O3-0.2;zPose(Z33,t,0);ZH.forEach(z=>{z.visible=t>=O3;zPose(z,t,0.3)});
+    if(t>HO)Z33.position.x=5.0-ease((t-HO)/2)*0.6;
+    // 군중
+    crowd.forEach((q,i)=>{const p=q.p;standPose(p);mouth(p,false);
+      const g=ease((t-GA-q.ph*0.04)/0.9);p.position.set(q.x0+(q.gx-q.x0)*g,0,q.z0+(q.gz-q.z0)*g);p.rotation.y=0.45+(Math.PI/2-0.45)*g;
+      if(g>0&&g<1)walkPose(p,t*7+q.ph,0.4);
+      q.hat.visible=t>GA+0.3;
+      const clap=(t>at(2,'G1')&&t<endOf(2,'G1',0.4))||(t>at(2,'G1b')&&t<endOf(2,'G1b',0.6));
+      if(clap){const u=p.userData,s=Math.sin(t*22+q.ph);u.arms[0].rotation.x=-1.35;u.arms[1].rotation.x=-1.35;u.arms[0].rotation.z=-0.25-0.2*s;u.arms[1].rotation.z=0.25+0.2*s;mouth(p,true)}
+      if(t>at(2,'G1b')-0.1&&t<endOf(2,'G1b',0.3)&&i%3==0){armUp(p,0,1);armUp(p,1,1)}
+      if(t>=at(2,'G2')&&t<O3+0.3){armUp(p,1,1);mouth(p,true)}
+      if(t>=O3+0.3){const fz=ease((t-O3-0.3)/0.3);p.userData.arms.forEach(a=>{a.rotation.x=-0.3*fz;a.rotation.z=0});p.userData.smile.visible=false;p.userData.flat.visible=false;p.userData.om.visible=true;p.userData.om.scale.set(0.7,0.9,1)}
+      if(t>=HO+0.4){const s=Math.sin(t*40+q.ph);p.userData.hip.position.x=s*0.015}});
+    sh(b32,t>=O2+0.1&&t<endOf(2,'G1b',0.6));if(t>=O2+0.1)popEl(b32,t,O2+0.1,'translateX(-50%) rotate(-3deg)');
+    conf.forEach(c=>{const lt=t-O2-0.1-c.d;c.m.visible=lt>0&&lt<3.2;if(lt>0){c.m.position.set(c.x+Math.sin(lt*3+c.rx)*0.2,c.y0-lt*c.sp,c.z);c.m.rotation.set(c.rx+lt*5,c.ry+lt*4,0)}});
+    {const lt=t-PP;ppop.visible=lt>0&&lt<0.6;ppop.position.set(3.4,2.4+lt*0.4,0.3);const kk=pop(lt/0.2);ppop.scale.set(ppop.userData.base[0]*kk,ppop.userData.base[1]*kk,1)}
+    show(bW,t,at(2,'w1'),endOf(2,'w1',0.4));bG.forEach((b,i)=>{show(b,t,at(2,'G1')+i*0.05,endOf(2,'G1',0.3));if(t>=at(2,'G1b'))show(b,t,at(2,'G1b')+i*0.05,endOf(2,'G1b',0.3));if(t>=at(2,'G2'))show(b,t,at(2,'G2')+i*0.05,O3+0.4)});
+    show(bO,t,at(2,'g3'),endOf(2,'g3',0.5));show(bZ,t,at(2,'z1'),endOf(2,'z1',1.0));
+    // 카메라
+    if(t<GA){C.fov=54;C.updateProjectionMatrix();C.position.set(-2.6,3.1,5.8);C.lookAt(2.4,1.1,-0.3)}
+    else if(t<HO){const k=ease((t-GA)/1.2);C.fov=54-k*4;C.updateProjectionMatrix();C.position.set(-2.6-k*0.2,3.1+k*0.4,5.8-k*5.6);C.lookAt(2.4+k*2.2,1.1+k*0.2,-0.3+k*0.5)}
+    else{const k=ease((t-HO)/2.5);C.fov=50-k*6;C.updateProjectionMatrix();C.position.set(-2.8+k*2.0,3.5-k*1.1,0.2);C.lookAt(4.6+k*1.5,1.3,0.2)}
+    const bp=beatPulse(2,t);vig.style.opacity=t>HO?0.3+0.5*bp:0;
+    renderer.setClearColor(0x000000,0);setSky('#f6e8f0','#e8d4e0');renderer.render(sc,C);
+    chipPop(c1,t,O1+0.6);c1.style.opacity=t>O1+0.6&&t<K2?1:0;chipPop(c2,t,O2+0.5);c2.style.opacity=t>O2+0.5&&t<K3?1:0;
+    popEl(c3,t,HO+0.2,'translateX(-50%)');c3.style.opacity=t>HO+0.2?1:0;
     caption(2,t)};
 };
 

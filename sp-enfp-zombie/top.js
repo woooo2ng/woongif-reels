@@ -4,8 +4,10 @@ const TM=await (await fetch('audio/timing.json')).json();
 // 줄 이름 -> 자막. 조각이 [문장, 시작오프셋(초)]이면 그 시각에, 문자열이면 글자 수 비율로 나눔
 const TXT={
  n1:[''],a1:[['속보입니다.',0],['생존자는 각자,',1],['조용히 숨어 계십시오!',2.05]],
- e1:['…저기요.','살아 계세요?'],j4:['헐 대박!! 다들 같이 숨어요!!'],
+ r1:['헐 무서워요ㅠㅠ 다들 괜찮으세요?'],r2:['저 302호인데 같이 숨으실 분!'],
  n2:['좀비보다 무서운 게 있었어요.','혼자 있는 거요.'],
+ w1:['새 생존자다!!'],G1:['어서 오세요!!'],G1b:['어서 오세요!!'],g3:['오늘 손님 많다!!'],G2:['어서 오세요~!!'],
+ n7:[['새 손님은 늘 반가웠어요.',0],['33번째 손님만 빼고요.',2.08]],
  e2:['우리 진짜 완벽하게 살아남자!!'],n3:['생존 계획은 완벽했어요.','4일 동안은요.'],
  z1:['으어…!'],e3:['(속닥) 근데 있잖아…'],j1:['(속닥) 헐 진짜??'],L:['푸핫!! 아하하하!!'],
  n4:[['침묵은,',0],['2분 47초 만에 깨졌어요.',1.22]],z3:['으어어어!!'],
@@ -29,7 +31,7 @@ function caption(si,t){if(window.noCap)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
   let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
   // 다음 줄 전까지는 이전 자막 유지(null은 짧은 공백 뒤 다음 줄이 없을 때만 숨김)
-  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6){idx--;}else break}
+  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6&&nx[0]-L[idx][0]<0.8){idx--;}else break}
   if(idx<0||!L[idx][1]){el.style.opacity=0;return}
   if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=L[idx][1]}
   const st=LEAD+L[idx][0];
