@@ -730,26 +730,33 @@ S[5]=()=>{
   const u=HR.userData;const ff=[];for(const [x,y,z,rad,n] of [[-0.12,0.2,0.2,0.09,60],[0.12,0.2,0.2,0.09,60],[0,0.36,0.2,0.08,50],[0,0.08,0.22,0.07,40],[0,0.24,0.25,0.05,25]]){const f=makeFoam(r,n,rad,{min:0.012,max:0.028});f.position.set(x,y,z);u.head.add(f);ff.push(f)}
   const spl=[];for(let i=0;i<16;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.025,8,6),basic(0xa9dcf2));scene.add(d);spl.push({d,vx:(r()-0.5)*1.6,vy:0.5+r()*1.2,vz:0.4+r()*0.6})}
   const sp2=sprk(scene,9,r,{x:40,y:2.15,z:0.3,w:0.9,h:0.6,col:'#fffbd8',size:0.0013});
-  const j1=ln(5,'j1');const CUT=4.2;
+  const j1=ln(5,'j1');const CUT=5.7;
   const ck=chip('무인도 3일째');
   const cam=new THREE.PerspectiveCamera(40,W/H,0.1,200);
   return t=>{B.upd(t);
     if(t<CUT){
-      // 가방: 굴러와 착지(0.7) → 1.45 열림 → 잡동사니를 하나씩 집어 감 → 주인공은 클렌저를 고름
-      const k=ease(t/0.7);sc.position.set(0,Math.max(0,Math.sin(Math.min(t/0.7,1)*Math.PI)*0.3)-0.02*(1-k),-3.4+3.4*k);sc.rotation.set(0,(1-k)*1.2,(1-k)*0.8);
-      const lk=ease((t-1.4)/0.35);sc.userData.lid.rotation.x=-1.9*lk;
-      const open=t>1.5;items.forEach(([o])=>o.visible=open);tube.visible=open;
-      [pA,pB,pC].forEach((p,i)=>{p.userData.head.rotation.x=-0.7*ease((t-1.7-i*0.08)/0.25)*(1-ease((t-2.3-i*0.35)/0.3))});
-      fly(hat,t,2.0,hA,0);if(t>2.35){hat.rotation.set(0,0,0)}
-      fly(duck,t,2.35,hB,0);fly(uke,t,2.7,hC,0);if(t>3.05){uke.rotation.set(-Math.PI/2,0,0.4+Math.sin(t*20)*0.04);pC.userData.arms[1].rotation.x=-0.6+Math.sin(t*18)*0.25}
-      showB(bA,t,2.45);showB(bB,t,2.8);showB(bC,t,3.1);
+      // 가방: 먼 바다에서 둥실둥실 떠내려옴(0~2.1) → 자던 사람 발에 툭 → 잠결에 기지개+발차기 → 딸깍 저절로 열림(2.55) → 잡동사니 하나씩 → 주인공은 클렌저를 고름
+      const fk=ease(Math.min(1,t/2.1));const bob=t<2.1?Math.sin(t*4.2)*0.08*(1-fk*0.7):0;
+      sc.position.set(-0.35+0.35*fk+Math.sin(t*1.3)*0.15*(1-fk),(t<1.7?-0.12:0)+bob,-8.5+8.5*fk);sc.rotation.set(Math.sin(t*3.1)*0.12*(1-fk),(1-fk)*0.9,Math.sin(t*2.6)*0.14*(1-fk));
+      if(t>2.1&&t<2.3){sc.position.z+=Math.sin((t-2.1)/0.2*Math.PI)*0.05}
+      // 잠결 기지개 + 발차기(A)
+      const sk=ease((t-2.25)/0.2)*(1-ease((t-2.75)/0.3));pA.userData.arms.forEach((a,i)=>{a.rotation.x=-2.9*sk;a.rotation.z=(i?0.5:-0.5)*sk});pA.userData.legs[0].rotation.z=0.55*Math.sin(Math.min(1,clamp01((t-2.38)/0.25))*Math.PI);
+      const lk=t<2.55?0:Math.min(1,pop((t-2.55)/0.3));sc.userData.lid.rotation.x=-1.9*lk;
+      const t2=t-1.5;
+      const open=t>2.6;items.forEach(([o])=>o.visible=open);tube.visible=open;
+      [pA,pB,pC].forEach((p,i)=>{p.userData.head.rotation.x=-0.7*ease((t2-1.7-i*0.08)/0.25)*(1-ease((t2-2.3-i*0.35)/0.3))});
+      fly(hat,t2,2.0,hA,0);if(t2>2.35){hat.rotation.set(0,0,0)}
+      fly(duck,t2,2.35,hB,0);fly(uke,t2,2.7,hC,0);if(t2>3.05){uke.rotation.set(-Math.PI/2,0,0.4+Math.sin(t*20)*0.04);pC.userData.arms[1].rotation.x=-0.6+Math.sin(t*18)*0.25}
+      showB(bA,t2,2.45);showB(bB,t2,2.8);showB(bC,t2,3.1);
       // 주인공: 가방 뒤에서 잡동사니 보다가(음…) 클렌저 집어 들기
-      standPose(H0);const u0=H0.userData;u0.head.rotation.x=0.35*(1-ease((t-3.6)/0.3));showB(bH,t,3.0,3.5);
-      const reach=ease((t-3.15)/0.25)*(1-ease((t-3.45)/0.25)*0.35);u0.arms[1].rotation.x=-1.3*reach;u0.arms[1].rotation.z=0.25*reach;
-      const tk=ease((t-3.4)/0.3);const hand=wp(u0.arms[1].children[1]);
+      standPose(H0);const u0=H0.userData;u0.head.rotation.x=0.35*(1-ease((t2-3.6)/0.3));showB(bH,t2,3.0,3.5);
+      const reach=ease((t2-3.15)/0.25)*(1-ease((t2-3.45)/0.25)*0.35);u0.arms[1].rotation.x=-1.3*reach;u0.arms[1].rotation.z=0.25*reach;
+      const tk=ease((t2-3.4)/0.3);const hand=wp(u0.arms[1].children[1]);
       const homeT=new THREE.Vector3(0.08,0.29,0.02);tube.position.lerpVectors(homeT,hand.clone().add(new THREE.Vector3(0,-0.12,0.1)),tk);tube.rotation.set(0,0,0);
       kl.position.copy(tube.position).add(new THREE.Vector3(-0.3,0.45,0.7));kl.visible=open;
-      cam.fov=46;const ck2=ease((t-1.2)/1.2);cam.position.set(0.5,4.8-ck2*0.4,6.6-ck2*0.6);cam.lookAt(0,0.3,0.15);
+      // 카메라: 바다 위 가방을 따라오다 해변으로
+      cam.fov=46;const pz=ease(Math.min(1,t/2.3));const ck2=ease((t2-1.2)/1.2);
+      cam.position.set(0.5,4.8-ck2*0.4,6.6-ck2*0.6-(1-pz)*6.5);cam.lookAt(0,0.3,0.15-(1-pz)*7.0);
       fh.visible=false;
     }else{
       const lt=t-CUT;
