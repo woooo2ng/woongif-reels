@@ -41,15 +41,17 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .flash{position:absolute;inset:0;pointer-events:none}
 .vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(70,0,0,.8) 100%)}
 .alertb{position:absolute;left:44px;right:44px;top:40px;background:rgba(250,250,252,.97);border-radius:30px;padding:22px 30px;box-shadow:0 12px 30px rgba(0,0,0,.35);color:#222}
-.alertb .h{display:flex;align-items:center;gap:14px;font-size:30px;font-weight:800;color:#666}
+.alertb .h{display:flex;align-items:center;gap:14px;font-size:36px;font-weight:800;color:#666}
 .alertb .h i{font-style:normal;background:#ff3b3b;color:#fff;border-radius:10px;padding:2px 12px;font-weight:900}
-.alertb .m{margin-top:10px;font-size:40px;font-weight:900;line-height:1.3}
+.alertb .m{margin-top:10px;font-size:50px;font-weight:900;line-height:1.3}
 .ph2{position:absolute;left:190px;top:170px;width:700px;height:1040px;border-radius:76px;background:#1b1b22;padding:20px;box-sizing:border-box;box-shadow:0 30px 70px rgba(0,0,0,.5)}
 .ph2 .screen{position:relative;width:100%;height:100%;border-radius:58px;overflow:hidden;background:linear-gradient(160deg,#ffcf8a,#ff9f8a 45%,#8fb8ff)}
 .ph2 .vid{position:absolute;left:0;right:0;top:260px;text-align:center}
 .ph2 .ui{position:absolute;right:30px;bottom:180px;display:flex;flex-direction:column;gap:40px;align-items:center;color:#fff;font-size:30px;font-weight:900;text-shadow:0 2px 6px rgba(0,0,0,.4)}
 .ph2 .ui b{display:block;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.35)}
 .ph2 .cap2{position:absolute;left:36px;bottom:70px;color:#fff;font-size:36px;font-weight:800;text-shadow:0 2px 6px rgba(0,0,0,.45)}
+.thumb2{position:absolute;filter:drop-shadow(0 14px 20px rgba(0,0,0,.35));transform-origin:50% 10%}
+.arw{position:absolute;font-size:150px;color:#fff}
 .thumb{position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(240,200,170,.95);box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .kp{position:absolute;left:130px;top:170px;width:820px;height:1040px;border-radius:80px;background:#1b1b22;padding:22px;box-sizing:border-box;box-shadow:0 30px 70px rgba(0,0,0,.45)}
 .kp .screen{position:relative;width:100%;height:100%;border-radius:60px;background:#b2c7da;overflow:hidden}

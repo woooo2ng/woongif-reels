@@ -283,7 +283,7 @@ def load(name):
 
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
-    [('n1', 0.35), ('z1', 2.3), ('p1', 0.9), ('n2', 2.7)],
+    [('n1', 0.35), ('z1', 2.3), ('p1', 0.9), ('n2', 3.7)],
     [('b1', 1.0), ('n3', 4.6)],
     [('n4', 1.5), ('m1', 0.7), ('h1', 0.3), ('m2', 0.3), ('h2', 0.3), ('m3', 0.3), ('z2', 0.9), ('n5', 0.5)],
     [('c1', 0.9), ('n6', 2.6)],
@@ -310,7 +310,7 @@ def sfx(si, ev):
     b = np.zeros(int(T * SR)); N = len(b); tt = np.arange(N) / SR
     if si == 0:
         D = {'bang': ve('n1', 0.25), 'turn': ve('n1', 1.0), 'door': vt('z1', -0.3), 'quiet': ve('z1', 0.15), 'look': ve('z1', 0.35),
-             'sit': ve('p1', 0.5), 'notif': vt('n2', -1.5), 'swipe': vt('n2', -0.75)}
+             'sit': ve('p1', 0.5), 'notif': vt('n2', -2.75), 'press': vt('n2', -1.6), 'swipe': vt('n2', -1.25)}
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += rumble(T, 0.14)
         for k in (0.4, 0.55, 1.6, 2.9): place(b, flicker(0.06), k)
@@ -321,7 +321,7 @@ def sfx(si, ev):
         place(b, doorslide(0.3), D['door'] - 0.2)
         place(b, sine(150, 140, 0.05, 0.02) * 0, D['quiet'])
         place(b, ding(0.22), D['notif']); place(b, buzz(0.18), D['notif'])
-        place(b, swipe(0.25), D['swipe'])
+        place(b, tap(0.35), D['press']); place(b, whoosh(0.45, 0.3), D['swipe'] + 0.15)
     elif si == 1:
         D = {'chat': ve('b1', 0.35)}
         m = [D['chat'] + 0.15, D['chat'] + 0.95, D['chat'] + 1.85]

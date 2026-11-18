@@ -153,7 +153,8 @@ S[0]=()=>{
   // 폰 화면 + 재난문자
   const ph=div('ph2','<div class="screen"><div class="vid"><svg viewBox="0 0 200 200" width="420" height="420"><polygon points="40,70 60,10 95,55" fill="#f2a65a"/><polygon points="160,70 140,10 105,55" fill="#f2a65a"/><ellipse cx="100" cy="115" rx="78" ry="68" fill="#f2a65a"/><rect x="62" y="98" width="14" height="22" rx="7" fill="#2a2a2a"/><rect x="124" y="98" width="14" height="22" rx="7" fill="#2a2a2a"/><path d="M92 132 L100 140 L108 132" stroke="#2a2a2a" stroke-width="5" fill="none"/></svg></div><div class="ui"><div><b></b>2.1만</div><div><b></b>342</div><div><b></b>공유</div></div><div class="cap2">@cat_daily · 고양이 식빵 굽기</div></div>');
   const al=div('alertb','<div class="h"><i>긴급재난문자</i> 지금</div><div class="m">[행정안전부] 전국 좀비 사태 발생. 외출을 자제하십시오.</div>',ph.querySelector('.screen'));
-  const th=div('thumb');
+  const th=div('thumb2','<svg viewBox="0 0 200 330" width="230" height="380"><path d="M40 330 L40 110 Q40 20 100 20 Q160 20 160 110 L160 330 Z" fill="#f1c8a4" stroke="#c99a78" stroke-width="6"/><path d="M62 112 Q62 48 100 48 Q138 48 138 112 Q138 140 100 140 Q62 140 62 112 Z" fill="#fbe3d2" stroke="#d8ab8c" stroke-width="5"/><path d="M48 200 Q100 215 152 200" stroke="#d8a888" stroke-width="5" fill="none"/></svg>');
+  const arw=div('arw out','←');
   const ch=chip('좀비 사태 인지: 0명',330);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
   return t=>{
     const TB=E.bang,TT=E.turn,TD=E.door,TQ=E.quiet,TL=E.look,TS=E.sit,TN=E.notif,TW=E.swipe,N2=at(0,'n2');
@@ -188,10 +189,22 @@ S[0]=()=>{
     vig.style.opacity=(t>TB-0.1&&t<TQ)?(0.25+0.75*beatPulse(0,t)):0;
     cutFlash(fl,t,TD-0.15);
     // 폰
-    const onPh=t>=TN-0.35&&t<N2-0.1;sh(ph,onPh);sh(th,onPh&&t>TW-0.45);
+    const TPr=E.press;
+    const onPh=t>=TN-0.35&&t<N2-0.1;sh(ph,onPh);sh(th,onPh&&t>TN+0.35);sh(arw,onPh&&t>TW&&t<TW+0.75);
     if(onPh){const k=ease((t-TN+0.35)/0.3);ph.style.transform=`translateY(${(1-k)*1200}px)`;
-      const ka=ease((t-TN)/0.25),kw=ease((t-TW)/0.28);al.style.transform=`translateY(${(1-ka)*-260}px) translateX(${-kw*760}px)`;al.style.opacity=t<TN?0:1;
-      const kt=clamp01((t-TW+0.45)/0.45);th.style.left=`${720-kt*520}px`;th.style.top=`${300+Math.sin(kt*Math.PI)*-30}px`;th.style.opacity=Math.min(1,clamp01((t-TW+0.45)/0.15),clamp01((TW+0.5-t)/0.15))}
+      // 배너: 부르르 흔들리며 내려옴 → 멈춤 → 엄지 따라 왼쪽으로
+      const ka=ease((t-TN)/0.25);const shk=t>TN&&t<TN+0.5?Math.sin((t-TN)*70)*10*(1-(t-TN)/0.5):0;
+      const dk=clamp01((t-TW)/0.6);const drag=-ease(dk)*560-Math.pow(clamp01((t-TW-0.45)/0.3),2)*500;
+      al.style.transform=`translateY(${(1-ka)*-300}px) translateX(${shk+drag}px) rotate(${drag*0.006}deg)`;al.style.opacity=t<TN?0:1;
+      al.style.filter=t>TPr&&t<TW+0.6?'brightness(0.92)':'none';
+      // 엄지: 오른쪽 아래에서 들어와 배너 위에 올림 → 꾹 → 왼쪽으로 끌기 → 빠짐
+      let tx,ty;const tipX0=760,tipY0=300;
+      if(t<TPr){const k2=ease((t-TN-0.35)/(TPr-TN-0.35));tx=1050+(tipX0-1050)*k2;ty=1500+(tipY0-1500)*k2}
+      else if(t<TW){tx=tipX0;ty=tipY0}
+      else if(t<TW+0.6){tx=tipX0-ease(dk)*560;ty=tipY0+Math.sin(dk*Math.PI)*12}
+      else{const k3=ease((t-TW-0.6)/0.35);tx=200+k3*700;ty=tipY0+k3*1200}
+      const press=t>=TPr&&t<TW+0.6?0.93:1;th.style.left=`${tx-115}px`;th.style.top=`${ty-25}px`;th.style.transform=`scale(${press}) rotate(-12deg)`;
+      arw.style.left=`${tx+130}px`;arw.style.top=`${ty-90}px`;arw.style.opacity=Math.min(1,clamp01((t-TW)/0.1),clamp01((TW+0.75-t)/0.2))}
     chipPop(ch,t,N2+0.15);ch.style.opacity=t>N2+0.15?1:0;
     caption(0,t)};
 };
