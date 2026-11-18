@@ -787,7 +787,7 @@ S[5]=()=>{
     standPose(B);B.rotation.set(0,0,0);B.userData.head.rotation.set(0,0,0);
     if(t<DAY){B.rotation.x=-Math.PI/2;B.position.set(59.6,0.75,-0.95+1.4);B.rotation.x=-Math.PI/2;B.position.set(59.6,0.72,-1.05);B.rotation.x=-Math.PI/2;
       B.position.z=-1.15+1.5;setFace(B,true)}
-    else{sitPose(B);B.rotation.y=Math.PI/2+0.2;B.position.set(59.3,0.5,0.0);B.userData.hip.position.y=0.58;setFace(B,false);
+    else{sitPose(B);B.rotation.y=Math.PI/2+0.2;B.position.set(59.3,0.12,0.0);B.userData.hip.position.y=0.58;setFace(B,false);
       const up=Math.sin((t-DAY)*2.2)>-0.2;phoneUp(B,1,up?0.75:0.25);B.userData.head.rotation.x=up?0.35:0.1}
     if(t<DAY){B.rotation.set(-Math.PI/2,0,0);B.position.set(59.6,0.76,0.45)}
     updHearts(hearts,t,CALM+0.6,1.4,1.4);hearts.forEach(q=>{q.h.visible=q.h.visible&&t<DAY&&inRoom});
@@ -801,7 +801,7 @@ S[5]=()=>{
     else{setCam(C,[61.0,1.75,1.0],[59.3,1.4,0],44)}
     popEl(stat,t,vt(LN(5,'n7')[0])+0.2,'translateX(-50%)');stat.style.display=t>WIDE&&!last?'flex':'none';
     ph.style.display=last?'block':'none';ph.style.opacity=1-clamp01((t-END)/0.3);ph.style.transform=`translateY(${(1-ease((t-LAST)/0.35))*1400}px) scale(0.9)`;
-    if(last){sitPose(B);B.rotation.set(0,Math.PI/2+0.2,0);B.position.set(59.3,0.5,0.0);B.userData.hip.position.y=0.58;phoneUp(B,1,0.75);setFace(B,false)}
+    if(last){sitPose(B);B.rotation.set(0,Math.PI/2+0.2,0);B.position.set(59.3,0.12,0.0);B.userData.hip.position.y=0.58;phoneUp(B,1,0.75);setFace(B,false)}
     const ke=t>END;endd.style.opacity=ke?clamp01((t-END)/0.3)*0.9:0;e1.style.opacity=e2.style.opacity=ke?1:0;popEl(e1,t,END+0.1);popEl(e2,t,END+0.3);
     caption(5,t);renderer.render(scene,C);
   };
