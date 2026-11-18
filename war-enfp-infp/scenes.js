@@ -141,7 +141,7 @@ function room(scene,o={}){const w=o.w||8,h=o.h||3.4,d=o.d||8;
 const _cv=new THREE.Vector3();
 function wpos(obj,dy=0){obj.updateMatrixWorld(true);obj.getWorldPosition(_cv);return [_cv.x,_cv.y+dy,_cv.z]}
 function follow(b,p,dy){const q=headPos(p,dy);b.position.copy(q)}
-function titleUI(){ui.insertAdjacentHTML('beforeend',`<div class="tag">ENFP vs INFP × 전쟁편</div><div class="title1 out" style="color:${C_E}">ENFP 나라와</div><div class="title2 out" style="color:${C_I}">INFP 나라가</div><div class="title3 out">전쟁이 난다면?</div>`);
+function titleUI(){ui.insertAdjacentHTML('beforeend',`<div class="tag">ENFP vs INFP × 전쟁편</div><div class="title1 out" style="color:${C_E};font-size:150px;letter-spacing:-4px;top:315px">ENFP 나라와</div><div class="title2 out" style="color:${C_I};top:480px">INFP 나라가</div><div class="title3 out" style="top:655px">전쟁이 난다면?</div>`);
   return ['.tag','.title1','.title2','.title3'].map(s=>ui.querySelector(s))}
 {const st=document.createElement('style');st.textContent=`
 .tag{white-space:nowrap}

@@ -1,5 +1,5 @@
 // ===== ENFP 나라와 INFP 나라가 전쟁이 난다면? (전쟁편 × 나라 대결편) =====
-const C_E='#ffd23f',C_I='#c9a8ff';
+const C_E='#ff8fc8',C_I='#c9a8ff';
 const TM=await (await fetch('audio/timing.json')).json();
 const TXT={
  n1:['ENFP 나라와 INFP 나라가,','전쟁이 난다면?'],g1:['전군, 총공격!!!'],crowd:[''],
