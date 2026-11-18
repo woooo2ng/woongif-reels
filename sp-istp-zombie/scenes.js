@@ -95,9 +95,9 @@ function apt(sc,r,o={}){
     else if(act==='game'){sitPose(p);p.position.set(0.3,-0.36,0);p.rotation.y=-0.9;tv=new THREE.Mesh(new THREE.PlaneGeometry(0.8,0.48),basic(0x8fd3ff));tv.position.set(-cw/2+0.06,1.05,0.1);tv.rotation.y=Math.PI/2;g.add(tv);p.userData.arms.forEach(a=>{a.rotation.x=-1.1;a.rotation.z=0})}
     else if(act==='phone'){sitPose(p);p.position.set(0,-0.36,0);holdPhone(p,1)}
     else if(act==='desk'){p.scale.setScalar(0.85)}
-    if(o.tvAll){const T=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.53),new THREE.MeshBasicMaterial({map:TVT}));T.position.set(-0.55,1.25,-D/2+0.04);g.add(T)}
+    let tvm=null;if(o.tvAll){tvm=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.53),new THREE.MeshBasicMaterial({map:TVT}));tvm.position.set(-0.55,1.25,-D/2+0.04);g.add(tvm)}
     const bl=new THREE.Mesh(new THREE.PlaneGeometry(cw,chh),new THREE.MeshLambertMaterial({map:blindTex(),side:THREE.DoubleSide}));bl.position.set(x,y+chh,-0.32);bl.visible=false;sc.add(bl);
-    rooms.push({c,r:rr2,x,y,g,p,act,bl,box,chh})}
+    rooms.push({c,r:rr2,x,y,g,p,act,bl,box,chh,tvm})}
   return {rooms,Wt,Ht,cw,chh}
 }
 let BLT=null;function blindTex(){return BLT||(BLT=canvasTex(128,128,(c,w,h)=>{c.fillStyle='#efe6d4';c.fillRect(0,0,w,h);for(let i=0;i<16;i++){c.fillStyle='rgba(120,100,70,.25)';c.fillRect(0,i*8+6,w,2)}}))}
@@ -377,7 +377,7 @@ S[4]=()=>{
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xb0b6ee,0x4a4660,1.5));{const d=new THREE.DirectionalLight(0xa8b4ff,0.6);d.position.set(-5,10,6);sc.add(d)}
   ground(sc,0x2e3040,300);
   const AP=apt(sc,r,{cols:4,rows:5,night:true,tvAll:true,actOf:(c,rr)=>c===1&&rr===2?'hero':'ramen'});
-  const HR=AP.rooms.find(rm=>rm.act==='hero');
+  const HR=AP.rooms.find(rm=>rm.act==='hero');const TVNEW=AP.rooms[0].tvm.material;const TVOFF=new THREE.MeshBasicMaterial({map:canvasTex(256,150,(c,w,h)=>{const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#7fb0e8');g.addColorStop(1,'#c8a0e0');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='rgba(255,255,255,.5)';c.beginPath();c.arc(w*0.3,h*0.6,30,0,7);c.fill()})});
   // 주인공: 창문 쪽을 보고 책상에서 라면
   const me=HR.p;me.position.set(0,0,0.15);me.rotation.y=0;sitPose(me);me.position.y=-0.05;me.scale.setScalar(0.9);
   const chair=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.45,0.5),lamb(0x4a4a58));chair.position.set(0,0.22,0.1);HR.g.add(chair);me.position.y=0.17;
@@ -389,12 +389,15 @@ S[4]=()=>{
   const hlite=glowSprite('rgba(255,250,220,1)',2.6);hlite.material.opacity=0.55;hlite.position.set(HR.x,HR.y+1.4,-2.1);sc.add(hlite);
   const C=cam(50);const fl=div('flash');
   const ch=chip('주인공 최대 리액션',330);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
+  const bino=div('bino','<svg width="1080" height="1920"><defs><radialGradient id="vg"><stop offset="70%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(0,0,0,.6)"/></radialGradient><mask id="bm2"><rect width="1080" height="1920" fill="#000"/><circle cx="370" cy="860" r="350" fill="#fff"/><circle cx="710" cy="860" r="350" fill="#fff"/></mask><mask id="bm"><rect width="1080" height="1920" fill="#fff"/><circle cx="370" cy="860" r="350" fill="#000"/><circle cx="710" cy="860" r="350" fill="#000"/></mask></defs><rect width="1080" height="1920" fill="#0b0b12" mask="url(#bm)"/><rect width="1080" height="1920" fill="url(#vg)" mask="url(#bm2)"/><line x1="540" y1="700" x2="540" y2="1020" stroke="rgba(255,255,255,.35)" stroke-width="4"/><line x1="380" y1="860" x2="700" y2="860" stroke="rgba(255,255,255,.35)" stroke-width="4"/></svg>');
+  const zst=div('zst','좀비');
   const yr=div('yr out','1년 후');
   const tvd=div('tv','<div class="live">LIVE</div><div class="hd">좀비 사태 1년</div><div class="big">공식 생존자 0명</div><div class="tick">&nbsp;&nbsp;정부 "생존자 확인 안 됨" · 전국 아파트 창문 불빛은 매일 켜져 있어… · 라면 판매량 역대 최고</div>');
   const tick=tvd.querySelector('.tick');
   const dim=div('flash');const e1=div('end1 out','다음 좀비편은?'),e2=div('end2 out','팔로우하고 기다려 주세요');
   return t=>{
     const TN=E.nod,TRd=E.radio,TL=E.leave,TSl=E.slurp,TY=E.year,TP=E.pull,TE=E.end,C2=at(4,'c2');
+    AP.rooms.forEach(rm=>{if(rm.tvm)rm.tvm.material=t<TY?TVOFF:TVNEW});
     spinHeli(hel,t);
     // 주인공
     const u=me.userData;sitPose(me);u.arms.forEach(a=>{a.rotation.x=-1.25;a.rotation.z=0});
@@ -408,12 +411,12 @@ S[4]=()=>{
     let mode;if(t<TRd)mode='win';else if(t<TL)mode='res';else if(t<TY)mode='win';else if(t<TP)mode='tv';else mode='pull';
     renderer.setClearColor(0x000000,0);setSky('#141a3a','#3a3f72 80%');
     if(mode==='win'){const k=ease(t/TRd);C.fov=42;C.position.set(HR.x+0.25,HR.y+1.25,3.3-k*0.5);C.lookAt(HR.x,HR.y+0.95,-1.2);if(t>=TL){C.position.set(HR.x+0.2,HR.y+1.2,2.6);C.lookAt(HR.x,HR.y+0.9,-1.2)}renderer.render(sc,C)}
-    else if(mode==='res'){const k=ease((t-TRd)/2);hel.updateMatrixWorld(true);const rp=new THREE.Vector3();res.userData.head.getWorldPosition(rp);const fd=new THREE.Vector3(Math.cos(1.88),0,-Math.sin(1.88));C.fov=40;C.position.copy(rp).addScaledVector(fd,2.6-k*0.4).add(new THREE.Vector3(0.6,0.1,0));C.lookAt(rp.x,rp.y-0.05,rp.z);
-      const ru=res.userData;ru.head.rotation.y=0;ru.arms[1].rotation.x=-0.6;ru.arms[0].rotation.x=-1.6;ru.arms[0].rotation.z=-0.4;renderer.render(sc,C)}
+    else if(mode==='res'){const sw=Math.sin(t*2.3)*0.04;C.fov=7;C.position.set(HR.x+2.5,HR.y+2.2,24);C.lookAt(HR.x+sw,HR.y+1.25+Math.cos(t*1.7)*0.03,-0.9);hlite.visible=false;C.updateProjectionMatrix();renderer.render(sc,C);C.fov=50;C.updateProjectionMatrix()}
     else if(mode==='pull'){const k=ease((t-TP)/3.4);C.fov=50;C.position.set(HR.x+k*0.5,HR.y+1.3+k*0.6,1.2+k*13);C.lookAt(HR.x+k*0.3,HR.y+1.0-k*0.6,-1.4);
       AP.rooms.forEach(rm=>{if(rm!==HR){const uu=rm.p.userData;uu.head.rotation.x=0.25+Math.sin(t*5+rm.c+rm.r)*0.08}});renderer.render(sc,C)}
     else{renderer.render(sc,C)}
     cutFlash(fl,t,TRd);
+    sh(bino,mode==='res');const TZ=at(4,'c2',0.95);sh(zst,mode==='res'&&t>=TZ);if(t>=TZ){const k=pop((t-TZ)/0.22);zst.style.transform=`translate(-50%,-50%) rotate(-12deg) scale(${2.2-1.2*Math.min(1,k)})`;zst.style.opacity=clamp01((t-TZ)/0.06)}
     chipPop(ch,t,TN+0.1);ch.style.opacity=t>TN+0.1&&t<TRd?1:0;
     sh(yr,t>=TY&&t<TY+0.75);
     sh(tvd,mode==='tv');if(mode==='tv'){const k=ease((t-TY-0.75)/0.3);tvd.style.transform=`scale(${0.9+0.1*k})`;tvd.style.opacity=k;tick.style.transform=`translateX(${-(t-TY)*120}px)`}

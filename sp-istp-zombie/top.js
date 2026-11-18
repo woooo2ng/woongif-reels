@@ -90,5 +90,7 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .tv .tick{position:absolute;left:0;right:0;bottom:0;height:80px;background:#ffd84d;color:#222;font-size:40px;font-weight:900;line-height:80px;white-space:nowrap}
 .end1{position:absolute;left:0;right:0;text-align:center;top:520px;font-size:110px}
 .end2{position:absolute;left:0;right:0;text-align:center;top:690px;font-size:60px}
+.bino{position:absolute;inset:0;pointer-events:none}
+.zst{position:absolute;left:540px;top:860px;border:16px solid #e2332d;color:#e2332d;font-size:170px;font-weight:900;padding:0 50px;border-radius:30px;background:rgba(255,255,255,.18);white-space:nowrap}
 .yr{position:absolute;inset:0;background:#111;display:flex;align-items:center;justify-content:center;font-size:140px}
 `;document.head.appendChild(st)}
