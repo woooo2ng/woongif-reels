@@ -5,8 +5,9 @@ function sentSplit(t){const out=[];let cur='';const a=[...t];for(let i=0;i<a.len
   const r=[];for(const s of out){if(s.length>30&&s.includes(', ')){const i=s.indexOf(', ',Math.floor(s.length*0.3));if(i>0){r.push(s.slice(0,i+1));r.push(s.slice(i+2));continue}}r.push(s)}
   // 짧은 조각은 앞 문장에 붙임
   const m=[];for(const s of r){if(m.length&&s.length<7&&(m[m.length-1].length+s.length)<30)m[m.length-1]+=' '+s;else m.push(s)}return m}
+const TMK={};TM.forEach(sc=>TMK[sc.key]=sc);
 const CAPL={};
-TM.forEach((sc,si)=>{const L=[];for(const [nm,[st,d]] of Object.entries(sc.lines)){const parts=sentSplit(TXT[nm]);const who=nm[0];
+TM.forEach((sc)=>{const si=sc.key;const L=[];for(const [nm,[st,d]] of Object.entries(sc.lines)){const parts=sentSplit(TXT[nm]);const who=nm[0];
   const tot=parts.reduce((a,p)=>a+p.length,0);let acc=st;parts.forEach(p=>{L.push([acc,p,who]);acc+=d*p.length/tot});L.push([st+d+0.25,null,who])}
   L.sort((a,b)=>a[0]-b[0]);CAPL[si]=L});
 window.setTiming=()=>{};
@@ -17,14 +18,14 @@ function caption(si,t){if(window.noCap)return;const L=CAPL[si];if(!L)return;
   if(idx<0||!L[idx][1]){el.style.opacity=0;return}
   const [st,txt,who]=L[idx];
   if(el.dataset.i!=idx){el.dataset.i=idx;
-    if(who==='n'){el.className='cap nar';el.textContent=txt}
-    else{el.className='cap say out';el.innerHTML=`<span class="nm">${who==='j'?'웅이':'스피커'}</span>`;el.appendChild(document.createTextNode(txt))}}
+    if(who==='n'||who==='m'){el.className='cap nar';el.textContent=txt}
+    else{el.className='cap say out';el.innerHTML=`<span class="nm">${who==='s'?'스피커':'웅이'}</span>`;el.appendChild(document.createTextNode(txt))}}
   const k=pop((t-st+0.05)/0.18);el.style.transform=`translateX(-50%) scale(${0.88+0.12*k})`;el.style.opacity=clamp01((t-st+0.1)/0.1);
 }
-const LN=(si,nm)=>TM[si].lines[nm];
+const LN=(si,nm)=>TMK[si].lines[nm];
 const at=(si,nm,k=0)=>LN(si,nm)[0]+k;
 const endOf=(si,nm,k=0)=>LN(si,nm)[0]+LN(si,nm)[1]+k;
-const DUR=si=>TM[si].dur;
+const DUR=si=>TMK[si].dur;
 const S=[];
 renderer.setClearColor(0x000000,0);
 // ---------- 공용 ----------

@@ -7,14 +7,14 @@ srv=http.server.ThreadingHTTPServer(('127.0.0.1',PORT),functools.partial(http.se
 TM=json.load(open('timing.json'))
 ARGS=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']
 scenes=[int(x) for x in sys.argv[1].split(',')]
-os.makedirs('out',exist_ok=True)
+os.makedirs('out2',exist_ok=True)
 with sync_playwright() as p:
     b=p.chromium.launch(args=ARGS);pg=b.new_page(viewport={'width':1920,'height':1080})
     pg.goto(f'http://localhost:{PORT}/index.html');pg.wait_for_function('window.ready===true',timeout=60000)
     for si in scenes:
-        final=f'out/scene_{si:02d}.mp4'
+        final=f'out2/scene_{si:02d}.mp4'
         if os.path.exists(final): continue
-        n=round(TM[si]['dur']*30);tmp=f'out/tmp_{si:02d}.mp4'
+        n=round(TM[si]['dur']*30);tmp=f'out2/tmp_{si:02d}.mp4'
         ff=subprocess.Popen(['ffmpeg','-y','-loglevel','error','-f','image2pipe','-framerate','30','-c:v','mjpeg','-i','-','-c:v','libx264','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-r','30',tmp],stdin=subprocess.PIPE)
         for f in range(n):
             pg.evaluate(f'renderFrame({si},{f/30})');ff.stdin.write(pg.screenshot(type='jpeg',quality=92))

@@ -28,7 +28,7 @@ for si,s in enumerate(TM):
                 place(e,starts[si]+st+len(x)/SR+dl-0.4)
 # 냉장고 꺼짐 '띵', 스피커 꺼짐
 def ding(): return sine(523,0.8,0.25)*0.2+np.pad(sine(392,0.8,0.25)*0.2,(int(0.12*SR),0))[:int(0.8*SR)]
-place(ding(),starts[22]+TM[22]['lines']['j12'][0]-0.3)
+i22=[i for i,o in enumerate(TM) if o['key']==22][0];place(ding(),starts[i22]+TM[i22]['lines']['j12'][0]-0.3)
 buf=buf[:int(T*SR)]
 fade=int(1.5*SR);buf[-fade:]*=np.linspace(1,0,fade)
 subprocess.run(['ffmpeg','-y','-loglevel','error','-f','f32le','-ar',str(SR),'-ac','1','-i','-','-af','loudnorm=I=-16:TP=-1.5:LRA=11','-ac','2','-c:a','aac','-b:a','192k','voice.m4a'],input=buf.astype(np.float32).tobytes(),check=True)
