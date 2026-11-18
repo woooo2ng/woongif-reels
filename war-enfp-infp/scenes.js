@@ -479,6 +479,29 @@ S[5]=()=>{
   };
 };
 
+// ===== 썸네일 (한 장) =====
+S[6]=()=>{
+  setSky('#ff9fc4','#ffe3a8 70%');
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xffd9c8,30,120);addLights(scene,{hemi:1.7,dir:1.6});
+  const r=rng(91);ground(scene,0x8fae78,300);
+  for(let i=0;i<9;i++){const h=new THREE.Mesh(new THREE.ConeGeometry(9+r()*6,5+r()*5,6),lamb(pick(r,[0x86a874,0x7d9f6c,0x93b07e])));h.position.set((i-4)*13+r()*4,0,-60-r()*12);scene.add(h)}
+  for(let i=0;i<4;i++){const g=glowSprite('rgba(255,190,120,1)',7);g.position.set((i-1.5)*8,13,-40);g.material.opacity=0.8;scene.add(g)}
+  sandbags(scene,0,0,10,3);
+  // ENFP 대군: 모래주머니 너머에서 달려옴
+  const zf=-4.5;const BN=banner('우리 친구 하자!!',4.4,1.0);BN.position.set(0,0,zf-0.6);scene.add(BN);waveBanner(BN,0.6);
+  const EG=enfpG(r);EG.position.set(0.2,0,zf+0.4);scene.add(EG);runPose(EG,1.2);armUp(EG,1,1);EG.userData.hip.rotation.x=0.12;
+  for(let row=0;row<7;row++)for(let c=0;c<9;c++){const p=enfp(r);const x=(c-4)*1.15+(row%2)*0.55+(r()-0.5)*0.3;p.position.set(x,0,zf-0.8-row*1.3);scene.add(p);
+    runPose(p,r()*6);if((c+row)%3===0){holdIn(p,bouquet(),1,0,-0.66,0.08);p.userData.arms[1].rotation.x=-1.4}else if((c+row)%3===1)armUp(p,0,0.95);else armUp(p,1,0.9)}
+  // INFP: 모래주머니에 등 붙이고 숨어서 대기
+  const IN=[];[[-0.75,0.6],[0.75,0.6]].forEach(([x,z],i)=>{const p=infp(r);p.position.set(x,0,z);scene.add(p);sweat(p);
+    sitPose(p);p.userData.hip.position.y=0.36;const R=rifle();p.userData.hip.add(R);R.rotation.x=-Math.PI/2+0.15;R.position.set(0.1,0.35,0.22);
+    p.userData.arms.forEach(a=>{a.rotation.x=-0.6;a.rotation.z=0});p.userData.head.rotation.x=0.08;IN.push(p)});
+  IN.forEach((p,i)=>{p.userData.sweat.position.y=0.38;p.rotation.y=(i%2?-0.12:0.12)});
+  const b1=sb(scene,'…!!',-0.85,1.72,0.6,{c:IC,size:0.0024}),b2=sb(scene,'…살려줘',0.95,1.72,0.6,{c:IC,size:0.0022});scaleBubble(b1,1);scaleBubble(b2,1);
+  const C=cam(52);setCam(C,[0.0,1.55,6.6],[0,3.05,-4],54);IN.forEach(p=>p.userData.legs.forEach(l=>l.rotation.x=-1.25));
+  ui.insertAdjacentHTML('beforeend',`<div class="tag" style="top:200px">ENFP vs INFP × 전쟁편</div><div class="title1 out" style="color:${C_E};font-size:150px;letter-spacing:-4px;top:265px">ENFP 나라와</div><div class="title2 out" style="color:${C_I};top:430px">INFP 나라가</div><div class="title3 out" style="top:605px">전쟁이 난다면?</div>`);
+  return t=>{renderer.render(scene,C)};
+};
 let curUpd=null,cur=-1;
 window.renderFrame=(si,t)=>{if(si!==cur){ui.innerHTML='';renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);curUpd=S[si]();cur=si}curUpd(t)};
 document.fonts.load(`900 60px ${FONT}`).then(()=>document.fonts.load(`500 40px ${FONT}`)).then(()=>{window.ready=true});
