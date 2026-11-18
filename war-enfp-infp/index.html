@@ -520,9 +520,9 @@ S[0]=()=>{
     flares.forEach(f=>{f.g.position.set(f.x,4+ease((t-RV-f.ph*0.4)/1.5)*9,-38);f.g.material.opacity=L*0.9});
     IN.forEach(p=>{aim(p);tremble(p,t,t<RV+0.5?1:0.4)});stern(IG);updSweat(IG,t);
     // 대군 전진 (z: -40 → 가까이)
-    const zf=-42+t*4.0;
-    EA.forEach(q=>{const z=zf-q.row*1.5;q.p.position.set(q.x,0,z);runPose(q.p,t*12+q.p.userData.ph);if(q.c%4===0&&q.row<2)armUp(q.p,0,0.9)});
-    EGp.position.set(0.3,0,zf+1.6);runPose(EGp,t*11);armUp(EGp,1,0.9+Math.sin(t*9)*0.1);
+    const zRaw=-42+t*4.0,zf=Math.min(zRaw,-8.5),arr=zRaw>-8.5;
+    EA.forEach(q=>{const z=zf-q.row*1.5;q.p.position.set(q.x,0,z);if(arr){standPose(q.p);cheerPose(q.p,t,0.8)}else{runPose(q.p,t*12+q.p.userData.ph);if(q.c%4===0&&q.row<2)armUp(q.p,0,0.9)}});
+    EGp.position.set(0.3,0,zf+1.6);if(arr)standPose(EGp);else runPose(EGp,t*11);armUp(EGp,1,0.9+Math.sin(t*9)*0.1);
     BN.position.set(0,0,zf+0.5);waveBanner(BN,t);{const u=pop((t-RV+0.1)/0.45);BN.visible=u>0.01;BN.scale.set(1,Math.max(0.01,u),1)}
     // 카메라
     const g1=at(0,'g1'),n2=E.n2,k1=E.k1;
