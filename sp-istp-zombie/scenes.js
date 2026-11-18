@@ -145,8 +145,8 @@ S[0]=()=>{
   seats.forEach(([s,z])=>{if(s===EMPTY[0]&&Math.abs(z-EMPTY[1])<0.36)return;if(r()<0.12)return;const p=istp(r);p.position.set(s*(Wd()-0.33),0,z);p.rotation.y=-s*Math.PI/2;sitBench(p);holdPhone(p,1);sc.add(p);pax.push({p,s,z,ph:r()*6,id:sid++})});
   function Wd(){return 1.6}
   const stand=[];for(const [x,z] of[[-0.35,4.4]]){const p=istp(r);p.position.set(x,0,z);p.rotation.y=x<0?0.6:-2.4;holdPhone(p,1);p.userData.arms[0].rotation.x=-2.7;p.userData.arms[0].rotation.z=-0.15;sc.add(p);stand.push(p)}
-  const lookers=pax.filter(q=>Math.abs(q.z+2.2)<2.2);const spk=lookers.find(q=>q.s>0&&q.z<-1.3&&q.z>-2.8)||lookers[0];
-  const bP=bubI(spk.p,'…뭐지',{y:1.75,size:0.0032});
+  const lookers=pax.filter(q=>Math.abs(q.z+2.2)<2.2);const trio=pax.filter(q=>q.s>0&&q.z<-0.5&&q.z>-3.0).sort((a,b)=>Math.abs(a.z+1.75)-Math.abs(b.z+1.75)).slice(0,3).sort((a,b)=>b.z-a.z);const spk=trio[1]||trio[0];const ZC=trio.reduce((a,q)=>a+q.z,0)/trio.length;
+  const bP=bubI(spk.p,'…뭐지',{y:1.62,size:0.0026,fs:72});
   const bZ=bubZ(Z,'으어어어!!',{size:0.0042});
   const C=cam(50);const tUpd=titleEls();
   const vig=div('vig');const fl=div('flash');
@@ -175,19 +175,21 @@ S[0]=()=>{
       else{Z.position.set(1.6-0.33,0,EMPTY[1]);Z.rotation.y=-Math.PI/2;zPose(Z,t,0);sitBench(Z);u.arms[0].rotation.x=-1.1;u.arms[1].rotation.x=-0.9;u.head.rotation.z=0.3}}
     // 승객: 대부분 계속 폰, 근처 몇 명만 1초 쳐다봄
     pax.forEach(q=>{sitBench(q.p);holdPhone(q.p,1);const u=q.p.userData;
+      const LE=endOf(0,'p1',0.45);if(trio.includes(q)&&t>TQ&&t<LE+0.25){const k=Math.min(clamp01((t-TQ-0.15)/0.12),clamp01((LE+0.25-t)/0.12));u.head.rotation.x=0.38-0.6*k;u.head.rotation.y=-0.55*k;u.hip.rotation.x=0;return}
       if(lookers.includes(q)&&t>TQ+0.1&&t<at(0,'p1',0.95)){const k=Math.min(clamp01((t-TQ-0.1)/0.2),clamp01((at(0,'p1',0.95)-t)/0.2));u.head.rotation.x=0.38-0.55*k;u.head.rotation.y=(q.s<0?0.6:-0.6)*k*(q.z>-2?1:-1)}});
-    show(bP,t,at(0,'p1'),endOf(0,'p1',0.4));show(bZ,t,at(0,'z1'),endOf(0,'z1',0.1));
+    show(bP,t,at(0,'p1'),endOf(0,'p1',0.4));{const v=t>=at(0,'p1',1.05)?1:0;if(bP.userData.v!==v){bP.userData.v=v;setBubble(bP,v?'빌런인가':'…뭐지',{bg:OR,fg:ORF,fs:72,size:0.0026});scaleBubble(bP,t>=at(0,'p1')?1:0)}}show(bZ,t,at(0,'z1'),endOf(0,'z1',0.1));
     // 카메라
-    let mode='A';if(t>=TT)mode='B';if(t>=TD-0.15)mode='C';if(t>=N2-0.1)mode='D';
+    let mode='A';if(t>=TT)mode='B';if(t>=TD-0.15)mode='C';if(t>=TQ&&t<endOf(0,'p1',0.7))mode='L';if(t>=N2-0.1)mode='D';
     if(mode==='A'){const k=ease(t/TT);C.fov=46;C.position.set(0.1,1.6,-3.2-k*1.3);C.lookAt(0,1.72,SW.z1)}
     else if(mode==='B'){const k=ease((t-TT)/(TD-TT));C.fov=58;C.position.set(0,1.75,SW.z1+1.2);C.lookAt(0,0.95-k*0.1,3)}
     else if(mode==='C'){const k=ease((t-TD)/(TS-TD));C.fov=54;C.position.set(-0.25,1.85,1.6-k*1.6);C.lookAt(0.2,1.25,SW.z1+1)}
+    else if(mode==='L'){const k=ease((t-TQ)/1.6);C.fov=55;C.position.set(-0.75,1.8,ZC-2.5+k*0.2);C.lookAt(1.25,1.15,ZC+0.25)}
     else{const k=ease((t-N2)/3);C.fov=55;C.position.set(-1.0,2.3,-0.4+k*0.4);C.lookAt(1.0,0.95,-3.7)}
     C.position.x+=bk*2;C.updateProjectionMatrix();
     renderer.setClearColor(0x000000,0);setSky('#1a1f33','#2b3352');renderer.render(sc,C);
     tUpd(t,TT);
     vig.style.opacity=(t>TB-0.1&&t<TQ)?(0.25+0.75*beatPulse(0,t)):0;
-    cutFlash(fl,t,TD-0.15);
+    cutFlash(fl,t,TD-0.15);if(t>=TQ&&t<TQ+0.2)cutFlash(fl,t,TQ);
     // 폰
     const TPr=E.press;
     const onPh=t>=TN-0.35&&t<N2-0.1;sh(ph,onPh);sh(th,onPh&&t>TN+0.35);sh(arw,onPh&&t>TW&&t<TW+0.75);
