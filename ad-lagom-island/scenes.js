@@ -409,6 +409,8 @@ S[5]=()=>{
       // 세안: 0.15 손 모으기 → 0.5 펌프 → 0.75 거품 → 1.55 얼굴 거품 → 2.25 헹굼(물 튐) → 깨끗
       const C2=1.55,R=2.25;
       const hu=ease((lt-0.05)/0.35);u.arms.forEach((a,i)=>{a.rotation.x=-1.5*hu-(lt>=C2&&lt<R?0.45+Math.sin(lt*14+i)*0.12:0);a.rotation.z=(i?-0.42:0.42)*hu});
+      // '얼굴도 하나도 안 당기네?' — 두 손으로 볼을 톡톡
+      {const T2=j1.t0+(j1.t1-j1.t0)*0.42-CUT;const fk2=ease((lt-T2)/0.25);if(fk2>0){u.arms.forEach((a,i)=>{a.rotation.x=-1.5*(1-fk2)-0.2*fk2;a.rotation.z=(i?-0.42:0.42)*(1-fk2)+(i?-0.15:0.15)*fk2});u.head.rotation.z=0.18*fk2*Math.sin(Math.min(1,(lt-T2)/0.6)*Math.PI*1.5);u.hip.position.y=0.8+Math.abs(Math.sin((lt-T2)*7))*0.04*fk2*Math.max(0,1-(lt-T2)/1.2)}}
       const press=lt>0.45&&lt<0.7?Math.sin((lt-0.45)/0.25*Math.PI):0;tube2.scale.set(0.33*(1+press*0.06),0.33*(1-press*0.05),0.33);
       fh.visible=lt<C2+0.3;fh.position.set(40,1.62,0.42);foamK(fh,lt<C2?clamp01((lt-0.75)/0.7):1-clamp01((lt-C2)/0.3));
       const fk=lt<C2?0:lt<R?clamp01((lt-C2)/0.5):1-clamp01((lt-R)/0.15);ff.forEach(f=>foamK(f,fk));
@@ -420,7 +422,7 @@ S[5]=()=>{
       const ck3=ease(lt/4);cam.fov=40;cam.position.set(39.82,1.9,4.05-ck3*0.08);cam.lookAt(39.8,1.15,0);
     }
     cam.updateProjectionMatrix();chipPop(ck,t,0.05);ck.style.display=t<2.0||t>CUT?'block':'none';
-    caption(5,t);renderer.render(scene,cam);
+    caption(5,t);{const cp=ui.querySelector('.cap');if(cp)cp.style.top=t>CUT?'370px':'1250px';}renderer.render(scene,cam);
   };
 };
 
