@@ -351,19 +351,19 @@ S[3]=()=>{
   const hel=heliM();sc.add(hel);const res=hel.userData.res;res.userData.mg.visible=true;
   const bR=bubI(res,'손 흔들어 주세요!',{y:2.2,size:0.0048,fs:70});
   const C=cam(50);const fl=div('flash');
-  const blindRooms=[AP.rooms[7],AP.rooms[8],AP.rooms[12]];
+  const order=[...AP.rooms].sort((a,b)=>b.r-a.r||a.c-b.c);
   const clip=div('clip',`<div class="cl"></div><div class="pp"><h1>생존자 확인표</h1><p>101호 <b>손 안 흔듦</b></p><p>102호 <b>블라인드 내림</b></p><p>103호 <b>누워 있음</b></p><p>104호 <b>라면 먹는 중</b></p><div class="tot">확인된 생존자<br><b>0명</b></div></div>`);
   const ps=[...clip.querySelectorAll('p')],tot=clip.querySelector('.tot');
   return t=>{
-    const B=[E.blind1,E.blind2,E.blind3],TK=E.check,N6=at(3,'n6');
+    const B0=E.blind0,TW=E.wide,TK=E.check,N6=at(3,'n6');
     spinHeli(hel,t);hel.userData.rot.rotation.y=t*40;
     const ru=res.userData;ru.arms[1].rotation.x=-1.6;ru.arms[1].rotation.z=0;ru.arms[0].rotation.x=t<endOf(3,'c1')?-2.6+Math.sin(t*9)*0.4:-0.4;ru.arms[0].rotation.z=-0.2;
     AP.rooms.forEach(rm=>{const u=rm.p.userData;if(rm.act==='ramen')u.head.rotation.x=0.3+Math.sin(t*5+rm.c)*0.08;if(rm.act==='game')u.arms.forEach(a=>a.rotation.x=-1.1+Math.sin(t*14+rm.r)*0.05)});
-    blindRooms.forEach((rm,i)=>setBlind(rm,ease((t-B[i])/0.18)));
+    order.forEach((rm,i)=>setBlind(rm,ease((t-B0-i*0.07)/0.16)));
     show(bR,t,at(3,'c1'),endOf(3,'c1',0.3));
     let mode=t<endOf(3,'c1',0.2)?'A':t<TK-0.2?'B':'C';
     if(mode==='A'){hel.position.set(-0.6,AP.Ht*0.68,6.5);hel.rotation.y=1.9;const k=ease(t/2.5);C.fov=55;C.position.set(3.0,2.0,17-k);C.lookAt(-0.6,AP.Ht*0.6,3)}
-    else{hel.position.set(-0.6,AP.Ht*0.68,6.5);const k=ease((t-endOf(3,'c1',0.2))/3);C.fov=48;C.position.set(-2.5+k*4.5,AP.Ht*0.5,7.2);C.lookAt(-2.5+k*4.5,AP.Ht*0.45,-1)}
+    else{hel.position.set(-7.5,AP.Ht*0.92,5);hel.rotation.y=1.9;const k=ease((t-endOf(3,'c1',0.2))/(TW-endOf(3,'c1',0.2)+0.4)),kw=ease((t-TW)/1.4);const x=-2.5+k*2.5;C.fov=48;C.position.set(x*(1-kw),AP.Ht*(0.62-0.1*kw),7.2+kw*17);C.lookAt(x*(1-kw),AP.Ht*(0.6-0.12*kw),-1)}
     hel.position.y+=Math.sin(t*2)*0.08;
     renderer.setClearColor(0x000000,0);setSky('#7fb8f0','#d8ecff 70%');renderer.render(sc,C);
     cutFlash(fl,t,endOf(3,'c1',0.2));

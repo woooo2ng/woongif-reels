@@ -340,10 +340,10 @@ def sfx(si, ev):
         for i in range(5): place(b, step(0.13), D['pass'] + 0.4 + i * 0.35)
         place(b, hum(T - D['calm'], 0.02), D['calm'])
     elif si == 3:
-        D = {'blind1': ve('c1', 0.6), 'blind2': ve('c1', 1.0), 'blind3': ve('c1', 1.3), 'check': vt('n6', 0.9)}
+        D = {'blind0': ve('c1', 1.0), 'wide': ve('c1', 1.3), 'check': vt('n6', 0.9)}
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += heli(T, 0.12)
-        for k in ('blind1', 'blind2', 'blind3'): place(b, blind(0.3), D[k])
+        for i in range(20): place(b, blind(0.2 + 0.08 * (i % 3 == 0)), D['blind0'] + i * 0.07)
         place(b, tick(0.2), D['check']); place(b, stamp(0.25), D['check'] + 0.5)
     elif si == 4:
         D = {'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.2), 'year': vt('n7', -1.0),
