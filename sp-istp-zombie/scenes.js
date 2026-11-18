@@ -177,7 +177,7 @@ S[0]=()=>{
     pax.forEach(q=>{sitBench(q.p);holdPhone(q.p,1);const u=q.p.userData;
       const LE=endOf(0,'p1',0.45);if(trio.includes(q)&&t>TQ&&t<LE+0.25){const k=Math.min(clamp01((t-TQ-0.15)/0.12),clamp01((LE+0.25-t)/0.12));u.head.rotation.x=0.38-0.6*k;u.head.rotation.y=-0.55*k;u.hip.rotation.x=0;return}
       if(lookers.includes(q)&&t>TQ+0.1&&t<at(0,'p1',0.95)){const k=Math.min(clamp01((t-TQ-0.1)/0.2),clamp01((at(0,'p1',0.95)-t)/0.2));u.head.rotation.x=0.38-0.55*k;u.head.rotation.y=(q.s<0?0.6:-0.6)*k*(q.z>-2?1:-1)}});
-    show(bP,t,at(0,'p1'),endOf(0,'p1',0.4));{const v=t>=at(0,'p1',1.05)?1:0;if(bP.userData.v!==v){bP.userData.v=v;setBubble(bP,v?'빌런인가':'…뭐지',{bg:OR,fg:ORF,fs:72,size:0.0026});scaleBubble(bP,t>=at(0,'p1')?1:0)}}show(bZ,t,at(0,'z1'),endOf(0,'z1',0.1));
+    show(bP,t,at(0,'p1'),endOf(0,'p1',0.4));{const v=t>=at(0,'p1',0.89)?1:0;if(bP.userData.v!==v){bP.userData.v=v;setBubble(bP,v?'빌런인가':'…뭐지',{bg:OR,fg:ORF,fs:72,size:0.0026});scaleBubble(bP,t>=at(0,'p1')?1:0)}}show(bZ,t,at(0,'z1'),endOf(0,'z1',0.1));
     // 카메라
     let mode='A';if(t>=TT)mode='B';if(t>=TD-0.15)mode='C';if(t>=TQ&&t<endOf(0,'p1',0.7))mode='L';if(t>=N2-0.1)mode='D';
     if(mode==='A'){const k=ease(t/TT);C.fov=46;C.position.set(0.1,1.6,-3.2-k*1.3);C.lookAt(0,1.72,SW.z1)}
