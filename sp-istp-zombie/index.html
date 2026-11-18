@@ -741,11 +741,14 @@ S[2]=()=>{
   for(const s of[-1,1]){const a=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.55,0.9),lamb(0x42606e));a.position.set(s*1.25,0.5,0);sofa.add(a)}sofa.position.set(-0.6,0,-1.6);sA.add(sofa);
   const tbl=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.4,0.7),lamb(0x7a5a40));tbl.position.set(-0.6,0.2,-0.2);sA.add(tbl);
   const bw=bowl();bw.position.set(-1.0,0.47,-0.2);sA.add(bw);
-  const callT=canvasTex(160,280,(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#3a4a6a');g.addColorStop(1,'#1a2030');c.fillStyle=g;c.fillRect(0,0,w,h);c.fillStyle='#fff';c.textAlign='center';c.font=`900 50px ${FONT}`;c.fillText('엄마',w/2,95);c.font=`700 18px ${FONT}`;c.fillStyle='#bcc6dd';c.fillText('수신 전화',w/2,122);
-    c.fillStyle='#e2332d';c.beginPath();c.arc(45,225,22,0,7);c.fill();c.fillStyle='#2ec46a';c.beginPath();c.arc(115,225,22,0,7);c.fill()});
+  const callT=canvasTex(480,840,(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#2e3a58');g.addColorStop(1,'#151a28');c.fillStyle=g;c.fillRect(0,0,w,h);c.textAlign='center';
+    c.fillStyle='#8a96b8';c.beginPath();c.arc(w/2,200,80,0,7);c.fill();c.fillStyle='#d8def0';c.beginPath();c.arc(w/2,180,30,0,7);c.fill();c.beginPath();c.arc(w/2,250,50,Math.PI,0);c.fill();
+    c.fillStyle='#fff';c.font=`900 130px ${FONT}`;c.fillText('엄마',w/2,430);c.font=`800 50px ${FONT}`;c.fillStyle='#c8d0e8';c.fillText('수신 전화',w/2,500);
+    c.fillStyle='#e2332d';c.beginPath();c.arc(130,700,66,0,7);c.fill();c.fillStyle='#2ec46a';c.beginPath();c.arc(350,700,66,0,7);c.fill();
+    c.fillStyle='#fff';c.font=`800 40px ${FONT}`;c.fillText('거절',130,800);c.fillText('응답',350,800)});
   const tph=myPhone(0x111111);tph.rotation.x=-Math.PI/2;tph.position.set(-0.25,0.42,-0.15);sA.add(tph);
   const scrOn=new THREE.MeshBasicMaterial({map:callT}),scrOff=basic(0x0b0b10);
-  const glow=glowSprite('rgba(170,200,255,1)',0.9);glow.position.set(-0.25,0.5,-0.15);sA.add(glow);
+  const glow=glowSprite('rgba(170,200,255,1)',0.55);glow.material.opacity=0.25;glow.position.set(-0.25,0.43,-0.15);sA.add(glow);
   const me=istp(r,{shirt:0x3d4a5c});me.position.set(-0.3,0,-1.55);sitPose(me);sA.add(me);
   // 엄마 집 (따뜻)
   const sM=new THREE.Scene();warmLights(sM);room(sM,{wall:0xe8d8c0,wall2:0xdcc8b0,floor:0xb89a7a});
@@ -765,7 +768,7 @@ S[2]=()=>{
   const bH={h1:bubI(me,'어.',{y:1.75,size:0.0036}),h2:bubI(me,'먹음.',{y:1.75,size:0.0036})};
   const C=cam(50),Ctop=cam(50,W/(H/2)),Cbot=cam(50,W/(H/2));
   const vig=div('vig');const fl=div('flash');
-  const ch=chip('무음 모드: 3년째',330);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
+  const ch=chip('무음 모드: 3년째',170);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
   const ch2=chip('안부 확인: 3초',330);ch2.style.background='#2b2b3a';ch2.style.color='#ffd84d';
   const sl=div('splitline');const w1=div('who2','엄마');w1.style.top='40px';const w2=div('who2','나');w2.style.top='1000px';
   const cu=div('callui','통화 중 <i>00:00</i>');cu.style.top='860px';const cuT=cu.querySelector('i');
@@ -792,7 +795,7 @@ S[2]=()=>{
       const zu=Zh.userData;const tz=t-(TP+0.5);if(tz<0){Zh.rotation.y=Math.PI*0.9;zu.head.rotation.z=0.5}else{Zh.rotation.y=Math.PI*0.9-Math.min(1,tz)*Math.PI*0.4;Zh.position.x=0.35+Math.max(0,tz-0.4)*0.9;zPose(Zh,t,tz>0.4?1:0)}
       show(bZ,t,at(2,'z2'),endOf(2,'z2',0.5));renderer.render(sH,C)}
     else{setSky('#1e1c30','#2e2a48');
-      if(t>=TR&&t<TA){const k=ease((t-TR)/2.5);C.fov=40;C.position.set(-0.25,1.5-k*0.2,0.55);C.lookAt(-0.25,0.42,-0.15)}
+      if(t>=TR&&t<TA){const k=ease((t-TR)/2.5);C.fov=34;C.position.set(-0.25,1.25-k*0.12,0.3);C.lookAt(-0.25,0.38,-0.06)}
       else{const k=ease(t/TR);C.fov=52;C.position.set(0.4,2.1,5.6-k*0.9);C.lookAt(0.4,1.15,-1.5)}
       renderer.render(sA,C)}
     vig.style.opacity=t<TR+0.1?(0.25+0.75*beatPulse(2,t)):0;
