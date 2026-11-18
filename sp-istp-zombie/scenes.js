@@ -251,18 +251,17 @@ S[1]=()=>{
   const st2=div('stat','<div><small>대피소 이용자</small><b>0명</b></div>');
   return t=>{
     const TC=E.chat,TR=E.read,TX=E.cross,TH=E.shelter;let sc;
-    if(t<TC){sc=sA;van.position.z=-8+t*0.45;const k=ease(t/TC);C.fov=50;C.position.set(2.2,1.5,3.5-k*0.8);C.lookAt(-1.0,1.9,-7);
+    if(t<TX){sc=sA;van.position.z=-8+t*0.45;const k=ease(t/TX);C.fov=50;C.position.set(2.2,1.5,3.5-k*0.8);C.lookAt(-1.0,1.9,-7);
       rings.forEach((m,i)=>{const p=((t*0.9+i*0.25)%1);m.position.set(van.position.x,1.95,van.position.z+0.95+p*2.2);m.scale.setScalar(0.6+p*2.4);m.material.opacity=0.55*(1-p)*(t>at(1,'b1')-0.2?1:0)})}
-    else if(t<TX){sc=sA}
     else if(t<TH){sc=sC;const k=ease((t-TX)/(TH-TX));C.fov=50;C.position.set(0,AP.Ht*0.5,12+k*4);C.lookAt(0,AP.Ht*0.5-0.6,-1);
       AP.rooms.forEach(rm=>{const u=rm.p.userData;if(rm.act==='ramen'){u.head.rotation.x=0.3+Math.sin(t*5+rm.c)*0.08}if(rm.act==='game'){u.arms.forEach(a=>a.rotation.x=-1.1+Math.sin(t*14+rm.r)*0.05)}})}
     else{sc=sD;const k=ease((t-TH)/2.5);C.fov=55;C.position.set(0,3.2-k*0.6,9-k*2);C.lookAt(0,1.4,-4)}
     renderer.setClearColor(0x000000,0);setSky('#8fc4f2','#d8ecff 70%');renderer.render(sc,C);
-    chipPop(ch,t,0.1);ch.style.opacity=t<TC?1:0;
-    sh(kp,t>=TC&&t<TX);if(t>=TC&&t<TX){const k=ease((t-TC)/0.3);kp.style.transform=`translateY(${(1-k)*1100}px)`;
+    chipPop(ch,t,0.1);ch.style.opacity=t<TX?1:0;
+    sh(kp,false);if(false){const k=ease((t-TC)/0.3);kp.style.transform=`translateY(${(1-k)*1100}px)`;
       [E.m1,E.m2,E.m3].forEach((t0,i)=>{R[i].style.visibility=t>=t0?'visible':'hidden';R[i].style.transform=`scale(${pop((t-t0)/0.22)})`;R[i].style.transformOrigin='left bottom'});
       U.forEach((u,i)=>{const t0=[E.m1,E.m2,E.m3][i];const n=Math.max(0,5-Math.floor(clamp01((t-t0-0.25)/0.7)*5.99));u.textContent=n?n:'';})}
-    sh(st1,t>=TR&&t<TX);if(t>=TR)popEl(st1,t,TR,'translateX(-50%)');
+    sh(st1,false);
     sh(st2,t>=TH+0.3);if(t>=TH+0.3)popEl(st2,t,TH+0.3,'translateX(-50%)');
     cutFlash(fl,t,TX);
     caption(1,t)};

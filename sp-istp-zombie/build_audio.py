@@ -284,7 +284,7 @@ def load(name):
 # ---------- 장면 구성: (이름, 직전 줄 끝에서 띄우는 간격) ----------
 SC = [
     [('n1', 0.35), ('z1', 2.3), ('p1', 0.9), ('n2', 3.7)],
-    [('b1', 1.0), ('n3', 4.6)],
+    [('b1', 1.0), ('n3', 0.7)],
     [('n4', 1.5), ('m1', 0.7), ('h1', 0.3), ('m2', 0.3), ('h2', 0.3), ('m3', 0.3), ('z2', 0.9), ('n5', 0.5)],
     [('c1', 0.9), ('n6', 2.6)],
     [('c2', 3.1), ('n7', 2.6), ('n8', 1.7)],
@@ -328,8 +328,6 @@ def sfx(si, ev):
         D.update({'m1': m[0], 'm2': m[1], 'm3': m[2], 'read': m[2] + 0.7, 'cross': vt('n3', -0.15), 'shelter': vt('n3', 2.0)})
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += wind(T, 0.04)
-        for x in m: place(b, kakao(0.15), x)
-        place(b, crickets(D['cross'] - D['read'], 0.05), D['read'])
         place(b, calm(T - D['cross'], 0.05), D['cross'])
         place(b, wind(T - D['shelter'], 0.06), D['shelter'])
     elif si == 2:
