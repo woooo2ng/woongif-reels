@@ -287,7 +287,7 @@ SC = [
     [('b1', 1.0), ('n3', 0.7)],
     [('n4', 1.5), ('m1', 0.7), ('h1', 0.3), ('m2', 0.3), ('h2', 0.3), ('m3', 0.3), ('z2', 0.9), ('n5', 0.5)],
     [('c1', 0.9), ('n6', 2.6)],
-    [('c2', 3.1), ('n7', 2.6), ('n8', 1.7)],
+    [('c2', 4.3), ('n7', 2.6), ('n8', 1.7)],
 ]
 POST = {0: 0.2, 1: 0.3, 2: 0.3, 3: 0.2, 4: 2.3}
 info = []
@@ -346,12 +346,13 @@ def sfx(si, ev):
         for i in range(20): place(b, blind(0.2 + 0.08 * (i % 3 == 0)), D['blind0'] + i * 0.07)
         place(b, tick(0.2), D['check']); place(b, stamp(0.25), D['check'] + 0.5)
     elif si == 4:
-        D = {'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.2), 'year': vt('n7', -1.0),
+        D = {'land': vt('c2', -2.75), 'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.2), 'year': vt('n7', -1.0),
              'pull': ve('n7', 0.25), 'end': info[si]['len'] + LEAD + 0.75 - 1.6}
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += heli(T, 0.13) * np.clip((D['leave'] + 1.6 - tt) / 1.6, 0, 1)
         b += drone(T, 0.1, 50) * np.clip((D['nod'] + 0.1 - tt) / 0.1, 0, 1)
-        h2, times = hb_track(T, 0.2, D['nod'], 100, 150, 0.45); b += h2; ev['beats'] = times
+        h2, times = hb_track(T, 0.2, D['nod'], 90, 150, 0.45); b += h2; ev['beats'] = times
+        place(b, sine(220, 180, 0.4, 0.15) * 0.15, D['land'])
         place(b, static(0.18), D['radio']); place(b, static(0.14), ve('c2', 0.05))
         place(b, slurp(0.18), D['slurp'])
         place(b, newsjingle(0.14), D['year'])
