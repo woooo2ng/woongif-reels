@@ -512,7 +512,7 @@ S[1]=()=>{
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,300);
   const ck=chip('원숭이 정규직 0마리');ck.style.opacity=0;
   return t=>{B.upd(t);
-    const wide=t<l2.t0-0.15||t>=n3.t0;
+    const wide=t>=n3.t0;
     set.visible=!wide;below.forEach(p=>p.visible=wide&&t<n3.t0);
     // 0~: 사람들이 코코넛을 못 땀(점프)
     below.forEach((p,i)=>{standPose(p);armUp(p,1,1);armUp(p,0,0.8);p.position.y=Math.max(0,Math.sin(t*7+i*1.3))*0.35});
