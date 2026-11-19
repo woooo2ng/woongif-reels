@@ -135,15 +135,15 @@ S[0]=()=>{
     bgEl.style.background=`linear-gradient(${mixc('#4b566b','#7fc6ef',k)},${mixc('#8e9aab','#c9eef6',k)} 55%,${mixc('#a9b3bf','#eafaf8',k)})`;
     fl.style.opacity=t>0.3&&t<0.5?0.85*(1-(t-0.3)/0.2):0;
     B.upd(t*(1.6-k*0.8));
-    Q.forEach((q,i)=>{const sl=1-ease((t-q.del)/2.0);const rk=ease((t-RISE-q.rd)/0.5);
+    Q.forEach((q,i)=>{const sl=1-ease((t-q.del)/2.0);const rk=clamp01((t-RISE-q.rd)/0.75);
       // 일어서면 정면, 명함 시간엔 짝꿍을 봄
       const ck_=ease((t-CD+0.4)/0.35);const yaw=rk<1?q.yaw0*(1-rk):(q.side>0?-Math.PI/2:Math.PI/2)*ck_;
-      riseK(q.p,q.x,q.z-sl*2.4,rk,yaw);q.p.position.y-=0.05*sl;standPose(q.p);q.p.userData.hip.rotation.x=0;q.p.userData.head.rotation.x=0;
+      riseUp(q.p,q.x,q.z-sl*2.4,rk,yaw);q.p.userData.hip.rotation.x=0;q.p.userData.head.rotation.x=0;
       const wk=ease((t-WT-i*0.015)/0.25)*(1-ease((t-WT-1.3)/0.3));if(rk>=1&&wk>0)watchPose(q.p,wk);
       const ok=ease((t-CD-0.05)/0.3)*(1-ease((t-CD-1.7)/0.3));q.c.visible=ok>0.3;if(ok>0)offerPose(q.p,ok);
       if(t>DR){q.p.rotation.y=0;standPose(q.p);q.p.userData.hip.rotation.x=0;q.p.userData.head.rotation.x=0.15;q.c.visible=false}});
     // 리더: 앞줄 가운데에서 일어나 시계 → 말하기 → 모래에 그리기
-    const lr=ease((t-RISE-0.1)/0.5);riseK(L,0,4.4-(1-ease(t/2.2))*2.2,lr,0);standPose(L);const u=L.userData;u.head.rotation.x=0;u.mouth.visible=t>l1.t0&&t<l1.t1&&Math.sin(t*22)>0;
+    const lr=clamp01((t-RISE-0.1)/0.75);riseUp(L,0,4.4-(1-ease(t/2.2))*2.2,lr,1.3*(1-ease(lr*1.6)));const u=L.userData;u.head.rotation.x=0;u.mouth.visible=t>l1.t0&&t<l1.t1&&Math.sin(t*22)>0;
     const wk=ease((t-WT)/0.25)*(1-ease((t-WT-1.2)/0.3));if(lr>=1&&wk>0)watchPose(L,wk);
     if(t>l1.t0+0.2&&t<DR){u.arms[1].rotation.x=-0.9*ease((t-l1.t0-0.2)/0.3);u.arms[1].rotation.z=0.2}
     if(t>=DR){L.position.set(-1.25,0,4.55);L.rotation.y=0.35;st.visible=true;const dk=clamp01((t-DR-0.1)/(n2.t1-DR-0.2));board.userData.set(dk);

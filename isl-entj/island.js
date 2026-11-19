@@ -31,7 +31,7 @@ function lie(p,x,z,yaw=0,o={}){const w=new THREE.Group();p.rotation.set(-Math.PI
   if(o.arms==='head'){u.arms.forEach(a=>{a.rotation.x=-2.9});u.arms[0].rotation.z=-0.5;u.arms[1].rotation.z=0.5}
   w.userData.p=p;return w}
 // 누운 → 일어섬 (발 기준 회전). k=0 누움, 1 섬
-function riseK(p,x,z,k,yaw=0){p.rotation.set(-Math.PI/2*(1-k),yaw,0,'YXZ');p.position.set(x,0.2*(1-k),z)}
+function riseK(p,x,z,k,yaw=0){p.rotation.set(-Math.PI/2*(1-k),yaw,0,'YXZ');p.position.set(x,0.12*(1-k),z)}
 function messy(p,hair=0x1d1d24){const h=p.userData.head;const g=new THREE.Group();h.add(g);
   for(let i=0;i<9;i++){const s=new THREE.Mesh(new THREE.SphereGeometry(0.075+(i%3)*0.02,16,12),smooth(hair));const a=i/9*Math.PI*2;s.position.set(Math.cos(a)*0.17,0.43+Math.sin(i*2.3)*0.04,Math.sin(a)*0.15-0.03);g.add(s)}
   for(let i=0;i<3;i++){const tw=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.018,0.018),lamb(0x8a6a44));tw.position.set(-0.06+i*0.07,0.52,-0.02+i*0.03);tw.rotation.set(0.3*i,i*1.1,0.5-i*0.4);g.add(tw)}
@@ -78,3 +78,13 @@ const IS=()=>{const scene=new THREE.Scene();addLights(scene,{hemi:1.5,sky:0xffff
 const PSHIRT=[0x9cc3ec,0xd98c8c,0x8cc9a0,0xe0c070,0xa58cd0,0x7fb7c9,0xe39a6b,0xc7a3c9,0x90b86c,0xf2b8c6];
 function crowd(r,n){const a=[];for(let i=0;i<n;i++)a.push(makePerson(r,{shirt:PSHIRT[i%PSHIRT.length],hair:pick(r,[0x1d1d24,0x2a2220,0x4a3426])}));return a}
 function mixc(a,b,k){const A=new THREE.Color(a),Bc=new THREE.Color(b);return '#'+A.lerp(Bc,clamp01(k)).getHexString()}
+// 누웠다 → 앉았다 → 일어섬 (몸이 판자처럼 들리지 않게). z = 다 일어섰을 때 위치, 누우면 머리가 -z
+function riseUp(p,x,z,k,yaw=0){const u=p.userData;standPose(p);const G=0.12;
+  const kA=ease(clamp01(k*1.8)),kB=ease(clamp01((k-0.5)*2));
+  const a=-Math.PI/2*(1-kA);const legR=-Math.PI/2-a;
+  const hipY=0.8+(G-0.8)*0;let hy=G+(0.8-G)*kB;const lr=legR*(1-kB);
+  u.legs.forEach(l=>l.rotation.x=lr);
+  // 엉덩이 월드 위치 = (x, hy, z) 고정, 몸통 각도 a
+  const oy=-0.8*Math.cos(a),oz=-0.8*Math.sin(a);
+  p.rotation.set(a,yaw,0,'YXZ');p.position.set(x+oz*Math.sin(yaw),hy+oy,z+oz*Math.cos(yaw));
+  if(kA<1){u.arms.forEach(a2=>{a2.rotation.x=0.4*(1-kA)})}}
