@@ -1,0 +1,13 @@
+B=https://elevenlabsusercontent.com/database/workspace/71c627992d48477da866dfd5d051ce12/content_generation
+curl -sS -o raw/n.mp3 "$B/gJ8fOeh8TzFArh6z8vpk/Wmwa2uVkSP6FSoZlMBjj/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=s63gQJo8IIC2-5QbTcNCEOJmbHM="
+curl -sS -o raw/j.mp3 "$B/ICW95eJzxp7W9Uj15NSC/szlNbpRDTfz5yiUUbgqA/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=dMyJX0k20kDsPtIAZpOStSrRPQg="
+curl -sS -o raw/e.mp3 "$B/Nu5bIZGRo6wYJezWU1yV/wstBDbKJMVWUWlvvxs6R/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=Fh818TlPHF7TAeEm96uzv-CRJR4="
+curl -sS -o raw/s.mp3 "$B/icSC5Um9uhSKMNP8DiIB/i1lCT9z2yAuf7CGFn9U6/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=mArHJLVIhnlSu_UG5aemByx6UiE="
+curl -sS -o raw/k.mp3 "$B/Oq8C3NpHoxFtqhsbkdkC/iE2ckUeiIhNaPK3yngNC/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=RpwJmcb5ZpgERk5ABKBnIJ5OfUQ="
+curl -sS -o raw/c.mp3 "$B/yK1rHKCsbO1dIqYSCOtR/ImVuXwixWCEaIya8Xu9n/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=2lbiWdzdk1cfReJD90gJV05pXe4="
+curl -sS -o raw/h.mp3 "$B/UQMPjaD5Bh9JQZeOmKXu/bFOKrzHU59FBsAc1DWmS/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=7C4HeXGu6-hi8HMCdbtcRKUi1gw="
+curl -sS -o raw/b.mp3 "$B/ZOR7KG2eItIntCi7xkyp/U0oDglQtjsyZtCxBgQU9/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=PQ3X8-P8ZWH8qCmH0CSZOSQHRBU="
+curl -sS -o raw/y.mp3 "$B/CXKg3TEEQ1yv7NfzQCNw/zVNPVdCjlShZVLUJ1VvG/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=DxYAto0CepMJX1Su2VoHLr_y0qY="
+curl -sS -o raw/d.mp3 "$B/9ygbwd3lghXiWufA0k7K/xCE9SVzVkIZaSK3Mnyyl/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=MuTPh9xEtDXpfoqf_CJWdT96L4M="
+curl -sS -o raw/t.mp3 "$B/MYkz9d0zAYdJClNYpmiK/MT6CjEWMaIdMr642govf/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=cJcfRpg7ySnkzzBtgxUulT0yu-o="
+curl -sS -o raw/a.mp3 "$B/34z9StxLzzXapQCoSw3l/hbzcKGhKmumEELmHPs0h/content.mp3?Expires=1795064400&KeyName=assets-cdn-key-1&Signature=oxYJk7t-FxzB2nxA4RrAUh1hNMs="

@@ -1,0 +1,9 @@
+node_modules
+out2/
+shots/
+cs/
+voice.raw
+video.mp4
+list.txt
+*.log
+index.html
