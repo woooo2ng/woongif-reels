@@ -366,8 +366,8 @@ S[5]=()=>{
   // 세안 파트(별도 공간, x=40)
   const HR=makeHero({shirt:0xd98c8c,pants:0x55506a});HR.position.set(40,0,0);scene.add(HR);const M=messy(HR);eyesK(HR,0.35);
   const rk2=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.34,0.86,12),lamb(0x9a7652));rk2.scale.set(1,1.15,1);rk2.position.set(39.58,0.495,1.95);scene.add(rk2);const rkTop=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.02,12),lamb(0xd9b98a));rkTop.position.set(39.58,0.975,1.95);scene.add(rkTop);
-  const tube2=makeTube();tube2.scale.setScalar(0.33);tube2.position.set(39.58,0.98,1.95);tube2.rotation.y=0.11;scene.add(tube2);// 참고 이미지처럼: 밝게 날리지 않는 연회색 튜브 + 진한 글씨
-  tube2.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshStandardMaterial){o.material=o.material.clone();o.material.color=new THREE.Color(0xdedede);o.material.emissive=new THREE.Color(0x141414);o.material.roughness=0.75}});
+  const tube2=makeTube();tube2.scale.setScalar(0.33);tube2.position.set(39.58,0.98,1.95);tube2.rotation.y=0.11;scene.add(tube2);// 실제 제품처럼 하얀 튜브(라곰 3차 피드백) — 라벨 맵을 발광 맵으로 써서 글씨는 진하게 유지
+  tube2.traverse(o=>{if(o.isMesh&&o.material&&o.material.isMeshStandardMaterial){o.material=o.material.clone();o.material.color=new THREE.Color(0xffffff);o.material.emissive=new THREE.Color(0x707070);if(o.material.map)o.material.emissiveMap=o.material.map;o.material.roughness=0.75}});
   const kl2=new THREE.PointLight(0xffffff,0.0,1.4,1.6);kl2.position.set(39.25,1.6,2.5);scene.add(kl2);
   const leaf=new THREE.Mesh(new THREE.ConeGeometry(0.5,2.2,4),lamb(0x4ba05c));leaf.scale.z=0.2;leaf.rotation.set(0,0,-1.35);leaf.position.set(40.95,2.75,0.4);scene.add(leaf);
   const p3=palm(scene,41.9,-1.2,1.35,-0.3,2.0);
