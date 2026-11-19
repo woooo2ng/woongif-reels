@@ -277,7 +277,7 @@ def vib(vol=0.0): return np.zeros(int(0.1 * SR))
 _load2 = load
 def load(name):
     x = _load2(name)
-    if name in ('b1', 'c1'): return megaphone(x)
+    if name in ('b1', 'c1', 'c3'): return megaphone(x)
     if name == 'c2': return radio(x)
     return x
 
@@ -287,7 +287,7 @@ SC = [
     [('b1', 1.0), ('n3', 0.7)],
     [('n4', 1.5), ('m1', 0.7), ('h1', 0.3), ('m2', 0.3), ('h2', 0.3), ('m3', 0.3), ('z2', 0.9), ('n5', 0.5)],
     [('t1', 0.9), ('z1', 1.7), ('t2', 0.6), ('n9', 1.1)],
-    [('c2', 4.3), ('n7', 2.6), ('n8', 1.7)],
+    [('c3', 0.4), ('c2', 3.0), ('n7', 3.4), ('n8', 1.7)],
 ]
 POST = {0: 0.2, 1: 0.3, 2: 0.3, 3: 0.2, 4: 2.3}
 info = []
@@ -348,7 +348,7 @@ def sfx(si, ev):
         place(b, buzz(0.12), D['camon'] - 0.05); place(b, ding(0.2), D['camon'])
         place(b, stamp(0.3), D['award']); place(b, ding(0.22), D['award'] + 0.05)
     elif si == 4:
-        D = {'land': vt('c2', -2.75), 'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.2), 'year': vt('n7', -1.0),
+        D = {'land': ve('c3', 0.35), 'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.5), 'year': vt('n7', -1.0), 'real': vt('n8', -0.1),
              'pull': ve('n7', 0.25), 'end': info[si]['len'] + LEAD + 0.75 - 1.6}
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += heli(T, 0.13) * np.clip((D['leave'] + 1.6 - tt) / 1.6, 0, 1)
