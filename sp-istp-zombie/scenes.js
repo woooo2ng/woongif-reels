@@ -404,6 +404,11 @@ S[4]=()=>{
   const desk=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.08,0.55),lamb(0x8a6a4e));desk.position.set(0,0.72,0.72);HR.g.add(desk);
   const bw=bowl();bw.position.set(0,0.82,0.62);HR.g.add(bw);
   AP.rooms.forEach(rm=>{if(rm!==HR&&rm.p.userData.bowl){}});
+  // 엔딩용: 방마다 각자 노는 모습 (TV·게임·먹기·폰)
+  const GAMET=new THREE.MeshBasicMaterial({map:canvasTex(256,150,(g,w,h)=>{g.fillStyle='#2b1f4a';g.fillRect(0,0,w,h);const cols=['#ff6b6b','#ffd84d','#5ad17a','#6bb8ff','#c38bff'];for(let i=0;i<14;i++){g.fillStyle=cols[i%5];g.fillRect(14+(i%7)*33,40+Math.floor(i/7)*36,28,28)}g.fillStyle='#fff';g.font=`900 26px ${FONT}`;g.fillText('STAGE 99',70,128)})});
+  const ENDA=['tv','game','eat','phone'];
+  AP.rooms.forEach((rm,i)=>{rm.end=rm===HR?'tv':ENDA[(i*3+1)%4];if(rm.end==='game'){const pad=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.06,0.14),lamb(0x222228));rm.p.userData.hip.add(pad);pad.position.set(0,0.28,0.42);pad.visible=false;rm.pad=pad}
+    if(rm.end==='tv'){const sb=bowl();sb.scale.setScalar(0.9);rm.g.add(sb);sb.position.set(0.5,0.06,0.25);sb.visible=false;rm.snack=sb}});
   const hel=heliM();sc.add(hel);const res=hel.userData.res;
   const SL=searchCone(sc);const room0={x:HR.x,y:HR.y+1.1};
   const hlite=glowSprite('rgba(255,250,220,1)',1.8);hlite.material.opacity=0.28;hlite.position.set(HR.x,HR.y+1.4,-2.1);sc.add(hlite);
@@ -448,7 +453,14 @@ S[4]=()=>{
     else if(mode==='wide'){const k=ease(t/TLd);C.fov=50;C.position.set(HR.x*0.3+1.4,HR.y+1.5,30-k*2);C.lookAt(HR.x*0.3+1.4,HR.y+2.4,0);renderer.render(sc,C)}
     else if(mode==='win'){const k=ease((t-TLd)/(TRd-TLd));C.fov=42;C.position.set(HR.x+0.25,HR.y+1.25,3.3-k*0.5);C.lookAt(HR.x,HR.y+0.95,-1.2);if(t>=TL){C.position.set(HR.x+0.2,HR.y+1.2,2.6);C.lookAt(HR.x,HR.y+0.9,-1.2)}renderer.render(sc,C)}
     else if(mode==='res'){const sw=Math.sin(t*2.3)*0.04;C.fov=7;C.position.set(HR.x+2.5,HR.y+2.2,24);C.lookAt(HR.x+sw,HR.y+1.25+Math.cos(t*1.7)*0.03,-0.9);hlite.visible=false;C.updateProjectionMatrix();renderer.render(sc,C);C.fov=50;C.updateProjectionMatrix()}
-    else if(mode==='pull'){AP.rooms.forEach(rm=>{const p=rm.p;p.rotation.y=Math.PI;p.position.z=0.35;if(p.userData.tbl)p.userData.tbl.visible=false;if(p.userData.bowl){p.userData.bowl.position.set(0,0.42,-0.05)}});chair.visible=false;desk.visible=false;bw.visible=false;me.position.z=0.35;
+    else if(mode==='pull'){chair.visible=false;desk.visible=false;bw.visible=false;
+      AP.rooms.forEach(rm=>{const p=rm.p,u3=p.userData;sitPose(p);u3.arms.forEach(a=>{a.rotation.z=0});if(u3.ph)u3.ph.visible=false;if(rm.pad)rm.pad.visible=false;if(rm.snack)rm.snack.visible=false;
+        const tb=u3.tbl,bl=u3.bowl;if(tb)tb.visible=false;if(bl)bl.visible=false;const ph=t*5+rm.c*1.3+rm.r*0.7;
+        if(rm.end==='tv'){p.rotation.y=Math.PI;p.position.set(0,-0.36,0.35);u3.arms.forEach(a=>a.rotation.x=-0.5);u3.arms[1].rotation.x=-0.9+Math.max(0,Math.sin(ph*0.6))*0.6;u3.head.rotation.x=0;if(rm.snack)rm.snack.visible=true}
+        else if(rm.end==='game'){p.rotation.y=Math.PI;p.position.set(0,-0.36,0.35);u3.arms.forEach((a,j)=>a.rotation.x=-1.05+Math.sin(ph*3+j)*0.08);u3.head.rotation.x=-0.05;rm.pad.visible=true;if(rm.tvm)rm.tvm.material=GAMET;p.position.x=Math.sin(ph*0.8)*0.05}
+        else if(rm.end==='eat'){p.rotation.y=0;p.position.set(0,-0.36,0.1);if(tb)tb.visible=true;if(bl){bl.visible=true;bl.position.set(0,0.42,0.72)}u3.arms.forEach(a=>a.rotation.x=-1.2);u3.head.rotation.x=0.3+Math.sin(ph)*0.1}
+        else{p.rotation.y=0;p.position.set(0,-0.36,0.1);holdPhone(p,1);u3.head.rotation.x=0.38+Math.sin(ph*0.5)*0.05}});
+      me.scale.setScalar(0.9);
       const k=ease((t-TP)/3.4);C.fov=50;C.position.set(HR.x+0.3+k*0.2,HR.y+1.75+k*0.2,2.4+k*12);C.lookAt(HR.x+k*0.3,HR.y+1.1-k*0.6,-1.4);
       AP.rooms.forEach(rm=>{if(rm!==HR){const uu=rm.p.userData;uu.head.rotation.x=0.25+Math.sin(t*5+rm.c+rm.r)*0.08}});renderer.render(sc,C)}
     else{renderer.render(sc,C)}
