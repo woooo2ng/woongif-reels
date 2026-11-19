@@ -517,7 +517,7 @@ S[1]=()=>{
     // 0~: 사람들이 코코넛을 못 땀(점프)
     below.forEach((p,i)=>{standPose(p);armUp(p,1,1);armUp(p,0,0.8);p.position.y=Math.max(0,Math.sin(t*7+i*1.3))*0.35});
     // 면접
-    L.position.set(-0.95,0.42,2.6);L.rotation.y=Math.PI/2;sitPose(L);const u=L.userData;u.arms[0].rotation.set(-1.0,0,0.3);u.head.rotation.x=t<l2.t0+1.6?0.3:0.05;u.mouth.visible=t>l2.t0&&t<l2.t1&&Math.sin(t*22)>0;
+    L.position.set(-1.05,-0.03,2.6);L.rotation.y=Math.PI/2;sitPose(L);L.userData.legs.forEach(l=>l.rotation.x=-1.15);const u=L.userData;u.arms[0].rotation.set(-1.0,0,0.3);u.head.rotation.x=t<l2.t0+1.6?0.3:0.05;u.mouth.visible=t>l2.t0&&t<l2.t1&&Math.sin(t*22)>0;
     mk.position.set(0.95,0.36,2.6);mk.rotation.y=-Math.PI/2;monkeySit(mk);mk.userData.arms[1].rotation.x=-0.9;mk.userData.head.rotation.z=Math.sin(t*3)*0.12;
     bd.visible=t>BG;bd.scale.setScalar(t>BG?pop((t-BG)/0.3):0.01);showB(kb,t,l2.t1+0.1,l2.t1+1.0);
     // 넓은 컷: 원숭이들이 나무를 오르내리며 코코넛
