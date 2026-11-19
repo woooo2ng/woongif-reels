@@ -681,6 +681,29 @@ S[5]=()=>{
   };
 };
 
+// 문이 열린 헬기(옆면이 뚫려 안에 앉은 사람이 보임). 몸체 기준 +z가 열린 쪽
+function heliOpen(){const g=new THREE.Group();const red=lamb(0xff6b5a),wh=lamb(0xffffff),dk=lamb(0x3a3a44);
+  const add=(geo,m,x,y,z)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);g.add(o);return o};
+  add(new THREE.BoxGeometry(3.0,0.14,1.6),red,0,-0.72,0);                 // 바닥
+  add(new THREE.BoxGeometry(3.1,0.14,1.7),red,0,0.78,0);                  // 지붕
+  add(new THREE.BoxGeometry(3.0,1.5,0.1),red,0,0.03,-0.78);               // 반대쪽 벽
+  add(new THREE.BoxGeometry(0.1,1.5,1.6),red,-1.5,0.03,0);                // 뒷벽
+  add(new THREE.BoxGeometry(3.0,1.48,0.04),lamb(0x8a4a48),0,0.03,-0.72);  // 안쪽 그늘
+  add(new THREE.BoxGeometry(3.0,0.3,0.08),red,0,-0.58,0.78);              // 문턱(다리 가림)
+  add(new THREE.BoxGeometry(3.0,0.08,0.09),wh,0,-0.4,0.79);               // 흰 줄
+  for(const x of[-1.48,0.55])add(new THREE.BoxGeometry(0.12,1.5,0.12),red,x,0.03,0.78);   // 문틀 기둥
+  add(new THREE.BoxGeometry(1.9,0.18,0.5),lamb(0x4a5a7a),-0.45,-0.52,-0.35);              // 좌석 벤치
+  add(new THREE.BoxGeometry(1.9,0.6,0.12),lamb(0x4a5a7a),-0.45,-0.2,-0.6);                // 등받이
+  // 조종석: 앞쪽 둥근 코 + 유리
+  const nose=add(new THREE.SphereGeometry(0.85,24,16,0,Math.PI),red,1.5,0.03,0);nose.rotation.y=Math.PI/2;nose.scale.set(1,0.9,0.95);
+  const glass=add(new THREE.SphereGeometry(0.7,24,16,0,Math.PI,0,Math.PI/2),smooth(0xbfe8ff),1.55,0.12,0);glass.rotation.y=Math.PI/2;glass.scale.set(1.15,1,0.95);
+  const tail=add(new THREE.CylinderGeometry(0.12,0.26,2.6,8),red,-2.8,0.35,0);tail.rotation.z=Math.PI/2;
+  add(new THREE.BoxGeometry(0.4,0.9,0.08),wh,-4.0,0.7,0);
+  const cross=add(new THREE.PlaneGeometry(0.5,0.5),basic(0xffffff),-0.6,1.0,0.86);cross.visible=false;
+  add(new THREE.CylinderGeometry(0.08,0.08,0.35,6),dk,0,1.0,0);
+  const rot=new THREE.Group();rot.position.y=1.2;g.add(rot);for(let i=0;i<2;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(6.0,0.04,0.22),lamb(0x333338));b.rotation.y=i*Math.PI/2;rot.add(b)}
+  for(const z of[-0.7,0.7]){add(new THREE.BoxGeometry(3.0,0.08,0.1),dk,0,-1.15,z);for(const x of[-0.7,0.7])add(new THREE.BoxGeometry(0.06,0.4,0.06),dk,x,-0.95,z)}
+  g.userData.rot=rot;return g}
 // ---------- S6 30일째: 리조트로 팔고 헬기로 떠남 → 엔딩 카드 ----------
 S[6]=()=>{
   sky('#ffb37a','#ffd9a8','#fff0d6');
@@ -688,10 +711,10 @@ S[6]=()=>{
   palm(scene,-5.4,-2.6,1.6,0.3,0.3);palm(scene,5.6,-3.2,1.5,-0.3,2);palm(scene,-6.4,3,1.3,0.2,1);
   const sg=signBoard(['리조트 오픈 예정','(주)무인도 → 매각 완료'],{w:3.4,h:1.5,fs:[120,72],y:1.3});sg.position.set(-0.9,0,0.6);scene.add(sg);
   const sold=labelSprite('SOLD',{bg:'#e2335a',fg:'#ffffff',fs:70,size:0.0055,r:12});sold.position.set(-0.4,3.05,0.32);scene.add(sold);
-  const HL=heli();HL.scale.setScalar(1.2);scene.add(HL);
+  const HL=heliOpen();HL.scale.setScalar(1.15);scene.add(HL);
   // 헬기 문 옆에 손 흔드는 사람들 + 조종석의 구조대원
-  const riders=crowd(r,4).map((p,i)=>{p.scale.setScalar(0.55);p.position.set(-0.9+i*0.55,-0.75,0.95);HL.add(p);return p});
-  const pilot=rescuer(r);pilot.scale.setScalar(0.5);pilot.position.set(0.9,-0.6,0.3);pilot.rotation.y=Math.PI/2;HL.add(pilot);
+  const riders=[leader(),...crowd(r,3)].map((p,i)=>{p.scale.setScalar(0.62);p.position.set(-1.05+i*0.5,-0.82,-0.32);HL.add(p);return p});
+  const pilot=rescuer(r);pilot.scale.setScalar(0.62);pilot.position.set(1.1,-0.82,0);pilot.rotation.y=Math.PI/2;HL.add(pilot);
   const ms=[0,1,2,3].map(i=>{const m=monkey();badge(m);scene.add(m);m.position.set(-1.6+i*1.05,0,3.6+(i%2)*0.4);m.rotation.y=Math.PI*0.95;return m});
   const L=leader();scene.add(L);const buyer=makePerson(r,{shirt:0xf2f2f2,pants:0xd9c9a8});scene.add(buyer);
   const ctr=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.02,0.4),lamb(0xffffff));ctr.position.set(0,-0.66,0.1);buyer.userData.arms[0].add(ctr);
@@ -702,9 +725,9 @@ S[6]=()=>{
   const e1=document.createElement('div');e1.className='end1 out';e1.textContent='다음 무인도편은?';ui.appendChild(e1);
   const e2=document.createElement('div');e2.className='end2 out';e2.textContent='팔로우하고 기다려 주세요';ui.appendChild(e2);
   return t=>{B.upd(t);
-    const up=t<TK?0:ease((t-TK)/3.2);HL.position.set(2.0-up*1.5,1.45+up*6.5,-1.2-up*2);HL.rotation.set(0,-0.35,up*0.08);HL.userData.rot.rotation.y=t*(t<TK?18:32);
-    riders.forEach((p,i)=>{standPose(p);sitPose(p);p.visible=t>=TK;wave(p,t,1,i)});
-    pilot.userData&&sitPose(pilot);
+    const up=t<TK?0:ease((t-TK)/3.2);HL.position.set(2.0-up*1.5,1.45+up*6.5,-1.2-up*2);HL.rotation.set(0,-0.12,up*0.06);HL.userData.rot.rotation.y=t*(t<TK?18:32);
+    riders.forEach((p,i)=>{standPose(p);sitPose(p);p.visible=t>=TK;p.userData.legs.forEach(l=>l.rotation.x=-1.25);wave(p,t,1,i);p.userData.hip.rotation.x=-0.05+Math.sin(t*3+i)*0.03});
+    standPose(pilot);sitPose(pilot);pilot.userData.legs.forEach(l=>l.rotation.x=-1.25);pilot.userData.arms.forEach(a=>a.rotation.x=-1.2);
     // 악수(0~TK): 리더와 바이어
     L.visible=buyer.visible=t<TK;L.position.set(0.2,0,2.4);L.rotation.y=Math.PI/2;buyer.position.set(1.1,0,2.4);buyer.rotation.y=-Math.PI/2;standPose(L);standPose(buyer);
     const sh=Math.sin(t*14)*0.12;L.userData.arms[1].rotation.set(-1.1+sh,0,-0.15);buyer.userData.arms[1].rotation.set(-1.1-sh,0,0.15);buyer.userData.arms[0].rotation.set(-0.6,0,0);
