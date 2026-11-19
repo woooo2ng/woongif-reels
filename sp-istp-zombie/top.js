@@ -7,6 +7,7 @@ const TXT={
  n4:[['좀비는 작은 소리에도 반응합니다.',0],['하지만 이 나라 폰은,',2.29],['원래 무음이었습니다.',3.69]],
  m1:['살아 있냐.'],h1:['어.'],m2:['밥은.'],h2:['먹음.'],m3:['그래.'],z2:['…으어?'],n5:['좀비 사태에도,','가족 걱정은 3초면 끝났습니다.'],
  c1:['생존자는 창밖으로 손을 흔들어 주세요!'],n6:[['다들 살아 있었습니다.',0],['손을 안 흔들었을 뿐이죠.',1.33]],
+ t1:['다들 무사한지 카메라 좀 켜 주세요.'],t2:['…김 대리님만 열정 있네요.'],n9:['이 나라에서 회의에 제일 적극적인 건,','좀비였습니다.'],
  c2:['…반응 없음.','좀비로 판정.'],n7:[['좀비 사태 1년째.',0],['공식 생존자는 0명입니다.',1.46]],n8:['…다들 잘 살고 있는 것 같습니다.'],
 };
 const CAPL={};
@@ -92,5 +93,16 @@ const endOf=(si,nm,k=0)=>LEAD+LN(si,nm)[0]+LN(si,nm)[1]+k;
 .end2{position:absolute;left:0;right:0;text-align:center;top:690px;font-size:60px}
 .bino{position:absolute;inset:0;pointer-events:none}
 .zst{position:absolute;left:540px;top:860px;border:16px solid #e2332d;color:#e2332d;font-size:170px;font-weight:900;padding:0 50px;border-radius:30px;background:rgba(255,255,255,.18);white-space:nowrap}
+.meet{position:absolute;inset:0;background:#15171f}
+.mbar{position:absolute;left:0;right:0;top:0;height:120px;background:#20232e;display:flex;align-items:center;justify-content:space-between;padding:0 40px;color:#dfe3ee;font-size:34px;font-weight:800;box-sizing:border-box}
+.mbar i{font-style:normal;color:#ff6b6b}
+.tile{position:absolute;width:320px;height:200px;border-radius:18px;background:#2a2d38;overflow:hidden;box-sizing:border-box;border:4px solid transparent}
+.tile .ini{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:86px;height:86px;border-radius:50%;color:#fff;font-size:40px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.tile .nm{position:absolute;left:12px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:26px;font-weight:800;padding:2px 12px;border-radius:8px}
+.tile .mu{position:absolute;right:12px;bottom:10px;color:#ff6b6b;font-size:22px;font-weight:900;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:8px}
+.tile.live{background:transparent;border-color:#5ad17a}
+.mbot{position:absolute;left:0;right:0;bottom:0;height:150px;background:#20232e;display:flex;align-items:center;justify-content:center;gap:40px}
+.mbot b{display:block;width:96px;height:96px;border-radius:50%;background:#3a3e4c}
+.mbot b.red{background:#e2332d}
 .yr{position:absolute;inset:0;background:#111;display:flex;align-items:center;justify-content:center;font-size:140px}
 `;document.head.appendChild(st)}

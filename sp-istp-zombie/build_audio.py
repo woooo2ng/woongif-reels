@@ -286,7 +286,7 @@ SC = [
     [('n1', 0.35), ('z1', 2.3), ('p1', 0.9), ('n2', 3.7)],
     [('b1', 1.0), ('n3', 0.7)],
     [('n4', 1.5), ('m1', 0.7), ('h1', 0.3), ('m2', 0.3), ('h2', 0.3), ('m3', 0.3), ('z2', 0.9), ('n5', 0.5)],
-    [('c1', 0.9), ('n6', 2.6)],
+    [('t1', 0.9), ('z1', 1.7), ('t2', 0.6), ('n9', 1.1)],
     [('c2', 4.3), ('n7', 2.6), ('n8', 1.7)],
 ]
 POST = {0: 0.2, 1: 0.3, 2: 0.3, 3: 0.2, 4: 2.3}
@@ -340,11 +340,13 @@ def sfx(si, ev):
         for i in range(5): place(b, step(0.13), D['pass'] + 0.4 + i * 0.35)
         place(b, hum(T - D['calm'], 0.02), D['calm'])
     elif si == 3:
-        D = {'blind0': ve('c1', 1.0), 'wide': ve('c1', 1.3), 'check': vt('n6', 0.9)}
+        D = {'grid': ve('t1', 0.1), 'camon': vt('z1', -0.7), 'big': vt('z1', 0.6), 'award': ve('t2', 0.25)}
         ev.update({k: round(x, 3) for k, x in D.items()})
-        b += heli(T, 0.12)
-        for i in range(20): place(b, blind(0.2 + 0.08 * (i % 3 == 0)), D['blind0'] + i * 0.07)
-        place(b, tick(0.2), D['check']); place(b, stamp(0.25), D['check'] + 0.5)
+        b += hum(T, 0.02)
+        place(b, ding(0.18), 0.15)
+        for i in range(12): place(b, tick(0.06), D['grid'] + i * 0.05)
+        place(b, buzz(0.12), D['camon'] - 0.05); place(b, ding(0.2), D['camon'])
+        place(b, stamp(0.3), D['award']); place(b, ding(0.22), D['award'] + 0.05)
     elif si == 4:
         D = {'land': vt('c2', -2.75), 'nod': vt('c2', -1.6), 'radio': vt('c2', -0.35), 'leave': ve('c2', 0.4), 'slurp': ve('c2', 1.2), 'year': vt('n7', -1.0),
              'pull': ve('n7', 0.25), 'end': info[si]['len'] + LEAD + 0.75 - 1.6}
