@@ -72,6 +72,8 @@ L = {
  'n7': cutp('raw/nar.mp3', 29.21, 31.35, 1.05, squeeze=True),
  'n8': cutp('raw/nar.mp3', 31.82, 37.20, 1.05, squeeze=True),
  'n9': cutp('raw/nar_b.mp3', 0.00, 2.55, 1.05, squeeze=True),
+ 'n10': cutp('raw/nar_c.mp3', 0.00, 3.40, 1.05, squeeze=True),
+ 'l6': cutp('raw/lead_b.mp3', 0.00, 4.70, 1.05, squeeze=True),
  'l1': cutp('raw/lead.mp3', 0.00, 3.49, 1.05, squeeze=True),
  'l2': cutp('raw/lead.mp3', 4.18, 8.24, 1.05, squeeze=True),
  'l3': cutp('raw/lead.mp3', 8.79, 11.27, 1.05, squeeze=True),
@@ -88,6 +90,8 @@ TXT = {
  'n3': ['사흘 만에,', '섬 원숭이들은 정규직이 됐습니다.'],
  'n4': ['무인도에서의 첫날 밤.', '다들 별을 보며 울 줄 알았는데,'],
  'n9': ['첫날 밤부터, 회고를 했어요.'],
+ 'n10': ['해도 뜨기 전에,', '다들 갓생을 살았어요.'],
+ 'l6': ['"5시 기상인데,"', '"4시 59분에 일어나셨네요? 좋습니다."'],
  'l3': ['"자, 오늘 회고 하죠."', '"아쉬운 점부터."'],
  'l4': ['"근데 이게 최선이에요?"'],
  'n5': ['구조 신호도 고쳤어요.', '구조받는 것보다, 사람 뽑는 게 더 급했거든요.'],
@@ -154,16 +158,20 @@ e = place(1, 'n3', e + 0.8)
 M['coco'] = e - 2.6
 X += [(1, thud(0.18), M['coco'] + k * 0.3) for k in range(7)] + [(1, ping(0.1), e - 0.5)]
 D.append(e + 0.9)
-# 2 첫날 밤 감성 → 회고
-X += [(2, fire(10, 0.04), 0.0), (2, waves(10, 0.025), 0.0)]
-e = place(2, 'n4', 0.4)
-X += [(2, guitar(e + 0.1), 0.0)]
-M['cut'] = e + 0.1
-X += [(2, scratchrec(), M['cut'])]
-e = place(2, 'n9', e + 0.45)
-e = place(2, 'l3', e + 0.3)
-M['hands'] = e - 0.4
-D.append(e + 1.0)
+# 2 무인도 2일째 새벽 미라클 모닝: 4:59 전원 기상 → 리더 → 해변 러닝 → 일출 스트레칭
+def snore(vol=0.05, d=1.0):
+    n = int(d * SR); t = np.arange(n) / SR
+    return lp(rs.standard_normal(n), 400) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.9 * t)) ** 2 * vol * 3
+X += [(2, waves(10.5, 0.03), 0.0), (2, snore(0.05, 0.9), 0.0)]
+M['wake'] = 0.9
+X += [(2, swoosh(0.14, 0.3), M['wake']), (2, thud(0.25), M['wake'] + 0.15), (2, gasp(0.12), M['wake'] + 0.1)]
+e = place(2, 'l6', M['wake'] + 0.55)
+M['jog'] = e + 0.3
+X += [(2, ping(0.1), M['jog'] - 0.1), (2, music(5.0, 0.05, 140), M['jog']), (2, steps(26, 0.16, 0.12), M['jog'])]
+e = place(2, 'n10', M['jog'] + 0.5)
+M['sun'] = e - 0.9
+X += [(2, sparkle(0.07), M['sun'] + 0.2), (2, shimmer(0.06), M['sun'] + 0.4)]
+D.append(e + 1.1)
 # 3 SOS → "근데 이게 최선이에요?" → 통나무 다시 옮겨 '채용 중' → 비행기
 X += [(3, waves(9, 0.035), 0.0), (3, thud(0.2), 0.5)]
 e = place(3, 'l4', 1.0)
