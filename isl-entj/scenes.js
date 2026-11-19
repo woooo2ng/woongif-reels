@@ -242,7 +242,7 @@ S[2]=()=>{
     else{L.visible=true;st.visible=true;L.position.set(-1.95,0,2.15);L.rotation.y=Math.PI/2-0.3;standPose(L);u.hip.rotation.x=0.2;u.head.rotation.x=0.25;
       u.arms[1].rotation.set(-0.75+Math.sin(t*13)*0.2,0,0);u.mouth.visible=t>l3.t0&&t<l3.t1&&Math.sin(t*22)>0;
       if(t>l3.t0+1.2){u.arms[1].rotation.set(-1.2,0,0);u.hip.rotation.x=0;u.head.rotation.x=0}}
-    board.userData.set((t-CUT-0.05)/1.4);
+    board.userData.set((t-CUT-0.05)/2.0);
     if(t<CUT){const c=ease(t/CUT);cam.position.set(0,2.4,6.8-c*0.8);cam.lookAt(0,1.6,-1)}
     else{cam.position.set(0.2,6.6,8.6);cam.lookAt(0,0,2.3)}
     if(t>=CUT){ck.innerHTML='무인도 1일째 밤 · <b>회고 진행 중</b>'}
