@@ -243,7 +243,7 @@ def bounce_bgm(dur, vol=0.12):  # 몽타주용 경쾌한 비트
 
 SC = [
     [('n1', 0.0), ('gb', 0.3), ('eb', 0.3), ('sq', 1.15), ('gn', 0.35), ('bt', 2.6), ('nb', 0.4)],
-    [('gj', 0.3), ('fs', 1.45), ('f1', 0.85), ('s4', 0.9), ('f2', 0.3), ('sm', 0.6), ('nk', 0.85)],
+    [('gj', 0.3), ('fs', 1.45), ('f1', 0.85), ('s4', 0.9), ('f2', 0.3), ('sm', 0.6), ('nk', 1.6)],
     [('sm1', 1.6), ('gm1', 0.25), ('fm1', 0.25), ('sm2', 0.6), ('fm2', 0.4), ('gm2', 2.1), ('eo2', 0.1), ('nm', 0.4)],
     [('gq', 1.0), ('en', 0.25), ('gw', 0.25), ('eo', 0.2), ('ne', 2.1)],
 ]
@@ -300,7 +300,7 @@ def sfx(si, ev):
         ev['run'] = round(vt('f2', -0.35), 3)
         ev['up'] = round(vt('sm', -0.5), 3); place(b, boing(0.3), ev['up']); place(b, squeeze(0.45), ev['up'] + 0.25)
         place(b, sparkle(0.15), end('sm', 0.05))
-        ev['dt'] = round(end('sm', 0.15), 3)
+        ev['dt'] = round(end('sm', -0.5), 3)
         ev['wide'] = round(vt('nk', -0.3), 3)
         for i in range(8): place(b, squeeze(0.12), ev['wide'] + 0.3 + i * 0.55); place(b, giggle(0.06), ev['wide'] + 0.5 + i * 0.55)
     elif si == 2:
