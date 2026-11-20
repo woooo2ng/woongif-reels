@@ -244,11 +244,11 @@ def bounce_bgm(dur, vol=0.12):  # 몽타주용 경쾌한 비트
 SC = [
     [('n1', 0.0), ('gb', 0.3), ('eb', 0.3), ('sq', 1.15), ('gn', 0.35), ('bt', 2.6), ('nb', 0.4)],
     [('gj', 0.3), ('fs', 1.45), ('f1', 0.85), ('s4', 0.9), ('f2', 0.3), ('sm', 0.6), ('nk', 0.85)],
-    [('e5a', 0.5), ('e5c', 0.15), ('s7', 2.0), ('ey', 2.2), ('ny', 0.35)],
+    [('sm1', 1.6), ('gm1', 0.25), ('fm1', 0.25), ('sm2', 0.6), ('fm2', 0.4), ('gm2', 2.1), ('eo2', 0.1), ('nm', 0.4)],
     [('gq', 1.0), ('en', 0.25), ('gw', 0.25), ('eo', 0.2), ('ne', 2.1)],
 ]
-POST = {0: 0.5, 1: 0.9, 2: 0.4, 3: 1.9}
-MEGA = {'eb', 'e5a', 'e5c'}
+POST = {0: 0.5, 1: 0.9, 2: 0.8, 3: 1.9}
+MEGA = {'eb', 'gm1'}
 RAW = {'e5c'}
 info = []
 for si, lines in enumerate(SC):
@@ -261,6 +261,8 @@ for si, lines in enumerate(SC):
         else: x = load(name)
         if name in MEGA: x = megaphone_fx(x)
         if name == 'bt': x = x * 0.9
+        if name == 'sm2': x = trim(rd(name, 1.07, 1.12))
+        if name == 'fm2': x = trim(rd(name, 0.93, 1.25))
         t += gap; starts[name] = [round(t, 3), round(len(x) / SR, 3)]; xs.append((x, t)); t += len(x) / SR
     T = t + POST.get(si, 0)
     v = np.zeros(int(T * SR) + 1)
@@ -302,16 +304,21 @@ def sfx(si, ev):
         ev['wide'] = round(vt('nk', -0.3), 3)
         for i in range(8): place(b, squeeze(0.12), ev['wide'] + 0.3 + i * 0.55); place(b, giggle(0.06), ev['wide'] + 0.5 + i * 0.55)
     elif si == 2:
-        place(b, fanfare(0.08), LEAD + 0.0)
-        ev['crack'] = round(vt('e5c', 0.29), 3); place(b, screech(0.1), ev['crack'] + 0.05)
-        ev['snap'] = round(vt('e5c', 0.5), 3); place(b, shutter(0.55), ev['snap'])
-        ev['caw'] = round(end('e5c', 0.75), 3); place(b, caw(0.22), ev['caw'])
-        ev['hold'] = round(end('e5c', 1.0), 3)
-        ev['meme'] = round(end('s7', 0.35), 3); place(b, whoosh(0.5, 0.2), ev['meme'])
-        for i in range(6): place(b, blip(1200, 0.05), ev['meme'] + 0.2 + i * 0.12)
-        for i in range(4): place(b, giggle(0.07), ev['meme'] + 0.4 + i * 0.5)
-        ev['smirk'] = round(vt('ey', 1.6), 3)
-        ev['prof'] = round(vt('ny', -0.35), 3); place(b, ding(0.2), ev['prof'] + 0.1)
+        place(b, drone(vt('sm1') + 0.3, 0.07), 0)
+        ev['eat'] = round(LEAD + 0.05, 3)
+        for k in range(3): place(b, tick(0.15), ev['eat'] + 0.3 + k * 0.3)
+        ev['bino'] = round(vt('sm1', -0.6), 3)
+        ev['shock'] = round(vt('sm1', 0.4), 3); place(b, stamp(0.4), ev['shock'] - 0.1)
+        ev['hand'] = round(vt('sm2', -0.35), 3)
+        place(b, giggle(0.0), 0)
+        ev['mur'] = round(end('sm2', 0.1), 3)
+        mur = filt(noise(1.6), 'bandpass', [250, 1200], 2) * np.sin(np.linspace(0, np.pi, int(1.6 * SR))) * 0.12
+        place(b, mur, ev['mur'])
+        ev['reg'] = round(end('fm2', 0.25), 3)
+        place(b, steps(vt('gm2') - ev['reg'], 0.09, 0.09), ev['reg']); place(b, bounce_bgm(vt('gm2') - ev['reg'], 0.08), ev['reg'])
+        place(b, whoosh(0.6, 0.15), ev['reg'])
+        ev['look'] = round(vt('gm2', -0.35), 3)
+        ev['top'] = round(vt('nm', -0.25), 3); place(b, ding(0.2), ev['top'] + 0.4)
     elif si == 3:
         ev['yawn'] = round(LEAD + 0.3, 3)
         ev['mont'] = round(end('eo', 0.15), 3); ev['word'] = round(vt('ne', 2.4), 3)
