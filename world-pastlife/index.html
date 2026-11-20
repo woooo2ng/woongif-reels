@@ -501,7 +501,7 @@ S[7]=()=>{sky('#dfe6ef');const scene=new THREE.Scene();lights(scene,'day');const
   const sw=sweat(iv);sw.visible=false;
   const glass=new THREE.Group();const gb=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.05,0.14,12),new THREE.MeshLambertMaterial({color:0xcfefff,transparent:true,opacity:0.8}));glass.add(gb);
   const liq=new THREE.Mesh(new THREE.CylinderGeometry(0.052,0.045,0.08,12),lamb(0xffffff));liq.position.y=-0.02;glass.add(liq);glass.position.set(0,-0.66,0.06);ap.userData.arms[1].add(glass);glass.visible=false;
-  const L=TMK[7].lines;const c=vcam(46);const ch=chip('면접 2번 지원자');ch.style.top='120px';
+  const L=TMK[7].lines;const c=vcam(46);const ch=chip('신입 공채 · 최종 면접');ch.style.top='120px';
   const tA=L.a01[0];
   return t=>{look(c,[1.2,3.1,9.8-t*0.1],[0.3,1.5,0]);popEl(ch,t,0.1);
     scaleBubble(ba,pop((t-0.15)/0.3));wings.forEach(([w,s])=>{w.rotation.y=s*(0.3+Math.sin(t*40)*0.35)});

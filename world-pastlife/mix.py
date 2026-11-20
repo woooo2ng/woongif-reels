@@ -1,7 +1,8 @@
 # 음성 + 효과음 + 합성 BGM(경쾌한 플럭 / 감동 구간 패드) → mix.m4a
 import json,subprocess,numpy as np
 from scipy.signal import butter,sosfilt
-SR=48000;TM=json.load(open('timing.json'));rs=np.random.default_rng(5)
+SR=48000;import sys
+TM=json.load(open(sys.argv[1] if len(sys.argv)>1 else 'timing.json'));OUT=sys.argv[2] if len(sys.argv)>2 else 'mix.m4a';rs=np.random.default_rng(5)
 starts=[];acc=0
 for s in TM: starts.append(acc/30);acc+=round(s['dur']*30)
 T=acc/30;N=int(T*SR);V=np.zeros(N+SR);X=np.zeros(N+SR)
@@ -31,32 +32,74 @@ def chime():
     return x
 for si,s in enumerate(TM):
     for k,(st,d) in s['lines'].items():place(V,load(k),starts[si]+st)
-L=lambda si,k:TM[si]['lines'][k][0]
-S=lambda si:starts[si]
+KI={o['key']:i for i,o in enumerate(TM)}
+L=lambda si,k:TM[KI[si]]['lines'][k][0]
+S=lambda si:starts[KI[si]]
+_place=place
+def place(buf,x,t,g=1.0):
+    _place(buf,x,t,g)
 # 효과음
-place(X,ding(),S(0)+0.2);
-for i in range(9):place(X,pop_(),S(0)+2.6+i*0.13,0.7)
-place(X,ding((1047,1047),0.18,0.18),S(1)+0.25)
-place(X,buzz(),S(2)+1.3)
-for i in range(10):place(X,pop_(),S(3)+0.4+i*0.82)
-place(X,thud(),S(3)+L(3,'n04')+3.135+0.6,0.6)
-place(X,sparkle(),S(4)+0.6)
-place(X,sparkle(),S(5)+L(5,'n05')+2.23+0.9,0.8)
-place(X,thud(),S(6)+L(6,'i01')+3.95)
-place(X,pop_(),S(7)+0.15)
-place(X,ding((659,880),0.12,0.15),S(8)+L(8,'n06')+0.2)
-place(X,buzz(),S(9)+L(9,'n07')+3.554+1.55)
-place(X,chime(),S(9)+L(9,'n07')+6.22)
-place(X,thud(),S(10)+L(10,'n08')+6.85,1.2)
-place(X,pop_(),S(11)+L(11,'n09')+2.906)
-place(X,ding((784,1047),0.12,0.2),S(12)+L(12,'j02')-0.1)
-place(X,ding((1047,1319),0.1,0.15),S(16)+0.3)
-place(X,sparkle(),S(16)+L(16,'n13')+3.806)
-place(X,buzz(),S(17)+L(17,'j03')+TM[17]['lines']['j03'][1]+0.25)
+try:
+    place(X,ding(),S(0)+0.2);
+except KeyError: pass
+try:
+    for i in range(9):place(X,pop_(),S(0)+2.6+i*0.13,0.7)
+except KeyError: pass
+try:
+    place(X,ding((1047,1047),0.18,0.18),S(1)+0.25)
+except KeyError: pass
+try:
+    place(X,buzz(),S(2)+1.3)
+except KeyError: pass
+try:
+    for i in range(10):place(X,pop_(),S(3)+0.4+i*0.82)
+except KeyError: pass
+try:
+    place(X,thud(),S(3)+L(3,'n04')+3.135+0.6,0.6)
+except KeyError: pass
+try:
+    place(X,sparkle(),S(4)+0.6)
+except KeyError: pass
+try:
+    place(X,sparkle(),S(5)+L(5,'n05')+2.23+0.9,0.8)
+except KeyError: pass
+try:
+    place(X,thud(),S(6)+L(6,'i01')+3.95)
+except KeyError: pass
+try:
+    place(X,pop_(),S(7)+0.15)
+except KeyError: pass
+try:
+    place(X,ding((659,880),0.12,0.15),S(8)+L(8,'n06')+0.2)
+except KeyError: pass
+try:
+    place(X,buzz(),S(9)+L(9,'n07')+3.554+1.55)
+except KeyError: pass
+try:
+    place(X,chime(),S(9)+L(9,'n07')+6.22)
+except KeyError: pass
+try:
+    place(X,thud(),S(10)+L(10,'n08')+6.85,1.2)
+except KeyError: pass
+try:
+    place(X,pop_(),S(11)+L(11,'n09')+2.906)
+except KeyError: pass
+try:
+    place(X,ding((784,1047),0.12,0.2),S(12)+L(12,'j02')-0.1)
+except KeyError: pass
+try:
+    place(X,ding((1047,1319),0.1,0.15),S(16)+0.3)
+except KeyError: pass
+try:
+    place(X,sparkle(),S(16)+L(16,'n13')+3.806)
+except KeyError: pass
+try:
+    place(X,buzz(),S(17)+L(17,'j03')+TM[KI[17]]['lines']['j03'][1]+0.25)
+except KeyError: pass
 # BGM
 B=np.zeros((N+SR,2));mid=lambda n:440*2**((n-69)/12)
 beat=60/104;prog=[[60,64,67,72],[57,60,64,69],[53,57,60,65],[55,59,62,67]];bass=[36,33,29,31]
-emo0,emo1=S(14),S(16)
+emo0,emo1=(S(14),S(16)) if 14 in KI else (1e9,1e9)
 nb=int(T/beat)+1
 for i in range(nb):
     t0=i*beat
@@ -68,17 +111,21 @@ for i in range(nb):
     if i%2==1:
         h=hp(noise(0.06,0.015),6000)*0.025;place(B[:,0],h,t0);place(B[:,1],h,t0)
 # 감동 구간 패드
+if emo0<1e8:
+  pass
 pd=[[57,60,64],[53,57,60],[48,55,60],[55,59,62]];dur=emo1-emo0+1.5;n=int(dur*SR);t=np.arange(n)/SR;P=np.zeros((n,2))
 for ci,ch in enumerate(pd):
     a=int(ci*dur/4*SR);b=min(n,int((ci+1)*dur/4*SR+1.5*SR));tt_=t[a:b]-t[a];env=np.minimum(1,np.minimum(tt_/1.2,(t[b-1]-t[a]-tt_)/1.2)).clip(0,1)
     for m in ch:
         for c,dt in enumerate([-0.2,0.2]):P[a:b,c]+=np.sin(2*np.pi*(mid(m)+dt)*tt_+rs.random()*6)*env*0.05
-P=np.stack([lp(P[:,0],1500),lp(P[:,1],1500)],1);p0=int((emo0-0.5)*SR);B[p0:p0+n]+=P[:len(B)-p0]
+P=np.stack([lp(P[:,0],1500),lp(P[:,1],1500)],1)
+if emo0<1e8:
+    p0=int((emo0-0.5)*SR);B[p0:p0+n]+=P[:len(B)-p0]
 # 덕킹
 env=np.abs(V);k=int(0.25*SR);env=np.convolve(env,np.ones(k)/k,'same');duck=1-0.45*np.clip(env/0.03,0,1)
 B*=duck[:,None]
 fi=int(0.3*SR);B[:fi]*=np.linspace(0,1,fi)[:,None]
 out=np.stack([V+X,V+X],1)+B
 out=out[:N];fo=int(0.8*SR);out[-fo:]*=np.linspace(1,0,fo)[:,None]
-subprocess.run(['ffmpeg','-y','-loglevel','error','-f','f32le','-ar',str(SR),'-ac','2','-i','-','-af','loudnorm=I=-14:TP=-1.5:LRA=11','-c:a','aac','-b:a','192k','mix.m4a'],input=out.astype(np.float32).tobytes(),check=True)
+subprocess.run(['ffmpeg','-y','-loglevel','error','-f','f32le','-ar',str(SR),'-ac','2','-i','-','-af','loudnorm=I=-14:TP=-1.5:LRA=11','-c:a','aac','-b:a','192k',OUT],input=out.astype(np.float32).tobytes(),check=True)
 print('T',round(T,2))
