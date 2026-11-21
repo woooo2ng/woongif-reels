@@ -313,6 +313,10 @@ S[2]=()=>{
   const b1=bubS(B,'장군님! 적이 민초를…!',{size:0.0017}),b2=bubS(G,'그걸 돈 주고 먹냐?',{size:0.0019}),b3=bubF(FE,'민초가 어때서?',{size:0.0022}),b4=bubS(M2,'…저 민초파인데요',{size:0.0019}),b5=bubF(F2,'솔직히 민초는 치약이지',{size:0.0017});
   const bq=[...al.slice(1,6),...fo.slice(7,12)].map((q,i)=>bub(q.p,'?!',{bg:i<5?'#f2ffd0':'#e4e0ff',fg:'#333',fs:70,size:0.0028}));
   const bG=bubS(G,'…어?',{size:0.0016}),bE=bubF(EG,'…어?',{size:0.0016});
+  // 아군·적군 이름표 (머리 바로 위, 말풍선 아래)
+  const TAGA={bg:'#d8f0c0',fg:'#2f5a14',fs:60,size:0.0022},TAGF={bg:'#e4e0ff',fg:'#3a2f8a',fs:60,size:0.0022};
+  const nt=[];all.forEach((q,j)=>{const s=labelSprite(j<12?'아군':'적군',j<12?TAGA:TAGF);s.center.set(0.5,0);s.position.y=2.02;q.p.add(s);nt.push(s)});
+  [[G,'아군'],[EG,'적군']].forEach(([p,tx])=>{const s=labelSprite(tx,tx==='아군'?TAGA:TAGF);s.center.set(0.5,0);s.position.y=2.0;p.add(s);nt.push(s)});
   const lab=[];all.forEach((q,i)=>{if(i%2)return;const s=labelSprite(q.m?'민초':'반민초',{bg:q.m?'#9ef0d2':'#e8c9a8',fg:q.m?'#1d5a46':'#5a2e14',fs:64,size:0.0034});s.center.set(0.5,0);s.position.y=2.25;s.material.depthTest=false;q.p.add(s);s.visible=false;lab.push(s)});
   const bino=div('bino','<svg width="1080" height="1920"><defs><mask id="bm2"><rect width="1080" height="1920" fill="#fff"/><circle cx="350" cy="820" r="320" fill="#000"/><circle cx="730" cy="820" r="320" fill="#000"/></mask></defs><rect width="1080" height="1920" fill="#0b0b10" mask="url(#bm2)"/></svg>');
   const ch=div('stat3','<div>아군 · 적군</div><div style="font-size:52px;color:#999">↓</div><div><b style="color:#2fb98a">민초파</b> · <b style="color:#8a5a3c">반민초파</b></div>');ch.style.opacity=0;
@@ -327,6 +331,7 @@ S[2]=()=>{
       if(t<REG&&t>fm2&&j>=12&&p!==F2&&p!==FE){p.userData.head.rotation.y=(p.position.x>F2.position.x?0.6:-0.6)}
       if(t<SH&&j<12)setFace(p,false)});
     lab.forEach(s=>{const on=rk>0.9&&!(t>LOOK-0.05&&t<TOP);scaleBubble(s,on?pop((rk-0.9)/0.1):0)});
+    nt.forEach((s,i)=>{s.visible=i>=all.length||rk<0.9})
     // 민초 먹는 적 병사: 두리번 → 한 입
     standPose(FE);FE.userData.arms[1].rotation.x=-1.886;FE.userData.arms[1].rotation.z=-0.708;
     if(t<BI){FE.userData.head.rotation.y=Math.sin(t*6)*0.6*(t<EAT+0.5?1:0);if(t>EAT+0.5)FE.userData.head.rotation.x=0.25*Math.abs(Math.sin((t-EAT)*7))}
