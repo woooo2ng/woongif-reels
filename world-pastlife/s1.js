@@ -81,25 +81,39 @@ S[3]=()=>{sky('linear-gradient(#20244a,#3b4384)');renderer.clear();
     popEl(ch,t,0.1);popIn(zero,t,tB+0.6,'rotate(-3deg)',0.35);ph.style.filter=t>tB+0.6?'brightness(0.75)':'';
     caption(3,t)}};
 
-// ===== 4. 카페: 친구는 왕, 웅이는 로딩 중 =====
-S[4]=()=>{sky('#e9d8c4');const scene=new THREE.Scene();lights(scene,'day');scene.add(new THREE.AmbientLight(0xffe8d0,0.3));
-  roomBox(scene,{wall:0xe8d2b8,wall2:0xdcc3a5,floor:0xb88a5e});
-  const win=new THREE.Mesh(new THREE.PlaneGeometry(4.5,2.6),new THREE.MeshBasicMaterial({map:canvasTex(450,260,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#9cc8f2');g.addColorStop(1,'#e6f2ff');x.fillStyle=g;x.fillRect(0,0,w,h);x.fillStyle='#b9c6d6';for(let i=0;i<9;i++){const bh=60+(i*41)%90;x.fillRect(i*52,h-bh,44,bh)}x.fillStyle='#fff';x.fillRect(w/2-4,0,8,h)})}));win.position.set(0,3.4,-3.85);scene.add(win);
-  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,0.6),new THREE.MeshBasicMaterial({map:cardTex([['CAFE 전생',70,'#6b4a2f']],{w:440,h:130,bg:'#fff3df'}),transparent:true}));sign.visible=false;
-  for(const x of[-5.2,4.6]){const pl=new THREE.Group();const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.28,0.6,10),lamb(0xd98c6c));pot.position.y=0.3;pl.add(pot);const lf=new THREE.Mesh(new THREE.IcosahedronGeometry(0.7,0),lamb(0x6fae6a));lf.position.y=1.2;pl.add(lf);pl.position.set(x,0,-3);scene.add(pl)}
-  roundTable(scene,0,0);cup(scene,-0.35,1.03,0.1);cup(scene,0.35,1.03,0.0,0xf2c9a0);
-  const fr=addFace(makePerson(rng(33),{shirt:0x7fb7c9,pants:0x33384a}));seat(scene,fr,-1.05,0,Math.PI/2,0x8a6a4a);setFace(fr,'smile');
-  const ph=holdPhone(fr,1,1.0);
-  const wg=woong();seat(scene,wg,1.05,0,-Math.PI/2,0x8a6a4a);const wph=holdPhone(wg,0,1.1);
-  const cr=crown();cr.position.set(0,0.6,0);cr.scale.setScalar(1.1);fr.userData.head.add(cr);cr.visible=false;
-  const bf=bub(fr,'전생: 왕',{bg:'#ffd84d',fs:70,size:0.0036,y:2.6});
-  const bw=bub(wg,'로딩 중… 3%',{bg:'#ffffff',fs:64,size:0.0034,y:2.45});
-  const L=TMK[4].lines;const c=vcam(48);
-  return t=>{look(c,[0.2,3.0,9.6-t*0.12],[0,1.55,0]);
-    scaleBubble(bf,pop((t-0.4)/0.3));cr.visible=t>0.6;if(cr.visible){cr.scale.setScalar(1.1*pop((t-0.6)/0.35));cr.rotation.y=t*1.2}
-    fr.userData.arms[1].rotation.x=-1.0-0.5*ease((t-0.2)/0.3);fr.userData.hip.position.y=0.56+Math.max(0,Math.sin(t*8))*0.03*(t<2.6?1:0);
-    if(t>L.j01[0]-0.2){const pct=Math.min(37,3+Math.floor((t-L.j01[0])*9));setBubble(bw,`로딩 중… ${pct}%`,{fs:64,size:0.0034});scaleBubble(bw,pop((t-L.j01[0]+0.2)/0.3))}else scaleBubble(bw,0);
-    wg.userData.head.rotation.x=t>L.j01[0]?0.35:0;setFace(wg,t>L.j01[0]?'flat':'open');
+// ===== 4. 내무반: 이등병 전생 장군 → 병장 경례 =====
+function armyCap(p){const g=new THREE.Group();const m=smooth(0x5d6b45);const c=new THREE.Mesh(new THREE.SphereGeometry(0.27,40,20,0,Math.PI*2,0,Math.PI*0.42),m);c.position.y=0.27;g.add(c);
+  const br=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.025,24,1,false,-Math.PI/2,Math.PI),m);br.position.set(0,0.3,0.12);br.scale.z=0.9;g.add(br);p.userData.head.add(g);p.userData.head.children[1].visible=false;return g}
+S[4]=()=>{sky('#cfd8c0');const scene=new THREE.Scene();lights(scene,'day');scene.add(new THREE.AmbientLight(0xf0f4e0,0.3));
+  roomBox(scene,{wall:0xdfe5cf,wall2:0xd2d9bf,floor:0x9a8a6a});
+  const plat=new THREE.Mesh(new THREE.BoxGeometry(9,0.6,2.2),lamb(0x8a6a4a));plat.position.set(0,0.3,-2.6);scene.add(plat);
+  for(let i=0;i<6;i++){const bl=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.28,0.6),lamb(0x6b7a4a));bl.position.set(-3.8+i*1.5,0.74,-3.4);scene.add(bl);
+    const pw=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.3),lamb(0xffffff));pw.position.set(-3.8+i*1.5,0.95,-3.4);scene.add(pw)}
+  for(let i=0;i<4;i++){const lk=new THREE.Mesh(new THREE.BoxGeometry(0.9,2.2,0.5),lamb(0x9aa38a));lk.position.set(-4.9,1.1,0.6-i*1.0);lk.rotation.y=Math.PI/2;scene.add(lk)}
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.6,0.6),new THREE.MeshBasicMaterial({map:cardTex([['생활관 3분대',60,'#3d4a2a']],{w:560,h:130,bg:'#fff8e0'}),transparent:true}));sign.position.set(0.6,3.9,-3.85);scene.add(sign);
+  const U=0x6b7a4a,UP=0x55613a;
+  const sg=addFace(makePerson(rng(41),{shirt:U,pants:UP}));armyCap(sg);sg.position.set(-1.0,0.6,-1.8);sg.rotation.y=0.55;sitPose(sg);scene.add(sg);holdPhone(sg,1,1.2);setFace(sg,'flat');
+  const pv=addFace(makePerson(rng(42),{shirt:U,pants:UP}));armyCap(pv);pv.position.set(0.75,0,0.4);pv.rotation.y=-0.9;scene.add(pv);setFace(pv,'open');
+  const pph=holdPhone(pv,1,0.0);pph.visible=false;
+  const L=TMK[4].lines;const tP=L.p01[0],tS=L.s02[0];
+  const bp=bub(pv,'전생: 장군',{bg:'#ffb38a',fs:68,size:0.0034,y:2.45});
+  const card=div('box',`<div style="font-size:32px;color:#7b5cff">전생24 · 내 조회 결과</div><div style="font-size:40px;color:#777;margin:10px 0 2px">병장 님의 전생은…</div><div style="font-size:84px;letter-spacing:-3px">그 장군의 말(馬)</div>`);
+  card.style.cssText+='left:130px;top:240px;width:820px;padding:36px 30px;box-sizing:border-box;text-align:center';
+  const ch=chip('일과 후 · 생활관');ch.style.top='120px';const c=vcam(46);
+  return t=>{popEl(ch,t,0.1);look(c,[0.1,3.0,8.4-t*0.12],[-0.15,1.4,-0.6]);
+    // 병장: 처음엔 비스듬히 앉아 폰 → 이등병 쪽으로 고개
+    sg.userData.head.rotation.y=t<tP+0.3?0.5:0.5;
+    // 이등병: 차렷 → 대답할 때 폰 내밀기
+    if(t>tP){pph.visible=true;pv.userData.arms[1].rotation.x=-1.4*ease((t-tP)/0.2)}else{pv.userData.arms.forEach(a=>{a.rotation.x=0;a.rotation.z=0})}
+    scaleBubble(bp,t>tP?pop((t-tP-0.1)/0.3):0);
+    // 병장 자기 폰 확인 카드
+    const tc=tP+TMK[4].lines.p01[1]+0.15;const show=t>tc&&t<tS+0.2;card.style.display=show?'':'none';if(show)card.style.transform=`scale(${pop((t-tc)/0.3)})`;
+    sg.userData.head.rotation.x=t>tc-0.2&&t<tS?0.35:0;setFace(sg,t>tc?'open':'flat');
+    // 병장 일어나 경례
+    if(t>tS-0.15){const k=ease((t-tS+0.15)/0.35);sg.position.y=0.6;standPose(sg);sg.userData.hip.position.y=0.8;sg.rotation.y=0.55+0.25*k;
+      sg.userData.arms[1].rotation.x=-2.35*k;sg.userData.arms[1].rotation.z=-0.4*k;sg.userData.head.rotation.x=0;sg.userData.arms[0].rotation.x=0;
+      if(sg.userData._ph===undefined){sg.userData._ph=1;sg.userData.arms[1].children.forEach(o=>{if(o.geometry&&o.geometry.parameters&&o.geometry.parameters.depth===0.03)o.visible=false})}
+      setFace(sg,'flat')}
     caption(4,t);renderer.render(scene,c)}};
 
 // ===== 5. 이력서에 '전생' 칸 =====
