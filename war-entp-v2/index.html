@@ -141,7 +141,7 @@ const TXT={
  gj:['장난은 끝났다.','이번엔 진짜다.'],fs:['멈춰! 더 오면 쏜다!'],f1:['경고 사격이다!'],s4:['장군님… 제 몫까지…'],f2:['고, 공포탄인데?!','미안해!! 진짜 맞출 생각 없었어!!'],
  sm:['몰카였지롱~ ㅋㅋㅋ'],nk:['이 나라 사람들은,','이기는 것보다','상대 반응 보는 게 더 좋았습니다.'],
  e5a:['이것이… 우리의 마지막…'],e5c:['경고(삑)다!'],s7:['…푸흡.'],ey:['…웃지 마!','…근데 그 엽사 나도 하나 줘 봐.'],ny:['그날 이후로,','적장 프사는 그 엽사입니다.'],
- sm1:['장군님! 적 병사가…','민초를 먹고 있습니다!'],gm1:['야! 그걸 돈 주고 먹냐?'],fm1:['근거 있어?','상쾌한 거 몰라?'],sm2:['…저 민초파인데요.'],
+ sm1:['장군님! 적 병사가…','민초를 먹고 있습니다!'],gm1:['야! 그걸 돈 주고 먹냐?'],fm1:['민초가 어때서?'],sm2:['…저 민초파인데요.'],
  fm2:['솔직히 민초는 치약이지.'],gm2:['…어?'],eo2:['…어?'],nm:['그날, 국경선이 다시 그어졌습니다.','이번엔 민초 기준으로.'],
  gq:['근데…','총싸움 좀 질리지 않냐?'],en:['어, 나도 그 말 하려고 했는데.'],gw:['내일은 물총 어때?'],eo:['오, 좋아.'],
  ne:['전쟁 3년째, 사상자 0명.','지금은 47번째 장르,','끝말잇기 전쟁 중입니다.'],
@@ -756,7 +756,7 @@ S[2]=()=>{
   all.forEach(q=>{const m=MINT.has(q.p);q.m=m;const k=m?mi++:ci++;const col=k%3,row=Math.floor(k/3);q.tx=(m?-1:1)*(1.3+col*1.25);q.tz=-1.6-row*1.5;q.d=r()*0.5});
   const GT=[-1.5,-0.5],ET=[-2.7,-0.5];  // 장군·적장도 민초파 맨 앞줄
   const E=EV(2),sm1=at(2,'sm1'),gm1=at(2,'gm1'),fm1=at(2,'fm1'),sm2=at(2,'sm2'),fm2=at(2,'fm2'),gm2=at(2,'gm2'),eo2=at(2,'eo2'),nm=at(2,'nm'),EAT=E.eat,BI=E.bino,SH=E.shock,HAND=E.hand,MUR=E.mur,REG=E.reg,LOOK=E.look,TOP=E.top;
-  const b1=bubS(B,'장군님! 적이 민초를…!',{size:0.0017}),b2=bubS(G,'그걸 돈 주고 먹냐?',{size:0.0019}),b3=bubF(FE,'근거 있어?',{size:0.0024}),b4=bubS(M2,'…저 민초파인데요',{size:0.0019}),b5=bubF(F2,'솔직히 민초는 치약이지',{size:0.0017});
+  const b1=bubS(B,'장군님! 적이 민초를…!',{size:0.0017}),b2=bubS(G,'그걸 돈 주고 먹냐?',{size:0.0019}),b3=bubF(FE,'민초가 어때서?',{size:0.0022}),b4=bubS(M2,'…저 민초파인데요',{size:0.0019}),b5=bubF(F2,'솔직히 민초는 치약이지',{size:0.0017});
   const bq=[...al.slice(1,6),...fo.slice(7,12)].map((q,i)=>bub(q.p,'?!',{bg:i<5?'#f2ffd0':'#e4e0ff',fg:'#333',fs:70,size:0.0028}));
   const bG=bubS(G,'…어?',{size:0.0016}),bE=bubF(EG,'…어?',{size:0.0016});
   const lab=[];all.forEach((q,i)=>{if(i%2)return;const s=labelSprite(q.m?'민초':'반민초',{bg:q.m?'#9ef0d2':'#e8c9a8',fg:q.m?'#1d5a46':'#5a2e14',fs:64,size:0.0034});s.center.set(0.5,0);s.position.y=2.25;s.material.depthTest=false;q.p.add(s);s.visible=false;lab.push(s)});

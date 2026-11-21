@@ -311,7 +311,7 @@ S[2]=()=>{
   all.forEach(q=>{const m=MINT.has(q.p);q.m=m;const k=m?mi++:ci++;const col=k%3,row=Math.floor(k/3);q.tx=(m?-1:1)*(1.3+col*1.25);q.tz=-1.6-row*1.5;q.d=r()*0.5});
   const GT=[-1.5,-0.5],ET=[-2.7,-0.5];  // 장군·적장도 민초파 맨 앞줄
   const E=EV(2),sm1=at(2,'sm1'),gm1=at(2,'gm1'),fm1=at(2,'fm1'),sm2=at(2,'sm2'),fm2=at(2,'fm2'),gm2=at(2,'gm2'),eo2=at(2,'eo2'),nm=at(2,'nm'),EAT=E.eat,BI=E.bino,SH=E.shock,HAND=E.hand,MUR=E.mur,REG=E.reg,LOOK=E.look,TOP=E.top;
-  const b1=bubS(B,'장군님! 적이 민초를…!',{size:0.0017}),b2=bubS(G,'그걸 돈 주고 먹냐?',{size:0.0019}),b3=bubF(FE,'근거 있어?',{size:0.0024}),b4=bubS(M2,'…저 민초파인데요',{size:0.0019}),b5=bubF(F2,'솔직히 민초는 치약이지',{size:0.0017});
+  const b1=bubS(B,'장군님! 적이 민초를…!',{size:0.0017}),b2=bubS(G,'그걸 돈 주고 먹냐?',{size:0.0019}),b3=bubF(FE,'민초가 어때서?',{size:0.0022}),b4=bubS(M2,'…저 민초파인데요',{size:0.0019}),b5=bubF(F2,'솔직히 민초는 치약이지',{size:0.0017});
   const bq=[...al.slice(1,6),...fo.slice(7,12)].map((q,i)=>bub(q.p,'?!',{bg:i<5?'#f2ffd0':'#e4e0ff',fg:'#333',fs:70,size:0.0028}));
   const bG=bubS(G,'…어?',{size:0.0016}),bE=bubF(EG,'…어?',{size:0.0016});
   const lab=[];all.forEach((q,i)=>{if(i%2)return;const s=labelSprite(q.m?'민초':'반민초',{bg:q.m?'#9ef0d2':'#e8c9a8',fg:q.m?'#1d5a46':'#5a2e14',fs:64,size:0.0034});s.center.set(0.5,0);s.position.y=2.25;s.material.depthTest=false;q.p.add(s);s.visible=false;lab.push(s)});
