@@ -1,24 +1,28 @@
-// ===== 0. 타이틀: 밤 도시, 다들 폰으로 전생 조회 =====
-S[0]=()=>{const V=window.V0||'B';const r=rng(11);const scene=new THREE.Scene();
-  if(V==='A'){sky('linear-gradient(#8f7ae8,#f2a0c4 55%,#ffd3a8)');scene.fog=new THREE.Fog(0xf2b6c8,30,95);lights(scene,'dusk');scene.add(new THREE.AmbientLight(0xffe0f0,0.55));city(scene,r,{roadW:12,lit:0.2})}
-  else{sky('linear-gradient(#6fb6f5,#bfe2ff 60%,#eef8ff)');scene.fog=new THREE.Fog(0xcfe6ff,35,110);lights(scene,'day');scene.add(new THREE.AmbientLight(0xffffff,0.25));city(scene,r,{roadW:12})}
-  const RES=[['왕?!','#ffd84d'],['장군!','#ffb38a'],['공주','#ffc2e0'],['왕…?','#ffd84d'],['모기','#cfe9ff'],['왕비','#ffc2e0'],['장군','#ffb38a'],['왕','#ffd84d'],['내시','#d8e6c8']];
-  const P=[];const pos=[[-2.0,0.6],[-0.7,1.4],[0.8,0.9],[2.0,0.3],[-1.4,-1.4],[0.1,-1.0],[1.5,-1.7],[-2.6,-3.2],[2.7,-3.0]];
-  pos.forEach(([x,z],i)=>{const p=i%3==1?girl(100+i,{shirt:pick(r,SHIRT)}):makePerson(rng(200+i));p.position.set(x,0,z);p.rotation.y=(r()-0.5)*0.5;
-    holdPhone(p,1,1.3);p.userData.head.rotation.x=0.38;scene.add(p);
-    const gl=glowSprite('rgba(190,150,255,1)',0.9);gl.position.set(x+0.15,1.55,z+0.5);gl.material.opacity=0.35;scene.add(gl);
-    const b=bub(p,'조회 중…',{fs:60,size:0.0032,bg:'#ffffff'});if(i>=7)b.visible=false;P.push({p,b,i})});
-  const c=vcam(52);
-  ui.innerHTML='<div class="tag0">만약에</div><div class="ttl1 out">누구나 전생을</div><div class="ttl2 out">조회할 수 있다면?</div>';
+// ===== 0. 타이틀: 낮 거리, 다들 전생 조회 → 맨 앞 한 명만 '모기' =====
+S[0]=()=>{const r=rng(11);const scene=new THREE.Scene();
+  sky('linear-gradient(#6fb6f5,#bfe2ff 60%,#eef8ff)');scene.fog=new THREE.Fog(0xcfe6ff,35,110);lights(scene,'day');scene.add(new THREE.AmbientLight(0xffffff,0.25));city(scene,r,{roadW:12});
+  const RES=[['왕!','#ffd84d'],['장군!','#ffb38a'],['공주','#ffc2e0'],['왕비','#ffc2e0'],['왕!','#ffd84d']];
+  const pos=[[-1.45,0.7],[1.45,0.8],[-0.8,-1.3],[0.85,-1.2],[0,-2.9]];
+  const P=pos.map(([x,z],i)=>{const p=i==2?girl(103,{shirt:0xff9ec4}):addFace(makePerson(rng(210+i)));p.position.set(x,0,z);p.rotation.y=-x*0.12;holdPhone(p,1,1.3);p.userData.head.rotation.x=0.38;scene.add(p);
+    const b=bub(p,'조회 중…',{fs:60,size:0.0036,bg:'#ffffff'});return {p,b,i}});
+  const hero=addFace(makePerson(rng(300),{shirt:0x7fb7c9,pants:0x33384a}));hero.position.set(0,0,2.3);scene.add(hero);holdPhone(hero,1,1.3);hero.userData.head.rotation.x=0.38;
+  const hb=bub(hero,'조회 중…',{fs:60,size:0.0036,bg:'#ffffff'});const sw=sweat(hero);sw.visible=false;
+  const c=vcam(48);const TC=window.TC||'#ffd84d';
+  ui.innerHTML=`<div class="tag0">만약에</div><div class="ttl1 out">누구나 전생을</div><div class="ttl2 out" style="color:${TC}">조회할 수 있다면?</div>`;
   const tg=ui.querySelector('.tag0'),t1=ui.querySelector('.ttl1'),t2=ui.querySelector('.ttl2');
-  return t=>{look(c,[0,3.3,11.5-t*0.45],[0,0.6,-6]);
-    P.forEach(({p,b,i})=>{if(i>=7){p.userData.head.rotation.x=0.38;return}const t0=0.25+i*0.08;scaleBubble(b,pop((t-t0)/0.3));
-      if(t>2.6+i*0.13&&b.userData.k!==1){b.userData.k=1;setBubble(b,RES[i][0],{bg:RES[i][1],fs:66,size:0.0038})}
-      if(b.userData.k===1){const k=pop((t-2.6-i*0.13)/0.3);scaleBubble(b,k);p.userData.head.rotation.x=0.38-0.45*ease((t-2.6-i*0.13)/0.25)}
-      p.userData.hip.position.y=0.8+(b.userData.k===1?Math.max(0,Math.sin((t-2.6-i*0.13)*9))*0.06*clamp01(4-t+2.6):0)});
-    popEl(tg,t,0.05);t1.style.transform=`scale(${pop((t-0.15)/0.35)})`;t1.style.opacity=clamp01((t-0.15)/0.1);
-    t2.style.transform=`scale(${pop((t-0.4)/0.4)})`;t2.style.opacity=clamp01((t-0.4)/0.1);
-    caption(0,t);renderer.render(scene,c)}};
+  const tR=0.75,tH=1.45;
+  return t=>{look(c,[0,2.1,9.4-t*0.25],[0,2.05,-1.2]);
+    P.forEach(({p,b,i})=>{scaleBubble(b,pop((t-0.05-i*0.04)/0.25));const t0=tR+i*0.09;
+      if(t>t0&&b.userData.k!==1){b.userData.k=1;setBubble(b,RES[i][0],{bg:RES[i][1],fs:68,size:0.0042})}
+      if(b.userData.k===1){scaleBubble(b,pop((t-t0)/0.3));const lk=ease((t-t0)/0.2);p.userData.head.rotation.x=0.38-0.45*lk;
+        p.userData.hip.position.y=0.8+(t<tH+0.2?Math.max(0,Math.sin((t-t0)*10))*0.07:0)}
+      if(t>tH+0.35){const k=ease((t-tH-0.35)/0.3);const ang=Math.atan2(0-p.position.x,2.3-p.position.z);p.rotation.y=-p.position.x*0.12*(1-k)+ang*k;p.userData.head.rotation.x=0;setFace(p,'open')}});
+    scaleBubble(hb,pop((t-0.05)/0.25));
+    if(t>tH){if(hb.userData.k!==1){hb.userData.k=1;setBubble(hb,'모기',{bg:'#cfe9ff',fs:74,size:0.0048})}scaleBubble(hb,pop((t-tH)/0.35));
+      hero.userData.head.rotation.x=0.38-0.3*ease((t-tH-0.4)/0.3);setFace(hero,'flat');sw.visible=t>tH+0.5}
+    popEl(tg,t,0.05);t1.style.transform=`scale(${pop((t-0.1)/0.3)})`;t1.style.opacity=clamp01((t-0.1)/0.1);
+    t2.style.transform=`scale(${pop((t-0.3)/0.35)})`;t2.style.opacity=clamp01((t-0.3)/0.1);
+    renderer.render(scene,c)}};
 
 // ===== 1. 뉴스 속보: 전생24 출시 =====
 S[1]=()=>{sky('linear-gradient(#1b2a5a,#2f4a8a)');const scene=new THREE.Scene();lights(scene,'day');
