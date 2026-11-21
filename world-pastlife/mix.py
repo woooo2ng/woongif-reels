@@ -52,10 +52,11 @@ try:
     place(X,buzz(),S(2)+1.3)
 except KeyError: pass
 try:
-    for i in range(10):place(X,pop_(),S(3)+0.4+i*0.82)
+    for tt_ in [0.4,1.3,2.0,2.9,3.8,4.8]:place(X,pop_(),S(3)+tt_)
+    for tt_ in [0.25,0.95,1.6,1.85,2.1]:place(X,pop_(),S(3)+L(3,'n04')+3.135+tt_)
 except KeyError: pass
 try:
-    place(X,thud(),S(3)+L(3,'n04')+3.135+0.6,0.6)
+    place(X,thud(),S(3)+L(3,'n04')+3.135+2.6,0.6)
 except KeyError: pass
 try:
     place(X,sparkle(),S(4)+0.6)
