@@ -133,10 +133,11 @@ function snowman(scene,x,z,s=1){const g=new THREE.Group();[[0.5,0.45],[0.36,1.15
 
 // ===== 0. '절대 누르지 마시오' 전쟁 개시 버튼 (타이틀) =====
 S[0]=()=>{
-  setSky('#a9c9e8','#eef4f8 70%');
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xe2ecf4,30,110);addLights(scene,{hemi:1.5});
+  const LG=scene.children.filter(c=>c.isLight);LG.forEach(l=>l.userData.i0=l.intensity);
+  const fogD=new THREE.Color(0x3a4066),fogL=new THREE.Color(0xe2ecf4);
   const r=rng(131);borderField(scene,r);
-  const BZ=-5;const BT=bigButton(scene,0,BZ);warnSign(scene,1.9,BZ+0.5,-0.35);
+  const BZ=-5;const BT=bigButton(scene,0,BZ);const WS=warnSign(scene,-0.6,BZ-0.75,0.1);
   const al=[],fo=[];
   for(let i=0;i<14;i++){const p=entpS(r,ALLY);const x=(i-6.5)*1.2;p.position.set(x,0,0.2+(i%2)*0.3);p.rotation.y=Math.PI;scene.add(p);setFace(p,false);al.push({p,x0:x,z0:p.position.z,ph:r()*6})}
   for(let i=0;i<14;i++){const p=entpS(r,FOE);const x=(i-6.5)*1.2+0.3;p.position.set(x,0,-10.2-(i%2)*0.3);scene.add(p);setFace(p,false);fo.push({p,x0:x,z0:p.position.z,ph:r()*6})}
@@ -144,10 +145,9 @@ S[0]=()=>{
   function ring(arr,base){arr.forEach((q,i)=>{const k=i/(arr.length-1);const a=base+(-1.25+2.5*k);const R=i%2?2.05:1.35;q.tx=Math.sin(a)*R;q.tz=BZ+Math.cos(a)*R;q.d=r()*0.4})}
   ring(al,0);ring(fo,Math.PI);
   const GX=-0.9,GZ=-0.9;const G=entpG(r,GEN);G.position.set(GX,0,GZ);G.rotation.y=Math.PI;scene.add(G);setFace(G,false);
-  const EG=entpG(r,ENEMYG);EG.position.set(2.2,0,-8.8);scene.add(EG);setFace(EG,false);const MG=mouthMega(EG);
-  const S1=al[5].p,S2=al[4].p;
-  const E=EV(0),gb=at(0,'gb'),eb=at(0,'eb'),sq=at(0,'sq'),gn=at(0,'gn'),bt=at(0,'bt'),nb=at(0,'nb'),STARE=E.stare,APPR=E.appr,PRESS=E.press,POP=E.pop;
-  const b1=bubS(G,'절대 누르지 마라',{size:0.0017}),b2=bubF(EG,'너희도 절대 누르지 마라!',{size:0.0017}),b3=sb(scene,'…궁금하지 않냐?',-2.4,2.75,0.35,{c:{bg:'#ffe0dc',fg:'#5a1a12'},size:0.0016}),b4=bubS(G,'…나도.',{size:0.0019});
+  const EG=entpG(r,ENEMYG);EG.position.set(2.2,0,-8.8);scene.add(EG);setFace(EG,false);  const S1=al[5].p,S2=al[4].p;
+  const E=EV(0),gb=at(0,'gb'),sq=at(0,'sq'),gn=at(0,'gn'),bt=at(0,'bt'),nb=at(0,'nb'),STARE=E.stare,APPR=E.appr,PRESS=E.press,POP=E.pop;
+  const b1=bubS(G,'절대 누르지 마라',{size:0.0017}),b3=sb(scene,'…궁금하지 않냐?',-2.4,2.75,0.35,{c:{bg:'#ffe0dc',fg:'#5a1a12'},size:0.0016}),b4=bubS(G,'…나도.',{size:0.0019});
   const bB=sb(scene,'띵동~ 누르지 말랬잖아~ ㅋ',0,2.6,BZ,{c:{bg:'#fff0f7',fg:'#c2185b'},size:0.0034});
   const CF=confetti3(scene,260,r,{x:0,y:1.3,z:BZ});
   const C=cam(50);const ch=chip('누른 사람 0명');ch.style.opacity=0;
@@ -155,45 +155,44 @@ S[0]=()=>{
   const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2'),t3=ui.querySelector('.title3');
   const look=(p,x,z)=>{p.rotation.y=Math.atan2(x-p.position.x,z-p.position.z)};
   return t=>{
-    const ak=clamp01((t-APPR)/(PRESS-0.35-APPR));const rk=clamp01((t-PRESS+0.55)/0.3);const fun=t>POP;
+    // 새벽 어둠 → 꽃가루 터지면 환하게
+    const lit=clamp01((t-POP)/0.6);setSky(lit>0.5?'#a9c9e8':'#1e2546',lit>0.5?'#eef4f8 70%':'#5a5a8a 70%');
+    LG.forEach(l=>l.intensity=l.userData.i0*(0.55+0.45*lit));scene.fog.color.copy(fogD).lerp(fogL,lit);
+    const ak=clamp01((t-APPR)/(PRESS-0.3-APPR));const rk=clamp01((t-PRESS+0.55)/0.3);const fun=t>POP;
     const pressed=t>PRESS;
     [...al,...fo].forEach((q,j)=>{const p=q.p;standPose(p);setFace(p,fun);
       const k=ease(clamp01((ak*1.15)-q.d*0.35));p.position.set(q.x0+(q.tx-q.x0)*k,0,q.z0+(q.tz-q.z0)*k);
-      if(ak>0&&k<1)walkPose(p,t*5+q.ph,0.32);
+      if(ak>0&&k<1)runPose(p,t*14+q.ph);
       if(t>STARE){look(p,0,BZ)}else p.rotation.y=j<al.length?Math.PI:0;
-      if(t>STARE&&t<PRESS-0.55){fidget(p,clamp01((t-STARE)/0.4),t,q.ph);eyesBig(p,1.35)}else eyesBig(p,1);
+      if(t>STARE&&t<APPR){fidget(p,clamp01((t-STARE)/0.4),t,q.ph);eyesBig(p,1.35)}else eyesBig(p,1);
       if(t>=PRESS-0.55&&!fun)reach(p,rk,t,q.ph);
       if(fun){const v=(j%3===0);if(v)vSign(p,1,1);p.userData.hip.position.y=0.8+Math.abs(Math.sin(t*6+q.ph))*0.06}});
-    standPose(G);standPose(EG);setFace(G,fun);setFace(EG,fun);
+    standPose(G);standPose(EG);setFace(G,fun);setFace(EG,fun);if(t>STARE&&t<APPR){look(EG,0,BZ);eyesBig(EG,1.4);fidget(EG,1,t,2)}else eyesBig(EG,1);
     // 장군: 버튼 가리키며 선언 → (나도) → 같이 다가감
     if(t<STARE)point(G,clamp01((t-gb)/0.25),1.35);
     const PX=-2.4,PZ=1.05;
-    if(t>APPR){const k=ease(ak);G.position.set(PX+(-0.55-PX)*k,0,PZ+(BZ+1.05-PZ)*k);look(G,0,BZ);if(k<1&&k>0)walkPose(G,t*5,0.3);if(t>=PRESS-0.55&&!fun)reach(G,rk,t,1)}
+    if(t>APPR){const k=ease(ak);G.position.set(PX+(-0.55-PX)*k,0,PZ+(BZ+1.05-PZ)*k);look(G,0,BZ);if(k<1&&k>0)runPose(G,t*14);if(t>=PRESS-0.55&&!fun)reach(G,rk,t,1)}
     else if(t>gn-0.45){const k=ease((t-gn+0.45)/0.35);G.position.set(-0.6+(PX+0.6)*k,0,PZ);G.rotation.y=Math.PI;G.userData.hip.rotation.x=0.25*k;if(k<1)walkPose(G,t*9,0.4)}
     else if(t>sq-0.2){G.position.set(-0.6,0,PZ);G.rotation.y=Math.PI}
     else{G.position.set(GX,0,GZ);G.rotation.y=Math.PI}
     if(t>gn-0.2&&t<APPR){G.userData.head.rotation.y=0}
     if(t>sq-0.2&&t<APPR){look(S1,S2.position.x,S2.position.z-2.4);look(S2,S1.position.x,S1.position.z-2.4);S1.userData.hip.rotation.x=0.15;S2.userData.hip.rotation.x=0.15;if(t>gn-0.1){S1.userData.head.rotation.y=0.9;S2.userData.head.rotation.y=-0.9;eyesBig(S1,1.6);eyesBig(S2,1.6)}}
-    // 적장: 확성기
-    MG.visible=t>eb-0.35&&t<STARE;if(MG.visible)megaArm(EG)
-    if(t>APPR){const k=ease(ak);EG.position.set(2.2+(0.55-2.2)*k,0,-8.8+(BZ-1.15+8.8)*k);look(EG,0,BZ);if(k<1&&k>0)walkPose(EG,t*5,0.3);if(t>=PRESS-0.55&&!fun)reach(EG,rk,t,2)}
+    if(t>APPR){const k=ease(ak);EG.position.set(2.2+(0.55-2.2)*k,0,-8.8+(BZ-1.15+8.8)*k);look(EG,0,BZ);if(k<1&&k>0)runPose(EG,t*14);if(t>=PRESS-0.55&&!fun)reach(EG,rk,t,2)}
     // 버튼
     const bk=pressed?(t<PRESS+0.12?1-((t-PRESS)/0.12)*0.6:0.4+0.6*clamp01((t-POP)/0.15)):1;BT.userData.btn.scale.y=0.6*bk;
     BT.userData.gl.material.opacity=0.5+0.4*Math.sin(t*6);
     updConf(CF,t,POP);
-    show(b1,t,gb+0.1,eb);show(b2,t,eb,STARE+0.2);show(b3,t,sq,gn);show(b4,t,gn,APPR+0.3);
+    show(b1,t,gb+0.1,STARE);show(b3,t,sq,gn);show(b4,t,gn,APPR+0.3);
     scaleBubble(bB,t>POP?pop((t-POP)/0.3):0);bB.visible=t>POP&&t<nb+0.2;
     const n=t<PRESS?0:t<POP?Math.min(4000,(t-PRESS)/0.25*4000):4000;ch.textContent='누른 사람 '+fmt(n)+'명';
     ch.style.opacity=t>PRESS?1:0;chipPop(ch,t,PRESS);if(t<PRESS)ch.style.opacity=0;
     // 카메라
-    if(t<gb-0.05){const k=ease(t/(gb-0.05));setCam(C,lerp3([0,8.5,10],[0,5.4,5.5],k),[0,0.8,BZ],52)}
-    else if(t<eb-0.05){const k=ease((t-gb)/3);setCam(C,lerp3([GX+0.8,2.3,GZ-2.9],[GX+0.65,2.3,GZ-2.6],k),[GX,2.2,GZ],44)}
-    else if(t<STARE){setCam(C,[1.5,2.3,-6.0],[2.2,2.25,-8.8],44)}
-    else if(t<STARE+1.0){const k=ease((t-STARE)/1.0);setCam(C,lerp3([1.1,1.7,BZ+2.6],[0.75,1.55,BZ+1.9],k),[0,1.0,BZ],46)}
-    else if(t<sq-0.05){const k=(t-STARE-1.0);setCam(C,[0.6+k*0.2,1.95,-2.2],[0.6+k*0.2,1.75,0.3],48)}
+    if(t<gb-0.05){const k=ease(t/(gb-0.05));setCam(C,lerp3([-0.45,2.0,BZ+3.6],[0,6.2,5.5],k),lerp3([-0.45,1.55,BZ],[0,0.8,BZ],k),46+6*k)}
+    else if(t<STARE){const k=ease((t-gb)/3);setCam(C,lerp3([GX+0.8,2.3,GZ-2.9],[GX+0.65,2.3,GZ-2.6],k),[GX,2.2,GZ],44)}
+    else if(t<sq-0.05){const k=ease((t-STARE)/(sq-STARE));setCam(C,lerp3([1.5,1.8,BZ+1.6],[1.45,1.75,BZ+1.1],k),[1.6,1.5,-10.2],46)}
     else if(t<APPR){setCam(C,[-2.4,2.25,-3.3],[-2.4,2.05,0.4],44)}
-    else if(t<PRESS-0.6){const k=ease((t-APPR)/(PRESS-0.6-APPR));setCam(C,lerp3([0,8.5,1.5],[0,6.6,-0.5],k),[0,0.6,BZ],50)}
-    else if(t<POP){const k=ease((t-PRESS+0.6)/1.6);setCam(C,lerp3([0,5.4,BZ+2.2],[0,4.6,BZ+1.4],k),[0,1.0,BZ],50)}
+    else if(t<PRESS-0.25){const k=ease((t-APPR)/(PRESS-0.25-APPR));setCam(C,lerp3([0,7.5,1.0],[0,6.2,-0.6],k),[0,0.6,BZ],52)}
+    else if(t<POP){const k=ease((t-PRESS+0.25)/1.0);setCam(C,lerp3([0,5.2,BZ+2.0],[0,4.7,BZ+1.5],k),[0,1.0,BZ],50)}
     else{const k=ease((t-POP)/5);setCam(C,lerp3([0,4.2,BZ+5.6],[0,5.6,BZ+8.2],k),[0,1.6,BZ],54)}
     const TO=gb+0.1;
     tag.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;

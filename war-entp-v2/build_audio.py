@@ -242,13 +242,13 @@ def bounce_bgm(dur, vol=0.12):  # 몽타주용 경쾌한 비트
     out = out[:int(dur * SR)]; return out / (np.abs(out).max() + 1e-9) * vol
 
 SC = [
-    [('n1', 0.0), ('gb', 0.3), ('eb', 0.3), ('sq', 1.15), ('gn', 0.35), ('bt', 2.6), ('nb', 0.4)],
+    [('n1', 0.0), ('gb', 0.25), ('sq', 1.05), ('gn', 0.25), ('bt', 1.35), ('nb', 0.4)],
     [('gj', 0.3), ('fs', 1.45), ('f1', 0.85), ('s4', 0.9), ('f2', 0.3), ('sm', 0.6), ('nk', 1.6)],
     [('sm1', 1.6), ('gm1', 0.25), ('fm1', 0.25), ('sm2', 0.6), ('fm2', 0.4), ('gm2', 2.1), ('eo2', 0.1), ('nm', 0.4)],
     [('gq', 1.0), ('en', 0.25), ('gw', 0.25), ('eo', 0.2), ('ne', 2.1)],
 ]
 POST = {0: 0.5, 1: 0.9, 2: 0.8, 3: 1.9}
-MEGA = {'eb', 'gm1'}
+MEGA = {'gm1'}
 RAW = {'e5c'}
 info = []
 for si, lines in enumerate(SC):
@@ -278,14 +278,14 @@ def sfx(si, ev):
     b = np.zeros(int(T * SR))
     b += wind(T, 0.04)
     if si == 0:
-        ev['stare'] = round(end('eb', 0.2), 3)
-        place(b, warbgm(ev['stare'] + 0.3, 0.2), 0)
-        place(b, heart(vt('gn') - ev['stare'], 90, 0.3), ev['stare'])
-        ev['appr'] = round(end('gn', 0.25), 3)
-        ev['press'] = round(vt('bt', -1.05), 3)
-        place(b, heart(ev['press'] - ev['appr'], 130, 0.4), ev['appr']); place(b, drone(ev['press'] - ev['appr'], 0.09), ev['appr'])
-        for k in range(10): place(b, steps(0.3, 0.1, 0.05), ev['appr'] + k * 0.17)
-        place(b, press(0.6), ev['press'])
+        ev['stare'] = round(end('gb', 0.05), 3)
+        ev['appr'] = round(end('gn', 0.1), 3)
+        ev['press'] = round(vt('bt', -0.55), 3)
+        place(b, warbgm(ev['appr'] + 0.2, 0.22), 0)
+        place(b, heart(vt('gn') - ev['stare'], 95, 0.3), ev['stare'])
+        place(b, heart(ev['press'] - ev['appr'], 150, 0.45), ev['appr']); place(b, whoosh(0.6, 0.25), ev['appr'])
+        for k in range(8): place(b, steps(0.3, 0.12, 0.06), ev['appr'] + k * 0.1)
+        place(b, press(0.65), ev['press'])
         ev['pop'] = round(vt('bt', -0.05), 3); place(b, dingdong(0.32), ev['pop'] - 0.02); place(b, confetti(0.35), ev['pop'] + 0.1)
         ev['nar'] = round(vt('nb', -0.2), 3)
     elif si == 1:
