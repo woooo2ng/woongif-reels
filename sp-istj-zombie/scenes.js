@@ -66,9 +66,11 @@ function windowTex(){return canvasTex(512,384,(c,w,h)=>{const g=c.createLinearGr
   c.strokeStyle='#f6f2ea';c.lineWidth=14;c.strokeRect(7,7,w-14,h-14);c.beginPath();c.moveTo(w/2,0);c.lineTo(w/2,h);c.stroke()})}
 function clockTex(s,on){return canvasTex(256,128,(c,w,h)=>{c.fillStyle='#202028';c.fillRect(0,0,w,h);c.fillStyle=on?'#ff5040':'#5a2020';c.font=`900 92px ${FONT}`;c.textAlign='center';c.fillText(s,w/2,100)})}
 function lobbyWall(){return canvasTex(1024,512,(c,w,h)=>{c.fillStyle='#e9e4dc';c.fillRect(0,0,w,h);c.fillStyle='#d8d0c4';c.fillRect(0,h-90,w,90);
-  // 우편함
-  for(let i=0;i<6;i++)for(let j=0;j<3;j++){c.fillStyle='#b8bcc6';c.fillRect(40+i*70,120+j*60,60,50);c.fillStyle='#8a8f9e';c.fillRect(50+i*70,150+j*60,40,6)}
-  c.fillStyle='#3f6fb5';c.font=`900 48px ${FONT}`;c.fillText('101동',560,120);c.fillStyle='#777';c.font=`700 30px ${FONT}`;c.fillText('엘리베이터 이용 시 한 줄 서기',560,170)})}
+  // 게시판 + 안내문
+  c.fillStyle='#b89a6a';c.fillRect(30,100,420,240);c.fillStyle='#f2e6c8';c.fillRect(42,112,396,216);
+  const P=[['#ffffff','전입신고 안내'],['#dff0ff','민원 서류 발급'],['#ffe4e4','좀비 사태 행동 요령'],['#fff4c8','번호표를 뽑아 주세요']];
+  P.forEach(([col,tx],i)=>{const x=56+(i%2)*190,y=126+Math.floor(i/2)*100;c.fillStyle=col;c.fillRect(x,y,176,86);c.fillStyle='#333';c.font=`800 22px ${FONT}`;c.fillText(tx,x+10,y+48)});
+  c.fillStyle='#3f6fb5';c.font=`900 56px ${FONT}`;c.fillText('행복동 주민센터',520,130);c.fillStyle='#777';c.font=`700 30px ${FONT}`;c.fillText('민원 접수 09:00 ~ 18:00',520,180)})}
 
 // ===== 0. 새벽 단지 놀이터 좀비 떼(타이틀) → 재난문자 → 07:00 알람, 기상 → 창밖 좀비 → 플래너 =====
 S[0]=()=>{
@@ -139,10 +141,10 @@ S[1]=()=>{
   const rw=new THREE.Mesh(new THREE.PlaneGeometry(10,4.2),lamb(0xe2dcd2));rw.rotation.y=-Math.PI/2;rw.position.set(4,2.1,1);sc.add(rw);
   const lw=new THREE.Mesh(new THREE.PlaneGeometry(10,4.2),lamb(0xe2dcd2));lw.rotation.y=Math.PI/2;lw.position.set(-6,2.1,1);sc.add(lw);
   // 엘리베이터
-  const ef=new THREE.Mesh(new THREE.BoxGeometry(1.6,2.5,0.1),lamb(0x9aa0ac));ef.position.set(2.0,1.25,-3.95);sc.add(ef);
-  const doors=[];for(const s of[-1,1]){const d=new THREE.Mesh(new THREE.BoxGeometry(0.66,2.25,0.06),lamb(0xc8ccd6));d.position.set(2.0+s*0.33,1.13,-3.88);sc.add(doors[doors.length]=d)}
-  const inside=new THREE.Mesh(new THREE.PlaneGeometry(1.3,2.25),basic(0xfff4d8));inside.position.set(2.0,1.13,-3.92);sc.add(inside);
-  const ind=labelSprite('▲ 7',{fs:56,bg:'#202028',fg:'#ff9a3a',size:0.004});ind.position.set(2.0,2.75,-3.85);sc.add(ind);
+  const desk=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.0,0.6),lamb(0x8a6f58));desk.position.set(0.9,0.5,-3.0);sc.add(desk);const dtop=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.05,0.7),lamb(0xe8dcc8));dtop.position.set(0.9,1.02,-3.0);sc.add(dtop);
+  
+  
+  const ind=labelSprite('안내',{fs:60,bg:'#3f6fb5',fg:'#fff',size:0.004});ind.position.set(0.9,1.45,-3.0);sc.add(ind);
   // 유리 현관문 (오른쪽 벽)
   const gl=[];for(const s of[-1,1]){const g=new THREE.Mesh(new THREE.PlaneGeometry(0.9,2.4),new THREE.MeshBasicMaterial({color:0xbfe6ff,transparent:true,opacity:0.45,side:THREE.DoubleSide}));g.rotation.y=-Math.PI/2;g.position.set(3.97,1.2,-0.2+s*0.46);sc.add(g);gl.push(g)}
   const gfr=new THREE.Mesh(new THREE.BoxGeometry(0.12,2.6,2.0),lamb(0x6a6f7a));gfr.position.set(4.05,1.3,-0.2);sc.add(gfr);
@@ -153,12 +155,12 @@ S[1]=()=>{
   const disp=display(sc,-2.5,3.0,-3.94,47);
   const waiters=[];for(let i=0;i<8;i++){const z=zombie(r);seatZ(z,seats[i][0],seats[i][1]);sc.add(z);ticket(z,48+i);waiters.push(z)}
   // 주인공 + 좀비
-  const me=istj(rng(11),{shirt:0x3d4a66});me.position.set(2.0,0,-2.7);me.rotation.y=Math.PI;sc.add(me);
-  const bag=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.32,0.1),lamb(0x4a3a2a));me.userData.arms[0].add(bag);bag.position.set(0,-0.75,0);
+  const me=istj(rng(11),{shirt:0x3d4a66});me.position.set(2.0,0,-2.7);me.rotation.y=0;sc.add(me);
+  const nt=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.02),new THREE.MeshBasicMaterial({map:canvasTex(96,128,(c,w,h)=>{c.fillStyle='#fff';c.fillRect(0,0,w,h);c.fillStyle='#3f6fb5';c.fillRect(0,0,w,30);c.fillStyle='#222';c.font=`900 30px ${FONT}`;c.textAlign='center';c.fillText('안내',w/2,86)})}));nt.position.set(-0.13,0.2,0.0);me.userData.arms[0].position.z=0;me.userData.hip.add(nt);nt.position.set(-0.14,0.5,0.175);
   const Z=zombie(rng(713),{shirt:0x8a94a6});sc.add(Z);
   const bZ=bubZ(Z,'으어어어!!',{size:0.0034,y:2.25});const bZ2=bubZ(Z,'…으어?',{size:0.0026,y:2.2});
   const bP=bubJ(me,'번호표 뽑으세요',{size:0.0024,y:2.2}),bP2=bubJ(me,'순서대로 해야죠',{size:0.0024,y:2.2});
-  const ch=chip('대기 인원 47명',1110);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
+  const ch=chip('대기 인원 47명',1110);const cw=chip('AM 8:59 · 그래도 출근',200);ch.style.background='#2b2b3a';ch.style.color='#ffd84d';
   const vig=div('vig');const fl=div('flash');
   const C=cam(50);
   const P0=[4.6,-0.2],P1=[2.75,-2.25],PM=[3.25,-3.1],PS=[seats[8][0],-2.6];
@@ -181,10 +183,9 @@ S[1]=()=>{
     if(u.tk)u.tk.visible=t>=TPu;
     // 주인공
     const um=me.userData;standPose(me);
-    if(t<TB){me.rotation.y=Math.PI}else{const k=ease((t-TB)/0.4);me.rotation.y=Math.PI+(Math.atan2(P1[0]-2.0,P1[1]+2.7)-Math.PI)*k}
-    if(t>=TPt&&t<TR+0.2){const k=Math.min(ease((t-TPt)/0.3),ease((TR+0.2-t)/0.3));me.rotation.y=Math.PI-0.15;pointAt(me,1,k)}
-    if(t>=N3-0.2){const k=clamp01((t-N3)/2.6);me.rotation.y=Math.PI;if(k>0.35){walkTo(me,[2.0,-2.7],[2.0,-3.6],clamp01((k-0.35)/0.5),t,false)}}
-    const ko=ease((t-N3-0.1)/0.7);doors[0].position.x=2.0-0.33-ko*0.62;doors[1].position.x=2.0+0.33+ko*0.62;
+    if(t<TB){me.rotation.y=0}else{const k=ease((t-TB)/0.4);me.rotation.y=Math.atan2(P1[0]-2.0,P1[1]+2.7)*k}
+    if(t>=TPt&&t<TR+0.2){const k=Math.min(ease((t-TPt)/0.3),ease((TR+0.2-t)/0.3));me.rotation.y=0.2;pointAt(me,1,k)}
+    if(t>=P3+1.0){me.rotation.y=-0.5}
     disp.userData.n!==47&&disp.userData.set(47);
     show(bZ,t,Z1+0.2,endOf(1,'z1',0.1));show(bZ2,t,at(1,'z2'),TR+0.5);show(bP,t,P2,endOf(1,'p2',0.5));show(bP2,t,P3,endOf(1,'p3',0.5));
     // 카메라
@@ -198,7 +199,7 @@ S[1]=()=>{
     C.updateProjectionMatrix();setSky('#d8d2c8','#d8d2c8');renderer.render(sc,C);
     vig.style.opacity=(t>TB-0.05&&t<TS)?(0.25+0.75*beatPulse(1,t)):0;
     cutFlash(fl,t,TB);if(t>=TR)cutFlash(fl,t,TR);
-    chipPop(ch,t,TR+0.3);ch.style.opacity=t>TR+0.3&&t<P3-0.1?1:0;
+    chipPop(cw,t,0.1);cw.style.opacity=t<TB?1:0;chipPop(ch,t,TR+0.3);ch.style.opacity=t>TR+0.3&&t<P3-0.1?1:0;
     caption(1,t)};
 };
 
@@ -212,7 +213,7 @@ function office(sc,r,o={}){
   const top=new THREE.Mesh(new THREE.BoxGeometry(4.3,0.06,0.8),lamb(0xe8dcc8));top.position.set(0,1.07,-1.6);sc.add(top);
   const glass=new THREE.Mesh(new THREE.PlaneGeometry(4.2,1.3),new THREE.MeshBasicMaterial({color:0xcfe8ff,transparent:true,opacity:0.22}));glass.position.set(0,1.75,-1.45);sc.add(glass);
   const hole=new THREE.Mesh(new THREE.PlaneGeometry(0.7,0.18),basic(0x6a6050));hole.position.set(0,1.18,-1.44);sc.add(hole);
-  const sign=labelSprite('관리사무소 · 민원 창구',{fs:64,bg:'#3f6fb5',fg:'#fff',size:0.0058});sign.position.set(0,3.55,-3.1);sc.add(sign);
+  const sign=labelSprite('행복동 주민센터 · 민원 창구',{fs:64,bg:'#3f6fb5',fg:'#fff',size:0.0058});sign.position.set(0,3.55,-3.1);sc.add(sign);
   const disp=display(sc,1.6,2.85,-3.12,47,1.1);
   const shutter=new THREE.Mesh(new THREE.BoxGeometry(4.3,1.35,0.06),new THREE.MeshLambertMaterial({map:canvasTex(1024,330,(c,w,h)=>{c.fillStyle='#b8bec8';c.fillRect(0,0,w,h);for(let i=0;i<22;i++){c.fillStyle='rgba(60,60,80,.25)';c.fillRect(0,i*15,w,4)}
     c.fillStyle='#fff';c.fillRect(250,90,524,150);c.strokeStyle='#e2332d';c.lineWidth=8;c.strokeRect(250,90,524,150);c.fillStyle='#e2332d';c.font=`900 62px ${FONT}`;c.textAlign='center';c.fillText('업무 종료',w/2,160);c.fillStyle='#333';c.font=`800 40px ${FONT}`;c.fillText('내일 09:00 접수',w/2,218)})}));
