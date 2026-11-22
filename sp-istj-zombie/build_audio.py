@@ -46,7 +46,7 @@ def tick2(vol=0.12):
     return x
 
 SC = [
-    [('n1', 0.35), ('p1', 3.0), ('n2', 0.5)],
+    [('n1', 0.35), ('p1', 4.6), ('n2', 0.5)],
     [('z1', 1.2), ('p2', 0.5), ('z2', 0.45), ('p3', 1.7), ('n3', 1.1)],
     [('a1', 0.6), ('c1', 1.5), ('z3', 0.4), ('c2', 0.45), ('n4', 2.4)],
     [('a2', 1.9), ('c3', 2.0), ('z4', 0.6), ('n5', 0.9)],
@@ -71,7 +71,7 @@ def sfx(si, ev):
     ve = lambda name, k=0: LEAD + L[name][0] + L[name][1] + k
     b = np.zeros(int(T * SR)); N = len(b); tt = np.arange(N) / SR
     if si == 0:
-        D = {'alert': ve('n1', 0.2), 'alarm': ve('n1', 1.3), 'wake': ve('n1', 1.6), 'look': ve('n1', 2.3), 'plan': vt('n2', -0.1)}
+        D = {'alert': ve('n1', 0.2), 'alarm': ve('n1', 2.9), 'wake': ve('n1', 3.2), 'look': ve('n1', 3.9), 'plan': vt('n2', -0.1)}
         ev.update({k: round(x, 3) for k, x in D.items()})
         b += (drone(T, 0.12, 49) + scrape(T, 0.04)) * np.clip((D['alarm'] - tt) / 0.08, 0, 1)
         b += siren(T, 0.05) * np.clip((D['alarm'] - tt) / 0.2, 0, 1)

@@ -570,7 +570,8 @@ S[0]=()=>{
   ground(sA,0x7a866e,300);
   for(let i=0;i<5;i++){const b=makeBuilding(r,5,16+r()*5,4,{wall:pick(r,['#cfc6d8','#d8cfc4','#c4ccd8']),win:'#4a5470',lit:0.3});b.position.set(-12+i*6,b.position.y,-11);sA.add(b)}
   playground(sA);
-  const hz=[];for(let i=0;i<11;i++){const z=zombie(r);const x=-4.6+r()*9.2,zz=-2.4+r()*4.4;z.position.set(x,0,zz);sA.add(z);hz.push({z,x,zz,ph:r()*6,ry:r()*6.28})}
+  const ZP=[[-1.9,1.7],[2.0,2.1],[-3.3,2.4],[3.5,2.6],[-1.6,-1.9],[1.7,-1.7],[-4.7,1.5],[4.7,1.1],[0,-2.7],[-2.9,-2.4],[3.3,-2.0]]; // 미끄럼틀·그네와 안 겹치는 자리
+  const hz=[];ZP.forEach(([x,zz])=>{const z=zombie(r);z.position.set(x,0,zz);sA.add(z);hz.push({z,x,zz,ph:r()*6,ry:r()*6.28})});
   for(let i=0;i<6;i++){tree(sA,-7+i*2.8+r(),-5.5-r(),0.9+r()*0.4)}
   // B: 침실
   const sB=new THREE.Scene();sB.add(new THREE.HemisphereLight(0xe8e6f8,0x6a6070,1.5));{const d=new THREE.DirectionalLight(0xffd0b0,0.8);d.position.set(0,4,-2);sB.add(d)}
@@ -596,7 +597,7 @@ S[0]=()=>{
   const C=cam(50);
   return t=>{
     const TA=E.alert,TAl=E.alarm,TW=E.wake,TL=E.look,TP=E.plan;
-    hz.forEach((q,i)=>{const s=t*0.35+q.ph;q.z.position.set(q.x+Math.sin(s)*0.6,0,q.zz+Math.cos(s*0.8)*0.4);q.z.rotation.y=q.ry+Math.sin(s*0.5)*0.8;zPose(q.z,t,0.8)});
+    hz.forEach((q,i)=>{const s=t*0.35+q.ph;q.z.position.set(q.x+Math.sin(s)*0.3,0,q.zz+Math.cos(s*0.8)*0.25);q.z.rotation.y=q.ry+Math.sin(s*0.5)*0.8;zPose(q.z,t,0.8)});
     let mode=t<TAl?'A':t<TP?'B':'C';
     if(mode==='A'){const k=ease(t/TAl);C.fov=50;C.position.set(0.7,3.9+k*0.3,11.8-k*2.0);C.lookAt(0.3,2.3,-3);C.updateProjectionMatrix();setSky('#3b4172','#f0b9a0 85%');renderer.render(sA,C)}
     else{
