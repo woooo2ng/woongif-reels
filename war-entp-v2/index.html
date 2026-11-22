@@ -639,6 +639,7 @@ S[0]=()=>{
     else if(t<PRESS-0.25){const k=ease((t-APPR)/(PRESS-0.25-APPR));setCam(C,lerp3([0,7.5,1.0],[0,6.2,-0.6],k),[0,0.6,BZ],52)}
     else if(t<POP){const k=ease((t-PRESS+0.25)/1.0);setCam(C,lerp3([0,5.2,BZ+2.0],[0,4.7,BZ+1.5],k),[0,1.0,BZ],50)}
     else{const k=ease((t-POP)/5);setCam(C,lerp3([0,4.2,BZ+5.6],[0,5.6,BZ+8.2],k),[0,1.6,BZ],54)}
+    if(window.THUMB){const T=window.THUMB;setCam(C,T.p,T.l,T.f);WS.position.set(T.ws[0],0,T.ws[1]);WS.rotation.y=T.ws[2];WS.scale.setScalar(T.ws[3]);G.visible=false}
     const TO=gb+0.1;
     tag.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
     t1.style.transform=`scale(${pop((t-0.1)/0.35)})`;t2.style.transform=`scale(${pop((t-0.35)/0.4)})`;t3.style.transform=`scale(${pop((t-0.6)/0.4)})`;
