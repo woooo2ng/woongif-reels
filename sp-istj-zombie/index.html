@@ -587,7 +587,7 @@ S[0]=()=>{
   const shirt=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.75,0.08),lamb(0xf4f4f4));shirt.position.set(-2.4,1.25,-2.5);sB.add(shirt);
   const me=istj(rng(11),{shirt:0xe8eef6,pants:0x8fa0c0});sB.add(me);me.userData.hip.children.slice(-2).forEach(m=>m.visible=false); // 잠옷이라 넥타이 없음
   const fl=div('flash');const tUpd=titleEls();
-  const al=div('alertb','<div class="h"><i>긴급재난문자</i> 지금</div><div class="m">[행정안전부] 좀비 사태 발생. 전 국민 외출을 금지합니다.</div>');al.style.top='200px';
+  const al=div('alertb','<div class="h"><i>긴급재난문자</i> 지금</div><div class="m">[행정안전부] 좀비 사태 발생. 전 국민 외출을 금지합니다.</div>');al.style.top='800px';
   const bP=bubJ(me,'…!',{y:1.65,size:0.0024,fs:72});
   const plan=div('plan',`<div class="rings"><b></b><b></b><b></b><b></b></div><h2>11월 23일 (월)</h2><h1>오늘 일정</h1>
    <p class="done"><i>07:00</i>기상 ✔</p><p><i>07:30</i>출근</p><p><i>12:00</i>점심</p><p><i>19:00</i>헬스</p><p class="zz"><i>??:??</i>좀비 사태</p>`);plan.style.top='290px';
@@ -599,7 +599,7 @@ S[0]=()=>{
     const TA=E.alert,TAl=E.alarm,TW=E.wake,TL=E.look,TP=E.plan;
     hz.forEach((q,i)=>{const s=t*0.35+q.ph;q.z.position.set(q.x+Math.sin(s)*0.3,0,q.zz+Math.cos(s*0.8)*0.25);q.z.rotation.y=q.ry+Math.sin(s*0.5)*0.8;zPose(q.z,t,0.8)});
     let mode=t<TAl?'A':t<TP?'B':'C';
-    if(mode==='A'){const k=ease(t/TAl);C.fov=50;C.position.set(0.7,3.9+k*0.3,11.8-k*2.0);C.lookAt(0.3,2.3,-3);C.updateProjectionMatrix();setSky('#3b4172','#f0b9a0 85%');renderer.render(sA,C)}
+    if(mode==='A'){const k=ease(t/TAl);C.fov=50;C.position.set(0.7,3.9+k*0.3,11.8-k*2.0);C.lookAt(0.3,2.9,-3);C.updateProjectionMatrix();setSky('#3b4172','#f0b9a0 85%');renderer.render(sA,C)}
     else{
       // 알람 → 일어나 앉음 → 창밖을 봄
       const blink=t<TW+0.6&&Math.floor((t-TAl)*4)%2===0;ckS.material=blink?ckOff:ckOn;ck.position.x=0.55+(t<TW+0.5?Math.sin(t*60)*0.01:0);ckS.position.x=ck.position.x;
@@ -612,8 +612,8 @@ S[0]=()=>{
       if(t<TW){C.fov=38;C.position.set(0.55,1.15,-0.5);C.lookAt(0.55,0.75,-2.05)}
       else{const k=ease((t-TW)/2.5);C.fov=52;C.position.set(-0.3,2.0,3.0-k*0.4);C.lookAt(0.1,1.2,-2.4)}
       C.updateProjectionMatrix();setSky('#3a3a50','#3a3a50');renderer.render(sB,C)}
-    tUpd(t,TA);
-    sh(al,t>=TA&&t<TAl+0.05);if(t>=TA){const k=ease((t-TA)/0.25);const shk=t<TA+0.5?Math.sin((t-TA)*70)*10*(1-(t-TA)/0.5):0;al.style.transform=`translateY(${(1-k)*-300}px) translateX(${shk}px)`}
+    tUpd(t,TAl);
+    sh(al,t>=TA&&t<TAl+0.05);if(t>=TA){const k=pop((t-TA)/0.3);const shk=t<TA+0.6?Math.sin((t-TA)*70)*10*(1-(t-TA)/0.6):0;al.style.transform=`translateX(${shk}px) scale(${0.6+0.4*k})`;al.style.opacity=clamp01((t-TA)/0.1)}
     vig.style.opacity=mode==='A'?0.35:0;
     cutFlash(fl,t,TAl);if(t>=TP)cutFlash(fl,t,TP);
     sh(plan,mode==='C');if(mode==='C'){const k=ease((t-TP)/0.3);plan.style.transform=`translateY(${(1-k)*1200}px) rotate(${-2*(1-k)}deg)`;
