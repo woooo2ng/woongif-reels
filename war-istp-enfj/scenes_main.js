@@ -312,6 +312,7 @@ S[5]=()=>{
   const cn=canBig();scene.add(cn);const stm=steam(scene,4,r);
   const budT=budMesh();T.userData.arms[0].add(budT);budT.position.set(0,-0.68,0.06);budT.visible=false;
   const budJ=budMesh();J.userData.arms[1].add(budJ);budJ.position.set(0,-0.68,0.06);budJ.visible=false;
+  const budB=budMesh();scene.add(budB);budB.visible=false;budB.rotation.z=Math.PI/2;
   const budE=budMesh();J.userData.head.add(budE);budE.position.set(0.265,0.19,0.02);budE.visible=false;
   const zz=textSprite('Zz',90,'#ffffff',0.004);scene.add(zz);
   const sun=glowSprite('rgba(255,170,110,1)',16);sun.position.set(-2,4,40);scene.add(sun);
@@ -324,39 +325,43 @@ S[5]=()=>{
     bG4=sb(scene,'…아무것도 안 나오는데요?',0,0,0,{c:JB,size:0.0019}),bK3=sb(scene,'…연설, 다 들었어요.',0,0,0,{c:TB,size:0.0019}),bK4=sb(scene,'…길긴 했어요.',0,0,0,{c:TB,size:0.0019});
   const ph=div('ph2',`<div class="sc"><div class="art">♪</div><div class="tt">재생 중인 곡 없음</div><div class="sub">ISTP 장군의 이어폰</div><div class="bar"></div><div class="tm"><span>0:00</span><span>0:00</span></div><div class="btn">▶</div></div>`);ph.style.opacity=0;
   const fb=div('fb','<img src="flash.jpg"><div class="vg"></div><div class="lb">2시간 40분 전</div>');fb.style.opacity=0;
-  const chC=chip('따뜻한 캔커피'),chB=chip('이어폰 한쪽'),ch=chip('2시간 40분 완청'),ch2=chip('ENFJ 나라 주말 여행지 1위: ISTP 나라');ch2.style.fontSize='48px';
+  const chD=chip('AM 6:00 · 다음 날 아침'),chC=chip('따뜻한 캔커피'),chB=chip('이어폰 한쪽'),ch=chip('2시간 40분 완청'),ch2=chip('ENFJ 나라 주말 여행지 1위: ISTP 나라');ch2.style.fontSize='48px';
   const stat=div('statbox','<div><small>전쟁</small><b>1년째</b></div><div><small>사상자</small><b>0명</b></div>');stat.style.top='330px';
   const endd=div('dim','');endd.style.opacity=0;const e1=div('end1 out','다음 나라 대결은?'),e2=div('end2 out','댓글로 신청해 주세요');e1.style.opacity=e2.style.opacity=0;
   const hp=new THREE.Vector3();
   return t=>{
     const WK=E.wake,CN=E.can,g3=at(5,'g3'),k2=at(5,'k2'),SIT=E.sit,PL=E.pull,OF=E.offer,Q=E.q,TK=E.take,IN=E.insert,SC=E.screen,g4=at(5,'g4'),k3=at(5,'k3'),FL=E.flash,TR=E.tears,k4=at(5,'k4'),SS=E.sunset,TL=E.tl,END=E.end;
-    const m=ease((t-WK)/0.8),sset=ease((t-SS+0.3)/1.2);
-    let top=lerpCol('#1c2244','#bfe0ff',m),bot=lerpCol('#3c3a66','#fff3e4',m);
+    const m=ease(t/2.4),sset=ease((t-SS+0.3)/1.2);
+    let top=lerpCol('#7a86b8','#bfe0ff',m),bot=lerpCol('#ffc49a','#fff3e4',m);
     if(t>SS-0.3&&t<TL){top=lerpCol(top,'#ff9a7a',sset);bot=lerpCol(bot,'#ffe0a8',sset)}
-    setSky(top,bot+' 72%');hemi.intensity=0.35+m*1.05;dl.intensity=0.25+m*1.15;fog.color.set(lerpCol('#2a2f55','#eef0f6',m));
+    setSky(top,bot+' 72%');hemi.intensity=0.8+m*0.6;dl.intensity=0.6+m*0.8;fog.color.set(lerpCol('#e8c8c0','#eef0f6',m));
     sun.material.opacity=t>SS-0.3&&t<TL?sset:0;
     // ENFJ 장군 (벤치 왼쪽)
     standPose(J);sitPose(J);J.userData.hip.position.y=0.6;J.position.set(-0.45,0,0.05);J.rotation.set(0,0,0);
     const sleep=t<WK;J.userData.head.rotation.x=sleep?0.55:0;setFace(J,!sleep);
     J.userData.head.rotation.y=(t>g3-0.3&&t<SIT+1.2)?0.5:(t>Q-0.2&&t<TK+0.4)?0.45:0;
+    if(t>WK+0.3&&t<CN-0.55){J.userData.head.rotation.x=0.45;J.userData.head.rotation.y=-0.5}
+    else if(t>=CN-0.55&&t<CN+0.2){J.userData.head.rotation.x=0.35;J.userData.head.rotation.y=-0.75}
+    if(t>Q-0.2&&t<TK+0.4)J.userData.head.rotation.x=0.3;
     const holdCan=t>CN;const aL=J.userData.arms[0];
     if(holdCan){const k=ease((t-CN)/0.4),up=t<g3-0.3?1:ease(1-(t-g3+0.3)/0.4);aL.rotation.x=-1.2*k-0.45*k*up;aL.rotation.z=0.45*k*up+0.1*k}
     J.updateMatrixWorld(true);
-    if(holdCan){aL.children[1].getWorldPosition(hp);cn.position.set(hp.x+0.05,hp.y-0.12,hp.z+0.05);cn.rotation.y=Math.PI/2}else cn.position.set(-0.05,0.54,0.12);
+    if(holdCan){aL.children[1].getWorldPosition(hp);cn.position.set(hp.x+0.05,hp.y-0.12,hp.z+0.05);cn.rotation.y=Math.PI/2}else{cn.position.set(-1.0,0.54,0.12);cn.rotation.y=0}
     // ISTP 장군
     standPose(T);const ebL=T.userData.ebs[0];const aT=T.userData.arms[0];
     if(t<SIT){T.position.set(2.4,0,-0.35);T.rotation.y=-2.2}
     else if(t<SIT+1.15){const k=ease((t-SIT)/1.15);T.position.set(2.4-k*1.85,0,-0.35+k*0.75);T.rotation.y=-2.2+k*0.8;walkPose(T,t*7,0.45)}
     else{sitPose(T);T.userData.hip.position.y=0.6;T.position.set(0.55,0,0.05);T.rotation.y=0}
     if(t>PL-0.1&&t<OF){const k=ease((t-PL+0.1)/0.35);aT.rotation.x=-2.75*k;aT.rotation.z=-0.55*k}
-    else if(t>=OF&&t<TK+0.25){const k=ease((t-OF)/0.35);aT.rotation.x=-2.75+(2.75-0.25)*k;aT.rotation.z=-0.55-0.95*k}
-    else if(t>=TK+0.25&&t<SS-0.3){const k=ease((t-TK-0.25)/0.4);aT.rotation.x=-0.25*(1-k)-0.7*k;aT.rotation.z=-1.5*(1-k)}
+    else if(t>=OF&&t<OF+0.6){const k=ease((t-OF)/0.35);aT.rotation.x=-2.75+(2.75-0.75)*k;aT.rotation.z=-0.55+0.1*k}
+    else if(t>=OF+0.6&&t<SS-0.3){const k=ease((t-OF-0.6)/0.4);aT.rotation.x=-0.75+0.05*k;aT.rotation.z=-0.45*(1-k)}
     else if(t>=SS-0.3){aT.rotation.x=-0.7}
-    ebL.visible=t<PL+0.25;budT.visible=t>=PL+0.25&&t<TK+0.15;
+    ebL.visible=t<PL+0.25;budT.visible=t>=PL+0.25&&t<OF+0.35;
+    budB.visible=t>=OF+0.35&&t<TK+0.15;if(budB.visible){const dr=1-ease((t-OF-0.35)/0.15);budB.position.set(0.1,0.6+dr*0.08,0.14)}
     // ENFJ가 받아서 귀에 꽂음
     const aR=J.userData.arms[1];
-    if(t>TK-0.3&&t<TK+0.3){const k=ease((t-TK+0.3)/0.4);aR.rotation.x=-0.35*k;aR.rotation.z=1.25*k}
-    else if(t>=TK+0.3&&t<IN+0.4){const k=ease((t-TK-0.3)/(IN-TK-0.3));aR.rotation.x=-0.35-(2.4)*k;aR.rotation.z=1.25-0.65*k}
+    if(t>TK-0.35&&t<TK+0.3){const k=ease((t-TK+0.35)/0.45);aR.rotation.x=-0.55*k;aR.rotation.z=0.7*k}
+    else if(t>=TK+0.3&&t<IN+0.4){const k=ease((t-TK-0.3)/(IN-TK-0.3));aR.rotation.x=-0.55-(2.2)*k;aR.rotation.z=0.7-0.1*k}
     else if(t>=IN+0.4&&t<IN+0.9){const k=ease((t-IN-0.4)/0.5);aR.rotation.x=-2.75*(1-k);aR.rotation.z=0.6*(1-k)}
     budJ.visible=t>=TK+0.15&&t<IN;budE.visible=t>=IN;
     updSteam(stm,t,cn.position.x,cn.position.y+0.24,cn.position.z+0.05,t>WK&&t<CN?1:0);
@@ -370,12 +375,13 @@ S[5]=()=>{
     walkers.forEach((p,i)=>{p.visible=tl;const lt=((t-TL)*0.35+i/8)%1;p.position.set(-9+lt*9,0,1.2+(i%3)*0.9);p.rotation.y=Math.PI/2;walkPose(p,t*8+i,0.5)});
     for(const p of[J,T])p.visible=!tl;
     // 카메라
-    if(t<WK+0.5){setCam(C,[0.9,1.75,3.4],[-0.3,1.35,0],44)}
-    else if(t<g3-0.3){const k=ease((t-WK-0.5)/0.7);const c=cn.position;setCam(C,lerp3([0.6,1.7,2.9],[c.x+0.55,c.y+0.45,c.z+1.85],k),lerp3([-0.4,1.3,0.15],[c.x-0.1,c.y+0.35,c.z],k),44)}
+    if(t<WK+0.3){const k=ease(t/(WK+0.3));setCam(C,[1.2,1.9,4.0-k*0.4],[-0.3,1.3,0],44)}
+    else if(t<CN-0.6){setCam(C,[0.35,1.75,1.85],[-0.5,1.45,0],42)}
+    else if(t<g3-0.3){const k=ease((t-CN-0.05)/0.6);const c=cn.position;setCam(C,lerp3([-0.25,1.5,2.1],[c.x+0.55,c.y+0.45,c.z+1.85],k),lerp3([-0.9,0.85,0.1],[c.x-0.1,c.y+0.35,c.z],k),44)}
     else if(t<SIT+1.3){setCam(C,[0.8,1.95,7.4],[0.85,1.3,0],46)}
     else if(t<PL-0.15){setCam(C,[0.05,1.75,3.6],[0.05,1.25,0],44)}
     else if(t<OF+0.2){setCam(C,[0.8,1.8,1.65],[0.55,1.7,0],40)}
-    else if(t<TK+0.4){setCam(C,[0.05,1.6,2.7],[0.05,1.25,0],44)}
+    else if(t<TK+0.4){setCam(C,[0.05,1.45,2.5],[0.05,0.95,0],44)}
     else if(t<SC){setCam(C,[0.75,1.8,0.95],[-0.45,1.72,0],42)}
     else if(t<k3-0.1){setCam(C,[-0.75,1.75,1.85],[-0.45,1.6,0],40)}
     else if(t<FL){setCam(C,[0.8,1.85,1.75],[0.55,1.72,0],40)}
@@ -385,6 +391,7 @@ S[5]=()=>{
     else{const k=ease((t-TL)/7);setCam(C,lerp3([0,7.5,-4],[1,8.5,-6.5],k),[0,0,12],52)}
     // UI
     chipPop(chC,t,CN+0.15);chC.style.opacity=t>CN+0.15&&t<g3-0.3?1:0;
+    chipPop(chD,t,0.25);chD.style.opacity=t>0.25&&t<CN-0.6?1:0;
     chipPop(chB,t,OF+0.2);chB.style.opacity=t>OF+0.2&&t<SC?1:0;
     const pO=t>SC&&t<endOf(5,'g4',0.5);ph.style.opacity=pO?1:0;ph.style.transform=`translateX(-50%) scale(${0.85+0.15*pop((t-SC)/0.3)})`;
     const fO=t>FL&&t<TR;fb.style.opacity=fO?clamp01(Math.min((t-FL)/0.15,(TR-t)/0.15)):0;

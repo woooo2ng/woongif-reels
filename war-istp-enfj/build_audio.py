@@ -6,7 +6,7 @@ SC = [
     [('e3', 0.3), ('e4', 0.05), ('s3', 0.5), ('e5', 1.3), ('n4', 0.3)],
     [('e6', 0.5), ('s4', 1.3), ('e7', 0.25), ('n5', 0.5)],
     [('g2', 2.0), ('n6', 0.5)],
-    [('g3', 3.0), ('k2', 0.3), ('g4', 5.4), ('k3', 0.5), ('k4', 1.7), ('n7', 0.4), ('n8', 0.9)],
+    [('g3', 4.2), ('k2', 0.3), ('g4', 5.8), ('k3', 0.5), ('k4', 1.7), ('n7', 0.4), ('n8', 0.9)],
 ]
 POST = {0: 0.3, 1: 0.3, 2: 0.2, 3: 0.3, 4: 0.3, 5: 1.7}
 SPEED = {'g1': 1.1, 'g2': 1.05, 'k3': 1.05, 'k4': 1.05, 'n7': 1.12, 'n8': 1.08, 'n1': 1.12, 'e5': 1.1, 'e6': 1.05, 'e7': 1.0, 'g3': 1.1, 'g4': 1.1, 'k2': 1.1}
@@ -90,14 +90,14 @@ def sfx(si, ev):
         place(b, pad(T - vt('g2'), (220, 277.2, 329.6, 440), 0.045), vt('g2'))
     elif si == 5:
         b += wind(T, 0.02)
-        ev['wake'] = 0.9; place(b, chirp(0.05), 1.0); place(b, chirp(0.04), 2.0)
-        ev['find'] = 1.5
-        ev['can'] = 1.7; place(b, can(0.18), 1.75)
+        ev['wake'] = 1.3; place(b, chirp(0.05), 0.6); place(b, chirp(0.04), 1.8); place(b, rustle(0.5, 0.06), 1.9)
+        ev['find'] = 1.9
+        ev['can'] = 3.1; place(b, can(0.18), 3.25)
         K = end('k2'); ev['sit'] = round(K + 0.3, 3); place(b, steps(1.0, 0.32, 0.08), K + 0.3); place(b, thud(0.15), K + 1.45)
         ev['pull'] = round(K + 2.2, 3); place(b, pop(0.3), K + 2.45)
-        ev['offer'] = round(K + 2.8, 3); ev['q'] = round(K + 3.15, 3); place(b, blip(880, 0.08), K + 3.15)
-        ev['take'] = round(K + 3.7, 3); ev['insert'] = round(K + 4.6, 3); place(b, pop(0.4), K + 4.6)
-        ev['screen'] = round(K + 5.05, 3)
+        ev['offer'] = round(K + 2.8, 3); place(b, tap(0.25), K + 3.15); ev['q'] = round(K + 3.45, 3); place(b, blip(880, 0.08), K + 3.45)
+        ev['take'] = round(K + 4.05, 3); ev['insert'] = round(K + 4.95, 3); place(b, pop(0.4), K + 4.95)
+        ev['screen'] = round(K + 5.4, 3)
         ev['flash'] = round(end('k3', 0.15), 3); place(b, whoosh(0.5, 0.14), ev['flash'] - 0.1)
         ev['tears'] = round(ev['flash'] + 1.1, 3); ev['chip'] = round(ev['tears'] + 0.15, 3); place(b, ping(0.1), ev['chip'])
         ev['sunset'] = round(vt('n7', -0.3), 3)
