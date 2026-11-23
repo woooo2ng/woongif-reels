@@ -110,3 +110,6 @@ h2{font-size:24px;font-weight:900;margin:8px 0 4px}
 .modal-box p{color:#6b5d70;line-height:1.5;font-size:15px}
 .toast{position:absolute;left:50%;bottom:40px;transform:translate(-50%,20px);background:#2b2b3a;color:#fff;font-weight:800;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;transition:.3s;z-index:30;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.snd{position:absolute;right:12px;top:calc(10px + env(safe-area-inset-top));z-index:15;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.9);font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,.15);cursor:pointer;display:none}
+.snd.on{display:block}
+#scr-game .hud{padding-right:58px}

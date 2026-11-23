@@ -34,6 +34,7 @@ function track(ev, data = {}) {
 // ===== 화면 전환 =====
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + id));
+  if (window.Snd && Snd.ctx) $('#snd').classList.toggle('on', id !== 'start');
   track('screen', { id });
 }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
@@ -45,7 +46,9 @@ const S = { me: store.get('me', null), data: null, partner: null, score: 0, pick
 const params = new URLSearchParams(location.search);
 
 // ===== 시작 =====
-document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(b.dataset.go));
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { Snd.init(); Snd.play('pop'); Snd.setMood('start'); show(b.dataset.go); });
+const sndBtn = $('#snd'); sndBtn.textContent = Snd.on ? '🔊' : '🔇';
+sndBtn.onclick = () => { Snd.init(); sndBtn.textContent = Snd.toggle() ? '🔊' : '🔇'; track('sound', { on: Snd.on }); };
 // 친구 결과 카드 링크로 들어오면(?with=enfp-f) 그 상대로 바로
 const viaLink = params.get('with');
 track('open', { via: viaLink || '' });
@@ -53,7 +56,7 @@ track('open', { via: viaLink || '' });
 // 내 MBTI
 $('#grid-me').innerHTML = MBTI.map(m => `<button class="cell" data-m="${m}">${m}</button>`).join('');
 const pickMe = m => { S.me = m; store.set('me', m); track('pick_me', { m }); renderPartners(); show('partner'); };
-document.querySelectorAll('#grid-me .cell').forEach(b => b.onclick = () => pickMe(b.dataset.m));
+document.querySelectorAll('#grid-me .cell').forEach(b => b.onclick = () => { Snd.play('pop'); pickMe(b.dataset.m); });
 $('[data-pick-me]').onclick = () => pickMe('모름');
 
 // 상대
@@ -104,19 +107,20 @@ async function say(who, text) {
   for (let i = 1; i <= text.length; i++) {
     if (t.skip) { textEl.textContent = text; break; }
     textEl.textContent = text.slice(0, i);
+    if (who !== 'nar' && i % 3 === 1 && text[i - 1] !== ' ') Snd.play('tick');
     await sleep(text[i - 1] === ' ' ? 18 : 34);
   }
   typing = null;
   nextEl.classList.add('on');
   await new Promise(r => { tapResolve = r; });
 }
-function heart() { const h = $('#heart-pop'); h.classList.remove('on'); void h.offsetWidth; h.classList.add('on'); }
+function heart() { Snd.play('ding'); const h = $('#heart-pop'); h.classList.remove('on'); void h.offsetWidth; h.classList.add('on'); }
 function setProg(i) { $('#prog').innerHTML = S.data.scenes.map((_, k) => `<i class="${k < i ? 'done' : ''}"></i>`).join(''); }
 function statChip(text) { const el = $('#stat-chip'); el.classList.remove('on'); if (!text) return; el.innerHTML = text.replace(/(\d[\d,]*)/g, '<b>$1</b>'); setTimeout(() => el.classList.add('on'), 700); }
 function ask(choices) {
   return new Promise(res => {
     choicesEl.innerHTML = choices.map((c, i) => `<button class="choice" data-i="${i}">${c.text}</button>`).join('');
-    choicesEl.querySelectorAll('.choice').forEach(b => b.onclick = () => { choicesEl.innerHTML = ''; res(choices[+b.dataset.i]); });
+    choicesEl.querySelectorAll('.choice').forEach(b => b.onclick = () => { choicesEl.innerHTML = ''; Snd.play('pop'); res(choices[+b.dataset.i]); });
   });
 }
 
@@ -127,6 +131,7 @@ async function startGame(file) {
   track('start', { file, me: S.me });
   show('game');
   const d = S.data;
+  Snd.init(); Snd.setMood('cafe');
   stage.className = 'stage cafe'; setProg(0);
   $('#scene-chip').textContent = d.intro.chip; statChip('');
   charEl.style.opacity = 0;
@@ -134,7 +139,7 @@ async function startGame(file) {
   charEl.style.opacity = 1;
   for (let i = 0; i < d.scenes.length; i++) {
     const sc = d.scenes[i];
-    stage.className = 'stage ' + sc.bg; setProg(i);
+    stage.className = 'stage ' + sc.bg; setProg(i); Snd.setMood(sc.bg);
     $('#scene-chip').textContent = `${i + 1}. ${sc.title}`;
     statChip(sc.chip || '');
     for (const l of sc.lines) { setExpr(l.expr); await say('her', l.text); }
@@ -160,6 +165,7 @@ function finish() {
   const e = pickEnding(); S.ending = e;
   const p = played(); if (!p.includes(S.partner)) { p.push(S.partner); store.set('played', p); }
   track('ending', { file: S.partner, end: e.id, score: S.score });
+  Snd.setMood('end'); Snd.duck(3); Snd.play(e.id);
   const locked = e.id === 'hidden' && (CONFIG.hiddenLocked || e.locked);
   $('#end-chip').textContent = e.chip || `${S.data.mbti}와의 소개팅 끝`;
   $('#end-char').src = S.data.img + (e.expr || 'smile') + '.png';
