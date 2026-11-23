@@ -191,7 +191,7 @@ S[1]=()=>{
     show(bZ,t,Z1+0.2,endOf(1,'z1',0.1));show(bZ2,t,at(1,'z2'),TR+0.5);show(bP,t,P2,endOf(1,'p2',0.5));show(bP2,t,P3,endOf(1,'p3',0.5));
     // 카메라
     let mode='A';if(t>=Z1+1.6)mode='B';if(t>=TPt)mode='M';if(t>=TR)mode='R';if(t>=P3-0.1)mode='P';if(t>=TPu-0.6)mode='W';
-    if(mode==='A'){const k=ease(t/(Z1+1.6));C.fov=52;C.position.set(-0.4,1.9,4.2-k*0.6);C.lookAt(2.7,1.25,-1.6)}
+    if(mode==='A'){const k=ease((t-0.45)/1.3),k2=ease((t-1.8)/(Z1-0.2));C.fov=55;C.position.set(1.6+0.3*k-0.4*k2,2.3-0.35*k,5.0-1.4*k-0.6*k2);C.lookAt(1.6+1.1*k,2.0-0.65*k,-4+2.3*k)} // 첫 화면: 주민센터 간판 전체
     else if(mode==='B'){const sk=Math.sin(t*40)*0.02*(t<TS?1:0);C.fov=50;C.position.set(1.5+sk,1.95,2.0);C.lookAt(2.3,1.7,-2.5)}
     else if(mode==='M'){const k=ease((t-TPt)/1.2);C.fov=50;C.position.set(1.3,2.0,1.6-k*0.4);C.lookAt(2.8,1.6,-3.0)}
     else if(mode==='R'){const k=ease((t-TR)/1.4);C.fov=50;C.position.set(1.8-k*3.4,1.9,1.2);C.lookAt(-0.5-k*2.0,1.1,-3.4)}
