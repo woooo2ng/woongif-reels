@@ -469,6 +469,8 @@ function titleUI(){ui.insertAdjacentHTML('beforeend',`<div class="tag">ISTP vs E
   return ['.tag','.title1','.title2','.title3'].map(s=>ui.querySelector(s))}
 {const st=document.createElement('style');st.textContent=`
 .tag{white-space:nowrap}
+.vsl{position:absolute;left:535px;top:0;width:10px;height:1920px;background:#fff;box-shadow:0 0 18px rgba(0,0,0,.25)}
+.vsb{position:absolute;left:50%;top:930px;transform:translateX(-50%);width:150px;height:150px;border-radius:50%;background:#2a2a2a;color:#ffd84d;font-size:72px;font-weight:900;display:flex;align-items:center;justify-content:center;border:8px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .spk{position:absolute;left:50%;top:250px;transform:translateX(-50%);background:#fff;border:10px solid #ff5f86;border-radius:40px;padding:18px 60px 22px;text-align:center;box-shadow:0 18px 44px rgba(0,0,0,.3);white-space:nowrap}
 .spk small{display:block;font-size:52px;font-weight:900;color:#555}
 .spk b{display:block;font-size:150px;font-weight:900;color:#e2335f;line-height:1.1;letter-spacing:-4px}
@@ -521,6 +523,10 @@ S[0]=()=>{
   const IG=istpG(r);IG.position.set(2.1,0,3.5);IG.rotation.y=Math.PI;scene.add(IG);
   const bud=budMesh();bud.visible=false;IG.userData.arms[1].add(bud);bud.position.set(0,-0.66,0.05);
   const EA=[];for(let row=0;row<5;row++)for(let c=0;c<11;c++){const p=enfjS(r);if(row<2)tears(p);scene.add(p);EA.push({p,x:(c-5)*1.2+(row%2)*0.5+(r()-0.5)*0.2,row})}
+  const HF_T=canvasTex(256,180,(x,w,h)=>{x.fillStyle='#ff8fa8';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font=`900 150px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillText('♥',w/2,h/2+8)});
+  const hflags=[];EA.forEach((q,i)=>{if(q.row<2&&i%3==0){const g=new THREE.Group();const pl=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,1.9,6),lamb(0xeeeeee));pl.position.y=0.75;g.add(pl);
+    const f=new THREE.Mesh(new THREE.PlaneGeometry(0.75,0.53),new THREE.MeshBasicMaterial({map:HF_T,side:THREE.DoubleSide}));f.position.set(0.4,1.45,0);f.rotation.y=Math.PI/2;g.add(f);holdIn(q.p,g,1,0,-0.66,0.05);hflags.push({q,f})}});
+  const hrt=sprinkleHearts(scene,14,r,{w:12,dz:3,z:-9,col:'#ff8fa8',size:0.012});
   const PD=podium();scene.add(PD);const EG=enfjG(r);tears(EG);scene.add(EG);
   const spot=glowSprite('rgba(255,225,190,1)',7);scene.add(spot);
   flag(scene,-7,-11,0xff8fa8,5);flag(scene,7,-11,0xff8fa8,5);
@@ -528,12 +534,14 @@ S[0]=()=>{
   const ch=div('spk','<small>⏱ 연설 시간</small><b>2시간 40분</b><i>…그리고 아직 하는 중</i>');
   const bK=sb(scene,'…아직 해?',0,0,0,{c:TB,size:0.0019});
   const PZ=-10.5;
+  const CL=cam(46),CR=cam(46);
+  const vsl=div('vsl','');const vsb=div('vsb','VS');
   return t=>{
     const RS=E.rise,g1=at(0,'g1'),n2=at(0,'n2'),k1=at(0,'k1'),POP=E.pop;
     setSky('#ffc9b8','#fff1e4 75%');
     // 대군 행진 → 정지
-    const zf=Math.min(-40+t*7.2,-15);const arr=zf>=-15;
-    EA.forEach(q=>{q.p.position.set(q.x,0,zf-q.row*1.4);if(!arr){walkPose(q.p,t*9+q.p.userData.ph,0.5);setFace(q.p,false)}else{standPose(q.p);setFace(q.p,true);
+    const ch0=t<RS;const zf=ch0?-15+(t/RS)*7.5:-15;const arr=!ch0;
+    EA.forEach(q=>{q.p.position.set(q.x,0,zf-q.row*1.4);if(!arr){runPose(q.p,t*11+q.p.userData.ph);setFace(q.p,true);updTears(q.p,t,1)}else{standPose(q.p);setFace(q.p,true);
       const cr=clamp01((t-g1-2.2)/0.6);if(cr>0){q.p.userData.head.rotation.x=0.15*cr;q.p.userData.arms[0].rotation.x=-2.2*cr;q.p.userData.arms[0].rotation.z=0.6*cr}updTears(q.p,t,cr)}});
     // 연단이 땅에서 올라옴
     const up=ease((t-RS)/0.9);PD.position.set(0,-1.25+up*1.25,PZ);PD.visible=t>RS-0.1;
@@ -542,18 +550,29 @@ S[0]=()=>{
     updTears(EG,t,clamp01((t-g1-3.4)/0.5));
     spot.position.set(0,3.4,PZ-1.2);spot.material.opacity=up*0.85;
     IT.forEach(p=>{standPose(p);aim(p)});standPose(IG);
+    hflags.forEach(o=>{o.f.rotation.z=Math.sin(t*6+o.q.x)*0.15;o.q.p.userData.arms[1].rotation.x=ch0?-1.9:-0.2});
+    updHearts(hrt,t,0,2.6,2.0);hrt.forEach(o=>{o.h.visible=o.h.visible&&ch0;o.h.position.z=zf-1.5+(o.z+9)});
     // 이어폰 빼기
     const pk=clamp01((t-POP+0.45)/0.4);if(t>POP-0.5){const a=IG.userData.arms[1];a.rotation.x=-2.75*pk;a.rotation.z=0.75*pk}
     IG.userData.ebs[1].visible=t<POP;bud.visible=t>=POP;
     // 카메라
-    if(t<RS){const k=ease(t/RS);setCam(C,[0.9,2.3,8.2-k*0.8],[0,1.3,-20],50)}
+    if(t<RS){setCam(C,[0,2.2,6],[0,1.4,-10],50)}
     else if(t<n2+1.6){const k=ease((t-RS)/5);setCam(C,[0.3,2.6,PZ+9.0-k*0.7],[0,2.55,PZ],46)}
     else if(t<POP-0.6){const k=ease((t-n2-1.6)/2.5);setCam(C,lerp3([-1.5,1.9,-3.2],[-1.0,2.0,-2.6],k),[0.8,1.5,3],48)}
     else{setCam(C,[1.55,2.45,1.05],[2.1,2.35,3.5],42)}
     bK.position.copy(headPos(IG,0.78));show(bK,t,k1,99);
     T.forEach((e,i)=>{const T0=[0.05,0.1,0.15,0.2][i];e.style.transform=(i==0?'translateX(-50%) ':'')+`scale(${pop((t-T0)/0.35)})`;e.style.opacity=t<RS?clamp01((t-T0)/0.1):clamp01(1-(t-RS)/0.2)});
     {const k=pop((t-E.chip)/0.35),sh=t>E.chip&&t<E.chip+0.5?Math.sin((t-E.chip)*60)*4*(1-(t-E.chip)/0.5):0;ch.style.transform=`translateX(calc(-50% + ${sh}px)) scale(${k})`;ch.style.opacity=t>E.chip?1:0}
-    caption(0,t);renderer.render(scene,C);
+    caption(0,t);
+    vsl.style.display=vsb.style.display=ch0?'block':'none';vsb.style.transform=`translateX(-50%) scale(${pop((t-0.2)/0.3)})`;
+    if(ch0){
+      renderer.setScissorTest(true);const hw=W/2;
+      CL.aspect=hw/H;CL.updateProjectionMatrix();CL.position.set(0.3,1.95,-1.2);CL.lookAt(0.3,1.55,-9);
+      renderer.setViewport(hw,0,hw,H);renderer.setScissor(hw,0,hw,H);renderer.render(scene,CL);
+      CR.aspect=hw/H;CR.updateProjectionMatrix();CR.position.set(-0.6,2.05,-2.6);CR.lookAt(-0.6,1.75,2.2);
+      renderer.setViewport(0,0,hw,H);renderer.setScissor(0,0,hw,H);renderer.render(scene,CR);
+      renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);
+    }else{renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.render(scene,C)}
   };
 };
 
