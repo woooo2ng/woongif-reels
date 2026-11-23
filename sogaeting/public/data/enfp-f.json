@@ -385,7 +385,14 @@
         "딱 하나만 빼고."
       ],
       "stat": "시작한 취미 10개 · 계속한 것 1개",
-      "punch": "계속한 1개 = 너"
+      "punch": "계속한 1개 = 너",
+      "set": "hobby",
+      "act": "shy",
+      "theme": [
+        "#8b6cf0",
+        "#f3edff",
+        "#ffe7a8"
+      ]
     },
     {
       "id": "after",
@@ -399,7 +406,14 @@
         "3초 뒤. \"근데 제주도 진짜 가는 거지?\""
       ],
       "stat": "다음 날: 제주도는 까먹음 · 너는 기억함",
-      "punch": "애프터 확정"
+      "punch": "애프터 확정",
+      "set": "bus",
+      "act": "phone",
+      "theme": [
+        "#ff6fb5",
+        "#ffe0f0",
+        "#fff3c4"
+      ]
     },
     {
       "id": "friend",
@@ -413,7 +427,15 @@
         "그리고 바로 단톡방 초대."
       ],
       "stat": "'ENFP 친구들 모임 (47)'에 초대됨",
-      "punch": "친구가 47명 생겼다"
+      "punch": "친구가 47명 생겼다",
+      "set": "room",
+      "act": "phone",
+      "special": "notif",
+      "theme": [
+        "#f2a400",
+        "#fff3c4",
+        "#e3f6cf"
+      ]
     },
     {
       "id": "matchmaker",
@@ -427,7 +449,14 @@
         "\"걔 진짜 착해! 계획도 엄청 잘 세워!\""
       ],
       "stat": "애프터 0회 · 소개받은 사람 1명",
-      "punch": "다음 상대는 ISTJ"
+      "punch": "다음 상대는 ISTJ",
+      "set": "cafe",
+      "special": "istj",
+      "theme": [
+        "#5b6b8f",
+        "#e6ebf5",
+        "#f3e9ee"
+      ]
     }
   ],
   "result": {

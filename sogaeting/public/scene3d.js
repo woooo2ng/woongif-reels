@@ -10,7 +10,7 @@ const pick = (r, a) => a[Math.floor(r() * a.length)];
 const mc = {}; const lamb = c => mc[c] || (mc[c] = new THREE.MeshLambertMaterial({ color: c, flatShading: true }));
 const sc = {}; const smooth = c => sc[c] || (sc[c] = new THREE.MeshLambertMaterial({ color: c }));
 const basic = c => new THREE.MeshBasicMaterial({ color: c });
-const FONT = 'Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif';
+const FONT = '"Jua","Noto Sans KR","Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif';
 function box(parent, w, h, d, col, x, y, z, mat) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat || lamb(col)); m.position.set(x, y, z); parent.add(m); return m; }
 function cyl(parent, rt, rb, h, col, x, y, z, seg = 12) { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), lamb(col)); m.position.set(x, y, z); parent.add(m); return m; }
 function rr(x, X, Y, w, h, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
@@ -221,8 +221,56 @@ function buildStreet(r) {
   sgeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); g.add(new THREE.Points(sgeo, new THREE.PointsMaterial({ color: 0xfff6d8, size: 0.06 })));
   return g;
 }
+
+// ---------- 엔딩 세트 ----------
+function cityTex(r) { return canvasTex(1024, 128, (x, w, h) => { x.fillStyle = '#2d2a55'; x.fillRect(0, 0, w, h);
+  for (let i = 0; i < 26; i++) { const bw = 30 + r() * 50, bh = 40 + r() * 80, bx = i * 40 + r() * 10; x.fillStyle = pick(r, ['#4a4585', '#5d5486', '#3f3a70']); x.fillRect(bx, h - bh, bw, bh);
+    for (let k = 0; k < 8; k++) { x.fillStyle = r() < 0.5 ? '#ffd98a' : '#2d2a55'; x.fillRect(bx + 5 + (k % 3) * 12, h - bh + 8 + Math.floor(k / 3) * 14, 6, 7); } }
+  for (let i = 0; i < 12; i++) { const gx = r() * w; const g = x.createRadialGradient(gx, 30, 0, gx, 30, 30); g.addColorStop(0, 'rgba(255,220,150,.8)'); g.addColorStop(1, 'rgba(255,220,150,0)'); x.fillStyle = g; x.fillRect(gx - 30, 0, 60, 60); } }); }
+function buildBus(r) {
+  const g = new THREE.Group(); room(g, { floor: 0x5d6680, wall: 0xdfe6ee });
+  const ct = cityTex(r); ct.wrapS = THREE.RepeatWrapping; ct.repeat.set(0.6, 1);
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.0), new THREE.MeshBasicMaterial({ map: ct })); win.position.set(0, 1.75, -2.15); g.add(win); g.userData.city = ct;
+  for (const x of [-2.1, -0.7, 0.7, 2.1]) box(g, 0.1, 1.1, 0.08, 0x9aa3b5, x, 1.75, -2.1);
+  box(g, 2.6, 0.45, 0.55, 0x4f7bd6, 0, 0.3, -0.55); box(g, 2.6, 0.75, 0.12, 0x4f7bd6, 0, 0.85, -0.82); // 뒷좌석
+  for (const x of [-1.6, 1.6]) { box(g, 0.06, 3.2, 0.06, 0xffd84d, x, 1.6, 0.3); }
+  box(g, 4.4, 0.05, 0.05, 0xb8c0cc, 0, 2.55, 0.3);
+  for (let i = 0; i < 5; i++) { const hd = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.02, 8, 16), lamb(0xffffff)); hd.position.set(-1.6 + i * 0.8, 2.25, 0.3); g.add(hd); box(g, 0.02, 0.2, 0.02, 0xb8c0cc, -1.6 + i * 0.8, 2.43, 0.3); }
+  box(g, 0.9, 0.22, 0.05, 0x2b2b30, 0, 2.65, -2.05);
+  texPlane(g, 0.85, 0.18, canvasTex(340, 72, (x, w, h) => { x.fillStyle = '#ff9f43'; x.font = `900 44px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('다음 정류장 ▶', w / 2, h / 2 + 2); }), 0, 2.65, -2.02);
+  return g;
+}
+function buildRoom(r, o = {}) {
+  const g = new THREE.Group(); room(g, { floor: 0xe8cfb8, wall: o.wall ?? 0xf3e3f0 });
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.1), new THREE.MeshBasicMaterial({ map: canvasTex(140, 110, (x, w, h) => { const gg = x.createLinearGradient(0, 0, 0, h); gg.addColorStop(0, '#2d2a55'); gg.addColorStop(1, '#6a5a9f'); x.fillStyle = gg; x.fillRect(0, 0, w, h); x.fillStyle = '#fff6c8'; x.beginPath(); x.arc(100, 30, 14, 0, 7); x.fill(); x.fillStyle = '#2d2a55'; x.beginPath(); x.arc(94, 26, 13, 0, 7); x.fill(); for (let i = 0; i < 14; i++) { x.fillStyle = '#fff'; x.fillRect(r() * w, r() * h * 0.7, 2, 2); } }) }));
+  win.position.set(-1.1, 2.0, -2.15); g.add(win); box(g, 1.5, 0.08, 0.1, 0xffffff, -1.1, 1.42, -2.1);
+  box(g, 1.6, 0.4, 1.0, 0xffffff, 1.5, 0.2, -1.4); box(g, 1.6, 0.15, 1.0, 0xffd0e4, 1.5, 0.47, -1.4); box(g, 0.5, 0.12, 0.35, 0xffffff, 1.5, 0.6, -1.75);
+  box(g, 0.9, 0.06, 0.5, 0xd9b48a, -1.6, 0.75, -1.6); cyl(g, 0.04, 0.04, 0.75, 0x9a7a5a, -1.6, 0.37, -1.6, 6);
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8), basic(0xfff0c0)); lamp.position.set(-1.8, 1.0, -1.6); g.add(lamp);
+  const rug = new THREE.Mesh(new THREE.CircleGeometry(1.0, 24), lamb(0xcde9ff)); rug.rotation.x = -Math.PI / 2; rug.position.set(0, 0.01, 0.2); g.add(rug);
+  plant(g, 2.3, -1.6, 0.8);
+  if (o.hobbies) { // 그만둔 취미 더미
+    const H = new THREE.Group(); H.position.set(-1.15, 0, -0.2); g.add(H);
+    const yarn = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 10), lamb(0xff9fcf)); yarn.position.set(0, 0.16, 0.2); H.add(yarn);
+    box(H, 0.42, 0.18, 0.3, 0x5ccf7a, 0.35, 0.09, 0.1); box(H, 0.32, 0.12, 0.2, 0x4f7bd6, 0.3, 0.24, 0.1); // 신발 상자
+    const bowl = cyl(H, 0.18, 0.11, 0.14, 0xffffff, -0.3, 0.07, 0.35, 14);
+    const uk = new THREE.Group(); cyl(uk, 0.16, 0.16, 0.06, 0xd9a06a, 0, 0, 0, 16).rotation.x = Math.PI / 2; box(uk, 0.05, 0.4, 0.04, 0x8a5a3a, 0, 0.3, 0); uk.position.set(-0.1, 0.45, -0.1); uk.rotation.z = 0.5; H.add(uk);
+    const db = new THREE.Group(); cyl(db, 0.07, 0.07, 0.08, 0x3a3a48, -0.12, 0, 0, 10).rotation.z = Math.PI / 2; cyl(db, 0.07, 0.07, 0.08, 0x3a3a48, 0.12, 0, 0, 10).rotation.z = Math.PI / 2; cyl(db, 0.02, 0.02, 0.2, 0x9aa3b5, 0, 0, 0, 6).rotation.z = Math.PI / 2; db.position.set(0.15, 0.07, 0.45); H.add(db);
+    const pal = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.02, 14), lamb(0xf6e3c0)); pal.position.set(0.4, 0.34, 0.12); pal.rotation.x = 0.2; H.add(pal);
+    texPlane(g, 0.95, 0.24, canvasTex(380, 96, (x, w, h) => { x.fillStyle = '#2b2b3a'; rr(x, 0, 0, w, h, 48); x.fill(); x.fillStyle = '#fff'; x.font = `900 46px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('그만둔 취미 9개', w / 2, h / 2 + 3); }), -1.1, 1.1, 0.1);
+  }
+  return g;
+}
+function mkISTJ() {
+  const p = makePerson(rng(909), { shirt: 0x3d4a6e, pants: 0x2c3040, hair: 0x1d1d24 }); const h = p.userData.head;
+  for (const sx of [-1, 1]) { const gl = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.008, 6, 16), basic(0x2b2b30)); gl.position.set(sx * 0.09, 0.25, 0.245); h.add(gl); }
+  box(h, 0.06, 0.008, 0.01, 0x2b2b30, 0, 0.25, 0.25); box(h, 0.07, 0.012, 0.01, 0x8a3a3a, 0, 0.15, 0.245);
+  const folder = new THREE.Group(); box(folder, 0.3, 0.38, 0.04, 0x2f6fd6, 0, 0, 0); folder.position.set(0, -0.6, 0.14); p.userData.arms[1].add(folder);
+  return p;
+}
+
 const SKY = {
-  cafe: ['#ffe9d2', '#ffd8b8'], counter: ['#e9f3e6', '#d6ead0'], table: ['#fbe3f0', '#f6d0e4'], rain: ['#a9bdd6', '#c8d6e6'], street: ['#4a4585', '#ffb3a0'],
+  cafe: ['#ffe9d2', '#ffd8b8'], counter: ['#e9f3e6', '#d6ead0'], table: ['#fbe3f0', '#f6d0e4'], rain: ['#a9bdd6', '#c8d6e6'], street: ['#4a4585', '#ffb3a0'], bus: ['#2d2a55', '#4a4585'], room: ['#f3e3f0', '#f3e3f0'], hobby: ['#efe3f6', '#efe3f6'],
 };
 // 세트별 카메라·캐릭터 위치
 const SETUP = {
@@ -230,6 +278,9 @@ const SETUP = {
   counter: { cam: [0.2, 1.55, 3.4], look: [0, 1.25, 0], fov: 40, char: [0.15, 0, 0.1], sit: false, light: { hemi: 1.7, dir: 1.2, sun: 0xffffff } },
   table:   { cam: [0.35, 1.5, 3.0], look: [0, 1.2, 0], fov: 38, char: [0, 0, 0], sit: true, light: { hemi: 1.75, dir: 1.1, sun: 0xffe8f0 } },
   rain:    { cam: [-0.3, 1.55, 3.5], look: [0, 1.25, 0], fov: 38, char: [0, 0, 0], sit: true, light: { hemi: 1.25, dir: 0.8, sun: 0xcfe0ff } },
+  bus:     { cam: [0.3, 1.45, 3.3], look: [0, 1.15, -0.4], fov: 40, char: [0, 0, -0.45], sit: true, legsOn: true, light: { hemi: 1.4, dir: 0.9, sun: 0xffe0c0 } },
+  room:    { cam: [0.2, 1.4, 3.6], look: [0, 1.1, 0], fov: 40, char: [0, 0, 0.1], sit: false, light: { hemi: 1.6, dir: 1.0, sun: 0xffe8f0 } },
+  hobby:   { cam: [-0.4, 1.4, 3.6], look: [-0.4, 1.0, 0], fov: 40, char: [0.35, 0, 0.1], sit: false, light: { hemi: 1.6, dir: 1.0, sun: 0xfff0e0 } },
   street:  { cam: [0.5, 1.3, 4.8], look: [0, 1.05, 0], fov: 40, char: [0.2, 0, 0.4], sit: false, light: { hemi: 1.45, dir: 1.0, sun: 0xffd2b0 } },
 };
 
@@ -245,11 +296,12 @@ const Scene3D = {
       const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3, 7, 8); scene.add(dir);
       const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
       const r = rng(4040);
-      const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r) };
+      const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r), bus: buildBus(r), room: buildRoom(r), hobby: buildRoom(r, { hobbies: true, wall: 0xefe3f6 }) };
+      const T = mkISTJ(); T.visible = false; sets.cafe.add(T); sets.cafe.userData.istj = T;
       Object.values(sets).forEach(s => { s.visible = false; scene.add(s); });
       const E = mkE(); scene.add(E);
       Object.assign(this, { renderer, scene, hemi, dir, cam, sets, E, canvas, set: null, expr: 'smile', act: 'idle', actT: 0, focus: 0, focusTarget: 0, shakeT: -9, t0: performance.now(), blinkAt: 2 });
-      this.resize(); new ResizeObserver(() => this.resize()).observe(canvas.parentElement);
+      this.ro = new ResizeObserver(() => this.resize()); this.resize(); this.ro.observe(canvas.parentElement);
       this.setSet('cafe'); this.setExpr('smile');
       const loop = () => { this.frame(); this.raf = requestAnimationFrame(loop); }; loop();
       this.ready = true; return true;
@@ -268,11 +320,13 @@ const Scene3D = {
     const sky = SKY[name]; this.scene.background = canvasTex(4, 256, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); x.fillStyle = g; x.fillRect(0, 0, w, h); });
     this.hemi.intensity = S.light.hemi; this.dir.intensity = S.light.dir; this.dir.color.set(S.light.sun);
     const u = this.E.userData; this.E.position.set(...S.char); this.E.rotation.set(0, 0, 0);
-    if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = false; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
+    if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = null; this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = null; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
+  attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
+  snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
   setMenu(sel) { const m = this.sets.counter.userData.menu; m.material.map = menuTex(sel); m.material.needsUpdate = true; },
   setExpr(expr, act) {
     const P = this.E.userData.P; resetFace(P); (FACE[expr] || FACE.smile)(P); this.expr = expr;
@@ -328,6 +382,8 @@ const Scene3D = {
     if (kind === 'staff') this.staffT = t;
     if (kind === 'notes') this.notesT = t;
     if (kind === 'bus') { this.busT = t; this.sets.street.userData.bus.visible = true; }
+    if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
+    if (kind === 'notif') this.notifT = t;
   },
   updSpecial(t) {
     if (this.set === 'counter' && this.staffT != null) { const st = this.sets.counter.userData.staff, u = st.userData, a = t - this.staffT;
@@ -338,6 +394,22 @@ const Scene3D = {
         const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c, transparent: true, depthWrite: false })); sp.scale.set(0.22, 0.22, 1); sp.visible = false; this.sets.rain.add(sp); this.notes.push(sp); } }
       const a = this.notesT == null ? 99 : t - this.notesT;
       this.notes.forEach((n, i) => { const lt = ((a * 0.45) + i / 7) % 1; n.visible = a < 4.5; n.position.set(-0.6 + (i % 4) * 0.4 + Math.sin(a * 2 + i) * 0.08, 1.4 + lt * 1.1, 0.2); n.material.opacity = Math.sin(lt * Math.PI); });
+    }
+    if (this.set === 'bus') this.sets.bus.userData.city.offset.x = (t * 0.06) % 1;
+    if (this.istjT != null) { // ISTJ: 정자세로 문에서 테이블까지 걸어와 꾸벅
+      const T = this.sets.cafe.userData.istj, u = T.userData, a = t - this.istjT, d = this.sets.cafe.userData.door;
+      d.rotation.y = -1.3 * ease(a / 0.35) * (1 - ease((a - 2.0) / 0.5));
+      const k = ease(clamp01((a - 0.3) / 2.2)); T.position.set(1.45 - 1.45 * k, 0, -1.9 + 2.0 * k); T.rotation.y = a < 2.5 ? Math.atan2(-1.45, 2.0) * (1 - ease((a - 2.1) / 0.4)) : 0;
+      const walk = a > 0.3 && a < 2.5, sw = walk ? Math.sin(a * 8) * 0.35 : 0;
+      u.legs[0].rotation.x = sw; u.legs[1].rotation.x = -sw; u.arms[0].rotation.x = -sw * 0.25; u.arms[1].rotation.x = -0.15;
+      u.hip.rotation.x = a > 2.8 && a < 3.6 ? Math.sin(clamp01((a - 2.8) / 0.8) * Math.PI) * 0.45 : 0; // 꾸벅
+      this.introPanX = 0.75 * (1 - ease((a - 1.4) / 1.2));
+    }
+    if (this.notifT != null) { // 단톡방 알림 폭발
+      if (!this.notif) { this.notif = []; const glyph = ['💬', '+1', 'ㅋㅋ', '💬', '+47', '♥', '💬', 'ㅋㅋㅋ'];
+        for (let i = 0; i < 12; i++) { const g = glyph[i % glyph.length]; const c = canvasTex(160, 90, (x, w, h) => { x.fillStyle = '#fff'; rr(x, 4, 4, w - 8, h - 8, 40); x.fill(); x.strokeStyle = '#ffd84d'; x.lineWidth = 6; x.stroke(); x.font = `900 44px ${FONT}`; x.fillStyle = '#3a2a00'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(g, w / 2, h / 2 + 3); });
+          const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c, transparent: true, depthWrite: false })); sp.scale.set(0.34, 0.19, 1); sp.visible = false; this.sets.room.add(sp); this.notif.push(sp); } }
+      const a = t - this.notifT; this.notif.forEach((n, i) => { const lt = ((a * 0.35) + i / 12) % 1; n.visible = true; const ang = i * 2.4; n.position.set(Math.cos(ang) * (0.55 + lt * 0.5), 1.0 + lt * 1.5, 0.3 + Math.sin(ang) * 0.2); n.material.opacity = Math.sin(lt * Math.PI); });
     }
     if (this.set === 'street' && this.busT != null) { const bus = this.sets.street.userData.bus, a = t - this.busT; bus.position.x = -12 + 10.6 * ease(a / 2.4); }
   },
@@ -395,7 +467,7 @@ const Scene3D = {
     // 카메라: 대사 중엔 천천히 다가가고, 놀라면 흔들림
     this.focus += (this.focusTarget - this.focus) * Math.min(1, dt * 1.2);
     const f = this.focus * 0.16, lk0 = S.look, cp0 = S.cam;
-    let ox = 0; if (this.introPan) { ox = 0.75; if (this.entering) ox = 0.75 * (1 - ease((t - this.entering.t0 - 0.9) / 0.9)); }
+    let ox = 0; if (this.introPan) { ox = 0.75; if (this.entering) ox = 0.75 * (1 - ease((t - this.entering.t0 - 0.9) / 0.9)); if (this.istjT != null) ox = this.introPanX ?? 0.75; }
     const cp = [cp0[0] + ox, cp0[1], cp0[2]], lk = [lk0[0] + ox, lk0[1], lk0[2]];
     let sx = 0, sy = 0; const sa = t - this.shakeT; if (sa < 0.35) { const amp = (1 - sa / 0.35) * 0.04; sx = Math.sin(sa * 70) * amp; sy = Math.cos(sa * 55) * amp; }
     this.cam.position.set(cp[0] + (lk[0] - cp[0]) * f + sx + Math.sin(t * 0.25) * 0.04, cp[1] + (lk[1] + 0.12 - cp[1]) * f + sy, cp[2] + (lk[2] - cp[2]) * f);

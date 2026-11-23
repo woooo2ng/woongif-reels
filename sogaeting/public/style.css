@@ -1,5 +1,6 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:#2b2440;font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif;color:#2b2b3a}
+html,body{margin:0;height:100%;background:#2b2440;font-family:"Noto Sans KR","Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif;color:#2b2b3a}
+:root{--cute:"Jua","Noto Sans KR","Apple SD Gothic Neo",sans-serif}
 #app{position:relative;max-width:480px;height:100%;min-height:100dvh;margin:0 auto;background:#fff6fb;overflow:hidden}
 .screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;padding:28px 22px calc(22px + env(safe-area-inset-bottom));overflow-y:auto}
 .screen.on{display:flex;animation:fade .35s ease}
@@ -158,3 +159,38 @@ h2{font-size:24px;font-weight:900;margin:8px 0 4px}
 .wipe-card{display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;font-weight:900;text-shadow:0 3px 0 rgba(140,30,90,.35)}
 .wipe-card span{font-size:18px;background:#fff;color:#ff6fb5;border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;text-shadow:none}
 .wipe-card b{font-size:34px;letter-spacing:-1px}
+
+/* 글꼴: 제목·버튼·말풍선은 Jua, 본문은 Noto Sans KR */
+h1,h2,.btn,.cell,.chip,.stat,.who,.choice,.tag,.end-name,.end-punch,.card-tag,.card-who,.card-pct,.card-end,.wipe-card b,.modal-title,.menu-pill,.fx .flight .route,.dex-title,.dex-row{font-family:var(--cute);font-weight:400!important;letter-spacing:0}
+#scr-start h1{font-size:52px;line-height:1.1}
+.btn{font-size:19px}.choice{font-size:17px}.who{font-size:14px}.chip{font-size:16px}.stat{font-size:15px}
+.text{font-weight:700}
+/* 3D 엔딩 */
+.end-stage #c3d{display:none}
+.end-stage.three #c3d{display:block;position:absolute;inset:0;width:100%;height:100%}
+.end-stage.three #end-char{display:none}
+.end-stage .chip{z-index:3}
+.end-stage{height:50%}
+/* 결과 카드 v2 */
+.card{--ac:#ff6fb5;--b1:#ffe0f0;--b2:#fff3c4;aspect-ratio:auto;background:linear-gradient(160deg,var(--b1),#fff 55%,var(--b2));gap:2px;padding:18px 18px 14px}
+.card-tag{color:var(--ac)}
+.card-who{font-size:20px;margin-top:8px}
+.card-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px;border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.12);margin:8px 0 6px;background:#fff}
+.card-photo.png{object-fit:contain;object-position:50% 100%}
+.card-pct{color:var(--ac);font-size:56px}
+.card-end{font-size:22px}
+.card-pattern{margin-top:8px}
+.card-fun{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
+.card-fun li{background:rgba(255,255,255,.8);border-radius:999px;padding:3px 10px;font-size:12px;line-height:1.6}
+.card-dex{width:100%;margin-top:10px}
+.dex-row{display:flex;align-items:center;justify-content:space-between;background:#2b2b3a;color:#fff;border-radius:14px;padding:8px 12px;font-size:15px}
+.dex-ends{display:flex;gap:4px}
+.dex-ends i{font-style:normal;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;color:#8a7d90}
+.dex-ends i.on{background:#fff}
+.dex{width:100%;max-width:360px;margin-top:12px;background:rgba(255,255,255,.08);border-radius:18px;padding:12px;color:#fff}
+.dex-title{font-size:18px;margin-bottom:8px}.dex-title small{font-size:13px;color:#c9b8cc;margin-left:4px}
+.dex-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.dex-grid b{font-size:9.5px;font-weight:900;text-align:center;padding:6px 0;border-radius:8px;background:rgba(255,255,255,.08);color:#8a7d90}
+.dex-grid b.on{background:#ff8fc8;color:#fff}
+.dex-sub{font-size:12px;color:#c9b8cc;margin-top:8px;text-align:center}
+.card,.dex,.result-btns{flex-shrink:0}

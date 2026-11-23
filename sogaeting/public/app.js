@@ -176,7 +176,9 @@ async function startGame(file) {
   show('game');
   const d = S.data;
   Snd.init(); Snd.setMood('cafe');
+  try { await document.fonts.ready; } catch {}
   if (window.Scene3D && !Scene3D.ready && !Scene3D.failed) { Scene3D.failed = !Scene3D.init($('#c3d')); }
+  if (use3D()) Scene3D.attach(stage);
   stage.className = 'stage cafe' + (use3D() ? ' three' : ''); setProg(0);
   if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
   setTimeout(() => Snd.play('bell'), 400);
@@ -220,6 +222,14 @@ function finish() {
   const locked = e.id === 'hidden' && (CONFIG.hiddenLocked || e.locked);
   $('#end-chip').textContent = e.chip || `${S.data.mbti}와의 소개팅 끝`;
   $('#end-char').src = S.data.img + (e.expr || 'smile') + '.png';
+  // 도감 기록
+  const dex = store.get('dex', {}); dex[S.partner] = [...new Set([...(dex[S.partner] || []), e.id])]; store.set('dex', dex);
+  const es = $('.end-stage'); es.classList.toggle('three', use3D());
+  if (use3D()) {
+    Scene3D.attach(es); Scene3D.setSet(e.set || 'cafe'); Scene3D.setFocus(false);
+    if (e.special) Scene3D.special(e.special);
+    if (e.special !== 'istj') Scene3D.setExpr(e.expr || 'smile', e.act);
+  }
   $('#end-name').textContent = `${e.emoji} ${e.name}`;
   const isChat = e.lines.some(l => l.startsWith('"'));
   const D = i => 0.3 + i * 0.75;
@@ -249,16 +259,28 @@ function pattern() {
   const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
   return S.data.result.pattern[top[1] >= 3 ? top[0] : 'mix'];
 }
+function dexHTML() {
+  const dex = store.get('dex', {}), d = S.data, got = dex[S.partner] || [];
+  const ends = d.endings.map(e => `<i class="${got.includes(e.id) ? 'on' : ''}" title="${e.name}">${got.includes(e.id) ? e.emoji : '?'}</i>`).join('');
+  const done = new Set(Object.keys(dex).map(f => f.split('-')[0].toUpperCase()));
+  const grid = MBTI.map(m => `<b class="${done.has(m) ? 'on' : ''}">${m}</b>`).join('');
+  return { ends, grid, n: got.length, total: d.endings.length, people: done.size };
+}
 $('#btn-result').onclick = () => {
   const d = S.data, e = S.ending, p = pattern(), n = pct();
+  S.shot = use3D() ? Scene3D.snapshot() : null;
+  const card = $('#card'), th = e.theme || ['#ff6fb5', '#ffe0f0', '#fff3c4'];
+  card.style.setProperty('--ac', th[0]); card.style.setProperty('--b1', th[1]); card.style.setProperty('--b2', th[2]);
   $('#card-who').textContent = `${S.me && S.me !== '모름' ? S.me + ' × ' : ''}${d.label}`;
-  $('#card-char').src = d.img + (e.expr || 'smile') + '.png';
+  const ph = $('#card-photo'); ph.src = S.shot || (d.img + (e.expr || 'smile') + '.png'); ph.classList.toggle('png', !S.shot);
   $('#card-end').textContent = `${e.emoji} ${e.name}`;
   $('#card-pattern').textContent = p.line;
-  $('#card-fun').innerHTML = d.result.funStats.map(s => `<li>· ${s}</li>`).join('');
+  $('#card-fun').innerHTML = d.result.funStats.map(s => `<li>${s}</li>`).join('');
+  const dx = dexHTML();
+  $('#card-dex').innerHTML = `<div class="dex-row"><span>${d.mbti} 엔딩 ${dx.n}/${dx.total}</span><span class="dex-ends">${dx.ends}</span></div>`;
+  $('#dex').innerHTML = `<div class="dex-title">소개팅 도감 <small>${dx.people}/16명</small></div><div class="dex-grid">${dx.grid}</div><div class="dex-sub">${d.mbti} 엔딩 ${dx.n}/${dx.total}개 발견 · ${dx.n < dx.total ? '다른 선택을 하면 다른 엔딩이 나와요!' : '엔딩 전부 발견!'}</div>`;
   $('#ad-slot').hidden = !CONFIG.adSlot;
   show('result');
-  // 숫자 올라가기
   const el = $('#card-pct'); let k = 0; const t = setInterval(() => { k = Math.min(n, k + Math.ceil(n / 25)); el.textContent = k; if (k >= n) clearInterval(t); }, 30);
   track('result', { file: S.partner, pct: n, type: p.type });
 };
@@ -274,21 +296,28 @@ function wrap(ctx, text, x, y, maxW, lh) {
 }
 async function makeImage() {
   const W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H;
-  const x = c.getContext('2d'), d = S.data, e = S.ending, F = 'Pretendard,"Apple SD Gothic Neo","Noto Sans KR",sans-serif';
-  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#ffd2e9'); g.addColorStop(.55, '#fff6fb'); g.addColorStop(1, '#fff0b8');
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const x = c.getContext('2d'), d = S.data, e = S.ending, th = e.theme || ['#ff6fb5', '#ffe0f0', '#fff3c4'];
+  const T = '"Jua","Noto Sans KR",sans-serif', B = '"Noto Sans KR","Apple SD Gothic Neo",sans-serif';
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, th[1]); g.addColorStop(1, th[2]); x.fillStyle = g; x.fillRect(0, 0, W, H);
   x.textAlign = 'center';
-  x.fillStyle = '#fff'; x.beginPath(); x.roundRect(W / 2 - 230, 150, 460, 76, 38); x.fill();
-  x.fillStyle = '#d64f93'; x.font = `900 40px ${F}`; x.fillText('만약에 소개팅 · 웅이프', W / 2, 202);
-  x.fillStyle = '#2b2b3a'; x.font = `900 62px ${F}`; x.fillText($('#card-who').textContent, W / 2, 320);
-  try { const im = await loadImg(d.img + (e.expr || 'smile') + '.png'); const h = 620, w = im.width * h / im.height; x.drawImage(im, W / 2 - w / 2, 350, w, h); } catch {}
-  x.fillStyle = '#ff6fb5'; x.font = `900 190px ${F}`; x.fillText(pct() + '%', W / 2, 1150);
-  x.fillStyle = '#2b2b3a'; x.font = `900 64px ${F}`; x.fillText(`${e.emoji} ${e.name}`, W / 2, 1250);
-  x.fillStyle = '#fff'; x.beginPath(); x.roundRect(110, 1300, W - 220, 190, 40); x.fill();
-  x.fillStyle = '#5a4d60'; x.font = `800 44px ${F}`; wrap(x, pattern().line, W / 2, 1380, W - 300, 62);
-  x.fillStyle = '#6b5d70'; x.font = `800 42px ${F}`;
-  d.result.funStats.forEach((s, i) => x.fillText('· ' + s, W / 2, 1580 + i * 64));
-  x.fillStyle = '#b4a6b8'; x.font = `800 36px ${F}`; x.fillText('나도 해 보기 → 웅이프 프로필 링크', W / 2, 1840);
+  x.fillStyle = '#fff'; x.beginPath(); x.roundRect(W / 2 - 230, 110, 460, 76, 38); x.fill();
+  x.fillStyle = th[0]; x.font = `40px ${T}`; x.fillText('만약에 소개팅 · 웅이프', W / 2, 162);
+  x.fillStyle = '#2b2b3a'; x.font = `66px ${T}`; x.fillText($('#card-who').textContent, W / 2, 280);
+  try {
+    const im = await loadImg($('#card-photo').src);
+    const pw = 860, phh = 640, px = (W - pw) / 2, py = 320;
+    x.save(); x.beginPath(); x.roundRect(px, py, pw, phh, 48); x.clip();
+    if (S.shot) { const s = Math.max(pw / im.width, phh / im.height); x.drawImage(im, px + (pw - im.width * s) / 2, py + (phh - im.height * s) / 2, im.width * s, im.height * s); }
+    else { x.fillStyle = '#fff'; x.fillRect(px, py, pw, phh); const h = phh * 0.95, w = im.width * h / im.height; x.drawImage(im, W / 2 - w / 2, py + phh - h, w, h); }
+    x.restore(); x.lineWidth = 10; x.strokeStyle = '#fff'; x.beginPath(); x.roundRect(px, py, pw, phh, 48); x.stroke();
+  } catch {}
+  x.fillStyle = th[0]; x.font = `190px ${T}`; x.fillText(pct() + '%', W / 2, 1160);
+  x.fillStyle = '#2b2b3a'; x.font = `70px ${T}`; x.fillText(`${e.emoji} ${e.name}`, W / 2, 1265);
+  x.fillStyle = '#fff'; x.beginPath(); x.roundRect(110, 1310, W - 220, 180, 40); x.fill();
+  x.fillStyle = '#5a4d60'; x.font = `700 42px ${B}`; wrap(x, pattern().line, W / 2, 1385, W - 300, 60);
+  x.fillStyle = '#6b5d70'; x.font = `700 40px ${B}`; d.result.funStats.forEach((s, i) => x.fillText(s, W / 2, 1575 + i * 60));
+  const dx = dexHTML(); x.fillStyle = th[0]; x.font = `46px ${T}`; x.fillText(`${d.mbti} 엔딩 ${dx.n}/${dx.total} 발견`, W / 2, 1790);
+  x.fillStyle = '#9a8da0'; x.font = `36px ${T}`; x.fillText('나도 해 보기 → 웅이프 프로필 링크', W / 2, 1855);
   return new Promise(r => c.toBlob(r, 'image/png'));
 }
 $('#btn-share').onclick = async () => {
