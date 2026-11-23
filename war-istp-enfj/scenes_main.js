@@ -375,7 +375,7 @@ S[5]=()=>{
     show(bG3,t,g3,endOf(5,'g3',0.4));show(bK2,t,k2,endOf(5,'k2',0.5));show(bQ,t,Q,TK+0.3);show(bG4,t,g4,endOf(5,'g4',0.3));show(bK3,t,k3,FL);show(bK4,t,k4,endOf(5,'k4',0.5));
     const tl=t>TL;crowd.forEach((q,i)=>{const v=tl&&t>TL+0.2+i*0.09;q.p.visible=v;q.mat.visible=v;
       q.p.updateMatrixWorld(true);q.p.userData.head.getWorldPosition(hp);q.nt.forEach((o,k)=>{const lt=((t-TL)*0.55+o.ph)%1;const kk=Math.sin(lt*Math.PI)*(v?1:0);o.n.visible=kk>0.03;o.n.position.set(hp.x+(k?0.35:-0.35)+Math.sin(lt*6+o.ph*9)*0.12,hp.y+0.25+lt*1.1,hp.z);o.n.scale.set(o.n.userData.base[0]*kk,o.n.userData.base[1]*kk,1)})});
-    walkers.forEach((p,i)=>{p.visible=tl;const lt=((t-TL)*0.35+i/8)%1;p.position.set(-10+lt*11,0,7+(i%3)*1.2);p.rotation.y=Math.PI/2;walkPose(p,t*8+i,0.5)});
+    walkers.forEach((p,i)=>{p.visible=false;const lt=((t-TL)*0.35+i/8)%1;p.position.set(-10+lt*11,0,7+(i%3)*1.2);p.rotation.y=Math.PI/2;walkPose(p,t*8+i,0.5)});
     for(const p of[J,T])p.visible=!tl;
     // 카메라
     if(t<WK+0.3){const k=ease(t/(WK+0.3));setCam(C,[1.2,1.9,4.0-k*0.4],[-0.3,1.3,0],44)}
