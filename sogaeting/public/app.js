@@ -92,12 +92,15 @@ $('#dialog').onclick = () => {
   if (tapResolve) { const r = tapResolve; tapResolve = null; r(); }
 };
 function preload(d) { ['smile','excited','happy','blush','pout','teary','surprised'].forEach(e => { const i = new Image(); i.src = d.img + e + '.png'; }); }
-function setExpr(e, bounce = true) {
+const use3D = () => !!(window.Scene3D && Scene3D.ready);
+function setExpr(e, bounce = true, act) {
+  if (use3D()) { Scene3D.setExpr(e, act); return; }
   const src = S.data.img + e + '.png';
   if (!charEl.src.endsWith(src)) charEl.src = src;
   if (bounce) { charEl.classList.remove('bounce'); void charEl.offsetWidth; charEl.classList.add('bounce'); }
 }
 async function say(who, text) {
+  if (use3D()) Scene3D.setFocus(who === 'her');
   whoEl.className = 'who' + (who === 'me' ? ' me' : who === 'nar' ? ' nar' : '');
   whoEl.textContent = who === 'me' ? '나' : who === 'nar' ? '' : S.data.mbti;
   whoEl.style.display = who === 'nar' ? 'none' : '';
@@ -117,7 +120,33 @@ async function say(who, text) {
 function heart() { Snd.play('ding'); const h = $('#heart-pop'); h.classList.remove('on'); void h.offsetWidth; h.classList.add('on'); }
 function setProg(i) { $('#prog').innerHTML = S.data.scenes.map((_, k) => `<i class="${k < i ? 'done' : ''}"></i>`).join(''); }
 function statChip(text) { const el = $('#stat-chip'); el.classList.remove('on'); if (!text) return; el.innerHTML = text.replace(/(\d[\d,]*)/g, '<b>$1</b>'); setTimeout(() => el.classList.add('on'), 700); }
+// 장면별 연출 컷 (대본의 fx)
+const fxEl = $('#fx'); let menuN = 0, galN = 0;
+function clearFx() { fxEl.innerHTML = ''; galN = 0; }
+function fx(f) {
+  if (!f) return;
+  const [kind, arg] = f.split(':');
+  if (kind === 'menu') {
+    const seq = arg.split('>'); menuN++;
+    const show1 = (m, i) => { if (use3D()) Scene3D.setMenu(m); fxEl.innerHTML = `<div class="menu-pill">주문 변경 <b>${menuN}</b>회 · <b>${m}</b></div>`; };
+    show1(seq[0]); if (seq[1]) setTimeout(() => { menuN++; show1(seq[1]); Snd.play('pop'); }, 1100);
+  } else if (kind === 'gallery') {
+    const to = +arg, from = galN; galN = to;
+    let ph = fxEl.querySelector('.phone');
+    if (!ph) { fxEl.innerHTML = '<div class="phone"><div class="scr"><div class="bar"><span>📷 갤러리</span><span><b class="cnt">1</b>장</span></div><div class="tiles"></div></div></div>'; ph = fxEl.querySelector('.phone'); }
+    const tiles = ph.querySelector('.tiles'), cnt = ph.querySelector('.cnt'), cols = ['#cde9ff', '#ffe0f0', '#fff3c4', '#d8f0c8', '#e9ddff'];
+    const add = Math.min(15, to) - tiles.children.length;
+    for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
+    let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
+  } else if (kind === 'flight') {
+    if (fxEl.querySelector('.flight')) return;
+    fxEl.innerHTML = '<div class="flight"><div class="route">김포 ✈ 제주</div><div class="meta">다음 주 토요일 · 07:10 출발 · 성인 2명</div><div class="row"><span class="left">잔여 4석!</span><span class="buy">바로 예매</span></div></div>';
+    Snd.play('ding');
+  }
+}
 function ask(choices) {
+  if (use3D()) Scene3D.setFocus(false);
+  clearFx();
   return new Promise(res => {
     choicesEl.innerHTML = choices.map((c, i) => `<button class="choice" data-i="${i}">${c.text}</button>`).join('');
     choicesEl.querySelectorAll('.choice').forEach(b => b.onclick = () => { choicesEl.innerHTML = ''; Snd.play('pop'); res(choices[+b.dataset.i]); });
@@ -132,23 +161,26 @@ async function startGame(file) {
   show('game');
   const d = S.data;
   Snd.init(); Snd.setMood('cafe');
-  stage.className = 'stage cafe'; setProg(0);
+  if (window.Scene3D && !Scene3D.ready && !Scene3D.failed) { Scene3D.failed = !Scene3D.init($('#c3d')); }
+  stage.className = 'stage cafe' + (use3D() ? ' three' : ''); setProg(0);
+  if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile'); }
   $('#scene-chip').textContent = d.intro.chip; statChip('');
   charEl.style.opacity = 0;
   await say('nar', d.intro.text);
   charEl.style.opacity = 1;
   for (let i = 0; i < d.scenes.length; i++) {
     const sc = d.scenes[i];
-    stage.className = 'stage ' + sc.bg; setProg(i); Snd.setMood(sc.bg);
+    stage.className = 'stage ' + sc.bg + (use3D() ? ' three' : ''); setProg(i); Snd.setMood(sc.bg); clearFx(); menuN = 0;
+    if (use3D()) Scene3D.setSet(sc.bg);
     $('#scene-chip').textContent = `${i + 1}. ${sc.title}`;
     statChip(sc.chip || '');
-    for (const l of sc.lines) { setExpr(l.expr); await say('her', l.text); }
+    for (const l of sc.lines) { setExpr(l.expr, true, l.act); fx(l.fx); await say('her', l.text); }
     const c = await ask(sc.choices);
     S.picks[sc.id] = c.key; S.score += c.score;
     track('choice', { file, scene: sc.id, key: c.key });
     await say('me', c.text);
     if (c.score > 0) heart();
-    for (const l of c.react) { setExpr(l.expr); await say('her', l.text); }
+    for (const l of c.react) { setExpr(l.expr, true, l.act); fx(l.fx); await say('her', l.text); }
   }
   setProg(d.scenes.length);
   finish();
@@ -170,11 +202,20 @@ function finish() {
   $('#end-chip').textContent = e.chip || `${S.data.mbti}와의 소개팅 끝`;
   $('#end-char').src = S.data.img + (e.expr || 'smile') + '.png';
   $('#end-name').textContent = `${e.emoji} ${e.name}`;
-  $('#end-lines').innerHTML = locked
-    ? '<p>히든 엔딩을 찾았어요!</p><p>잠금을 풀면 볼 수 있어요.</p>'
-    : e.lines.map((l, i) => `<p style="animation-delay:${0.2 + i * 0.55}s">${l}</p>`).join('') +
-      `<p class="end-punch" style="animation-delay:${0.2 + e.lines.length * 0.55}s">${e.punch}</p>`;
-  const st = $('#end-stat'); st.textContent = e.stat; st.style.animationDelay = `${0.6 + e.lines.length * 0.55}s`;
+  const isChat = e.lines.some(l => l.startsWith('"'));
+  const D = i => 0.3 + i * 0.75;
+  if (locked) $('#end-lines').innerHTML = '<p>히든 엔딩을 찾았어요!</p><p>잠금을 풀면 볼 수 있어요.</p>';
+  else if (isChat) {
+    // 카톡 화면: 따옴표 대사는 ENFP 메시지, 나머지는 회색 안내
+    const av = S.data.img + 'smile.png';
+    $('#end-lines').innerHTML = '<div class="kakao">' + e.lines.map((l, i) => l.startsWith('"')
+      ? `<div class="msg" style="animation-delay:${D(i)}s"><div class="av" style="background-image:url('${av}')"></div><div><div class="nm">${S.data.mbti}</div><div class="bb">${l.replace(/^"|"$/g, '')}</div></div></div>`
+      : `<div class="nar" style="animation-delay:${D(i)}s">${l}</div>`).join('') + '</div>' +
+      `<p class="end-punch" style="animation-delay:${D(e.lines.length)}s">${e.punch}</p>`;
+    e.lines.forEach((l, i) => { if (l.startsWith('"')) setTimeout(() => Snd.play('ding'), D(i) * 1000); });
+  } else $('#end-lines').innerHTML = e.lines.map((l, i) => `<p style="animation-delay:${D(i)}s">${l}</p>`).join('') +
+      `<p class="end-punch" style="animation-delay:${D(e.lines.length)}s">${e.punch}</p>`;
+  const st = $('#end-stat'); st.textContent = e.stat; st.style.animationDelay = `${0.6 + e.lines.length * 0.75}s`;
   show('ending');
 }
 

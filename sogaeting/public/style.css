@@ -113,3 +113,38 @@ h2{font-size:24px;font-weight:900;margin:8px 0 4px}
 .snd{position:absolute;right:12px;top:calc(10px + env(safe-area-inset-top));z-index:15;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.9);font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,.15);cursor:pointer;display:none}
 .snd.on{display:block}
 #scr-game .hud{padding-right:58px}
+
+/* 3D */
+#c3d{position:absolute;inset:0;width:100%;height:100%;display:none;z-index:1}
+.stage.three #c3d{display:block}
+.stage.three .char{display:none}
+.stage.three .rainfx,.stage.three::before{display:none}
+/* 연출 컷 */
+.fx{position:absolute;inset:0;z-index:3;pointer-events:none}
+.fx .phone{position:absolute;right:14px;bottom:26px;width:46%;max-width:190px;aspect-ratio:9/16;border-radius:24px;background:#1b1b22;padding:7px;box-shadow:0 14px 30px rgba(40,20,50,.35);animation:fxin .35s cubic-bezier(.3,1.5,.5,1)}
+.fx .phone .scr{width:100%;height:100%;border-radius:18px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.fx .phone .bar{font-size:11px;font-weight:900;padding:8px 10px 6px;display:flex;justify-content:space-between;color:#333}
+.fx .phone .bar b{color:#ff6fb5}
+.fx .tiles{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:0 3px 3px;align-content:start}
+.fx .tiles i{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:20px;animation:fxin .25s ease both}
+.fx .flight{position:absolute;left:14px;right:14px;bottom:24px;background:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 14px 30px rgba(40,20,50,.35);animation:fxin .35s cubic-bezier(.3,1.5,.5,1)}
+.fx .flight .route{font-size:22px;font-weight:900;display:flex;align-items:center;gap:8px}
+.fx .flight .meta{font-size:13px;font-weight:700;color:#6b5d70;margin-top:4px}
+.fx .flight .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.fx .flight .left{font-size:13px;font-weight:900;color:#e2335a}
+.fx .flight .buy{background:#ff6fb5;color:#fff;font-weight:900;font-size:14px;padding:7px 14px;border-radius:999px}
+.fx .menu-pill{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);white-space:nowrap;background:#fff;border-radius:999px;padding:8px 16px;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(0,0,0,.18);animation:fxin .3s ease}
+.fx .menu-pill s{color:#a596a8}
+.fx .menu-pill b{color:#ff6fb5}
+@keyframes fxin{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+.fx .menu-pill{animation:pillin .3s ease}
+@keyframes pillin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
+/* 엔딩 카톡 */
+.kakao{width:100%;max-width:400px;background:#b2c7da;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;margin:4px 0 4px;min-height:120px}
+.kakao .nar{align-self:center;font-size:12px;font-weight:800;color:#fff;background:rgba(0,0,0,.2);padding:3px 12px;border-radius:999px;opacity:0;animation:up .35s ease forwards}
+.kakao .msg{display:flex;gap:8px;align-items:flex-start;opacity:0;animation:up .35s ease forwards}
+.kakao .av{width:34px;height:34px;border-radius:12px;background:#ffe0f0 center/180% no-repeat;flex:none}
+.kakao .nm{font-size:11px;color:#3c4a5a;font-weight:800;margin-bottom:3px;text-align:left}
+.kakao .bb{background:#fff;border-radius:4px 14px 14px 14px;padding:8px 12px;font-size:15px;font-weight:700;text-align:left;word-break:keep-all;max-width:240px}
+.kakao .invite{align-self:stretch;background:#fff;border-radius:12px;padding:10px;font-size:13px;font-weight:800;text-align:left;opacity:0;animation:up .35s ease forwards}
+.end-lines{width:100%;display:flex;flex-direction:column;align-items:center}

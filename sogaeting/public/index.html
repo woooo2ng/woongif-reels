@@ -40,7 +40,9 @@
   <!-- 게임 -->
   <section class="screen" id="scr-game">
     <div class="stage" id="stage">
+      <canvas id="c3d"></canvas>
       <div class="rainfx"></div>
+      <div class="fx" id="fx"></div>
       <div class="hud">
         <div class="prog" id="prog"></div>
         <div class="chip" id="scene-chip"></div>
@@ -102,6 +104,7 @@
   <button class="snd" id="snd" aria-label="소리 켜기/끄기">🔊</button>
   <div class="toast" id="toast"></div>
 </main>
+<script type="module" src="scene3d.js"></script>
 <script src="audio.js"></script>
 <script src="app.js"></script>
 </body>
