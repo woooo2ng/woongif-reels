@@ -5,9 +5,10 @@
 'use strict';
 const MOODS = {
   // tempo: BPM / arp: 한 박에 몇 음 / hat: 하이햇 / bass / pad: 길게 까는 화음 / cut: 필터(밝기) / vol
-  cafe:    { tempo: 96,  arp: 2, hat: true,  bass: true,  pad: false, cut: 2600, vol: 1.0 },
-  counter: { tempo: 100, arp: 2, hat: true,  bass: true,  pad: false, cut: 2800, vol: 1.0 },
-  table:   { tempo: 112, arp: 4, hat: true,  bass: true,  pad: false, cut: 3200, vol: 1.0 },
+  // 카페·카운터·덕질은 시작 화면과 같은 곡 (빨라지는 버전 뺌)
+  cafe:    { tempo: 96,  arp: 2, hat: true,  bass: true,  pad: false, cut: 2400, vol: 0.8 },
+  counter: { tempo: 96,  arp: 2, hat: true,  bass: true,  pad: false, cut: 2400, vol: 0.8 },
+  table:   { tempo: 96,  arp: 2, hat: true,  bass: true,  pad: false, cut: 2400, vol: 0.8 },
   rain:    { tempo: 72,  arp: 1, hat: false, bass: false, pad: true,  cut: 1500, vol: 1.7, piano: true },
   street:  { tempo: 80,  arp: 1, hat: false, bass: true,  pad: true,  cut: 1900, vol: 1.2 },
   end:     { tempo: 84,  arp: 1, hat: false, bass: false, pad: true,  cut: 1700, vol: 1.5 },
