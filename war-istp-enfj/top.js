@@ -31,7 +31,7 @@ function caption(si,t){if(window.noCap)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
   let idx=-1;for(let i=0;i<L.length;i++)if(t>=LEAD+L[i][0]-0.05)idx=i;
   // 다음 줄 전까지는 이전 자막 유지(null은 짧은 공백 뒤 다음 줄이 없을 때만 숨김)
-  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6){idx--;}else break}
+  while(idx>=0&&L[idx][1]===null){const nx=L[idx+1];if(nx&&t>=LEAD+nx[0]-0.6&&nx[0]-L[idx][0]<0.9){idx--;}else break}
   if(idx<0||!L[idx][1]){el.style.opacity=0;return}
   if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=L[idx][1]}
   const st=LEAD+L[idx][0];
