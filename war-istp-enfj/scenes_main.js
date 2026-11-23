@@ -141,7 +141,7 @@ S[0]=()=>{
     T.forEach((e,i)=>{const T0=[0.05,0.1,0.15,0.2][i];e.style.transform=(i==0?'translateX(-50%) ':'')+`scale(${pop((t-T0)/0.35)})`;e.style.opacity=t<RS?clamp01((t-T0)/0.1):clamp01(1-(t-RS)/0.2)});
     {const k=pop((t-E.chip)/0.35),sh=t>E.chip&&t<E.chip+0.5?Math.sin((t-E.chip)*60)*4*(1-(t-E.chip)/0.5):0;ch.style.transform=`translateX(calc(-50% + ${sh}px)) scale(${k})`;ch.style.opacity=t>E.chip?1:0}
     caption(0,t);
-    vsl.style.display=vsb.style.display=ch0?'block':'none';vsb.style.transform=`translateX(-50%) scale(${pop((t-0.2)/0.3)})`;
+    vsl.style.display=ch0?'block':'none';vsb.style.display=ch0?'flex':'none';vsb.style.transform=`translateX(-50%) scale(${pop((t-0.2)/0.3)})`;
     if(ch0){
       renderer.setScissorTest(true);const hw=W/2;
       CL.aspect=hw/H;CL.updateProjectionMatrix();CL.position.set(0.3,1.95,-1.2);CL.lookAt(0.3,1.55,-9);
