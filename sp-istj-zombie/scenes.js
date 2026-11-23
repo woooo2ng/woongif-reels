@@ -115,7 +115,7 @@ S[0]=()=>{
       const kw=ease((t-TW)/0.5);const u=me.userData;
       if(kw<=0){me.rotation.set(-Math.PI/2,0,0);me.position.set(-0.6,0.72,-1.55);standPose(me)}
       else{me.rotation.set(-Math.PI/2*(1-kw),0,0);me.position.set(-0.6,0.42+0.3*(1-kw),-1.55+kw*0.55);sitPose(me);u.legs.forEach(l=>l.rotation.x=-Math.PI/2*kw);u.hip.position.y=0.56}
-      const kl=ease((t-TL)/0.35);u.head.rotation.y=-0.9*kl;u.head.rotation.x=-0.1*kl;me.rotation.y=-0.5*kl*kw;
+      const kl=ease((t-TL)/0.35);u.head.rotation.y=0.25*kw+0.75*kl;u.head.rotation.x=-0.1*kl;me.rotation.y=0.6*kw; // 오른쪽 창문 쪽으로
       bl.position.z=-0.4+kw*0.3;bl.scale.z=1-kw*0.2;
       show(bP,t,TL+0.05,TP);
       if(t<TW){C.fov=38;C.position.set(0.55,1.15,-0.5);C.lookAt(0.55,0.75,-2.05)}
