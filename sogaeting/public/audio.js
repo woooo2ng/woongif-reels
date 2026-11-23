@@ -77,6 +77,9 @@ const SFX = {
   pop(ctx, out, t) { tone(ctx, out, t, 520, 0.14, { type: 'sine', vol: 0.3, slide: 1100 }); },
   ding(ctx, out, t) { [1568, 2093].forEach((f, i) => tone(ctx, out, t + i * 0.07, f, 0.6, { type: 'sine', vol: 0.16 })); },
   tick(ctx, out, t) { tone(ctx, out, t, 1500 + Math.random() * 300, 0.035, { type: 'sine', vol: 0.05 }); },
+  bell(ctx, out, t) { [2637, 3136, 2637].forEach((f, i) => tone(ctx, out, t + i * 0.09, f, 0.7, { type: 'sine', vol: 0.09 })); },
+  whoosh(ctx, out, t) { noise(ctx, out, t, 0.35, 0.06, 1800); tone(ctx, out, t, 300, 0.3, { type: 'sine', vol: 0.06, slide: 900 }); },
+  bus(ctx, out, t) { [0, 0.28].forEach(d => tone(ctx, out, t + d, 330, 0.22, { type: 'square', vol: 0.05, cut: 1200 })); },
   // 엔딩 징글
   after(ctx, out, t) { [72, 76, 79, 84, 88].forEach((n, i) => tone(ctx, out, t + i * 0.11, hz(n), 0.9, { type: 'sine', vol: 0.15 }));
     [1, 2].forEach(i => noise(ctx, out, t + 0.55 + i * 0.12, 0.25, 0.03, 9000)); },

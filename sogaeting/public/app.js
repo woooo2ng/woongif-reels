@@ -107,6 +107,7 @@ async function say(who, text) {
   nextEl.classList.remove('on');
   textEl.textContent = '';
   const t = { skip: false }; typing = t;
+  if (who === 'her' && use3D()) Scene3D.talk(true);
   for (let i = 1; i <= text.length; i++) {
     if (t.skip) { textEl.textContent = text; break; }
     textEl.textContent = text.slice(0, i);
@@ -114,6 +115,7 @@ async function say(who, text) {
     await sleep(text[i - 1] === ' ' ? 18 : 34);
   }
   typing = null;
+  if (use3D()) Scene3D.talk(false);
   nextEl.classList.add('on');
   await new Promise(r => { tapResolve = r; });
 }
@@ -138,11 +140,24 @@ function fx(f) {
     const add = Math.min(15, to) - tiles.children.length;
     for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
     let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
+  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus') {
+    if (use3D()) Scene3D.special(kind);
+    Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : 'tick');
   } else if (kind === 'flight') {
     if (fxEl.querySelector('.flight')) return;
     fxEl.innerHTML = '<div class="flight"><div class="route">김포 ✈ 제주</div><div class="meta">다음 주 토요일 · 07:10 출발 · 성인 2명</div><div class="row"><span class="left">잔여 4석!</span><span class="buy">바로 예매</span></div></div>';
     Snd.play('ding');
   }
+}
+// 장면 전환 카드: 화면을 덮었다가 걷히면서 다음 장면
+const wipe = $('#wipe');
+function sceneCard(n, title, swap) {
+  return new Promise(res => {
+    $('#wipe-n').textContent = n; $('#wipe-t').textContent = title;
+    wipe.classList.remove('out'); wipe.classList.add('in'); Snd.play('whoosh');
+    setTimeout(() => { swap(); wipe.classList.add('out'); }, 650);
+    setTimeout(() => { wipe.classList.remove('in', 'out'); res(); }, 1150);
+  });
 }
 function ask(choices) {
   if (use3D()) Scene3D.setFocus(false);
@@ -163,15 +178,19 @@ async function startGame(file) {
   Snd.init(); Snd.setMood('cafe');
   if (window.Scene3D && !Scene3D.ready && !Scene3D.failed) { Scene3D.failed = !Scene3D.init($('#c3d')); }
   stage.className = 'stage cafe' + (use3D() ? ' three' : ''); setProg(0);
-  if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile'); }
+  if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
+  setTimeout(() => Snd.play('bell'), 400);
   $('#scene-chip').textContent = d.intro.chip; statChip('');
   charEl.style.opacity = 0;
   await say('nar', d.intro.text);
   charEl.style.opacity = 1;
   for (let i = 0; i < d.scenes.length; i++) {
     const sc = d.scenes[i];
-    stage.className = 'stage ' + sc.bg + (use3D() ? ' three' : ''); setProg(i); Snd.setMood(sc.bg); clearFx(); menuN = 0;
-    if (use3D()) Scene3D.setSet(sc.bg);
+    await sceneCard(i + 1, sc.title, () => {
+      stage.className = 'stage ' + sc.bg + (use3D() ? ' three' : ''); setProg(i); Snd.setMood(sc.bg); clearFx(); menuN = 0;
+      if (use3D() && (i > 0 || Scene3D.set !== sc.bg)) Scene3D.setSet(sc.bg);
+    });
+    if (i === 0 && use3D()) { Snd.play('bell'); await Scene3D.enter(); }
     $('#scene-chip').textContent = `${i + 1}. ${sc.title}`;
     statChip(sc.chip || '');
     for (const l of sc.lines) { setExpr(l.expr, true, l.act); fx(l.fx); await say('her', l.text); }
