@@ -551,7 +551,7 @@ S[0]=()=>{
     else if(t<POP-0.6){const k=ease((t-n2-1.6)/2.5);setCam(C,lerp3([-1.5,1.9,-3.2],[-1.0,2.0,-2.6],k),[0.8,1.5,3],48)}
     else{setCam(C,[1.55,2.45,1.05],[2.1,2.35,3.5],42)}
     bK.position.copy(headPos(IG,0.78));show(bK,t,k1,99);
-    T.forEach((e,i)=>{const T0=[0.15,0.25,1.4,2.45][i];e.style.transform=(i==0?'translateX(-50%) ':'')+`scale(${pop((t-T0)/0.35)})`;e.style.opacity=t<RS?clamp01((t-T0)/0.1):clamp01(1-(t-RS)/0.2)});
+    T.forEach((e,i)=>{const T0=[0.05,0.1,0.15,0.2][i];e.style.transform=(i==0?'translateX(-50%) ':'')+`scale(${pop((t-T0)/0.35)})`;e.style.opacity=t<RS?clamp01((t-T0)/0.1):clamp01(1-(t-RS)/0.2)});
     {const k=pop((t-E.chip)/0.35),sh=t>E.chip&&t<E.chip+0.5?Math.sin((t-E.chip)*60)*4*(1-(t-E.chip)/0.5):0;ch.style.transform=`translateX(calc(-50% + ${sh}px)) scale(${k})`;ch.style.opacity=t>E.chip?1:0}
     caption(0,t);renderer.render(scene,C);
   };
@@ -597,6 +597,8 @@ S[2]=()=>{
   // 낮: 칭찬 링
   const s1=new THREE.Scene();s1.fog=new THREE.Fog(0xe6f0fa,20,80);addLights(s1,{hemi:1.5});field(s1,r,{mz:-9});
   const A=istpS(r);A.position.set(0,0,0);s1.add(A);
+  const port=new THREE.Group();{const R=rifle();R.rotation.y=Math.PI/2;port.add(R)}port.rotation.z=0.75;port.position.set(0,0.3,0.33);A.userData.hip.add(port);
+  const carry=rifle();A.userData.arms[1].add(carry);carry.position.set(0.02,-0.66,0.1);carry.rotation.x=-1.25;carry.visible=false;
   const ring=[];for(let i=0;i<7;i++){const a=Math.PI*(0.9+i*0.2);const p=enfjS(r);p.position.set(Math.cos(a)*1.9,0,Math.sin(a)*1.9);p.rotation.y=Math.atan2(-p.position.x,-p.position.z);s1.add(p);ring.push(p)}
   const hearts=sprinkleHearts(s1,10,r,{w:4,dz:3,col:'#ff8fa8',size:0.005});
   // 밤: 막사
@@ -618,7 +620,7 @@ S[2]=()=>{
     if(t<N){
       setSky('#bfe0ff','#f2f8ff 70%');
       ring.forEach((p,i)=>{standPose(p);if(t<W)clapPose(p,t);else{clapPose(p,W);}});
-      standPose(A);aim(A);A.userData.arms[0].rotation.x=-1.2;
+      standPose(A);if(t<W){port.visible=true;carry.visible=false;A.userData.arms[0].rotation.set(-0.95,0,0.5);A.userData.arms[1].rotation.set(-1.05,0,-0.5)}else{port.visible=false;carry.visible=true;A.userData.arms[1].rotation.x=-0.25}
       if(t>W){const k=t-W;A.rotation.y=Math.PI*0.5*ease(k/0.25);walkPose(A,k*7,0.5);A.position.x=Math.max(0,k-0.2)*1.5}
       b1.position.copy(headPos(fl,0.65));b2.position.copy(headPos(fr,0.65));b3.position.copy(headPos(A,0.65));
       show(b1,t,at(2,'e3'),endOf(2,'e3',0.1));show(b2,t,at(2,'e4'),endOf(2,'e4',0.3));show(b3,t,at(2,'s3'),W+0.3);
@@ -741,7 +743,7 @@ S[5]=()=>{
   const sun=glowSprite('rgba(255,170,110,1)',16);sun.position.set(-2,4,40);scene.add(sun);
   const crowd=[];for(let i=0;i<26;i++){const isJ=i%2==0;const p=isJ?enfjS(r):istpS(r);const x=(r()-0.5)*22,z=4+r()*16;
     p.rotation.set(-Math.PI/2,0,(r()-0.5)*1.2);p.position.set(x,0.2,z);p.visible=false;scene.add(p);
-    const mat=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.04,2.1),lamb(isJ?0xffc9d4:0xd8d0b0));mat.position.set(x,0.02,z+0.1);mat.rotation.y=-p.rotation.z;mat.visible=false;scene.add(mat);crowd.push({p,mat})}
+    const mat=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.04,2.1),lamb(isJ?0xffc9d4:0xd8d0b0));mat.position.set(x,0.02,z+0.1);mat.rotation.y=-p.rotation.z;mat.visible=false;scene.add(mat);if(isJ)earbuds(p);{const hd=p.userData.head;hd.children.forEach(c=>{if(c.material===smooth(IST.helm)||c.material===smooth(ENJ.helm))c.visible=false});hd.children[1].visible=true;setFace(p,true)}const nt=[];for(let k=0;k<2;k++){const n=textSprite(k?'♫':'♪',90,k?'#ffd56b':'#ffffff',0.007);n.visible=false;scene.add(n);nt.push({n,ph:r()})}crowd.push({p,mat,nt})}
   const walkers=[];for(let i=0;i<8;i++){const p=enfjS(r);p.visible=false;scene.add(p);walkers.push(p)}
   const C=cam(46);const E=EV(5);
   const bG3=sb(scene,'…혹시 이거, 장군님이…?',0,0,0,{c:JB,size:0.0026}),bK2=sb(scene,'남아서요.',0,0,0,{c:TB,size:0.0026}),bQ=sb(scene,'?',0,0,0,{c:JB,size:0.0024}),
@@ -794,8 +796,9 @@ S[5]=()=>{
     const hJ=headPos(J,0.85),hT=headPos(T,0.85);
     bG3.position.copy(hJ);bG4.position.copy(hJ);bQ.position.copy(hJ);bK2.position.copy(hT);bK3.position.copy(hT);bK4.position.copy(hT);
     show(bG3,t,g3,endOf(5,'g3',0.4));show(bK2,t,k2,endOf(5,'k2',0.5));show(bQ,t,Q,TK+0.3);show(bG4,t,g4,endOf(5,'g4',0.3));show(bK3,t,k3,FL);show(bK4,t,k4,endOf(5,'k4',0.5));
-    const tl=t>TL;crowd.forEach((q,i)=>{const v=tl&&t>TL+0.2+i*0.09;q.p.visible=v;q.mat.visible=v});
-    walkers.forEach((p,i)=>{p.visible=tl;const lt=((t-TL)*0.35+i/8)%1;p.position.set(-9+lt*9,0,1.2+(i%3)*0.9);p.rotation.y=Math.PI/2;walkPose(p,t*8+i,0.5)});
+    const tl=t>TL;crowd.forEach((q,i)=>{const v=tl&&t>TL+0.2+i*0.09;q.p.visible=v;q.mat.visible=v;
+      q.p.updateMatrixWorld(true);q.p.userData.head.getWorldPosition(hp);q.nt.forEach((o,k)=>{const lt=((t-TL)*0.55+o.ph)%1;const kk=Math.sin(lt*Math.PI)*(v?1:0);o.n.visible=kk>0.03;o.n.position.set(hp.x+(k?0.35:-0.35)+Math.sin(lt*6+o.ph*9)*0.12,hp.y+0.25+lt*1.1,hp.z);o.n.scale.set(o.n.userData.base[0]*kk,o.n.userData.base[1]*kk,1)})});
+    walkers.forEach((p,i)=>{p.visible=tl;const lt=((t-TL)*0.35+i/8)%1;p.position.set(-10+lt*11,0,7+(i%3)*1.2);p.rotation.y=Math.PI/2;walkPose(p,t*8+i,0.5)});
     for(const p of[J,T])p.visible=!tl;
     // 카메라
     if(t<WK+0.3){const k=ease(t/(WK+0.3));setCam(C,[1.2,1.9,4.0-k*0.4],[-0.3,1.3,0],44)}
@@ -811,7 +814,7 @@ S[5]=()=>{
     else if(t<k4-0.05){setCam(C,[-0.8,1.75,1.75],[-0.65,1.62,0],38)}
     else if(t<SS-0.3){setCam(C,[0.05,1.85,3.7],[0.05,1.45,0],44)}
     else if(t<TL){const k=ease((t-SS)/6);setCam(C,lerp3([0.0,2.0,-4.4],[0.0,2.2,-5.4],k),[0,1.1,10],50)}
-    else{const k=ease((t-TL)/7);setCam(C,lerp3([0,7.5,-4],[1,8.5,-6.5],k),[0,0,12],52)}
+    else{const k=ease((t-TL)/7);setCam(C,lerp3([0,4.4,-1.2],[0.6,5.2,-3.0],k),[0,0.3,10],52)}
     // UI
     chipPop(chC,t,CN+0.15);chC.style.opacity=t>CN+0.15&&t<g3-0.3?1:0;
     chipPop(chD,t,0.25);chD.style.opacity=t>0.25&&t<CN-0.6?1:0;
