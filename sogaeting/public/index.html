@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>만약에 소개팅 · 웅이프</title>
+<meta name="description" content="만약에, ENFP랑 소개팅을 한다면? 5분 MBTI 소개팅 게임">
+<meta property="og:title" content="만약에 소개팅 · 웅이프">
+<meta property="og:description" content="만약에, ENFP랑 소개팅을 한다면? 결과 카드로 친구랑 비교해 봐!">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+  <!-- 시작 -->
+  <section class="screen" id="scr-start">
+    <div class="start-top">
+      <div class="tag">웅이프 만약에</div>
+      <h1 class="out">만약에<br><span class="pink">소개팅</span>을<br>한다면?</h1>
+      <img class="start-char" src="img/enfp-f/excited.png" alt="">
+    </div>
+    <p class="sub">MBTI 캐릭터랑 5분 소개팅.<br>선택에 따라 엔딩이 달라져요.</p>
+    <button class="btn main" data-go="me">소개팅 시작하기</button>
+    <p class="tiny">진짜 사람이 아니라 웅이프 캐릭터예요 · 개인정보 안 받아요</p>
+  </section>
+
+  <!-- 내 MBTI -->
+  <section class="screen" id="scr-me">
+    <h2>내 MBTI는?</h2>
+    <div class="grid" id="grid-me"></div>
+    <button class="btn ghost" data-pick-me="모름">잘 모르겠어요</button>
+  </section>
+
+  <!-- 상대 고르기 -->
+  <section class="screen" id="scr-partner">
+    <h2>누구랑 소개팅할래?</h2>
+    <p class="sub sm">첫 한 명은 무료예요</p>
+    <div class="grid partner" id="grid-partner"></div>
+  </section>
+
+  <!-- 게임 -->
+  <section class="screen" id="scr-game">
+    <div class="stage" id="stage">
+      <div class="rainfx"></div>
+      <div class="hud">
+        <div class="prog" id="prog"></div>
+        <div class="chip" id="scene-chip"></div>
+      </div>
+      <div class="stat" id="stat-chip"></div>
+      <img class="char" id="char" alt="">
+      <div class="heart-pop" id="heart-pop">♥</div>
+    </div>
+    <div class="dialog" id="dialog">
+      <div class="who" id="who"></div>
+      <div class="text" id="text"></div>
+      <div class="next" id="next">▼</div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- 엔딩 -->
+  <section class="screen" id="scr-ending">
+    <div class="end-stage">
+      <div class="chip" id="end-chip"></div>
+      <img class="char" id="end-char" alt="">
+    </div>
+    <div class="end-box">
+      <div class="end-name" id="end-name"></div>
+      <div class="end-lines" id="end-lines"></div>
+      <div class="end-stat" id="end-stat"></div>
+      <button class="btn main" id="btn-result">결과 카드 보기</button>
+    </div>
+  </section>
+
+  <!-- 결과 카드 -->
+  <section class="screen" id="scr-result">
+    <div class="card" id="card">
+      <div class="card-tag">만약에 소개팅 · 웅이프</div>
+      <div class="card-who" id="card-who"></div>
+      <img class="card-char" id="card-char" alt="">
+      <div class="card-pct"><span id="card-pct">0</span>%</div>
+      <div class="card-end" id="card-end"></div>
+      <div class="card-pattern" id="card-pattern"></div>
+      <ul class="card-fun" id="card-fun"></ul>
+      <div class="card-url">woong.if · 만약에 소개팅</div>
+    </div>
+    <div class="result-btns">
+      <button class="btn main" id="btn-share">친구한테 결과 보내기</button>
+      <button class="btn" id="btn-other">다른 MBTI랑 소개팅하기</button>
+      <button class="btn ghost" id="btn-again">다시 하기</button>
+    </div>
+    <div class="ad-slot" id="ad-slot" hidden></div>
+  </section>
+
+  <!-- 잠금 안내 (지금은 결제 없음: '준비 중'만) -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title"></div>
+      <p id="modal-text"></p>
+      <button class="btn main" id="modal-ok">알겠어요</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
