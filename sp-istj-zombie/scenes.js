@@ -240,15 +240,16 @@ S[2]=()=>{
   ground(sL,0x8fa27a,400);
   const road=new THREE.Mesh(new THREE.PlaneGeometry(3,120),lamb(0xbdb6a8));road.rotation.x=-Math.PI/2;road.position.set(0,0.01,0);sL.add(road);
   for(let i=0;i<4;i++){const b=makeBuilding(r,7,20,5,{wall:'#e3dccf',win:'#5d7590',lit:0.15});b.position.set(-14,b.position.y,-14+i*12);sL.add(b);const b2=makeBuilding(r,7,20,5,{wall:'#d8d2c6',win:'#5d7590',lit:0.15});b2.position.set(14,b2.position.y,-14+i*12);sL.add(b2)}
+  const cen=makeBuilding(r,8,7,5,{wall:'#e8e2d6',win:'#5d7590',lit:0.1});cen.position.set(0,cen.position.y,-22);sL.add(cen);
   const path=[];for(let i=0;i<260;i++){const s=i*0.55;// 건물 입구에서 나와 도로 따라 지그재그
-    const x=Math.sin(s*0.09)*1.0,z=-14+s;path.push([x,z])}
+    const x=Math.sin(s*0.09)*1.0,z=-16+s;path.push([x,z])}
   const Q=[];const rq=rng(733);for(let i=0;i<path.length;i++){const z=zombie(rq);z.position.set(path[i][0],0,path[i][1]);z.rotation.y=Math.PI;z.visible=false;sL.add(z);Q.push(z)}
   const stat=div('stat','<div><small>물린 사람</small><b>0명</b></div><div><small>대기 좀비</small><b>0명</b></div>');const sb=stat.querySelectorAll('b')[1];
   const C=cam(50);
   return t=>{
     const TC=E.call,TW=E.walk,TSt=E.stamp,TBk=E.back,TPu=E.pull,TL=E.lapse,TS=E.stat,C1=at(2,'c1');
     sitters.forEach((p,i)=>{const s=O.seats[i<3?i:i+1];seatZ(p,s[0],s[1],Math.PI);const u=p.userData;u.arms[0].rotation.x=-0.6;u.arms[1].rotation.x=-1.1;u.head.rotation.z=0.25+Math.sin(t*1.3+i)*0.05;u.head.rotation.x=0.1});
-    O.disp.userData.set(t>=TC?48:47);O.shutter.visible=false;
+    O.disp.userData.set(t>=TC?48:47);O.shutter.visible=false;O.disp.scale.setScalar(t>=TC&&t<TC+0.5?1+0.12*Math.sin((t-TC)/0.5*Math.PI):1);
     const cl=O.cl,uc=cl.userData;standPose(cl);cl.rotation.y=0;
     if(t>C1-0.2&&t<TSt+0.4){uc.arms[1].rotation.x=-0.9;uc.arms[0].rotation.x=-0.5}
     if(t>TSt-0.25&&t<TSt+0.2){uc.arms[1].rotation.x=-2.2+ease((t-TSt+0.25)/0.25)*1.4}
@@ -260,16 +261,16 @@ S[2]=()=>{
     else if(t<TPu){walkTo(Z,PC,PB,clamp01((t-TBk)/(TPu-TBk)),t);u.head.rotation.x=0.4;u.arms.forEach(a=>a.rotation.x*=0.55)}
     else{const k=clamp01((t-TPu-0.3)/0.9);walkTo(Z,PB,PE,k,t);u.head.rotation.x=0.4;u.arms.forEach(a=>a.rotation.x*=0.55)}
     ticket(Z,t>=TPu?3812:48);u.tk.visible=t<TBk-0.1||t>=TPu;
-    show(bZ,t,at(2,'z3'),TSt);
+    show(bZ,t,at(2,'z3'),TSt);if(t>C1+0.85&&t<TBk-0.2)bZ.visible=false;
     let mode=t<TW?'A':t<C1+0.9?'B':t<TBk-0.2?'F':t<TL?'W':'L';
     sh(form,mode==='F');sh(stp,mode==='F'&&t>=TSt);
-    if(mode==='F'){const k=ease((t-C1-0.9)/0.3);form.style.transform=`translateY(${(1-k)*1200}px) rotate(${(1-k)*3}deg)`;scr.textContent=t>at(2,'z3')+0.2?'으어':'';
+    if(mode==='F'){const k=pop((t-C1-0.9)/0.3);form.style.transform=`scale(${0.6+0.4*k}) rotate(${(1-Math.min(1,k))*3}deg)`;form.style.opacity=clamp01((t-C1-0.9)/0.12);scr.textContent=t>at(2,'z3')+0.2?'으어':'';
       if(t>=TSt){const k2=pop((t-TSt)/0.2);stp.style.transform=`translate(-50%,-50%) rotate(-14deg) scale(${2.4-1.4*Math.min(1,k2)})`;stp.style.opacity=clamp01((t-TSt)/0.05)}}
     if(mode==='L'){const k=clamp01((t-TL)/(VOICE[2]+0.7-(t-TL>0?0:0)-TL+0.25));const kk=ease(clamp01((t-TL)/2.6));
       const n=Math.floor(12+Math.pow(kk,1.2)*(Q.length-12));Q.forEach((z,i)=>{z.visible=i<n;if(z.visible)zPose(z,t,0)});
       const day=(t-TL)*2.2;const g=0.5+0.5*Math.cos(day*Math.PI);hemi.intensity=0.7+0.9*g;
       setSky(g>0.5?'#7fb8f0':'#2a3060',g>0.5?'#e6f2ff':'#5a5a90');
-      C.fov=55;C.position.set(5-kk*2,5+kk*22,-26+kk*4);C.lookAt(0,0.5,-8+kk*40);C.updateProjectionMatrix();renderer.render(sL,C);
+      const kc=Math.pow(kk,1.6);C.fov=55;C.position.set(2.6+2.4*kc,1.9+28*kc,-17.5-3*kc);C.lookAt(0,1.3-0.8*kc,-10+50*kc);C.updateProjectionMatrix();renderer.render(sL,C);
       const cnt=Math.round(48+Math.pow(kk,1.3)*(3812-48));sb.textContent=fmt(cnt)+'명'}
     else{
       if(mode==='A'){const k=ease(t/TW);C.fov=50;C.position.set(2.4,2.4,5.6-k*0.6);C.lookAt(0.6,1.75,-2.2)}
@@ -290,6 +291,10 @@ S[3]=()=>{
   // 거미줄·먼지: 1년 동안 기다림
   const web=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.9),new THREE.MeshBasicMaterial({map:canvasTex(256,256,(c,w,h)=>{c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=3;for(let i=0;i<8;i++){c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(i*0.2)*w*1.2,Math.sin(i*0.2)*h*1.2);c.stroke()}for(let k=1;k<6;k++){c.beginPath();c.arc(0,0,k*40,0,Math.PI/2);c.stroke()}}),transparent:true,side:THREE.DoubleSide}));
   const Z=zombie(rng(713),{shirt:0x8a94a6});sc.add(Z);ticket(Z,3812);
+  {const u=Z.userData;const w1=web.clone();w1.scale.setScalar(0.42);w1.position.set(0.12,0.5,0.02);w1.rotation.set(0,0,-0.2);u.head.add(w1);
+   const w2=web.clone();w2.scale.setScalar(0.5);w2.position.set(-0.3,0.62,0.17);w2.rotation.z=Math.PI/2;u.hip.add(w2);
+   const w3=web.clone();w3.scale.setScalar(0.35);w3.position.set(0.04,-0.35,0.12);w3.rotation.z=Math.PI;u.arms[1].add(w3);
+}
   const S0=O.seats[3];
   // 줄: 사무실 안에서 문 밖까지
   const line=[];const rq=rng(741);for(let i=0;i<22;i++){const z=zombie(rq);const k=i;const x=S0[0]-0.2-(k%2)*0.15+(k>4?Math.min(4,(k-4))*-0.0:0);const zz=S0[1]+0.9+k*0.75;z.position.set(-0.2+Math.sin(k*0.7)*0.3,0,1.9+k*0.7);z.rotation.y=Math.PI;sc.add(z);ticket(z,3813+i);line.push(z)}
