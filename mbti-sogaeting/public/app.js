@@ -215,6 +215,7 @@ async function startGame(file) {
   if (use3D()) { Scene3D.attach(stage); Scene3D.setModel(S.data.model || S.partner); }
   const first = d.scenes[0].bg; stage.className = 'stage ' + first + (use3D() ? ' three' : ''); setProg(0);
   if (use3D()) { Scene3D.setSet(first); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
+  if (use3D()) Scene3D.prewarm(d.scenes.map(x => x.bg).concat(d.endings.map(x => x.set || 'cafe')));
   setTimeout(() => Snd.play('bell'), 400);
   $('#scene-chip').textContent = d.intro.chip; statChip('');
   charEl.style.opacity = 0;

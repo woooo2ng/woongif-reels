@@ -1558,18 +1558,82 @@ const Scene3D = {
       const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3, 7, 8); scene.add(dir);
       const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
       const r = rng(4040);
-      const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r), bus: buildBus(r), room: buildRoom(r), hobby: buildRoom(r, { hobbies: true, wall: 0xefe3f6 }), bunsik: buildDiner(r, { kind: 'bunsik', floor: 0xd9c8a8, wall: 0xfff3c4, items: [['떡볶이', '4.5'], ['순대', '4.0'], ['모둠 튀김', '5.0']], board: { name: '분식 MENU', bg: '#d8352a' }, sign: ['떡볶이 맛집', '#ff7a5a', '#fff'], chair: 0xff7a5a }),
-        pasta: buildDiner(r, { kind: 'pasta', floor: 0x8a6a52, wall: 0xf3dcc8, items: [['크림 파스타', '15.0'], ['오늘의 파스타', '16.0'], ['리조또', '15.5']], board: { name: 'Trattoria', bg: '#6a3a3a' }, chair: 0x6a4a3a, top: 0xf6f0e8 }),
-        brunch: buildDiner(r, { kind: 'brunch', floor: 0xf0e4d0, wall: 0xe6f7ef, window: 0xd8f0ff, items: [['팬케이크', '14.0'], ['에그 베네딕트', '15.0'], ['과일 요거트', '9.0']], board: { name: 'BRUNCH', bg: '#5fb38a' }, chair: 0xffffff }),
-        bbq: buildDiner(r, { kind: 'bbq', floor: 0x8a7a6a, wall: 0xf6e0c8, items: [['삼겹살', '16.0'], ['목살', '17.0'], ['된장찌개', '5.0']], board: { name: '숯불 고기', bg: '#3a2a22' }, sign: ['고기 굽는 집', '#3a2a22', '#ffb84d'], chair: 0x8a5a3a, top: 0x6a5a4a }),
-        sushi: buildDiner(r, { kind: 'sushi', floor: 0xb89a7a, wall: 0xf3eadb, items: [['오마카세 런치', '45.0'], ['모둠 초밥', '28.0'], ['우동', '9.0']], board: { name: '스시 오늘', bg: '#2f3f6e' }, chair: 0x6a4a3a, top: 0xd9b48a }),
-        gukbap: buildDiner(r, { kind: 'gukbap', floor: 0xc9b8a0, wall: 0xf6f0e0, items: [['돼지국밥', '10.0'], ['순대국밥', '10.0'], ['수육 小', '15.0']], board: { name: '국밥', bg: '#2b2b30' }, sign: ['3대째 국밥', '#fff', '#2b2b30'], chair: 0x9a7a5a }),
-        bookstore: buildBookstore(r), props: buildPropShop(r), lpbar: buildLpBar(r), catcafe: buildCatCafe(r), arcade: buildArcade(r), gallery: buildGallery(r),
-        store: buildStore(r), beach: buildBeach(r), park: buildPark(r), river: buildRiver(r), subway: buildSubway(r), car: buildCar(r),
-        mala: buildRest(r, REST.mala), donkatsu: buildRest(r, REST.donkatsu), shabu: buildRest(r, REST.shabu), pho: buildRest(r, REST.pho), dakgalbi: buildRest(r, REST.dakgalbi), burger: buildRest(r, REST.burger), pizza: buildRest(r, REST.pizza), naengmyeon: buildRest(r, REST.naengmyeon), jjajang: buildRest(r, REST.jjajang), curry: buildRest(r, REST.curry), steak: buildRest(r, REST.steak), escape: buildVenue(r, 'escape'), planetarium: buildVenue(r, 'planetarium'), pocha: buildVenue(r, 'pocha'), bowling: buildVenue(r, 'bowling'), cinema: buildVenue(r, 'cinema'), garden: buildVenue(r, 'garden'), flower: buildVenue(r, 'flower'), bakery: buildVenue(r, 'bakery'), picnic: buildVenue(r, 'picnic'), teahouse: buildVenue(r, 'teahouse'), rooftop: buildVenue(r, 'rooftop'), forest: buildVenue(r, 'forest'), amusement: buildVenue(r, 'amusement'), batting: buildVenue(r, 'batting'), kart: buildVenue(r, 'kart'), karaoke: buildVenue(r, 'karaoke'), popup: buildVenue(r, 'popup'), festival: buildVenue(r, 'festival'), boardgame: buildVenue(r, 'boardgame'), vr: buildVenue(r, 'vr'), thrift: buildVenue(r, 'thrift'), gym: buildVenue(r, 'gym'), mart: buildVenue(r, 'mart'), track: buildVenue(r, 'track'), photobooth: buildVenue(r, 'photobooth'), mall: buildVenue(r, 'mall'), market: buildVenue(r, 'market'), pottery: buildVenue(r, 'pottery'), aquarium: buildVenue(r, 'aquarium'), tower: buildVenue(r, 'tower'), golf: buildVenue(r, 'golf'), lounge: buildVenue(r, 'lounge'), skating: buildVenue(r, 'skating'),
-        window: buildWindowTable(r) };
-      const T = mkISTJ(); T.visible = false; sets.cafe.add(T); sets.cafe.userData.istj = T;
-      Object.values(sets).forEach(s => { s.visible = false; scene.add(s); });
+      const SETF = {
+        cafe: r => buildCafe(r),
+        counter: r => buildCounter(r),
+        table: r => buildTable(r),
+        rain: r => buildRain(r),
+        street: r => buildStreet(r),
+        bus: r => buildBus(r),
+        room: r => buildRoom(r),
+        hobby: r => buildRoom(r, { hobbies: true, wall: 0xefe3f6 }),
+        bunsik: r => buildDiner(r, { kind: 'bunsik', floor: 0xd9c8a8, wall: 0xfff3c4, items: [['떡볶이', '4.5'], ['순대', '4.0'], ['모둠 튀김', '5.0']], board: { name: '분식 MENU', bg: '#d8352a' }, sign: ['떡볶이 맛집', '#ff7a5a', '#fff'], chair: 0xff7a5a }),
+        pasta: r => buildDiner(r, { kind: 'pasta', floor: 0x8a6a52, wall: 0xf3dcc8, items: [['크림 파스타', '15.0'], ['오늘의 파스타', '16.0'], ['리조또', '15.5']], board: { name: 'Trattoria', bg: '#6a3a3a' }, chair: 0x6a4a3a, top: 0xf6f0e8 }),
+        brunch: r => buildDiner(r, { kind: 'brunch', floor: 0xf0e4d0, wall: 0xe6f7ef, window: 0xd8f0ff, items: [['팬케이크', '14.0'], ['에그 베네딕트', '15.0'], ['과일 요거트', '9.0']], board: { name: 'BRUNCH', bg: '#5fb38a' }, chair: 0xffffff }),
+        bbq: r => buildDiner(r, { kind: 'bbq', floor: 0x8a7a6a, wall: 0xf6e0c8, items: [['삼겹살', '16.0'], ['목살', '17.0'], ['된장찌개', '5.0']], board: { name: '숯불 고기', bg: '#3a2a22' }, sign: ['고기 굽는 집', '#3a2a22', '#ffb84d'], chair: 0x8a5a3a, top: 0x6a5a4a }),
+        sushi: r => buildDiner(r, { kind: 'sushi', floor: 0xb89a7a, wall: 0xf3eadb, items: [['오마카세 런치', '45.0'], ['모둠 초밥', '28.0'], ['우동', '9.0']], board: { name: '스시 오늘', bg: '#2f3f6e' }, chair: 0x6a4a3a, top: 0xd9b48a }),
+        gukbap: r => buildDiner(r, { kind: 'gukbap', floor: 0xc9b8a0, wall: 0xf6f0e0, items: [['돼지국밥', '10.0'], ['순대국밥', '10.0'], ['수육 小', '15.0']], board: { name: '국밥', bg: '#2b2b30' }, sign: ['3대째 국밥', '#fff', '#2b2b30'], chair: 0x9a7a5a }),
+        bookstore: r => buildBookstore(r),
+        props: r => buildPropShop(r),
+        lpbar: r => buildLpBar(r),
+        catcafe: r => buildCatCafe(r),
+        arcade: r => buildArcade(r),
+        gallery: r => buildGallery(r),
+        store: r => buildStore(r),
+        beach: r => buildBeach(r),
+        park: r => buildPark(r),
+        river: r => buildRiver(r),
+        subway: r => buildSubway(r),
+        car: r => buildCar(r),
+        mala: r => buildRest(r, REST.mala),
+        donkatsu: r => buildRest(r, REST.donkatsu),
+        shabu: r => buildRest(r, REST.shabu),
+        pho: r => buildRest(r, REST.pho),
+        dakgalbi: r => buildRest(r, REST.dakgalbi),
+        burger: r => buildRest(r, REST.burger),
+        pizza: r => buildRest(r, REST.pizza),
+        naengmyeon: r => buildRest(r, REST.naengmyeon),
+        jjajang: r => buildRest(r, REST.jjajang),
+        curry: r => buildRest(r, REST.curry),
+        steak: r => buildRest(r, REST.steak),
+        escape: r => buildVenue(r, 'escape'),
+        planetarium: r => buildVenue(r, 'planetarium'),
+        pocha: r => buildVenue(r, 'pocha'),
+        bowling: r => buildVenue(r, 'bowling'),
+        cinema: r => buildVenue(r, 'cinema'),
+        garden: r => buildVenue(r, 'garden'),
+        flower: r => buildVenue(r, 'flower'),
+        bakery: r => buildVenue(r, 'bakery'),
+        picnic: r => buildVenue(r, 'picnic'),
+        teahouse: r => buildVenue(r, 'teahouse'),
+        rooftop: r => buildVenue(r, 'rooftop'),
+        forest: r => buildVenue(r, 'forest'),
+        amusement: r => buildVenue(r, 'amusement'),
+        batting: r => buildVenue(r, 'batting'),
+        kart: r => buildVenue(r, 'kart'),
+        karaoke: r => buildVenue(r, 'karaoke'),
+        popup: r => buildVenue(r, 'popup'),
+        festival: r => buildVenue(r, 'festival'),
+        boardgame: r => buildVenue(r, 'boardgame'),
+        vr: r => buildVenue(r, 'vr'),
+        thrift: r => buildVenue(r, 'thrift'),
+        gym: r => buildVenue(r, 'gym'),
+        mart: r => buildVenue(r, 'mart'),
+        track: r => buildVenue(r, 'track'),
+        photobooth: r => buildVenue(r, 'photobooth'),
+        mall: r => buildVenue(r, 'mall'),
+        market: r => buildVenue(r, 'market'),
+        pottery: r => buildVenue(r, 'pottery'),
+        aquarium: r => buildVenue(r, 'aquarium'),
+        tower: r => buildVenue(r, 'tower'),
+        golf: r => buildVenue(r, 'golf'),
+        lounge: r => buildVenue(r, 'lounge'),
+        skating: r => buildVenue(r, 'skating'),
+        window: r => buildWindowTable(r) };
+      const sets = {}, built = {};
+      const seed = k => { let h = 4040; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) | 0; return h; };
+      for (const k of Object.keys(SETF)) Object.defineProperty(sets, k, { enumerable: true, get: () => { if (!built[k]) { const g = SETF[k](rng(seed(k))); g.visible = false; scene.add(g); built[k] = g; if (k === 'cafe') { const T = mkISTJ(); T.visible = false; g.add(T); g.userData.istj = T; } } return built[k]; } });
+      this.built = built;
       const E = mkE(); scene.add(E); this.models = { 'enfp-f': E }; this.modelId = 'enfp-f';
       Object.assign(this, { renderer, scene, hemi, dir, cam, sets, E, canvas, set: null, expr: 'smile', act: 'idle', actT: 0, focus: 0, focusTarget: 0, shakeT: -9, t0: performance.now(), blinkAt: 2 });
       this.ro = new ResizeObserver(() => this.resize()); this.resize(); this.ro.observe(canvas.parentElement);
@@ -1585,8 +1649,8 @@ const Scene3D = {
     this.fovK = w / h < 0.62 ? 1.18 : 1;
   },
   setSet(name) {
-    if (!this.sets[name]) name = 'cafe';
-    Object.entries(this.sets).forEach(([k, s]) => s.visible = k === name);
+    if (!(name in this.sets)) name = 'cafe';
+    const cur = this.sets[name]; Object.values(this.built).forEach(s => s.visible = s === cur);
     this.set = name; const S = SETUP[name];
     const sky = SKY[name]; this.scene.background = canvasTex(4, 256, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); x.fillStyle = g; x.fillRect(0, 0, w, h); });
     this.hemi.intensity = S.light.hemi; this.dir.intensity = S.light.dir; this.dir.color.set(S.light.sun);
@@ -1594,7 +1658,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (this.sets[name].userData.menu) this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = this.fwT = null; this.sets.beach.userData.fw.visible = false; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.sets.room.userData.duo) this.sets.room.userData.duo.visible = false; if (this.sets.room.userData.memo) this.sets.room.userData.memo.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = this.fwT = null; if (this.built.beach) this.built.beach.userData.fw.visible = false; if (this.built.room?.userData.draw) this.built.room.userData.draw.visible = false; if (this.built.room?.userData.helm) this.built.room.userData.helm.visible = false; if (this.built.room?.userData.tix) this.built.room.userData.tix.visible = false; if (this.built.room?.userData.duo) this.built.room.userData.duo.visible = false; if (this.built.room?.userData.memo) this.built.room.userData.memo.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; if (this.built.cafe) this.built.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); if (this.built.street) this.built.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -1617,6 +1681,7 @@ const Scene3D = {
     const cur = this.set; this.set = null; if (cur) this.setSet(cur);
   },
   // ----- 첫 등장: 문 열고 뛰어 들어와서 앉기 -----
+  prewarm(names) { const q = [...new Set(names)].filter(n => n in this.sets && !this.built[n]); const step = () => { const n = q.shift(); if (!n) return; this.sets[n]; later(step); }; const later = f => window.requestIdleCallback ? requestIdleCallback(f, { timeout: 800 }) : setTimeout(f, 80); later(step); },
   hideChar() { this.E.visible = false; this.introPan = true; const d = this.sets.cafe.userData.door; d.rotation.y = 0; },
   get door() { return (this.sets[this.set] && this.sets[this.set].userData.door) || this._noDoor || (this._noDoor = new THREE.Group()); },
   enter() {

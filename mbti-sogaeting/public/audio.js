@@ -104,6 +104,21 @@ const Snd = {
     this.bgm = ctx.createGain(); this.bgm.gain.value = 1.1; this.bgm.connect(this.master);
     this.sfx = ctx.createGain(); this.sfx.gain.value = 1; this.sfx.connect(this.master);
     document.addEventListener('visibilitychange', () => { if (!this.ctx) return; document.hidden ? this.ctx.suspend() : this.ctx.resume(); });
+    this.unlock();
+  },
+  // 휴대폰 소리 문제 대응: 아이폰 무음 스위치(웹오디오가 같이 꺼짐) · 터치 전 재생 차단 · 백그라운드 후 멈춤
+  unlock() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
+    if (!this.keep) { // 무음 오디오 태그를 같이 틀어 두면 아이폰이 '미디어 재생'으로 취급해서 무음 모드에서도 소리가 남
+      const n = 8000, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (o, t) => [...t].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+      w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 16000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+      const a = this.keep = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }))); a.loop = true; a.setAttribute('playsinline', ''); a.volume = 0.01;
+      const kick = () => { if (!this.ctx) return; if (this.ctx.state !== 'running') this.ctx.resume(); if (this.on && a.paused) a.play().catch(() => {});
+        try { const s = this.ctx.createBufferSource(); s.buffer = this.ctx.createBuffer(1, 1, 22050); s.connect(this.ctx.destination); s.start(0); } catch {} };
+      ['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, kick, { passive: true }));
+      document.addEventListener('visibilitychange', () => { if (document.hidden) a.pause(); });
+      kick();
+    }
   },
   setMood(m) {
     if (!this.ctx) return;
@@ -125,6 +140,7 @@ const Snd = {
   toggle() {
     this.on = !this.on; try { localStorage.setItem('sgt_sound', this.on ? '1' : '0'); } catch {}
     if (this.ctx) this.master.gain.setTargetAtTime(this.on ? 0.9 : 0, this.ctx.currentTime, 0.05);
+    if (this.keep) { if (this.on) this.keep.play().catch(() => {}); else this.keep.pause(); }
     return this.on;
   },
 };
