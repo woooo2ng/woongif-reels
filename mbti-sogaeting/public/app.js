@@ -281,6 +281,8 @@ function finish() {
   if (use3D()) {
     Scene3D.attach(es); Scene3D.setSet(e.set || 'cafe'); Scene3D.setFocus(false);
     if (e.special) Scene3D.special(e.special);
+    $('.end-stage .hidcard')?.remove();
+    if (e.special && e.special.startsWith('h_') && !locked) { const hc = Scene3D.hidCard(e.special); const im = document.createElement('img'); im.className = 'hidcard'; im.src = hc.src; im.style.borderColor = hc.edge; es.appendChild(im); }
     if (e.special !== 'istj') Scene3D.setExpr(e.expr || 'smile', e.act);
   }
   $('#end-name').textContent = `${e.emoji} ${e.name}`;

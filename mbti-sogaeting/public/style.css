@@ -220,3 +220,5 @@ h1,h2,.btn,.cell,.chip,.stat,.who,.choice,.tag,.end-name,.end-punch,.card-tag,.c
 .gbtn small{font-size:12px;color:#a596a8}
 .gbtn.off{opacity:.45;cursor:default}
 .stage.window{background:linear-gradient(#cfeaff 0,#fbe3f0 58%,#fff 58.2%,#f2e9ee 100%)}
+.end-stage .hidcard{position:absolute;right:5%;top:16%;width:44%;border:6px solid #8a6a52;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);z-index:2;transform:rotate(3deg) scale(.2);opacity:0;animation:hidpop .6s .5s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes hidpop{to{transform:rotate(3deg) scale(1);opacity:1}}

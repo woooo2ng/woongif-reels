@@ -588,7 +588,8 @@
     "#a9a9b8",
     "#f6f2fb",
     "#ffe7a8"
-   ]
+   ],
+   "special": "h_intp"
   },
   {
    "id": "after",

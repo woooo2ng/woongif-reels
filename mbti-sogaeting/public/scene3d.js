@@ -1392,6 +1392,65 @@ function deco(g, r, k) {
   return g;
 }
 
+// ================= 새 11개 유형 히든 엔딩 소품 (1년 뒤) =================
+function paper(w, h, draw, bg = '#fffaf0') { return canvasTex(Math.round(w * 400), Math.round(h * 400), (x, cw, ch) => { x.fillStyle = bg; x.fillRect(0, 0, cw, ch); draw(x, cw, ch); }); }
+function ptxt(x, s, X, Y, size, col = '#2a2a3a', align = 'left', wgt = 900) { x.font = `${wgt} ${size}px ${FONT}`; x.fillStyle = col; x.textAlign = align; x.textBaseline = 'middle'; x.fillText(s, X, Y); }
+function heartP(x, cx, cy, s, col = '#ff6f9f') { x.fillStyle = col; x.beginPath(); x.moveTo(cx, cy + s * 0.35); x.bezierCurveTo(cx - s, cy - s * 0.3, cx - s * 0.4, cy - s, cx, cy - s * 0.4); x.bezierCurveTo(cx + s * 0.4, cy - s, cx + s, cy - s * 0.3, cx, cy + s * 0.35); x.fill(); }
+function hidProp(kind) {
+  const g = new THREE.Group(), r = rng(77);
+  const P = (w, h, tex, x, y, z, rz = 0) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); m.position.set(x, y, z); m.rotation.z = rz; m.userData.panel = 1; g.add(m); return m; };
+  const board = (w, h, x, y, z, col = 0x8a6a52) => { const b = box(g, w + 0.08, h + 0.08, 0.04, col, x, y, z - 0.03); b.userData.panel = 1; return b; };
+  switch (kind) {
+    case 'h_intp': { board(1.0, 0.8, 1.05, 2.0, -1.2, 0x3a3a48);
+      P(1.0, 0.8, paper(1.0, 0.8, (x, w, h) => { x.strokeStyle = '#cde0f6'; x.lineWidth = 3; for (let i = 1; i < 9; i++) { x.beginPath(); x.moveTo(0, i * h / 9); x.lineTo(w, i * h / 9); x.stroke(); } x.strokeStyle = '#ff9fb8'; x.beginPath(); x.moveTo(60, 0); x.lineTo(60, h); x.stroke();
+        ptxt(x, '가설 #1', 80, 50, 34, '#4a5aa8'); ptxt(x, '둘이 먹으면 다 맛있음', 80, 110, 34); ptxt(x, '검증 365회 ✔', 80, 170, 34, '#3fb88a'); ptxt(x, '결론: 참', 80, 230, 38, '#d8352a'); ptxt(x, '공동 연구자: ♥', 80, 290, 30, '#8a5a8a'); }), 1.05, 2.0, -1.17, -0.04);
+      for (let i = 0; i < 3; i++) { const b = bowl(g, -0.9 + i * 0.22, -0.9, 0xffffff, 0xd8352a, 0.09, 1.2); } box(g, 0.8, 0.05, 0.35, 0x8a6a52, -0.68, 1.18, -0.9); break; }
+    case 'h_istj': { board(1.1, 0.85, 1.05, 2.0, -1.2, 0x2f3f6e);
+      P(1.1, 0.85, paper(1.1, 0.85, (x, w, h) => { ptxt(x, '2027 · 토요일', 20, 30, 30, '#2f3f6e'); const cw = (w - 40) / 7, chh = (h - 80) / 5;
+        for (let j = 0; j < 5; j++) for (let i = 0; i < 7; i++) { const X = 20 + i * cw, Y = 60 + j * chh; x.strokeStyle = '#c8ccd4'; x.lineWidth = 2; x.strokeRect(X, Y, cw, chh); if (i === 5) { x.fillStyle = '#fff3c4'; x.fillRect(X + 2, Y + 2, cw - 4, chh - 4); ptxt(x, '★', X + cw / 2, Y + chh / 2, 30, '#ff9f43', 'center'); } } }), 1.05, 2.0, -1.17);
+      const db = new THREE.Group(); box(db, 0.42, 0.06, 0.3, 0x2f3f6e, 0, 0, 0); box(db, 0.4, 0.065, 0.02, 0xffffff, 0, 0, 0.15); db.position.set(-0.8, 1.0, -0.8); db.rotation.y = 0.3; g.add(db); box(g, 0.6, 0.9, 0.45, 0x5a2a3a, -0.8, 0.5, -0.8); break; }
+    case 'h_isfj': { board(1.0, 0.8, 1.05, 2.0, -1.2, 0xffc0d8);
+      P(1.0, 0.8, paper(1.0, 0.8, (x, w, h) => { x.fillStyle = '#ffd6e0'; x.fillRect(60, 110, w - 120, h - 150); x.fillStyle = '#ff6f9f'; x.fillRect(w / 2 - 14, 110, 28, h - 150); x.fillRect(60, h / 2 + 10, w - 120, 24);
+        for (const s2 of [-1, 1]) { x.beginPath(); x.ellipse(w / 2 + s2 * 40, 104, 40, 22, s2 * 0.5, 0, 7); x.fill(); }
+        for (let i = 0; i < 4; i++) { x.fillStyle = '#e8b870'; x.beginPath(); x.arc(110 + i * 60, h - 22, 22, 0, 7); x.fill(); x.fillStyle = '#5a3020'; x.beginPath(); x.arc(110 + i * 60, h - 22, 6, 0, 7); x.fill(); }
+        x.fillStyle = '#fff'; rr(x, w - 190, 150, 150, 60, 10); x.fill(); heartP(x, w - 165, 182, 14); ptxt(x, '제일 예쁜 거', w - 145, 180, 22, '#d8457a'); ptxt(x, '오늘도 따로 포장 ♥', w / 2, 44, 34, '#d8457a', 'center'); }), 1.05, 2.0, -1.17); break; }
+    case 'h_infj': { board(1.0, 0.75, 1.05, 2.0, -1.2, 0x5f8f6f);
+      P(1.0, 0.75, paper(1.0, 0.75, (x, w, h) => { x.fillStyle = '#e8dcc0'; x.fillRect(w / 2 - 2, 0, 4, h); ptxt(x, 'p.1', 30, 34, 24, '#8a7a6a'); ['오늘 이 길,', '나중에', '생각날 것', '같다.'].forEach((s, i) => ptxt(x, s, 30, 90 + i * 46, 32, '#3a4a3a', 'left', 700));
+        ptxt(x, 'p.365', w / 2 + 24, 34, 24, '#8a7a6a'); ['정말로,', '매일', '생각났다.'].forEach((s, i) => ptxt(x, s, w / 2 + 24, 90 + i * 46, 32, '#3a4a3a', 'left', 700)); heartP(x, w - 50, h - 40, 20); }), 1.05, 2.0, -1.17);
+      for (let i = 0; i < 5; i++) { const lf = sph(g, 0.06, [0x7fbf6a, 0xffd84d, 0xff9f43][i % 3], -0.9 + i * 0.12, 1.05, -0.8); lf.scale.set(1, 0.3, 0.6); } box(g, 0.8, 1.0, 0.4, 0x8a6a52, -0.7, 0.5, -0.85); break; }
+    case 'h_estp': { board(1.1, 0.85, 1.05, 2.05, -1.2, 0xd4a94a);
+      P(1.1, 0.85, paper(1.1, 0.85, (x, w, h) => { x.fillStyle = '#d8352a'; x.fillRect(0, 0, w, 70); ptxt(x, '명예의 전당 ★', w / 2, 36, 38, '#fff', 'center'); ptxt(x, '이번 달 최고 기록', w / 2, 110, 28, '#8a6a52', 'center');
+        [['1', '○○○', '132km/h'], ['1', '○○○', '132km/h']].forEach((row, i) => { const Y = 175 + i * 70; x.fillStyle = i ? '#ffe6ee' : '#e6f4ff'; x.fillRect(24, Y - 28, w - 48, 56); ptxt(x, '🏆', 50, Y, 30, '#000', 'center'); ptxt(x, row[1], 100, Y, 30); ptxt(x, row[2], w - 40, Y, 28, '#d8352a', 'right'); }); ptxt(x, '2027.11.24 · 같은 날짜', w / 2, h - 30, 24, '#8a6a52', 'center'); }, '#fffaf0'), 1.05, 2.05, -1.17);
+      for (let i = 0; i < 2; i++) { const bt = cyl(g, 0.025, 0.045, 0.85, i ? 0xc8a070 : 0x2b2b30, -0.75 + i * 0.12, 0.45, -0.7, 8); bt.rotation.z = 0.15 - i * 0.3; } break; }
+    case 'h_esfp': { box(g, 1.2, 0.75, 0.06, 0x1d1d24, 1.05, 2.05, -1.23).userData.panel = 1;
+      P(1.12, 0.67, paper(1.12, 0.67, (x, w, h) => { const gg = x.createLinearGradient(0, 0, w, h); gg.addColorStop(0, '#ff6fb5'); gg.addColorStop(1, '#6f5fd8'); x.fillStyle = gg; x.fillRect(0, 0, w, h); ptxt(x, 'DUET', w / 2, 60, 40, '#fff', 'center'); ptxt(x, '100', w / 2, h / 2 + 10, 110, '#ffd84d', 'center'); ptxt(x, '♪ 처음 같이 부른 날', w / 2, h - 40, 28, '#fff', 'center'); }), 1.05, 2.05, -1.19);
+      for (let i = 0; i < 2; i++) { const mic = cyl(g, 0.03, 0.022, 0.24, i ? 0xff6fb5 : 0x8fd3ff, -0.7 + i * 0.15, 0.95, -0.6, 8); mic.rotation.z = 0.3 - i * 0.6; sph(g, 0.045, 0x3a3a48, -0.7 + i * 0.15 - Math.sin(0.3 - i * 0.6) * 0.13, 1.07, -0.6); } box(g, 0.6, 0.8, 0.4, 0x3a3a48, -0.62, 0.4, -0.6); break; }
+    case 'h_entp': { board(1.0, 0.8, 1.05, 2.0, -1.2, 0xc8a070);
+      P(0.95, 0.75, paper(0.95, 0.75, (x, w, h) => { ptxt(x, '사업 계획서', w / 2, 40, 34, '#2a2a3a', 'center', 700); ptxt(x, '🍕 테두리 클럽', w / 2, 100, 40, '#d8452a', 'center'); x.font = `700 26px ${FONT}`;
+        ['공동 대표 2명', '실행한 것: 0개', '같이 웃은 날: 365일'].forEach((s, i) => ptxt(x, '· ' + s, 40, 160 + i * 42, 28, '#3a3a48', 'left', 700)); x.strokeStyle = '#d8452a'; x.lineWidth = 4; x.beginPath(); x.ellipse(w - 80, h - 40, 60, 24, 0, 0, 7); x.stroke(); ptxt(x, '채택!', w - 80, h - 40, 26, '#d8452a', 'center'); }, '#ffffff'), 1.05, 2.0, -1.17, 0.06);
+      for (let i = 0; i < 6; i++) { const cr = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.02, 6, 10, Math.PI), lamb(0xe8b860)); cr.position.set(-0.85 + i * 0.1, 0.78, 0.92 + (i % 2) * 0.04); cr.rotation.x = -Math.PI / 2; g.add(cr); } break; }
+    case 'h_estj': { board(1.1, 0.85, 1.05, 2.0, -1.2, 0x8a8a90);
+      P(1.1, 0.85, paper(1.1, 0.85, (x, w, h) => { ptxt(x, '주간 일정', 24, 36, 32, '#2a2a3a'); ptxt(x, '우선순위', w - 24, 36, 24, '#8a8a90', 'right');
+        [['토 10:00', '러닝 (같이)', '1', '#ff6f9f'], ['월 09:00', '주간 회의', '2', '#c8ccd4'], ['수 19:00', '운동', '3', '#c8ccd4'], ['금 18:00', '장보기', '4', '#c8ccd4']].forEach((row, i) => { const Y = 100 + i * 64; x.fillStyle = i ? '#f6f6f6' : '#fff0f5'; x.fillRect(16, Y - 26, w - 32, 54); ptxt(x, row[0], 30, Y, 26, '#5a5a64'); ptxt(x, row[1], 190, Y, 28, i ? '#5a5a64' : '#d8457a'); x.fillStyle = row[3]; x.beginPath(); x.arc(w - 50, Y, 20, 0, 7); x.fill(); ptxt(x, row[2], w - 50, Y + 1, 24, '#fff', 'center'); }); }), 1.05, 2.0, -1.17);
+      for (let i = 0; i < 2; i++) { const sh = new THREE.Group(); box(sh, 0.12, 0.07, 0.28, i ? 0xff6f9f : 0x4f7bd6, 0, 0.035, 0); box(sh, 0.13, 0.03, 0.29, 0xffffff, 0, 0.005, 0); sh.position.set(-0.75 + i * 0.18, 0, 0.6); g.add(sh); } break; }
+    case 'h_esfj': { board(1.0, 0.8, 1.05, 2.0, -1.2, 0xff8a3a);
+      P(1.0, 0.8, paper(1.0, 0.8, (x, w, h) => { x.fillStyle = '#ff8a3a'; x.fillRect(0, 0, w, 64); ptxt(x, '시장 골목 호떡', w / 2, 34, 34, '#fff', 'center');
+        x.fillStyle = '#2b2b30'; x.beginPath(); x.ellipse(w / 2, h - 70, 160, 46, 0, 0, 7); x.fill(); for (let i = 0; i < 3; i++) { x.fillStyle = '#d89a48'; x.beginPath(); x.ellipse(w / 2 - 90 + i * 90, h - 74, 36, 16, 0, 0, 7); x.fill(); }
+        x.fillStyle = '#fff'; x.strokeStyle = '#ff8a3a'; x.lineWidth = 4; rr(x, 40, 90, w - 80, 110, 24); x.fill(); x.stroke(); ptxt(x, '"오늘도 둘이 왔네?', w / 2, 125, 30, '#3a3a48', 'center'); ptxt(x, '하나 더 넣었어 ♥"', w / 2, 168, 30, '#d8603a', 'center'); }), 1.05, 2.0, -1.17); break; }
+    case 'h_enfj': { board(1.0, 0.8, 1.05, 2.0, -1.2, 0x8a6a52);
+      P(1.0, 0.8, paper(1.0, 0.8, (x, w, h) => { ptxt(x, '두 집 찬장', w / 2, 40, 32, '#5a4a3a', 'center');
+        [[w * 0.3, 0, '우리 집'], [w * 0.7, 0.18, '그쪽 집']].forEach(([cx, tilt, lb]) => { x.fillStyle = '#c8a070'; x.fillRect(cx - 120, h * 0.62, 240, 12); x.save(); x.translate(cx, h * 0.62); x.rotate(tilt); x.fillStyle = '#8fb8c8'; x.beginPath(); x.moveTo(-80, -90); x.lineTo(80, -90); x.quadraticCurveTo(70, 0, 0, 0); x.quadraticCurveTo(-70, 0, -80, -90); x.fill(); x.fillStyle = '#f6f0e0'; x.beginPath(); x.ellipse(0, -90, 80, 16, 0, 0, 7); x.fill(); x.restore(); ptxt(x, lb, cx, h * 0.62 + 44, 24, '#8a7a6a', 'center'); });
+        ptxt(x, '삐뚤한 거 하나, 반듯한 거 하나', w / 2, h - 30, 26, '#d8457a', 'center'); }), 1.05, 2.0, -1.17); break; }
+    case 'h_entj': { board(1.15, 0.85, 1.05, 2.05, -1.2, 0x2a1a18);
+      P(1.15, 0.85, paper(1.15, 0.85, (x, w, h) => { ptxt(x, '2027 연간 계획', 20, 32, 30, '#8a2a3a'); const cw = (w - 40) / 6, chh = (h - 70) / 4;
+        for (let j = 0; j < 4; j++) for (let i = 0; i < 6; i++) { const X = 20 + i * cw, Y = 58 + j * chh, empty = i === 4 && j === 2; x.fillStyle = empty ? '#ffffff' : pick(r, ['#d8dce4', '#c8ccd4', '#e6e0d8']); x.fillRect(X + 3, Y + 3, cw - 6, chh - 6);
+          if (empty) { x.strokeStyle = '#ff6f9f'; x.lineWidth = 5; x.setLineDash([8, 5]); x.strokeRect(X + 3, Y + 3, cw - 6, chh - 6); x.setLineDash([]); heartP(x, X + cw / 2, Y + chh / 2 + 4, 22); } else { x.fillStyle = '#8a8a90'; x.fillRect(X + 12, Y + chh / 2 - 3, cw - 30, 6); } }
+        ptxt(x, '비워 둠 = 이 사람과의 시간', w - 20, h - 20, 22, '#d8457a', 'right'); }), 1.05, 2.05, -1.17); break; }
+  }
+  [...g.children].forEach(c => { if (!c.userData.panel) g.remove(c); }); g.scale.setScalar(0.62); g.position.set(-0.031, 0.46, 0.944);
+  return g;
+}
+
 const REST = {
   mala: { kind: 'mala', floor: 0xb89a7a, wall: 0xffe0d0, items: [['마라탕', '12.0'], ['꿔바로우', '15.0'], ['토마토 계란', '9.0']], board: { name: '마라 MENU', bg: '#b8203a' }, sign: ['마라 맵기 1~5', '#d8352a', '#fff'], chair: 0xd8352a, lanterns: 0xff4d4d },
   donkatsu: { kind: 'donkatsu', floor: 0xc9b8a0, wall: 0xf6efe0, items: [['등심 돈가스', '11.0'], ['치즈 돈가스', '12.5'], ['모밀', '8.0']], board: { name: '돈가스', bg: '#5a3a2a' }, sign: ['정식 11:30~', '#fff', '#5a3a2a'], chair: 0x8a6a52 },
@@ -1597,6 +1656,7 @@ const Scene3D = {
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; if (this.emoteS.material.map) this.emoteS.material.map.dispose();
     this.emoteS.material.map = t; this.emoteS.material.needsUpdate = true; const k = 0.0028; this.emoteS.userData.base = [c.width * k, c.height * k]; this.emoteT = this.now();
   },
+  hidCard(kind) { const g = hidProp(kind); const m = g.children.find(c => c.material && c.material.map); const b = g.children.find(c => c !== m); return { src: m.material.map.image.toDataURL('image/png'), edge: b ? '#' + b.material.color.getHexString() : '#8a6a52' }; },
   // ----- 장면별 특별 순간 -----
   special(kind) {
     const t = this.now();
@@ -1607,6 +1667,7 @@ const Scene3D = {
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
     if (kind === 'fireworks') this.fwT = t;
+    if (kind.startsWith('h_')) this.E.position.x -= 0.3;
     if (kind === 'memo') { const R = this.sets.room; if (!R.userData.memo) { const grp = new THREE.Group();
         const tex = canvasTex(360, 300, (x, w, h) => { x.fillStyle = '#fff6b8'; x.fillRect(0, 0, w, h); x.fillStyle = '#e8d98a'; x.fillRect(0, 0, w, 26);
           x.fillStyle = '#2a2a3a'; x.font = 'bold 24px sans-serif'; x.fillText('좋았던 점', 22, 64); x.font = '20px sans-serif';
