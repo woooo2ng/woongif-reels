@@ -1,0 +1,10 @@
+{
+  // 만약에 소개팅 — 정적 사이트 (Workers Static Assets)
+  // 대시보드 Worker 이름이 이 name과 같아야 빌드가 됨
+  "name": "mbti-sogaeting",
+  "compatibility_date": "2026-11-24",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "404-page"
+  }
+}

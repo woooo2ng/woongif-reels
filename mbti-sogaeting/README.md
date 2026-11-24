@@ -27,8 +27,7 @@
 - `adSlot`: 결과 화면 광고 자리
 - `track`: `/api/track` 통계 전송 (Cloudflare Pages Functions + D1 붙인 뒤)
 
-## 배포 (신청소와 같은 방식, 나중에)
-Cloudflare Pages → Connect to Git → `woongif-reels`
-- 프로젝트 이름: `mbti-sogaeting` → 주소 `mbti-sogaeting.pages.dev`
-- Production branch: `sogaeting` (main에 합치면 `main`)
-- Root directory: `mbti-sogaeting` · Build command: 비움 · Build output directory: `public`
+## 배포 (Cloudflare Workers · 정적 사이트)
+- `wrangler.jsonc`의 `name`(mbti-sogaeting)과 대시보드 Worker 이름이 같아야 함
+- Worker → Settings → Build: Git 저장소 `woongif-reels`, Branch `sogaeting`(main에 합치면 `main`), **Root directory `mbti-sogaeting`**, Build command 비움, Deploy command `npx wrangler deploy`
+- 주소: `mbti-sogaeting.<계정 서브도메인>.workers.dev`
