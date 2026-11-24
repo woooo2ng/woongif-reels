@@ -14,7 +14,7 @@ const CONFIG = {
 };
 const MBTI = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
 // 지금 열려 있는 상대 (나중에 여기 추가: { mbti:'ISTP', g:'m', file:'istp-m' })
-const PARTNERS = [{ mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }];
+const PARTNERS = [{ mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }, { mbti: 'INFP', g: 'f', file: 'infp-f' }, { mbti: 'INFP', g: 'm', file: 'infp-m' }];
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -160,8 +160,8 @@ function fx(f) {
     fxEl.innerHTML = '<div class="flight"><div class="route">🚌 바다행 버스</div><div class="meta">지금 출발 · 약 2시간 · 도착하면 해 지기 직전</div><div class="row"><span class="left">막차 21:40</span><span class="buy">탈까?</span></div></div>';
     Snd.play('ding');
   } else if (kind === 'ktyping') {
-    fxEl.innerHTML = '<div class="kchat"><div class="khead">오늘 만난 사람 💗</div><div class="kbody"></div><div class="kinput"><span class="kdraft"></span><i>|</i></div></div>';
-    const drafts = ['오늘 진짜 재밌었', '혹시 오늘 나 너무 말 많', 'ㅋㅋㅋㅋ 잘 들어갔', '오늘 즐거웠어요 :)', '너 오늘'], el = fxEl.querySelector('.kdraft');
+    fxEl.innerHTML = '<div class="kchat"><div class="khead">' + ((S.data.kakao || {}).head || '오늘 만난 사람 💗') + '</div><div class="kbody"></div><div class="kinput"><span class="kdraft"></span><i>|</i></div></div>';
+    const K = S.data.kakao || {}, drafts = K.drafts || ['오늘 진짜 재밌었', '혹시 오늘 나 너무 말 많', 'ㅋㅋㅋㅋ 잘 들어갔', '오늘 즐거웠어요 :)', '너 오늘'], el = fxEl.querySelector('.kdraft');
     let di = 0, ci = 0, del = false;
     fxEl._typing = setInterval(() => { const dr = drafts[di % drafts.length];
       if (!del) { ci++; el.textContent = dr.slice(0, ci); if (ci >= dr.length) del = true; }
@@ -170,7 +170,8 @@ function fx(f) {
     clearInterval(fxEl._typing);
     const body = fxEl.querySelector('.kbody'), inp = fxEl.querySelector('.kdraft'); if (!body) return;
     if (inp) inp.textContent = '';
-    body.innerHTML += '<div class="kb mine">오늘 진짜 재밌었어!!!!! 🥹🥹</div><div class="kpics mine">' + ['🍰', '☕', '🧟', '🌧️', '🌊'].map(e => `<i>${e}</i>`).join('') + '</div>';
+    const K = S.data.kakao || {}, pics = K.pics || ['🍰', '☕', '🧟', '🌧️', '🌊'];
+    body.innerHTML += `<div class="kb mine">${K.msg || '오늘 진짜 재밌었어!!!!! 🥹🥹'}</div>` + (pics.length ? '<div class="kpics mine">' + pics.map(e => `<i>${e}</i>`).join('') + '</div>' : '');
     Snd.play('ding');
   } else if (kind === 'kme') {
     const body = fxEl.querySelector('.kbody'); if (!body) return;

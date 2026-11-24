@@ -116,7 +116,67 @@ function mkEm() {
   p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
   return p;
 }
-const MODELS = { 'enfp-f': mkE, 'enfp-m': mkEm };
+// ---------- INFP (여: 좀비 롱폼 확정안 / 남: 시안 C 베레모+니트 조끼) ----------
+function mkI(v) { // INFP: F = 좀비 롱폼 확정안(라벤더 가디건+헤드폰+긴 갈색머리) / A·B·C = 남자 시안
+  const male=v!=='F';
+  const shirt={F:0xfafafa,A:0xd9ccf5,B:0xfaf6ee,C:0xfafafa}[v], pants={F:0x8c90c0,A:0x8c90c0,B:0x9aa6c8,C:0x6f7398}[v];
+  const p=makePerson(rng(201+'FABC'.indexOf(v)),{shirt,pants});const u=p.userData,h=u.head;
+  const SK=0xffe3cf;h.children[0].material=new THREE.MeshLambertMaterial({color:SK,emissive:0x2a1a10});u.arms.forEach(a=>a.children[1].material=lamb(SK));
+  h.children[1].visible=false;
+  h.children.forEach(c=>{const g=c.geometry&&c.geometry.parameters;if(g&&((g.width===0.05&&g.height===0.07)||(g.width===0.07&&g.height===0.035)))c.visible=false});
+  if(v==='F'){u.arms.forEach(a=>a.children[0].material=lamb(0xcdbcf0));for(const s of[-1,1]){const c=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.66,0.34),lamb(0xcdbcf0));c.position.set(s*0.17,0.31,0.002);u.hip.add(c)}}
+  if(v==='B'){ // 크림 후드 + 라벤더 끈
+    const hood=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.07,10,24),lamb(0xeee6d8));hood.rotation.x=Math.PI/2;hood.position.set(0,0.66,-0.07);u.hip.add(hood);
+    for(const s of[-1,1]){const st=new THREE.Mesh(new THREE.BoxGeometry(0.022,0.2,0.02),lamb(0xb9a4ec));st.position.set(s*0.06,0.5,0.17);u.hip.add(st)}}
+  if(v==='C'){ // 셔츠 + 라벤더 니트 조끼
+    const vest=new THREE.Mesh(new THREE.BoxGeometry(0.54,0.5,0.34),lamb(0xbfaee8));vest.position.y=0.25;u.hip.add(vest);
+    const col=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.06,0.05),lamb(0xffffff));col.position.set(0,0.62,0.15);u.hip.add(col)}
+  const er=male?0.048:0.05, ey=0.245;
+  const P={eyes:[],hls:[],lashes:[],cheeks:[]};
+  for(const sx of[-1,1]){
+    const e=new THREE.Mesh(new THREE.SphereGeometry(er,20,16),basic(0x2a1a14));e.scale.set(0.9,1.25,0.5);e.position.set(sx*0.095,ey,0.232);h.add(e);P.eyes.push(e);
+    const hl=new THREE.Mesh(new THREE.SphereGeometry(er*0.33,12,8),basic(0xffffff));hl.position.set(sx*0.095+er*0.33,ey+er*0.45,0.252);h.add(hl);P.hls.push(hl);
+    if(!male){const la=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.012,0.012),basic(0x2a1a14));la.position.set(sx*0.135,ey+0.04,0.226);la.rotation.z=sx*0.6;h.add(la);P.lashes.push(la)}
+    const hc0={F:0x6a4232,A:0x6a4232,B:0x3a2a26,C:0x5a3a2c}[v];
+    const br=new THREE.Mesh(new THREE.BoxGeometry(male?0.055:0.05,male?0.014:0.012,0.012),basic(0x3a2418));br.position.set(sx*0.095,0.322,0.262);br.rotation.z=sx*-0.25;h.add(br); // 처진 눈썹(INFP 시그니처)
+    const ck=new THREE.Mesh(new THREE.CircleGeometry(0.05,20),new THREE.MeshBasicMaterial({color:0xffa3b8,transparent:true,opacity:0.85}));ck.position.set(sx*0.15,0.175,0.216);ck.rotation.y=sx*0.35;h.add(ck);P.cheeks.push(ck)}
+  const sm=new THREE.Mesh(new THREE.TorusGeometry(0.028,0.011,8,16,Math.PI),basic(0xd8506e));sm.rotation.z=Math.PI;sm.position.set(0,0.165,0.245);h.add(sm);P.smile=sm;
+  const hc={F:0x6a4232,A:0x6a4232,B:0x3a2a26,C:0x5a3a2c}[v],m=smooth(hc);
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.264,40,20,0,Math.PI*2,0,Math.PI*0.5),m);cap.position.y=0.25;cap.rotation.x=-0.25;h.add(cap);
+  const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI,Math.PI,0,Math.PI*(v==='F'?0.8:0.62)),m);bk.position.y=0.25;h.add(bk);
+  if(v==='F'){
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(1.0,0.26,0.42);bang.position.set(0,0.4,0.15);h.add(bang);
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.1,24,16),m);sd.scale.set(0.55,1.55,0.85);sd.position.set(sx*0.22,0.17,0.04);h.add(sd)}
+    const band=new THREE.Mesh(new THREE.TorusGeometry(0.285,0.02,8,32,Math.PI),smooth(0xf2ecff));band.position.set(0,0.25,-0.02);h.add(band);
+    for(const sx of[-1,1]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,0.06,24),smooth(0xb9a4ec));cup.rotation.z=Math.PI/2;cup.position.set(sx*0.285,0.24,-0.02);h.add(cup)}
+  } else if(v==='A'){ // 몽글 웨이브 + 목에 건 헤드폰
+    const r=rng(9);for(let i=0;i<16;i++){const th=r()*Math.PI*2,ph=r()*0.9;const b=new THREE.Mesh(new THREE.SphereGeometry(0.085,16,12),m);
+      b.position.set(Math.sin(ph)*Math.cos(th)*0.24,0.3+Math.cos(ph)*0.22,Math.sin(ph)*Math.sin(th)*0.24-0.02);if(b.position.z>0.12)b.position.z=0.12;h.add(b)}
+    for(const sx of[-1,0,1]){const b=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);b.scale.set(0.42,0.28,0.42);b.position.set(sx*0.1,0.385-Math.abs(sx)*0.01,0.155);b.rotation.z=-sx*0.3;h.add(b)}
+    const band=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.02,8,32,Math.PI),smooth(0xf2ecff));band.rotation.x=Math.PI/2+0.2;band.position.set(0,0.66,0.02);u.hip.add(band);
+    for(const sx of[-1,1]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.05,24),smooth(0xb9a4ec));cup.position.set(sx*0.17,0.62,0.12);cup.rotation.x=Math.PI/2;cup.rotation.z=sx*0.4;u.hip.add(cup)}
+  } else if(v==='B'){ // 눈썹까지 덮는 커튼 앞머리(가르마)
+    for(const sx of[-1,1]){const b=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);b.scale.set(0.6,0.3,0.42);b.position.set(sx*0.09,0.375,0.155);b.rotation.z=sx*0.4;h.add(b)}
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.08,16,12),m);sd.scale.set(0.6,1.1,0.9);sd.position.set(sx*0.235,0.24,0.06);h.add(sd)}
+  } else { // C: 동글 바가지 + 연보라 베레모
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(1.0,0.25,0.42);bang.position.set(0,0.38,0.15);h.add(bang);
+    const beret=new THREE.Mesh(new THREE.SphereGeometry(0.25,32,16),smooth(0x9d86d8));beret.scale.set(1.12,0.42,1.05);beret.position.set(0.04,0.5,-0.02);beret.rotation.z=-0.2;h.add(beret);
+    const nub=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.02,0.05,8),smooth(0x9d86d8));nub.position.set(0.06,0.61,-0.02);h.add(nub);
+  }
+  p.scale.setScalar(0.8);h.scale.setScalar(1.4);h.position.y=0.62;
+  const mo=new THREE.Mesh(new THREE.SphereGeometry(0.045,20,14),basic(0xb8344f));mo.scale.set(1,0.75,0.4);mo.position.set(0,0.16,0.24);mo.visible=false;h.add(mo);P.open=mo;
+  const tg=new THREE.Mesh(new THREE.SphereGeometry(0.024,14,10),basic(0xff8fa6));tg.scale.set(1,0.5,0.4);tg.position.set(0,0.143,0.25);tg.visible=false;h.add(tg);P.tongue=tg;
+  P.happy=[];for(const sx of[-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.01,8,16,Math.PI),basic(0x2a1a14));a.position.set(sx*0.095,0.24,0.238);a.visible=false;h.add(a);P.happy.push(a)}
+  P.tears=[];for(const sx of[-1,1]){const t=new THREE.Mesh(new THREE.SphereGeometry(0.018,14,10),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:0.95}));t.scale.set(1,1.5,0.5);t.position.set(sx*0.1,0.19,0.245);t.visible=false;h.add(t);P.tears.push(t)}
+  P.brows=[];P.pout=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.009,8,16),basic(0xc8405e));P.pout.position.set(0,0.165,0.248);P.pout.visible=false;h.add(P.pout);
+  const phone = new THREE.Group(); box(phone, 0.16, 0.3, 0.03, 0x22222a, 0, 0, 0);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.27), basic(0xe6dcff)); scr.position.z = 0.017; phone.add(scr);
+  phone.position.set(0, -0.68, 0.12); phone.rotation.x = Math.PI / 2; phone.visible = false; u.arms[1].add(phone);
+  p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
+  return p}
+
+
+const MODELS = { 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
 
 const FACE = {
   smile() {},
