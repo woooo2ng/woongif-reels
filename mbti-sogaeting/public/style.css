@@ -212,3 +212,10 @@ h1,h2,.btn,.cell,.chip,.stat,.who,.choice,.tag,.end-name,.end-punch,.card-tag,.c
 .dex-rank li span{color:#ff8fc8;width:28px}.dex-rank li b{flex:1;font-weight:400}.dex-rank li em{font-style:normal;color:#ffd84d}
 .dex-grid b{display:flex;flex-direction:column;line-height:1.2}.dex-grid b small{font-size:8px;opacity:.85}
 .stage.room{background:linear-gradient(#f3e3f0 0,#f3e3f0 60%,#e8cfb8 60.2%,#d9bba0 100%)}
+
+.gpick{display:flex;gap:10px;margin-top:6px}
+.gbtn{flex:1;border:2px solid #ffd0e7;background:#fff6fb;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit}
+.gbtn img{width:80px;height:98px;object-fit:contain}
+.gbtn b{font-family:var(--cute);font-weight:400;font-size:17px;color:#2b2b3a}
+.gbtn small{font-size:12px;color:#a596a8}
+.gbtn.off{opacity:.45;cursor:default}

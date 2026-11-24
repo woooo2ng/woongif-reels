@@ -85,6 +85,39 @@ function mkE() {
   p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
   return p;
 }
+
+// ---------- ENFP 남자 (시안 B-1: 검은 바가지 머리 · 하늘색 티) ----------
+function mkEm() {
+  const p = makePerson(rng(143), { shirt: 0x8fd3ff, pants: 0x55506a }); const u = p.userData, h = u.head;
+  const SK = 0xffe3cf; h.children[0].material = new THREE.MeshLambertMaterial({ color: SK, emissive: 0x2a1a10 }); u.arms.forEach(a => a.children[1].material = lamb(SK));
+  h.children[1].visible = false;
+  h.children.forEach(c => { const g = c.geometry && c.geometry.parameters; if (g && ((g.width === 0.05 && g.height === 0.07) || (g.width === 0.07 && g.height === 0.035))) c.visible = false; });
+  const P = { eyes: [], hls: [], cheeks: [], happy: [], tears: [], brows: [] };
+  for (const sx of [-1, 1]) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.045, 20, 16), basic(0x2a1a14)); e.scale.set(0.9, 1.15, 0.5); e.position.set(sx * 0.095, 0.25, 0.232); h.add(e); P.eyes.push(e);
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 8), basic(0xffffff)); hl.position.set(sx * 0.095 + 0.015, 0.27, 0.252); h.add(hl); P.hls.push(hl);
+    const br = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.016, 0.012), basic(0x4a2c1c)); br.position.set(sx * 0.095, 0.33, 0.232); br.rotation.z = -sx * 0.12; h.add(br);
+    const ck = new THREE.Mesh(new THREE.CircleGeometry(0.04, 20), new THREE.MeshBasicMaterial({ color: 0xff9fb8, transparent: true, opacity: 0.6 })); ck.position.set(sx * 0.15, 0.175, 0.216); ck.rotation.y = sx * 0.35; h.add(ck); P.cheeks.push(ck);
+    const a = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.01, 8, 16, Math.PI), basic(0x2a1a14)); a.position.set(sx * 0.095, 0.245, 0.238); a.visible = false; h.add(a); P.happy.push(a);
+    const t = new THREE.Mesh(new THREE.SphereGeometry(0.018, 14, 10), new THREE.MeshBasicMaterial({ color: 0x8fd3ff, transparent: true, opacity: 0.95 })); t.scale.set(1, 1.5, 0.5); t.position.set(sx * 0.1, 0.195, 0.245); t.visible = false; h.add(t); P.tears.push(t);
+  }
+  P.smile = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 8, 16, Math.PI), basic(0xc8405e)); P.smile.rotation.z = Math.PI; P.smile.position.set(0, 0.165, 0.245); h.add(P.smile);
+  P.open = new THREE.Mesh(new THREE.SphereGeometry(0.045, 20, 14), basic(0xb8344f)); P.open.scale.set(1, 0.75, 0.4); P.open.position.set(0, 0.16, 0.24); P.open.visible = false; h.add(P.open);
+  P.tongue = new THREE.Mesh(new THREE.SphereGeometry(0.024, 14, 10), basic(0xff8fa6)); P.tongue.scale.set(1, 0.5, 0.4); P.tongue.position.set(0, 0.143, 0.25); P.tongue.visible = false; h.add(P.tongue);
+  P.pout = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.009, 8, 16), basic(0xc8405e)); P.pout.position.set(0, 0.165, 0.248); P.pout.visible = false; h.add(P.pout);
+  const m = smooth(0x2a2220);
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.262, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.22; h.add(cap);
+  const bk = new THREE.Mesh(new THREE.SphereGeometry(0.266, 40, 24, Math.PI, Math.PI, 0, Math.PI * 0.62), m); bk.position.y = 0.25; h.add(bk);
+  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.95, 0.24, 0.42); bang.position.set(0, 0.37, 0.15); h.add(bang);
+  p.scale.setScalar(0.8); h.scale.setScalar(1.4); h.position.y = 0.62;
+  const phone = new THREE.Group(); box(phone, 0.16, 0.3, 0.03, 0x22222a, 0, 0, 0);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.27), basic(0xbfe6ff)); scr.position.z = 0.017; phone.add(scr);
+  phone.position.set(0, -0.68, 0.12); phone.rotation.x = Math.PI / 2; phone.visible = false; u.arms[1].add(phone);
+  p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
+  return p;
+}
+const MODELS = { 'enfp-f': mkE, 'enfp-m': mkEm };
+
 const FACE = {
   smile() {},
   excited(P) { P.smile.visible = false; P.open.visible = true; P.tongue.visible = true; P.hls.forEach(h => h.scale.setScalar(1.6)); P.eyes.forEach(e => e.scale.set(1, 1.35, 0.5)); },
@@ -299,7 +332,7 @@ const Scene3D = {
       const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r), bus: buildBus(r), room: buildRoom(r), hobby: buildRoom(r, { hobbies: true, wall: 0xefe3f6 }) };
       const T = mkISTJ(); T.visible = false; sets.cafe.add(T); sets.cafe.userData.istj = T;
       Object.values(sets).forEach(s => { s.visible = false; scene.add(s); });
-      const E = mkE(); scene.add(E);
+      const E = mkE(); scene.add(E); this.models = { 'enfp-f': E }; this.modelId = 'enfp-f';
       Object.assign(this, { renderer, scene, hemi, dir, cam, sets, E, canvas, set: null, expr: 'smile', act: 'idle', actT: 0, focus: 0, focusTarget: 0, shakeT: -9, t0: performance.now(), blinkAt: 2 });
       this.ro = new ResizeObserver(() => this.resize()); this.resize(); this.ro.observe(canvas.parentElement);
       this.setSet('cafe'); this.setExpr('smile');
@@ -337,6 +370,14 @@ const Scene3D = {
     this.lastEmoteExpr = expr;
   },
   setFocus(on) { this.focusTarget = on ? 1 : 0; },
+  setModel(id) {
+    if (!MODELS[id] || this.modelId === id) return;
+    this.models = this.models || {};
+    const next = this.models[id] || (this.models[id] = MODELS[id]());
+    if (this.E && this.E !== next) this.scene.remove(this.E);
+    this.scene.add(next); this.E = next; this.modelId = id;
+    const cur = this.set; this.set = null; if (cur) this.setSet(cur);
+  },
   // ----- 첫 등장: 문 열고 뛰어 들어와서 앉기 -----
   hideChar() { this.E.visible = false; this.introPan = true; const d = this.sets.cafe.userData.door; d.rotation.y = 0; },
   enter() {

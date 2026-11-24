@@ -14,7 +14,7 @@ const CONFIG = {
 };
 const MBTI = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
 // 지금 열려 있는 상대 (나중에 여기 추가: { mbti:'ISTP', g:'m', file:'istp-m' })
-const PARTNERS = [{ mbti: 'ENFP', g: 'f', file: 'enfp-f' }];
+const PARTNERS = [{ mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }];
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -38,7 +38,7 @@ function show(id) {
   track('screen', { id });
 }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
-function modal(title, text) { $('#modal-title').textContent = title; $('#modal-text').textContent = text; $('#modal').hidden = false; }
+function modal(title, text) { $('#modal-title').textContent = title; $('#modal-text').textContent = text; $('#modal-ok').textContent = '알겠어요'; $('#modal').hidden = false; }
 $('#modal-ok').onclick = () => { $('#modal').hidden = true; };
 
 // ===== 상태 =====
@@ -63,16 +63,26 @@ $('[data-pick-me]').onclick = () => pickMe('모름');
 function played() { return store.get('played', []); }
 function renderPartners() {
   $('#grid-partner').innerHTML = MBTI.map(m => {
-    const p = PARTNERS.find(x => x.mbti === m);
-    return p
-      ? `<button class="cell open" data-file="${p.file}"><span class="face">💗</span>${m}<small>${p.g === 'f' ? '여자' : '남자'} · 지금 가능</small></button>`
+    const ps = PARTNERS.filter(x => x.mbti === m);
+    return ps.length
+      ? `<button class="cell open" data-m="${m}"><span class="face">💗</span>${m}<small>${ps.map(p => p.g === 'f' ? '여' : '남').join(' · ')} 가능</small></button>`
       : `<button class="cell locked" data-soon="${m}"><span class="face">🔒</span>${m}<small>준비 중</small></button>`;
   }).join('');
-  document.querySelectorAll('#grid-partner .open').forEach(b => b.onclick = () => tryStart(b.dataset.file));
+  document.querySelectorAll('#grid-partner .open').forEach(b => b.onclick = () => pickGender(b.dataset.m));
   document.querySelectorAll('#grid-partner .locked').forEach(b => b.onclick = () => {
     track('want', { m: b.dataset.soon });
     modal(`${b.dataset.soon}는 준비 중이에요`, '누르신 유형을 세고 있어요. 많이 눌린 유형부터 소개팅 상대로 나와요!');
   });
+}
+// 같은 MBTI 안에서 남/여 고르기
+function pickGender(m) {
+  const ps = PARTNERS.filter(x => x.mbti === m), dex = store.get('dex', {});
+  $('#modal-title').textContent = `${m} 누구랑 소개팅할래?`;
+  $('#modal-text').innerHTML = `<span class="gpick">${['f', 'm'].map(g => { const p = ps.find(x => x.g === g); const best = p && dex[p.file] && dex[p.file].best;
+    return p ? `<button class="gbtn" data-file="${p.file}"><img src="img/${p.file}/smile.png" alt=""><b>${m} ${g === 'f' ? '여자' : '남자'}</b><small>${best ? `내 궁합 ${best}%` : '아직 안 만남'}</small></button>`
+             : `<button class="gbtn off" disabled><b>${m} ${g === 'f' ? '여자' : '남자'}</b><small>준비 중</small></button>`; }).join('')}</span>`;
+  $('#modal-ok').textContent = '닫기'; $('#modal').hidden = false;
+  document.querySelectorAll('#modal .gbtn[data-file]').forEach(b => b.onclick = () => { $('#modal').hidden = true; Snd.play('pop'); tryStart(b.dataset.file); });
 }
 function tryStart(file) {
   const p = played();
@@ -201,7 +211,7 @@ async function startGame(file) {
   Snd.init(); Snd.setMood('cafe');
   try { await document.fonts.ready; } catch {}
   if (window.Scene3D && !Scene3D.ready && !Scene3D.failed) { Scene3D.failed = !Scene3D.init($('#c3d')); }
-  if (use3D()) Scene3D.attach(stage);
+  if (use3D()) { Scene3D.attach(stage); Scene3D.setModel(S.data.model || S.partner); }
   stage.className = 'stage cafe' + (use3D() ? ' three' : ''); setProg(0);
   if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
   setTimeout(() => Snd.play('bell'), 400);
@@ -265,7 +275,7 @@ function finish() {
   // 도감 기록
   const dex = store.get('dex', {}), cur = dex[S.partner];
   const prev = Array.isArray(cur) ? { ends: cur, best: 0 } : (cur || { ends: [], best: 0 });
-  dex[S.partner] = { mbti: S.data.mbti, ends: [...new Set([...prev.ends, e.id])], best: Math.max(prev.best || 0, pct()) }; store.set('dex', dex);
+  dex[S.partner] = { mbti: S.data.mbti, g: S.data.gender, ends: [...new Set([...prev.ends, e.id])], best: Math.max(prev.best || 0, pct()) }; store.set('dex', dex);
   const es = $('.end-stage'); es.classList.toggle('three', use3D());
   if (use3D()) {
     Scene3D.attach(es); Scene3D.setSet(e.set || 'cafe'); Scene3D.setFocus(false);
@@ -295,10 +305,10 @@ function dexHTML() {
   const dex = store.get('dex', {}), d = S.data, me = dex[S.partner] || { ends: [] }, got = me.ends || [];
   const ends = d.endings.map(e => `<i class="${got.includes(e.id) ? 'on' : ''}" title="${e.name}">${got.includes(e.id) ? e.emoji : '?'}</i>`).join('');
   const rows = Object.values(dex).filter(x => x && x.mbti).sort((a, b) => b.best - a.best);
-  const done = new Set(rows.map(x => x.mbti));
-  const grid = MBTI.map(m => { const r = rows.find(x => x.mbti === m); return `<b class="${r ? 'on' : ''}">${m}${r ? `<small>${r.best}%</small>` : ''}</b>`; }).join('');
-  const rank = rows.slice(0, 3).map((x, i) => `<li><span>${i + 1}위</span><b>${x.mbti}</b><em>${x.best}%</em></li>`).join('');
-  return { ends, grid, rank, n: got.length, total: d.endings.length, people: done.size };
+  const done = new Set(rows.map(x => x.mbti)); const people = rows.length;
+  const grid = MBTI.map(m => { const r = rows.filter(x => x.mbti === m).sort((a, b) => b.best - a.best)[0]; return `<b class="${r ? 'on' : ''}">${m}${r ? `<small>${r.best}%</small>` : ''}</b>`; }).join('');
+  const rank = rows.slice(0, 3).map((x, i) => `<li><span>${i + 1}위</span><b>${x.mbti} ${x.g === 'm' ? '남' : x.g === 'f' ? '여' : ''}</b><em>${x.best}%</em></li>`).join('');
+  return { ends, grid, rank, n: got.length, total: d.endings.length, people };
 }
 $('#btn-result').onclick = () => {
   const d = S.data, e = S.ending, p = pattern(), n = pct();
@@ -312,8 +322,8 @@ $('#btn-result').onclick = () => {
   $('#card-fun').innerHTML = d.result.funStats.map(s => `<li>${s}</li>`).join('');
   const dx = dexHTML();
   $('#card-dex').innerHTML = `<div class="dex-row"><span>${d.mbti} 엔딩 ${dx.n}/${dx.total}</span><span class="dex-ends">${dx.ends}</span></div>`;
-  $('#dex').innerHTML = `<div class="dex-title">내 궁합 순위 <small>${dx.people}/16명 소개팅함</small></div><ol class="dex-rank">${dx.rank}</ol>` +
-    `<div class="dex-grid">${dx.grid}</div><div class="dex-sub">${dx.people < 16 ? `아직 ${16 - dx.people}명이 남았어요. 진짜 찰떡은 아직 못 만났을 수도?` : '16명 전부 만나 봤어요!'}</div>`;
+  $('#dex').innerHTML = `<div class="dex-title">내 궁합 순위 <small>${dx.people}/32명 소개팅함</small></div><ol class="dex-rank">${dx.rank}</ol>` +
+    `<div class="dex-grid">${dx.grid}</div><div class="dex-sub">${dx.people < 32 ? `아직 ${32 - dx.people}명이 남았어요. 진짜 찰떡은 아직 못 만났을 수도?` : '32명 전부 만나 봤어요!'}</div>`;
   $('#ad-slot').hidden = !CONFIG.adSlot;
   show('result');
   const el = $('#card-pct'); let k = 0; const t = setInterval(() => { k = Math.min(n, k + Math.ceil(n / 25)); el.textContent = k; if (k >= n) clearInterval(t); }, 30);

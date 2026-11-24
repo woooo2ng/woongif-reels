@@ -1,0 +1,667 @@
+{
+  "id": "enfp-m",
+  "version": 3,
+  "mbti": "ENFP",
+  "gender": "m",
+  "label": "ENFP 남자",
+  "color": "#8fd3ff",
+  "img": "img/enfp-m/",
+  "intro": {
+    "chip": "토요일 PM 2:00 · 연남동 카페",
+    "text": "소개팅 장소에 먼저 도착했다. 문에 달린 종이 딸랑— 울린다."
+  },
+  "callbacks": {
+    "s3": {
+      "A": "무기 담당",
+      "B": "마트부터 털자던",
+      "C": "소개팅을 안 했을 거라던"
+    }
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "title": "첫 만남",
+      "bg": "cafe",
+      "lines": [
+        {
+          "expr": "excited",
+          "act": "wave",
+          "text": "헐 혹시 소개팅?! 안녕하세요!!"
+        },
+        {
+          "expr": "surprised",
+          "text": "근데 우리 오늘 처음 보는 거 맞죠? 왜 이렇게 익숙하지?"
+        },
+        {
+          "expr": "happy",
+          "text": "우리 동갑이죠? 그럼 우리… 말 놓을까요?!"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "E"
+          ],
+          "text": "좋아! 놓자",
+          "score": 2,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "헐 바로 받아 주네?"
+            },
+            {
+              "expr": "happy",
+              "text": "우리 벌써 친구다!! 아니 친구는 아니고… 아무튼!"
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "I",
+            "J"
+          ],
+          "text": "조금 더 친해지면 놓을게요",
+          "score": -1,
+          "react": [
+            {
+              "expr": "pout",
+              "text": "(볼 빵빵 2초)"
+            },
+            {
+              "expr": "smile",
+              "text": "…좋아요! 그럼 오늘 안에 친해지는 게 목표예요."
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "N",
+            "P"
+          ],
+          "text": "반말 하나 존댓말 하나 섞어 쓸게요",
+          "score": 1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "ㅋㅋㅋ 그게 뭐예요?"
+            },
+            {
+              "expr": "blush",
+              "text": "…아 근데 귀엽다. 그거 해요."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "주문",
+      "bg": "counter",
+      "chip": "고민한 메뉴 3개 · 고른 메뉴 0개",
+      "lines": [
+        {
+          "expr": "excited",
+          "act": "point",
+          "text": "사장님 이 케이크 직접 만드신 거예요? 대박.",
+          "fx": "menu:수제 케이크"
+        },
+        {
+          "expr": "surprised",
+          "text": "아 근데 라떼도 맛있어 보이고… 에이드도…",
+          "fx": "menu:라떼>딸기 에이드"
+        },
+        {
+          "expr": "happy",
+          "text": "못 고르겠다! 우리 세 개 다 시켜서 나눠 먹을래?!"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "P",
+            "E"
+          ],
+          "text": "좋아, 다 시켜!",
+          "score": 2,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "꺄 역시!!",
+              "fx": "staff"
+            },
+            {
+              "expr": "happy",
+              "text": "우리 식성 궁합 100점이다. 아니 120점!"
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "J",
+            "S"
+          ],
+          "text": "다 못 먹을 것 같은데… 두 개만 하자",
+          "score": 1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "오 현실적이다…"
+            },
+            {
+              "expr": "smile",
+              "text": "근데 그게 맞네! 남기면 아깝잖아. 똑똑해."
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "J",
+            "I"
+          ],
+          "text": "나는 원래 먹던 거 먹을게",
+          "score": -1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "헉 단골 메뉴 있구나…"
+            },
+            {
+              "expr": "smile",
+              "text": "다음엔 내가 모험시켜 줄게. 각오해."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "만약에",
+      "bg": "table",
+      "lines": [
+        {
+          "expr": "smile",
+          "text": "근데 갑자기 궁금한 거 있어."
+        },
+        {
+          "expr": "excited",
+          "text": "만약에 우리가 좀비 세상에서 처음 만났으면 어땠을 것 같아?"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "N",
+            "F"
+          ],
+          "text": "나는 무기 담당, 너는 분위기 담당",
+          "score": 3,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "헐 완벽해!! 나 좀비한테도 말 걸 수 있어."
+            },
+            {
+              "expr": "blush",
+              "text": "…그럼 우리 좀비 세상에서도 만났겠다."
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "S",
+            "T"
+          ],
+          "text": "일단 마트부터 털어야지. 물이랑 통조림",
+          "score": 1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "ㅋㅋㅋ 너 진짜 살아남겠다."
+            },
+            {
+              "expr": "happy",
+              "text": "나 너만 따라다닐래. 통조림 따는 건 내가 할게!"
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "T"
+          ],
+          "text": "좀비 세상이면 소개팅을 안 했겠지",
+          "score": -1,
+          "react": [
+            {
+              "expr": "pout",
+              "text": "…아 진짜 ㅋㅋㅋ 너 T야?"
+            },
+            {
+              "expr": "happy",
+              "text": "(그래도 웃음) 아 근데 맞는 말이라 할 말이 없네."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "고민",
+      "bg": "rain",
+      "lines": [
+        {
+          "expr": "smile",
+          "text": "어, 비 온다… 나 요즘 고민 하나 있는데 말해도 돼?"
+        },
+        {
+          "expr": "teary",
+          "text": "하고 싶은 게 너무 많아서 뭘 해야 할지 모르겠어. 다 하고 싶어!"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "F",
+            "N"
+          ],
+          "text": "다 해 봐. 너라면 할 것 같아",
+          "score": 2,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "(눈 반짝)"
+            },
+            {
+              "expr": "blush",
+              "text": "…그 말 진짜 듣고 싶었어. 고마워."
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "T",
+            "J"
+          ],
+          "text": "우선순위를 정해 보자. 제일 하고 싶은 게 뭐야?",
+          "score": 0,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "헉 컨설팅 받는 기분이야 ㅋㅋ"
+            },
+            {
+              "expr": "smile",
+              "text": "…근데 진짜 정리되긴 했다. 너랑 얘기하길 잘했어."
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "F",
+            "P"
+          ],
+          "text": "나도 그래. 우리 같이 하나 시작해 볼래?",
+          "score": 3,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "!!!! 진짜?? 같이?"
+            },
+            {
+              "expr": "happy",
+              "text": "뭐 하지? 클라이밍? 뜨개질? 아 다 하고 싶어!!",
+              "fx": "notes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "즉흥",
+      "bg": "street",
+      "lines": [
+        {
+          "expr": "smile",
+          "text": "벌써 가야 돼? …아 잠깐만!"
+        },
+        {
+          "expr": "surprised",
+          "act": "phone",
+          "text": "(폰을 보더니) 여기서 바다까지 버스로 두 시간이래.",
+          "fx": "seabus"
+        },
+        {
+          "expr": "excited",
+          "text": "우리 지금 바다 보러 갈래?!"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "P",
+            "E"
+          ],
+          "text": "그래 좋아, 지금 가자",
+          "score": 3,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "꺄 진짜?!",
+              "fx": "bus"
+            },
+            {
+              "expr": "happy",
+              "text": "미쳤다 버스 왔어!! 우리 진짜 가는 거야?"
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "J"
+          ],
+          "text": "다음에 가자, 날 잡아서",
+          "score": -1,
+          "react": [
+            {
+              "expr": "pout",
+              "text": "아… 그치, 너무 갑자기였다 ㅋㅋ"
+            },
+            {
+              "expr": "smile",
+              "text": "그럼 약속! 다음에 꼭이야. 손가락 걸어."
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "P",
+            "S"
+          ],
+          "text": "바다는 다음에. 대신 지금 한강 가자",
+          "score": 2,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "오 절충안 천재다!!"
+            },
+            {
+              "expr": "blush",
+              "text": "한강도 좋아. 너랑 가면 다 좋아. …방금 말 못 들은 걸로 해."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "title": "그날 밤",
+      "bg": "room",
+      "chip": "썼다 지운 카톡 47번",
+      "lines": [
+        {
+          "expr": "blush",
+          "act": "phone",
+          "text": "(침대에서 카톡 입력 중… 지움… 입력 중… 지움…)",
+          "fx": "ktyping"
+        },
+        {
+          "expr": "excited",
+          "act": "phone",
+          "text": "에잇 몰라! 보내!",
+          "fx": "kmsg"
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "E",
+            "F"
+          ],
+          "text": "나도!!! ㅋㅋㅋ 사진 다 저장함 🥹🥹🥹",
+          "score": 2,
+          "react": [
+            {
+              "expr": "excited",
+              "text": "(침대에서 발 동동)",
+              "fx": "kme"
+            },
+            {
+              "expr": "happy",
+              "text": "답장 빨라… 이모티콘도 세 개야… 좋아…"
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "I",
+            "T"
+          ],
+          "text": "나도 재밌었어! 조심히 들어가 :)",
+          "score": -1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "…느낌표가 하나네?",
+              "fx": "kme"
+            },
+            {
+              "expr": "blush",
+              "text": "아냐 웃는 표시 있으니까 좋은 거야. 좋은 거 맞지? (캡처해서 친구한테 보냄)"
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "I",
+            "F"
+          ],
+          "text": "(1시간 뒤) 오늘 고마웠어. 특히 {cb:s3} 얘기 너무 웃겼어",
+          "score": 1,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "(1시간 동안 폰 37번 확인함)",
+              "fx": "kme"
+            },
+            {
+              "expr": "blush",
+              "text": "…그걸 기억해? 아 몰라 이불 차러 갈래."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "title": "두 번째 만남",
+      "bg": "cafe",
+      "lines": [
+        {
+          "expr": "pout",
+          "act": "turn",
+          "text": "(빨대만 휘휘 젓는 중)"
+        },
+        {
+          "expr": "teary",
+          "text": "아까 내가 얘기할 때… 폰 봤지. 나 좀 서운했어."
+        }
+      ],
+      "choices": [
+        {
+          "key": "A",
+          "tags": [
+            "F"
+          ],
+          "text": "미안해. 듣고 있었는데 티가 안 났나 봐. 다시 얘기해 줘",
+          "score": 3,
+          "react": [
+            {
+              "expr": "surprised",
+              "text": "…응."
+            },
+            {
+              "expr": "blush",
+              "text": "근데 사과를 왜 이렇게 다정하게 해? 반칙이야. 처음부터 다시 얘기해 줄게!!"
+            }
+          ]
+        },
+        {
+          "key": "B",
+          "tags": [
+            "T"
+          ],
+          "text": "아 그거 급한 연락이라서. 듣고는 있었어",
+          "score": -1,
+          "react": [
+            {
+              "expr": "pout",
+              "text": "아… 그렇구나."
+            },
+            {
+              "expr": "smile",
+              "text": "이해는 돼! 근데 다음엔 급한 거면 말해 줘. 그럼 안 서운해."
+            }
+          ]
+        },
+        {
+          "key": "C",
+          "tags": [
+            "P",
+            "E"
+          ],
+          "text": "에이~ 내가 언제~",
+          "score": 0,
+          "react": [
+            {
+              "expr": "pout",
+              "text": "…진짜 서운했는데."
+            },
+            {
+              "expr": "happy",
+              "text": "(반쯤 웃음) 다음엔 진짜 삐질 거야. 폰 압수할 거야."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "hidden",
+      "emoji": "✨",
+      "name": "히든 · 같이 시작한 사람",
+      "locked": false,
+      "when": {
+        "s4": "C",
+        "s5": "A",
+        "s7": "A"
+      },
+      "chip": "1년 뒤",
+      "expr": "blush",
+      "set": "hobby",
+      "act": "shy",
+      "lines": [
+        "1년 동안 둘이 같이 시작한 취미는 10개.",
+        "클라이밍, 뜨개질, 베이킹, 러닝, 우쿨렐레… 전부 그만뒀다.",
+        "딱 하나만 빼고."
+      ],
+      "stat": "시작한 취미 10개 · 계속한 것 1개",
+      "punch": "계속한 1개 = 너",
+      "theme": [
+        "#8b6cf0",
+        "#f3edff",
+        "#ffe7a8"
+      ]
+    },
+    {
+      "id": "after",
+      "emoji": "💗",
+      "name": "애프터 성공",
+      "minPct": 75,
+      "expr": "happy",
+      "set": "bus",
+      "act": "phone",
+      "lines": [
+        "집 가는 버스. 카톡이 왔다.",
+        "\"오늘 진짜 재밌었다!!! 🥹\"",
+        "\"다음 주 토요일 비워 둬!! 갈 데 47개 있어\""
+      ],
+      "stat": "다음 약속까지 D-6",
+      "punch": "애프터 확정",
+      "theme": [
+        "#ff6fb5",
+        "#ffe0f0",
+        "#fff3c4"
+      ]
+    },
+    {
+      "id": "friend",
+      "emoji": "😐",
+      "name": "찐친 엔딩",
+      "minPct": 50,
+      "expr": "excited",
+      "set": "room",
+      "act": "phone",
+      "special": "notif",
+      "lines": [
+        "집에 오자마자 카톡이 왔다.",
+        "\"너 완전 내 찐친 될 듯!!\"",
+        "그리고 바로 단톡방 초대."
+      ],
+      "stat": "'ENFP 친구들 모임 (47)'에 초대됨",
+      "punch": "친구가 47명 생겼다",
+      "theme": [
+        "#f2a400",
+        "#fff3c4",
+        "#e3f6cf"
+      ]
+    },
+    {
+      "id": "matchmaker",
+      "emoji": "💀",
+      "name": "주선자 엔딩",
+      "minPct": 0,
+      "expr": "smile",
+      "set": "cafe",
+      "special": "istj",
+      "lines": [
+        "ENFP는 읽씹을 하지 않는다.",
+        "\"너 진짜 좋은 사람이라 내 친구 소개해 줄게!!\"",
+        "\"걔 진짜 착해! 계획도 엄청 잘 세워!\""
+      ],
+      "stat": "애프터 0회 · 소개받은 사람 1명",
+      "punch": "다음 상대는 ISTJ",
+      "theme": [
+        "#5b6b8f",
+        "#e6ebf5",
+        "#f3e9ee"
+      ]
+    }
+  ],
+  "result": {
+    "funStats": [
+      "썼다 지운 카톡 47번",
+      "하고 싶은 것 리스트 47개",
+      "좀비 세상 생존 확률 ?%"
+    ]
+  },
+  "model": "enfp-m"
+}
