@@ -176,7 +176,62 @@ function mkI(v) { // INFP: F = 좀비 롱폼 확정안(라벤더 가디건+헤�
   return p}
 
 
-const MODELS = { 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
+// ---------- ISFP (여: 좀비 롱폼 확정 B안 민트 후드 / 남: 시안 A 커플룩) — 바보털은 지웅 요청으로 뺌 ----------
+function mkS(v){ // ISFP: F = 좀비 롱폼 확정 B안(민트 후드+바보털) / A·B·C = 남자 시안
+  const male=v!=='F';
+  const shirt={F:0xa6e8cc,A:0xa6e8cc,B:0xf3ead8,C:0xcfe9a8}[v], pants={F:0x9a9ea6,A:0x9a9ea6,B:0x8a8f9c,C:0x6c7f9a}[v];
+  const p=makePerson(rng(301+'FABC'.indexOf(v)),{shirt,pants});const u=p.userData,h=u.head;
+  const SK=0xffe3cf;h.children[0].material=new THREE.MeshLambertMaterial({color:SK,emissive:0x2a1a10});u.arms.forEach(a=>a.children[1].material=lamb(SK));
+  h.children[1].visible=false;
+  h.children.forEach(c=>{const g=c.geometry&&c.geometry.parameters;if(g&&((g.width===0.05&&g.height===0.07)||(g.width===0.07&&g.height===0.035)))c.visible=false});
+  const dk=c=>new THREE.Color(c).multiplyScalar(0.92).getHex();
+  if(v==='F'||v==='A'){ // 후드 + 끈 + 캥거루 주머니
+    const hood=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.07,10,24),lamb(dk(shirt)));hood.rotation.x=Math.PI/2;hood.position.set(0,0.66,-0.07);u.hip.add(hood);
+    for(const s of[-1,1]){const st=new THREE.Mesh(new THREE.BoxGeometry(0.022,0.2,0.02),lamb(0xffffff));st.position.set(s*0.06,0.5,0.17);u.hip.add(st)}
+    const pk=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.13,0.02),lamb(dk(shirt)));pk.position.set(0,0.12,0.165);u.hip.add(pk)}
+  if(v==='B'){ // 오버핏 니트 골지
+    for(let i=0;i<5;i++){const rb=new THREE.Mesh(new THREE.BoxGeometry(0.012,0.6,0.01),lamb(dk(shirt)));rb.position.set(-0.16+i*0.08,0.32,0.162);u.hip.add(rb)}}
+  if(v==='C'){ // 체크 셔츠 (가로·세로 줄)
+    for(let i=0;i<3;i++){const hz=new THREE.Mesh(new THREE.BoxGeometry(0.53,0.03,0.33),lamb(0xa6cf7e));hz.position.y=0.12+i*0.2;u.hip.add(hz);
+      const vt=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.64,0.33),lamb(0xa6cf7e));vt.position.set(-0.15+i*0.15,0.32,0);u.hip.add(vt)}
+    const col=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.06,0.05),lamb(0xf6f6f2));col.position.set(0,0.62,0.15);u.hip.add(col)}
+  const hc={F:0x9a6a48,A:0x7a5238,B:0x3a2a22,C:0x6a4a34}[v],m=smooth(hc);
+  const P={eyes:[],hls:[],lashes:[],cheeks:[]};
+  for(const sx of[-1,1]){
+    const e=new THREE.Mesh(new THREE.SphereGeometry(0.046,20,16),basic(0x2a1a14));e.scale.set(0.9,1.2,0.5);e.position.set(sx*0.095,0.245,0.232);h.add(e);P.eyes.push(e);
+    const hl=new THREE.Mesh(new THREE.SphereGeometry(0.015,12,8),basic(0xffffff));hl.position.set(sx*0.095+0.015,0.266,0.252);h.add(hl);P.hls.push(hl);
+    const br=new THREE.Mesh(new THREE.BoxGeometry(male?0.055:0.05,male?0.014:0.012,0.012),basic(0x3a2418));br.position.set(sx*0.095,0.322,0.262);br.rotation.z=sx*-0.1;h.add(br);
+    const ck=new THREE.Mesh(new THREE.CircleGeometry(0.045,20),new THREE.MeshBasicMaterial({color:0xffa8a8,transparent:true,opacity:0.85}));ck.position.set(sx*0.15,0.175,0.216);ck.rotation.y=sx*0.35;h.add(ck);P.cheeks.push(ck)}
+  const sm=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.011,8,16,Math.PI),basic(0xd8506e));sm.rotation.z=Math.PI;sm.position.set(0,0.165,0.245);h.add(sm);P.smile=sm;
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.264,40,20,0,Math.PI*2,0,Math.PI*0.5),m);cap.position.y=0.25;cap.rotation.x=-0.24;h.add(cap);
+  const bk=new THREE.Mesh(new THREE.SphereGeometry(0.266,40,24,Math.PI,Math.PI,0,Math.PI*(v==='F'?0.66:0.6)),m);bk.position.y=0.25;h.add(bk);
+  const ahoge=()=>{const ah=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.018,8,20,Math.PI*1.2),m);ah.position.set(0.02,0.56,0.02);ah.rotation.set(0,0.3,0.6);h.add(ah)};
+  if(v==='F'||v==='A'){
+    for(const sx of[-1,0,1]){const b=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);b.scale.set(0.4,0.3,0.42);b.position.set(sx*0.1,0.385-Math.abs(sx)*0.01,0.155);b.rotation.z=-sx*0.3;h.add(b)}
+    if(v==='F')for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.09,20,14),m);sd.scale.set(0.6,1.1,0.85);sd.position.set(sx*0.22,0.2,0.04);h.add(sd)}
+  } else if(v==='B'){ // 버킷햇
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(1.0,0.24,0.42);bang.position.set(0,0.37,0.15);h.add(bang);
+    const crown=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.27,0.2,32),smooth(0xb9dca0));crown.position.set(0,0.52,-0.01);crown.rotation.x=-0.12;h.add(crown);
+    const brim=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.38,0.025,32),smooth(0xa9cf8e));brim.position.set(0,0.43,0.0);brim.rotation.x=-0.12;h.add(brim);
+  } else { // C: 부스스한 앞머리 (뾰족 끝이 사방으로)
+    for(const [x,rz] of [[-0.15,0.7],[-0.08,0.35],[0,0.05],[0.08,-0.3],[0.15,-0.65]]){const b=new THREE.Mesh(new THREE.ConeGeometry(0.07,0.2,12),m);b.position.set(x,0.37,0.19-Math.abs(x)*0.35);b.rotation.set(0.5,0,Math.PI+rz*0.5);h.add(b)}
+    for(const [x,z,rz,rx] of [[-0.12,0.05,0.6,-0.3],[0.02,0.0,-0.1,-0.5],[0.14,0.02,-0.7,-0.3],[0.06,-0.14,-0.3,-1.2]]){const t=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.16,12),m);t.position.set(x,0.5,z);t.rotation.set(rx,0,rz);h.add(t)}
+    ahoge();
+  }
+  p.scale.setScalar(0.8);h.scale.setScalar(1.4);h.position.y=0.62;
+  const mo=new THREE.Mesh(new THREE.SphereGeometry(0.045,20,14),basic(0xb8344f));mo.scale.set(1,0.75,0.4);mo.position.set(0,0.16,0.24);mo.visible=false;h.add(mo);P.open=mo;
+  const tg=new THREE.Mesh(new THREE.SphereGeometry(0.024,14,10),basic(0xff8fa6));tg.scale.set(1,0.5,0.4);tg.position.set(0,0.143,0.25);tg.visible=false;h.add(tg);P.tongue=tg;
+  P.happy=[];for(const sx of[-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.01,8,16,Math.PI),basic(0x2a1a14));a.position.set(sx*0.095,0.24,0.238);a.visible=false;h.add(a);P.happy.push(a)}
+  P.tears=[];for(const sx of[-1,1]){const t=new THREE.Mesh(new THREE.SphereGeometry(0.018,14,10),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:0.95}));t.scale.set(1,1.5,0.5);t.position.set(sx*0.1,0.19,0.245);t.visible=false;h.add(t);P.tears.push(t)}
+  P.brows=[];P.pout=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.009,8,16),basic(0xc8405e));P.pout.position.set(0,0.165,0.248);P.pout.visible=false;h.add(P.pout);
+  const phone = new THREE.Group(); box(phone, 0.16, 0.3, 0.03, 0x22222a, 0, 0, 0);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.27), basic(0xd8f6ea)); scr.position.z = 0.017; phone.add(scr);
+  phone.position.set(0, -0.68, 0.12); phone.rotation.x = Math.PI / 2; phone.visible = false; u.arms[1].add(phone);
+  p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
+  return p}
+
+
+const MODELS = { 'isfp-f': () => mkS('F'), 'isfp-m': () => mkS('A'), 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
 
 const FACE = {
   smile() {},
@@ -438,7 +493,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = null; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -508,6 +563,20 @@ const Scene3D = {
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'drawings') { const R = this.sets.room; if (!R.userData.draw) { const grp = new THREE.Group(); const r = rng(9);
+        for (let i = 0; i < 14; i++) { const tex = canvasTex(120, 150, (x, w, h) => { x.fillStyle = '#fffdf6'; x.fillRect(0, 0, w, h); x.strokeStyle = '#c9b48a'; x.lineWidth = 8; x.strokeRect(4, 4, w - 8, h - 8);
+            x.fillStyle = ['#ffe0f0', '#d8f6ea', '#fff3c4', '#cde9ff'][i % 4]; x.fillRect(16, 16, w - 32, h - 32); x.strokeStyle = '#5a4a3a'; x.lineWidth = 4;
+            x.fillStyle = '#8ab8e8'; x.beginPath(); x.ellipse(w / 2, 128, 30, 26, 0, Math.PI, 0); x.fill(); x.fillStyle = '#ffe3cf'; x.beginPath(); x.arc(w / 2, 72, 26, 0, Math.PI * 2); x.fill(); x.stroke(); x.fillStyle = '#5a4a3a'; x.beginPath(); x.arc(w / 2, 62, 27, Math.PI * 1.05, Math.PI * 1.95); x.fill(); x.beginPath(); x.arc(w / 2 - 9, 74, 3.5, 0, 7); x.arc(w / 2 + 9, 74, 3.5, 0, 7); x.fill(); x.beginPath(); x.arc(w / 2, 82, 7, 0.2, Math.PI - 0.2); x.stroke();
+            x.fillStyle = '#ff6f9f'; x.font = '22px sans-serif'; x.fillText('♥', w / 2 + 14, 40); });
+          const f = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.42), new THREE.MeshBasicMaterial({ map: tex })); f.position.set(-2.0 + (i % 7) * 0.66 + (r() - 0.5) * 0.1, 1.55 + Math.floor(i / 7) * 0.62 + (r() - 0.5) * 0.08, -2.12); f.rotation.z = (r() - 0.5) * 0.15; grp.add(f); }
+        R.add(grp); R.userData.draw = grp; }
+      R.userData.draw.visible = true; }
+    if (kind === 'umbrella') { const u = this.E.userData; if (!u.umb) { const um = new THREE.Group(); // 내 쪽(카메라 쪽)으로 기운 우산
+        const can = new THREE.Mesh(new THREE.ConeGeometry(0.85, 0.36, 18, 1, true), new THREE.MeshLambertMaterial({ color: 0x9df2c8, side: THREE.DoubleSide })); can.position.y = 2.45; um.add(can);
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 6), smooth(0xffffff)); tip.position.y = 2.65; um.add(tip);
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 1.5, 8), smooth(0xdedede)); stick.position.y = 1.65; um.add(stick);
+        um.position.set(0.28, 0, 0.1); um.rotation.set(0.42, 0, -0.12); u.umb = um; this.E.add(um); }
+      u.umb.visible = true; this.umbT = t; }
     if (kind === 'couple') this.coupleT = t;
   },
   updSpecial(t) {

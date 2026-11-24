@@ -14,7 +14,7 @@ const CONFIG = {
 };
 const MBTI = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
 // 지금 열려 있는 상대 (나중에 여기 추가: { mbti:'ISTP', g:'m', file:'istp-m' })
-const PARTNERS = [{ mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }, { mbti: 'INFP', g: 'f', file: 'infp-f' }, { mbti: 'INFP', g: 'm', file: 'infp-m' }];
+const PARTNERS = [{ mbti: 'ISFP', g: 'f', file: 'isfp-f' }, { mbti: 'ISFP', g: 'm', file: 'isfp-m' }, { mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }, { mbti: 'INFP', g: 'f', file: 'infp-f' }, { mbti: 'INFP', g: 'm', file: 'infp-m' }];
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -152,7 +152,7 @@ function fx(f) {
     const add = Math.min(15, to) - tiles.children.length;
     for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
     let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
-  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple') {
+  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple' || kind === 'umbrella') {
     if (use3D()) Scene3D.special(kind);
     Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : kind === 'cakeman' || kind === 'couple' ? 'whoosh' : 'tick');
   } else if (kind === 'seabus') {
