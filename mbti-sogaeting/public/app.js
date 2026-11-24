@@ -152,9 +152,9 @@ function fx(f) {
     const add = Math.min(15, to) - tiles.children.length;
     for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
     let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
-  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus') {
+  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple') {
     if (use3D()) Scene3D.special(kind);
-    Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : 'tick');
+    Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : kind === 'cakeman' || kind === 'couple' ? 'whoosh' : 'tick');
   } else if (kind === 'seabus') {
     if (fxEl.querySelector('.flight')) return;
     fxEl.innerHTML = '<div class="flight"><div class="route">🚌 바다행 버스</div><div class="meta">지금 출발 · 약 2시간 · 도착하면 해 지기 직전</div><div class="row"><span class="left">막차 21:40</span><span class="buy">탈까?</span></div></div>';

@@ -195,11 +195,12 @@
   {
    "id": "s3",
    "title": "상상",
-   "bg": "table",
+   "bg": "window",
    "lines": [
     {
      "expr": "smile",
-     "text": "(창밖을 보다가) 저 아저씨요. 케이크 상자 들고 엄청 급하게 가시죠."
+     "text": "(창밖을 보다가) 저 아저씨요. 케이크 상자 들고 엄청 급하게 가시죠.",
+     "fx": "cakeman"
     },
     {
      "expr": "blush",
@@ -218,7 +219,8 @@
      "react": [
       {
        "expr": "excited",
-       "text": "헐 표정 봐요 ㅋㅋㅋ 진짜 까먹은 얼굴이야."
+       "text": "헐 표정 봐요 ㅋㅋㅋ 진짜 까먹은 얼굴이야.",
+       "fx": "couple"
       },
       {
        "expr": "blush",

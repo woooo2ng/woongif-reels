@@ -263,6 +263,27 @@ function buildTable(r) {
   dateTable(g);
   return g;
 }
+
+// 창가 테이블: 창밖으로 지나가는 사람들(INFP '이야기 지어내기' 장면)
+function buildWindowTable(r) {
+  const g = new THREE.Group(); room(g, { floor: 0xe8c9b0, wall: 0xfbe3ee });
+  windowWall(g, 0xcfeaff, 2.0, 4.6);
+  for (let i = 0; i < 6; i++) { const b = box(g, 0.7, 0.5 + r() * 0.7, 0.05, pick(r, [0xf6d7c3, 0xe3d6f3, 0xd6ead0, 0xffe6b0]), -2.0 + i * 0.8, 1.3, -2.145); b.position.y = 1.15 + b.geometry.parameters.height / 2; }
+  box(g, 4.6, 0.1, 0.05, 0xc9c2bc, 0, 1.1, -2.14);
+  lampPend(g, 0, 2.9, -0.2);
+  dateTable(g);
+  const walk = (o, extra) => { const p = makePerson(rng(o.seed), { shirt: o.shirt, pants: o.pants }); p.scale.setScalar(0.52); p.rotation.y = Math.PI / 2; p.position.set(-3, 1.12, -2.13); p.visible = false; if (extra) extra(p); g.add(p); return p; };
+  const cake = walk({ seed: 31, shirt: 0x6f8fb8, pants: 0x3c4458 }, p => { const u = p.userData;
+    const bx = new THREE.Group(); box(bx, 0.55, 0.38, 0.55, 0xffffff, 0, 0, 0); box(bx, 0.57, 0.06, 0.1, 0xff8fb8, 0, 0, 0); box(bx, 0.1, 0.4, 0.57, 0xff8fb8, 0, 0, 0);
+    bx.position.set(0, 0.25, 0.42); u.hip.add(bx); u.arms.forEach(a => { a.rotation.x = -1.25; }); });
+  const c1 = walk({ seed: 41, shirt: 0xff9fb8, pants: 0x55506a }, p => { const fl = new THREE.Group(); for (let i = 0; i < 5; i++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), smooth([0xff6f9f, 0xffd84d, 0xff9fd0][i % 3])); f.position.set((i - 2) * 0.07, 0.1 + (i % 2) * 0.06, 0); fl.add(f); }
+    box(fl, 0.06, 0.3, 0.06, 0x6fbf6f, 0, -0.12, 0); fl.position.set(0, -0.7, 0.15); p.userData.arms[1].add(fl); p.userData.arms[1].rotation.x = -0.9; });
+  const c2 = walk({ seed: 47, shirt: 0x8fd3ff, pants: 0x3c4458 }, p => { p.userData.arms[1].rotation.x = -2.9; });
+  const bang = new THREE.Sprite(new THREE.SpriteMaterial({ map: canvasTex(64, 64, x => { x.font = '900 50px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineWidth = 6; x.strokeStyle = '#fff'; x.strokeText('!?', 32, 34); x.fillStyle = '#ff5f7a'; x.fillText('!?', 32, 34); }), transparent: true, depthWrite: false }));
+  bang.scale.set(0.22, 0.22, 1); bang.visible = false; g.add(bang);
+  g.userData.walkers = { cake, c1, c2, bang };
+  return g;
+}
 function buildRain(r) {
   const g = new THREE.Group(); room(g, { floor: 0xb9a48c, wall: 0xdfe4ee });
   windowWall(g, 0x6f84a8, 2.0, 4.8);
@@ -363,7 +384,7 @@ function mkISTJ() {
 }
 
 const SKY = {
-  cafe: ['#ffe9d2', '#ffd8b8'], counter: ['#e9f3e6', '#d6ead0'], table: ['#fbe3f0', '#f6d0e4'], rain: ['#a9bdd6', '#c8d6e6'], street: ['#4a4585', '#ffb3a0'], bus: ['#2d2a55', '#4a4585'], room: ['#f3e3f0', '#f3e3f0'], hobby: ['#efe3f6', '#efe3f6'],
+  cafe: ['#ffe9d2', '#ffd8b8'], counter: ['#e9f3e6', '#d6ead0'], table: ['#fbe3f0', '#f6d0e4'], rain: ['#a9bdd6', '#c8d6e6'], street: ['#4a4585', '#ffb3a0'], bus: ['#2d2a55', '#4a4585'], room: ['#f3e3f0', '#f3e3f0'], hobby: ['#efe3f6', '#efe3f6'], window: ['#fbe3f0', '#f6d0e4'],
 };
 // 세트별 카메라·캐릭터 위치
 const SETUP = {
@@ -373,6 +394,7 @@ const SETUP = {
   rain:    { cam: [-0.3, 1.55, 3.5], look: [0, 1.25, 0], fov: 38, char: [0, 0, 0], sit: true, light: { hemi: 1.25, dir: 0.8, sun: 0xcfe0ff } },
   bus:     { cam: [0.3, 1.45, 3.3], look: [0, 1.15, -0.4], fov: 40, char: [0, 0, -0.45], sit: true, legsOn: true, light: { hemi: 1.4, dir: 0.9, sun: 0xffe0c0 } },
   room:    { cam: [0.2, 1.4, 3.6], look: [0, 1.1, 0], fov: 40, char: [0, 0, 0.1], sit: false, light: { hemi: 1.6, dir: 1.0, sun: 0xffe8f0 } },
+  window:  { cam: [0.5, 1.6, 3.7], look: [0, 1.45, 0], fov: 44, char: [0.35, 0, 0], sit: true, light: { hemi: 1.75, dir: 1.1, sun: 0xfff0e0 } },
   hobby:   { cam: [-0.4, 1.4, 3.6], look: [-0.4, 1.0, 0], fov: 40, char: [0.35, 0, 0.1], sit: false, light: { hemi: 1.6, dir: 1.0, sun: 0xfff0e0 } },
   street:  { cam: [0.5, 1.3, 4.8], look: [0, 1.05, 0], fov: 40, char: [0.2, 0, 0.4], sit: false, light: { hemi: 1.45, dir: 1.0, sun: 0xffd2b0 } },
 };
@@ -389,7 +411,7 @@ const Scene3D = {
       const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3, 7, 8); scene.add(dir);
       const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
       const r = rng(4040);
-      const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r), bus: buildBus(r), room: buildRoom(r), hobby: buildRoom(r, { hobbies: true, wall: 0xefe3f6 }) };
+      const sets = { cafe: buildCafe(r), counter: buildCounter(r), table: buildTable(r), rain: buildRain(r), street: buildStreet(r), bus: buildBus(r), room: buildRoom(r), hobby: buildRoom(r, { hobbies: true, wall: 0xefe3f6 }), window: buildWindowTable(r) };
       const T = mkISTJ(); T.visible = false; sets.cafe.add(T); sets.cafe.userData.istj = T;
       Object.values(sets).forEach(s => { s.visible = false; scene.add(s); });
       const E = mkE(); scene.add(E); this.models = { 'enfp-f': E }; this.modelId = 'enfp-f';
@@ -416,7 +438,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = null; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = null; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -485,6 +507,8 @@ const Scene3D = {
     if (kind === 'bus') { this.busT = t; this.sets.street.userData.bus.visible = true; }
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
+    if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'couple') this.coupleT = t;
   },
   updSpecial(t) {
     if (this.set === 'counter' && this.staffT != null) { const st = this.sets.counter.userData.staff, u = st.userData, a = t - this.staffT;
@@ -495,6 +519,15 @@ const Scene3D = {
         const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c, transparent: true, depthWrite: false })); sp.scale.set(0.22, 0.22, 1); sp.visible = false; this.sets.rain.add(sp); this.notes.push(sp); } }
       const a = this.notesT == null ? 99 : t - this.notesT;
       this.notes.forEach((n, i) => { const lt = ((a * 0.45) + i / 7) % 1; n.visible = a < 4.5; n.position.set(-0.6 + (i % 4) * 0.4 + Math.sin(a * 2 + i) * 0.08, 1.4 + lt * 1.1, 0.2); n.material.opacity = Math.sin(lt * Math.PI); });
+    }
+    if (this.set === 'window') { const W = this.sets.window.userData.walkers;
+      const go = (p, t0, speed, ph, dx = 0) => { const a = t0 == null ? -1 : t - t0, x = -2.4 + a * speed + dx; p.visible = a >= 0 && x > -2.3 && x < 2.3; if (!p.visible) return x;
+        const u = p.userData, sw = Math.sin(a * ph) * 0.7; p.position.x = x; u.legs[0].rotation.x = sw; u.legs[1].rotation.x = -sw; p.position.y = 1.12 + Math.abs(Math.sin(a * ph)) * 0.03; return x; };
+      // 케이크 아저씨: 엄청 급하게
+      if (W.cake.visible || this.cakeT != null) go(W.cake, this.cakeT, 1.25, 14);
+      // 300일 커플: 꽃다발 든 쪽 + 머리 짚는 쪽(까먹음)
+      go(W.c1, this.coupleT, 0.55, 7, 0.38); const x2 = go(W.c2, this.coupleT, 0.55, 7);
+      W.bang.visible = W.c2.visible; if (W.bang.visible) W.bang.position.set(x2, 1.92 + Math.sin(t * 6) * 0.02, -2.0);
     }
     if (this.set === 'bus') this.sets.bus.userData.city.offset.x = (t * 0.06) % 1;
     if (this.istjT != null) { // ISTJ: 정자세로 문에서 테이블까지 걸어와 꾸벅
