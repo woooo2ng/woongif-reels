@@ -30,4 +30,4 @@
 ## 배포 (Cloudflare Workers · 정적 사이트)
 - `wrangler.jsonc`의 `name`(mbti-sogaeting)과 대시보드 Worker 이름이 같아야 함
 - Worker → Settings → Build: Git 저장소 `woongif-reels`, Branch `sogaeting`(main에 합치면 `main`), **Root directory `mbti-sogaeting`**, Build command 비움, Deploy command `npx wrangler deploy`
-- 주소: `mbti-sogaeting.<계정 서브도메인>.workers.dev`
+- 주소: https://mbti-sogaeting.dopaminpet-15a7fee7.workers.dev (Worker `mbti-sogaeting`, 2026-11-24 배포)
