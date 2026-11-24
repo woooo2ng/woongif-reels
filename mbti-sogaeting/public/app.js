@@ -152,7 +152,7 @@ function fx(f) {
     const add = Math.min(15, to) - tiles.children.length;
     for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
     let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
-  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple' || kind === 'umbrella') {
+  } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple' || kind === 'umbrella' || kind === 'fireworks') {
     if (use3D()) Scene3D.special(kind);
     Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : kind === 'cakeman' || kind === 'couple' ? 'whoosh' : 'tick');
   } else if (kind === 'seabus') {
@@ -213,8 +213,8 @@ async function startGame(file) {
   try { await document.fonts.ready; } catch {}
   if (window.Scene3D && !Scene3D.ready && !Scene3D.failed) { Scene3D.failed = !Scene3D.init($('#c3d')); }
   if (use3D()) { Scene3D.attach(stage); Scene3D.setModel(S.data.model || S.partner); }
-  stage.className = 'stage cafe' + (use3D() ? ' three' : ''); setProg(0);
-  if (use3D()) { Scene3D.setSet('cafe'); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
+  const first = d.scenes[0].bg; stage.className = 'stage ' + first + (use3D() ? ' three' : ''); setProg(0);
+  if (use3D()) { Scene3D.setSet(first); Scene3D.setExpr('smile', 'idle'); Scene3D.hideChar(); }
   setTimeout(() => Snd.play('bell'), 400);
   $('#scene-chip').textContent = d.intro.chip; statChip('');
   charEl.style.opacity = 0;
