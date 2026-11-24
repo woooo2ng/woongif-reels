@@ -557,7 +557,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -627,6 +627,14 @@ const Scene3D = {
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'tickets') { const R = this.sets.room; if (!R.userData.tix) { const grp = new THREE.Group(); const r = rng(23);
+        const places = ['강릉', '여수', '경주', '전주', '부산', '속초', '통영', '안동', '순천', '군산', '목포', '포항'];
+        box(grp, 1.5, 1.0, 0.03, 0xc9a77a, 1.05, 2.05, -2.15);
+        places.forEach((pl, i) => { const tex = canvasTex(160, 80, (x, w, h) => { x.fillStyle = '#fffaf0'; x.fillRect(0, 0, w, h); x.fillStyle = ['#ff8fb8', '#8fd3ff', '#9df2c8'][i % 3]; x.fillRect(0, 0, w, 18);
+            x.fillStyle = '#2a2a30'; x.font = 'bold 26px sans-serif'; x.textAlign = 'center'; x.fillText(pl, w / 2, 50); x.font = '14px sans-serif'; x.fillText('2인 · 당일', w / 2, 70); });
+          const t = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.17), new THREE.MeshBasicMaterial({ map: tex })); t.position.set(0.55 + (i % 4) * 0.34 + (r() - 0.5) * 0.04, 2.38 - Math.floor(i / 4) * 0.28 + (r() - 0.5) * 0.04, -2.12); t.rotation.z = (r() - 0.5) * 0.2; grp.add(t); });
+        R.add(grp); R.userData.tix = grp; }
+      R.userData.tix.visible = true; }
     if (kind === 'helmets') { const R = this.sets.room; if (!R.userData.helm) { const grp = new THREE.Group();
         box(grp, 1.3, 0.06, 0.3, 0x8a6a52, 0.95, 1.75, -2.05);
         [[-0.32, 0x1a1a1e], [0.32, 0xffffff]].forEach(([x, c], i) => { const hm = new THREE.Group();
