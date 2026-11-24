@@ -1,0 +1,664 @@
+{
+ "id": "istp-m",
+ "version": 1,
+ "mbti": "ISTP",
+ "gender": "m",
+ "label": "ISTP 남자",
+ "color": "#2a2a30",
+ "img": "img/istp-m/",
+ "model": "istp-m",
+ "intro": {
+  "chip": "토요일 PM 2:00 · 합정동 카페",
+  "text": "소개팅 장소에 도착했다. 문에 달린 종이 딸랑— 울린다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "헬멧 하나 더 산다는 거",
+   "B": "'걱정해 주는 거예요?' 한 거",
+   "C": "중간이 없다는 거"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람",
+  "drafts": [
+   "ㅇ",
+   "ㅇㅇ",
+   "오늘",
+   "잘 들어갔",
+   "ㅇㅇ"
+  ],
+  "msg": "잘 들어갔어요?",
+  "pics": []
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "cafe",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(고개만 까딱) …안녕하세요."
+    },
+    {
+     "expr": "smile",
+     "text": "기다리기 싫어서 미리 시켜 놨어요. 라떼 두 잔."
+    },
+    {
+     "expr": "smile",
+     "text": "…싫으면 바꿔요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "T",
+      "J"
+     ],
+     "text": "오 센스 있다. 라떼 좋아해요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "…다행."
+      },
+      {
+       "expr": "blush",
+       "text": "(무표정인데 귀가 빨개짐)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "사실 저 라떼를 못 마셔서요 ㅎㅎ",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아."
+      },
+      {
+       "expr": "smile",
+       "text": "(말없이 일어나서 바꿔 옴. 30초 컷)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "E"
+     ],
+     "text": "말씀이 별로 없으시네요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "…네. 원래 그래요."
+      },
+      {
+       "expr": "blush",
+       "text": "근데 오늘은 좀 하려고 했어요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "계산",
+   "bg": "counter",
+   "chip": "계산 끝내는 데 걸린 시간 3초",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(카운터 앞) 계산은 아까 했어요."
+    },
+    {
+     "expr": "smile",
+     "text": "다음엔 그쪽이 사요. 그럼 공평하잖아요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "그럼 다음엔 제가 맛있는 거 살게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…'다음'."
+      },
+      {
+       "expr": "blush",
+       "text": "(다음 약속이 생긴 걸 확인함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "T",
+      "J"
+     ],
+     "text": "아니에요, 반반 해요! 바로 보낼게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아… 네."
+      },
+      {
+       "expr": "smile",
+       "text": "(1원 단위까지 정확히 받음. 4,750원)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "감사해요! 잘 마실게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네."
+      },
+      {
+       "expr": "smile",
+       "text": "(속으로: 다음엔 저 사람이 사겠지. 계산 끝)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "주말",
+   "bg": "table",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "주말이요? 혼자 바이크 타고 아무 데나 가요."
+    },
+    {
+     "expr": "smile",
+     "text": "지난주엔 그냥 동해 갔다 왔어요. 당일로."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "P",
+      "E"
+     ],
+     "text": "헐 멋있다. 저도 뒤에 한번 타 보고 싶어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "smile",
+       "text": "헬멧 하나 더 사야겠네요."
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "J"
+     ],
+     "text": "위험하지 않아요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "안전하게 타요."
+      },
+      {
+       "expr": "blush",
+       "text": "…걱정해 주는 거예요? (입꼬리 1mm 올라감)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I",
+      "S"
+     ],
+     "text": "저는 집이 제일 좋아요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋ"
+      },
+      {
+       "expr": "smile",
+       "text": "저도 바이크 아니면 집에 있어요. 중간이 없어요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "웃음",
+   "bg": "rain",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(비 오는 창밖을 보다가) …"
+    },
+    {
+     "expr": "happy",
+     "text": "아까 그 얘기요. 사실 계속 웃겼는데 참고 있었어요. …크흡."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "웃는 거 처음 봐요. 웃으니까 좋다",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(다시 무표정 하려다가 실패)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E",
+      "N"
+     ],
+     "text": "뭐가 웃겼는데요? ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그냥… 다 웃겼어요."
+      },
+      {
+       "expr": "smile",
+       "text": "(설명은 끝까지 안 함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "표정이 없어서 재미없으신 줄 알았어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아."
+      },
+      {
+       "expr": "smile",
+       "text": "얼굴이 원래 이래요. 재미없었으면 벌써 갔어요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "우산",
+   "bg": "street",
+   "lines": [
+    {
+     "expr": "surprised",
+     "text": "(나오자마자 비가 쏟아진다. 말없이 편의점 쪽으로 뛰어간다)"
+    },
+    {
+     "expr": "smile",
+     "text": "(1분 뒤, 우산 하나 들고 돌아옴) …하나밖에 없었어요.",
+     "fx": "umbrella"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "말도 없이 가서 놀랐잖아요 ㅋㅋ 고마워요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "…말하면 따라올 것 같아서."
+      },
+      {
+       "expr": "blush",
+       "text": "(우산을 내 쪽으로 조금 더 기울임)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "J"
+     ],
+     "text": "그쪽이 쓰세요. 저는 뛰어가면 돼요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "pout",
+       "text": "…그럼 산 의미가 없잖아요."
+      },
+      {
+       "expr": "smile",
+       "text": "(우산을 내 손에 쥐여 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "얼마예요? 보내 드릴게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋ 4,500원."
+      },
+      {
+       "expr": "smile",
+       "text": "…농담이에요. 그건 그냥 받아요."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "chip": "보낸 글자 7자 · 고민한 시간 40분",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(침대에 누워서 폰을 40분째 들고 있다)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "smile",
+     "text": "…",
+     "act": "phone"
+    },
+    {
+     "expr": "smile",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "네! 덕분에 우산 쓰고 잘 왔어요 ㅎㅎ 오늘 즐거웠어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "ㅇㅇ",
+       "fx": "kme"
+      },
+      {
+       "expr": "blush",
+       "text": "(그리고 그 답장을 다섯 번 다시 읽음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N",
+      "P"
+     ],
+     "text": "아까 {cb:s3} 진짜예요? ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "진짜.",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "(1초 만에 답장함. 평소 답장 속도 3시간)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T",
+      "J"
+     ],
+     "text": "넵 잘 들어왔어요! 푹 쉬세요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "넵.",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(대화 끝. …인 줄 알았는데 10분 뒤 '오늘 재밌었어요'가 옴)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "cafe",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(오늘은 먼저 와서 기다리고 있었다)"
+    },
+    {
+     "expr": "blush",
+     "text": "…다음 주에도 시간 돼요? 가 보고 싶은 데 있으면 말해요. 데려다줄게요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "좋아요. 어디든 좋아요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "happy",
+       "text": "(무표정이 1초 만에 무너짐)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E",
+      "J"
+     ],
+     "text": "이번엔 제가 코스 짜 올게요!",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "오."
+      },
+      {
+       "expr": "happy",
+       "text": "그럼 저는 운전만 할게요. 편하다."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I",
+      "J"
+     ],
+     "text": "음… 일정 보고 연락드릴게요",
+     "score": 0,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네. 편할 때."
+      },
+      {
+       "expr": "smile",
+       "text": "(그날 밤 폰을 평소보다 자주 확인함)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 헬멧 두 개",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "smile",
+   "set": "room",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, ISTP의 현관.",
+    "헬멧이 두 개 걸려 있다.",
+    "하나는 처음부터 내 머리 사이즈였다."
+   ],
+   "stat": "같이 달린 거리 3,200km",
+   "punch": "말 대신 헬멧을 하나 더 샀다",
+   "theme": [
+    "#3a3a48",
+    "#ececf2",
+    "#ffd6d6"
+   ],
+   "special": "helmets"
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "smile",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 3시간 만에 카톡이 왔다.",
+    "\"ㅇㅇ 재밌었음\"",
+    "\"다음 주 토요일 2시. 데리러 감\""
+   ],
+   "stat": "글자 수 13자 · 약속 확정",
+   "punch": "물음표 없이 애프터 확정",
+   "theme": [
+    "#c24a4a",
+    "#f6e6e6",
+    "#e6ebf5"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🏍️",
+   "name": "바이크 모임 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ISTP한테 연락이 왔다.",
+    "\"이번 주 바이크 모임 올래요?\"",
+    "…모임 인원 6명. 전부 말이 없다."
+   ],
+   "stat": "모임 하루 대화량 12마디",
+   "punch": "말 없는 친구가 6명 생겼다",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f0f0f0"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "✂️",
+   "name": "깔끔한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "cafe",
+   "lines": [
+    "ISTP는 거절도 깔끔하다.",
+    "\"오늘 감사했어요. 잘 맞는 분 만나세요.\"",
+    "…읽고 나니 오히려 후련하다."
+   ],
+   "stat": "거절 메시지 18자 · 고민 시간 0초",
+   "punch": "돌려 말하지 않는 사람",
+   "theme": [
+    "#4a4a58",
+    "#ececf2",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "오늘 말한 단어 87개",
+   "웃음 참은 횟수 6번",
+   "답장 속도 3시간 (나한테만 1초)"
+  ]
+ }
+}

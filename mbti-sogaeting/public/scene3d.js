@@ -231,19 +231,83 @@ function mkS(v){ // ISFP: F = 좀비 롱폼 확정 B안(민트 후드+바보털)
   return p}
 
 
-const MODELS = { 'isfp-f': () => mkS('F'), 'isfp-m': () => mkS('A'), 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
+// ---------- ISTP (남: 좀비 롱폼 확정안 / 여: 시안 A 단발 + 같은 바람막이) — 눈은 납작한 눈 + 일자 라인(P.lids) ----------
+function mkT(v){ // ISTP: Z = 좀비 롱폼 확정안(남) / A·B·C = 여자 시안
+  const fem=v!=='Z';
+  const shirt={Z:0x2a2a30,A:0x2a2a30,B:0x9aa0aa,C:0xf6f6f2}[v], pants={Z:0x3d4e6a,A:0x3d4e6a,B:0x2a2a30,C:0x4a5f86}[v];
+  const p=makePerson(rng(401+'ZABC'.indexOf(v)),{shirt,pants});const u=p.userData,h=u.head;
+  const SK=0xffe3cf;h.children[0].material=new THREE.MeshLambertMaterial({color:SK,emissive:0x2a1a10});u.arms.forEach(a=>a.children[1].material=lamb(SK));
+  h.children[1].visible=false;
+  h.children.forEach(c=>{const g=c.geometry&&c.geometry.parameters;if(g&&((g.width===0.05&&g.height===0.07)||(g.width===0.07&&g.height===0.035)))c.visible=false});
+  const M=(w,hh,d,c,x,y,z,par=u.hip)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,hh,d),lamb(c));b.position.set(x,y,z);par.add(b);return b};
+  if(v==='Z'||v==='A'){ // 검은 바람막이 + 빨간 줄 + 지퍼
+    M(0.015,0.6,0.02,0xb8b8c0,0.04,0.32,0.165);for(const s of[-1,1]){const c=M(0.14,0.08,0.06,0x202026,s*0.1,0.64,0.12);c.rotation.z=s*0.3}
+    M(0.53,0.04,0.33,0xc24a4a,0,0.2,0)}
+  if(v==='B'){ // 회색 후드집업 + 안에 검은 티
+    M(0.16,0.5,0.02,0x2a2a30,0,0.32,0.162);for(const s of[-1,1])M(0.022,0.18,0.02,0xffffff,s*0.1,0.5,0.172);
+    const hood=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.07,10,24),lamb(0x8a909a));hood.rotation.x=Math.PI/2;hood.position.set(0,0.66,-0.07);u.hip.add(hood)}
+  if(v==='C'){ // 흰 티 + 열린 데님 오버셔츠
+    u.arms.forEach(a=>a.children[0].material=lamb(0x6a87b8));for(const s of[-1,1])M(0.19,0.66,0.34,0x6a87b8,s*0.175,0.31,0.002)}
+  const hc={Z:0x18161a,A:0x18161a,B:0x2a2020,C:0x1e1a1c}[v],m=smooth(hc);
+  const P={eyes:[],hls:[],lashes:[],cheeks:[],lids:[]};
+  for(const sx of[-1,1]){
+    const ex=0.095;const e=new THREE.Mesh(new THREE.SphereGeometry(0.043,20,16),basic(0x2a1a14));e.scale.set(0.95,0.72,0.5);e.userData.bs=e.scale.clone();e.position.set(sx*ex,0.244,0.232);h.add(e);P.eyes.push(e);
+    const hl=new THREE.Mesh(new THREE.SphereGeometry(0.014,12,8),basic(0xffffff));hl.position.set(sx*ex+0.014,0.252,0.252);h.add(hl);P.hls.push(hl);
+    { // 졸린 듯 시크한 눈: 위아래로 납작한 눈 + 위에 일자 라인 (웃음·놀람에선 숨김)
+      const ln=new THREE.Mesh(new THREE.BoxGeometry(0.092,0.013,0.012),basic(0x1a1210));ln.position.set(sx*ex,0.272,0.256);h.add(ln);P.lids.push(ln);
+      if(fem){const la=new THREE.Mesh(new THREE.BoxGeometry(0.026,0.011,0.011),basic(0x1a1210));la.position.set(sx*(ex+0.05),0.277,0.25);la.rotation.z=sx*0.5;h.add(la);P.lids.push(la)}
+    }
+    const br=new THREE.Mesh(new THREE.BoxGeometry(fem?0.058:0.065,fem?0.012:0.014,0.012),basic(0x18161a));br.position.set(sx*0.095,0.318,0.262);br.rotation.z=0;h.add(br);
+    const ck=new THREE.Mesh(new THREE.CircleGeometry(0.04,20),new THREE.MeshBasicMaterial({color:0xff9fb8,transparent:true,opacity:0.45}));ck.position.set(sx*0.15,0.175,0.216);ck.rotation.y=sx*0.35;h.add(ck);P.cheeks.push(ck)}
+  const sm=new THREE.Mesh(new THREE.TorusGeometry(0.024,0.01,8,16,Math.PI),basic(0xb85060));sm.rotation.z=Math.PI;sm.position.set(0,0.162,0.246);h.add(sm);P.smile=sm;
+  if(v==='Z'){const ba=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.028,0.006),basic(0xf6d6ae));ba.position.set(0.14,0.2,0.222);ba.rotation.set(0,0.35,0.45);h.add(ba)}
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.262,40,20,0,Math.PI*2,0,Math.PI*0.5),m);cap.position.y=0.25;cap.rotation.x=-0.22;h.add(cap);
+  if(v==='Z'){
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.264,40,24,Math.PI,Math.PI,0,Math.PI*0.6),m);bk.position.y=0.25;h.add(bk);
+    for(const sx of[-1,1]){const b=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);b.scale.set(0.55,0.28,0.42);b.position.set(sx*0.08,0.39,0.155);b.rotation.z=sx*0.35;h.add(b)}
+  } else if(v==='A'){ // 매끈한 단발 + 일자 앞머리, 끝은 안으로 말림
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.272,40,24,Math.PI,Math.PI,0,Math.PI*0.8),m);bk.position.y=0.25;h.add(bk);
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.1,24,16),m);sd.scale.set(0.6,1.45,1.0);sd.position.set(sx*0.225,0.15,0.03);h.add(sd);
+      const curl=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),m);curl.scale.set(0.9,0.6,1.0);curl.position.set(sx*0.2,0.02,0.06);h.add(curl)}
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(1.02,0.24,0.42);bang.position.set(0,0.39,0.155);h.add(bang);
+  } else if(v==='B'){ // 긴 머리 하나로 묶음 + 잔머리
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI,Math.PI,0,Math.PI*0.66),m);bk.position.y=0.25;h.add(bk);
+    const tie=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.012,8,14),smooth(0x22222a));tie.position.set(0.2,0.06,0.06);tie.rotation.set(1.2,0,0.4);h.add(tie);
+    const tail=new THREE.Mesh(new THREE.SphereGeometry(0.08,16,12),m);tail.scale.set(0.8,2.1,0.8);tail.position.set(0.23,-0.08,0.1);tail.rotation.z=0.25;h.add(tail);
+    const lead=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),m);lead.scale.set(0.7,1.4,0.8);lead.position.set(0.21,0.12,0.04);h.add(lead);
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(1.0,0.24,0.42);bang.position.set(0,0.395,0.15);h.add(bang);
+    for(const sx of[-1,1]){const w=new THREE.Mesh(new THREE.SphereGeometry(0.035,12,10),m);w.scale.set(0.5,1.8,0.6);w.position.set(sx*0.2,0.24,0.14);h.add(w)}
+  } else { // C: 귀 보이는 숏컷 + 실버 귀걸이
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI,Math.PI,0,Math.PI*0.6),m);bk.position.y=0.25;h.add(bk);
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(0.95,0.25,0.42);bang.position.set(0.04,0.395,0.15);bang.rotation.z=0.2;h.add(bang);
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),m);sd.scale.set(0.5,1.1,0.9);sd.position.set(sx*0.24,0.27,0.04);h.add(sd);
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(0.022,0.006,8,16),smooth(0xd8dce4));ring.position.set(sx*0.262,0.13,0.03);ring.rotation.y=Math.PI/2;h.add(ring)}
+  }
+  p.scale.setScalar(0.8);h.scale.setScalar(1.4);h.position.y=0.62;
+  const mo=new THREE.Mesh(new THREE.SphereGeometry(0.04,20,14),basic(0xb8344f));mo.scale.set(1,0.7,0.4);mo.position.set(0,0.16,0.24);mo.visible=false;h.add(mo);P.open=mo;
+  const tg=new THREE.Mesh(new THREE.SphereGeometry(0.022,14,10),basic(0xff8fa6));tg.scale.set(1,0.5,0.4);tg.position.set(0,0.145,0.25);tg.visible=false;h.add(tg);P.tongue=tg;
+  P.happy=[];for(const sx of[-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.01,8,16,Math.PI),basic(0x2a1a14));a.position.set(sx*0.095,0.24,0.264);a.visible=false;h.add(a);P.happy.push(a)}
+  P.tears=[];for(const sx of[-1,1]){const t=new THREE.Mesh(new THREE.SphereGeometry(0.018,14,10),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:0.95}));t.scale.set(1,1.5,0.5);t.position.set(sx*0.1,0.19,0.245);t.visible=false;h.add(t);P.tears.push(t)}
+  P.brows=[];P.pout=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.009,8,16),basic(0xc8405e));P.pout.position.set(0,0.165,0.248);P.pout.visible=false;h.add(P.pout);
+  const phone = new THREE.Group(); box(phone, 0.16, 0.3, 0.03, 0x22222a, 0, 0, 0);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.27), basic(0xdfe4ee)); scr.position.z = 0.017; phone.add(scr);
+  phone.position.set(0, -0.68, 0.12); phone.rotation.x = Math.PI / 2; phone.visible = false; u.arms[1].add(phone);
+  p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
+  return p}
+
+const MODELS = { 'istp-m': () => mkT('Z'), 'istp-f': () => mkT('A'), 'isfp-f': () => mkS('F'), 'isfp-m': () => mkS('A'), 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
 
 const FACE = {
   smile() {},
-  excited(P) { P.smile.visible = false; P.open.visible = true; P.tongue.visible = true; P.hls.forEach(h => h.scale.setScalar(1.6)); P.eyes.forEach(e => e.scale.set(1, 1.35, 0.5)); },
-  happy(P) { P.eyes.forEach(e => e.visible = false); P.hls.forEach(h => h.visible = false); P.happy.forEach(a => a.visible = true); P.smile.visible = false; P.open.visible = true; P.open.scale.set(1.1, 0.6, 0.4); P.cheeks.forEach(c => c.scale.setScalar(1.2)); },
+  excited(P) { (P.lids || []).forEach(l => l.visible = false); P.smile.visible = false; P.open.visible = true; P.tongue.visible = true; P.hls.forEach(h => h.scale.setScalar(1.6)); P.eyes.forEach(e => e.scale.set(1, 1.35, 0.5)); },
+  happy(P) { (P.lids || []).forEach(l => l.visible = false); P.eyes.forEach(e => e.visible = false); P.hls.forEach(h => h.visible = false); P.happy.forEach(a => a.visible = true); P.smile.visible = false; P.open.visible = true; P.open.scale.set(1.1, 0.6, 0.4); P.cheeks.forEach(c => c.scale.setScalar(1.2)); },
   blush(P) { P.eyes.forEach(e => e.scale.set(0.9, 0.75, 0.5)); P.cheeks.forEach(c => { c.scale.set(1.7, 1.3, 1); c.material.opacity = 0.95; c.material.color.set(0xff7a9a); }); P.smile.scale.setScalar(0.7); },
   pout(P) { P.smile.visible = false; P.pout.visible = true; P.cheeks.forEach(c => { c.scale.setScalar(1.45); c.material.opacity = 0.9; }); P.brows.forEach((b, i) => { b.visible = true; b.rotation.z = i ? -0.35 : 0.35; }); },
-  teary(P) { P.tears.forEach(t => t.visible = true); P.hls.forEach(h => h.scale.setScalar(1.8)); P.eyes.forEach(e => e.scale.set(1, 1.3, 0.5)); P.smile.rotation.z = 0; P.smile.position.y = 0.14; P.smile.scale.setScalar(0.8); P.brows.forEach((b, i) => { b.visible = true; b.rotation.z = i ? 0.35 : -0.35; }); },
-  surprised(P) { P.smile.visible = false; P.open.visible = true; P.open.scale.set(0.7, 0.95, 0.4); P.eyes.forEach(e => e.scale.set(1.05, 1.45, 0.5)); P.brows.forEach(b => { b.visible = true; b.position.y = 0.345; }); },
+  teary(P) { (P.lids || []).forEach(l => l.visible = false); P.tears.forEach(t => t.visible = true); P.hls.forEach(h => h.scale.setScalar(1.8)); P.eyes.forEach(e => e.scale.set(1, 1.3, 0.5)); P.smile.rotation.z = 0; P.smile.position.y = 0.14; P.smile.scale.setScalar(0.8); P.brows.forEach((b, i) => { b.visible = true; b.rotation.z = i ? 0.35 : -0.35; }); },
+  surprised(P) { (P.lids || []).forEach(l => l.visible = false); P.smile.visible = false; P.open.visible = true; P.open.scale.set(0.7, 0.95, 0.4); P.eyes.forEach(e => e.scale.set(1.05, 1.45, 0.5)); P.brows.forEach(b => { b.visible = true; b.position.y = 0.345; }); },
 };
 function resetFace(P) {
-  P.eyes.forEach(e => { e.visible = true; e.scale.set(0.9, 1.2, 0.5); }); P.hls.forEach(h => { h.visible = true; h.scale.setScalar(1); });
+  P.eyes.forEach(e => { e.visible = true; if (e.userData.bs) e.scale.copy(e.userData.bs); else e.scale.set(0.9, 1.2, 0.5); }); (P.lids || []).forEach(l => l.visible = true); P.hls.forEach(h => { h.visible = true; h.scale.setScalar(1); });
   P.cheeks.forEach(c => { c.scale.setScalar(1); c.material.opacity = 0.75; c.material.color.set(0xff9fb8); });
   P.smile.visible = true; P.smile.rotation.z = Math.PI; P.smile.position.y = 0.165; P.smile.scale.setScalar(1);
   [P.open, P.tongue, P.pout, ...P.happy, ...P.tears, ...P.brows].forEach(x => x.visible = false);
@@ -493,7 +557,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -563,6 +627,15 @@ const Scene3D = {
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'helmets') { const R = this.sets.room; if (!R.userData.helm) { const grp = new THREE.Group();
+        box(grp, 1.3, 0.06, 0.3, 0x8a6a52, 0.95, 1.75, -2.05);
+        [[-0.32, 0x1a1a1e], [0.32, 0xffffff]].forEach(([x, c], i) => { const hm = new THREE.Group();
+          const sh = new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 20, 0, Math.PI * 2, 0, Math.PI * 0.62), smooth(c)); hm.add(sh);
+          const st = new THREE.Mesh(new THREE.SphereGeometry(0.263, 32, 20, -0.09, 0.18, 0, Math.PI * 0.62), smooth(i ? 0x9df2c8 : 0xc24a4a)); hm.add(st);
+          const vz = new THREE.Mesh(new THREE.SphereGeometry(0.25, 24, 12, -0.9, 1.8, Math.PI * 0.32, Math.PI * 0.28), new THREE.MeshLambertMaterial({ color: 0x334055, transparent: true, opacity: 0.8 })); vz.rotation.y = Math.PI / 2; hm.add(vz);
+          hm.position.set(0.95 + x, 1.8, -1.95); hm.rotation.y = -Math.PI / 2; grp.add(hm); });
+        R.add(grp); R.userData.helm = grp; }
+      R.userData.helm.visible = true; }
     if (kind === 'drawings') { const R = this.sets.room; if (!R.userData.draw) { const grp = new THREE.Group(); const r = rng(9);
         for (let i = 0; i < 14; i++) { const tex = canvasTex(120, 150, (x, w, h) => { x.fillStyle = '#fffdf6'; x.fillRect(0, 0, w, h); x.strokeStyle = '#c9b48a'; x.lineWidth = 8; x.strokeRect(4, 4, w - 8, h - 8);
             x.fillStyle = ['#ffe0f0', '#d8f6ea', '#fff3c4', '#cde9ff'][i % 4]; x.fillRect(16, 16, w - 32, h - 32); x.strokeStyle = '#5a4a3a'; x.lineWidth = 4;
