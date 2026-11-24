@@ -557,7 +557,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.sets.room.userData.duo) this.sets.room.userData.duo.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -627,6 +627,14 @@ const Scene3D = {
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'duo') { const R = this.sets.room; if (!R.userData.duo) { const grp = new THREE.Group();
+        box(grp, 1.5, 0.9, 0.06, 0x22222a, 1.05, 2.05, -2.13);
+        const tex = canvasTex(300, 170, (x, w, h) => { const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#6f5fd8'); gr.addColorStop(1, '#ff8fb8'); x.fillStyle = gr; x.fillRect(0, 0, w, h);
+          x.fillStyle = '#fff'; x.font = 'bold 30px sans-serif'; x.textAlign = 'center'; x.fillText('STAGE CLEAR!', w / 2, 70); x.font = 'bold 26px sans-serif'; x.fillStyle = '#8fd3ff'; x.fillText('1P', w / 2 - 50, 125); x.fillStyle = '#ffe08a'; x.fillText('♥', w / 2, 125); x.fillStyle = '#ffb3c8'; x.fillText('2P', w / 2 + 50, 125); });
+        const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.38, 0.78), new THREE.MeshBasicMaterial({ map: tex })); scr.position.set(1.05, 2.05, -2.09); grp.add(scr);
+        [[0.75, 0x8fd3ff], [1.35, 0xffb3c8]].forEach(([x, c]) => { const pad = new THREE.Group(); box(pad, 0.3, 0.06, 0.16, c, 0, 0, 0); for (const s of [-1, 1]) { const g2 = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), lamb(c)); g2.position.set(s * 0.14, 0, 0.03); pad.add(g2); } pad.position.set(x, 1.5, -2.0); pad.rotation.x = 1.2; grp.add(pad); });
+        R.add(grp); R.userData.duo = grp; }
+      R.userData.duo.visible = true; }
     if (kind === 'tickets') { const R = this.sets.room; if (!R.userData.tix) { const grp = new THREE.Group(); const r = rng(23);
         const places = ['강릉', '여수', '경주', '전주', '부산', '속초', '통영', '안동', '순천', '군산', '목포', '포항'];
         box(grp, 1.5, 1.0, 0.03, 0xc9a77a, 1.05, 2.05, -2.15);
