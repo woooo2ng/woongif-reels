@@ -361,10 +361,10 @@ $('#btn-share').onclick = async () => {
   track('share_click', { file: S.partner });
   try {
     const blob = await makeImage();
-    const f = new File([blob], 'sogaeting.png', { type: 'image/png' });
+    const f = new File([blob], 'mbti-sogaeting.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], text: text + ' ' + url }); track('share_done', { how: 'file' }); return; }
     if (navigator.share) { await navigator.share({ text, url }); track('share_done', { how: 'link' }); return; }
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sogaeting.png'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'mbti-sogaeting.png'; a.click();
     try { await navigator.clipboard.writeText(text + ' ' + url); } catch {}
     toast('이미지 저장 + 링크 복사 완료!'); track('share_done', { how: 'download' });
   } catch (err) { if (err && err.name !== 'AbortError') toast('공유가 안 됐어요. 화면을 캡처해 주세요!'); }

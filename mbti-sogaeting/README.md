@@ -1,4 +1,4 @@
-# 만약에 소개팅 (프로토타입)
+# 만약에 소개팅 (mbti-sogaeting)
 
 웅이프 MBTI 캐릭터랑 5분 소개팅하는 웹 게임. 장면 5개 → 선택지 → 엔딩 4개 → 결과 카드(공유 이미지).
 
@@ -28,4 +28,7 @@
 - `track`: `/api/track` 통계 전송 (Cloudflare Pages Functions + D1 붙인 뒤)
 
 ## 배포 (신청소와 같은 방식, 나중에)
-Cloudflare Pages → Connect to Git → `woongif-reels`, Root directory `sogaeting`, Build output `public`, Build command 비움.
+Cloudflare Pages → Connect to Git → `woongif-reels`
+- 프로젝트 이름: `mbti-sogaeting` → 주소 `mbti-sogaeting.pages.dev`
+- Production branch: `sogaeting` (main에 합치면 `main`)
+- Root directory: `mbti-sogaeting` · Build command: 비움 · Build output directory: `public`
