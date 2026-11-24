@@ -295,7 +295,64 @@ function mkT(v){ // ISTP: Z = 좀비 롱폼 확정안(남) / A·B·C = 여자 �
   p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
   return p}
 
-const MODELS = { 'istp-m': () => mkT('Z'), 'istp-f': () => mkT('A'), 'isfp-f': () => mkS('F'), 'isfp-m': () => mkS('A'), 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
+// ---------- INTJ (여: 옆가르마·남색 셔츠·안경 / 남: 낮게 묶은 머리·터틀넥·안경) ----------
+function mkJ(v){ // INTJ: 스타일 M(옆가르마·남색 셔츠) / B(낮은 똥머리·터틀넥). F = M 스타일 여자(확정), N = B 스타일 남자(확정)
+  const fem=v!=='M'&&v!=='N'; v={F:'M',N:'B'}[v]||v;
+  const shirt={M:0x4a5aa8,A:0x4a5aa8,B:0x55505e,C:0xe9dcc4}[v], pants={M:0x2c3040,A:0x2c3040,B:0x2c3040,C:0x3a3a48}[v];
+  const p=makePerson(rng(501+'MABC'.indexOf(v)),{shirt,pants});const u=p.userData,h=u.head;
+  const SK=0xffe3cf;h.children[0].material=new THREE.MeshLambertMaterial({color:SK,emissive:0x2a1a10});u.arms.forEach(a=>a.children[1].material=lamb(SK));
+  h.children[1].visible=false;
+  h.children.forEach(c=>{const g=c.geometry&&c.geometry.parameters;if(g&&((g.width===0.05&&g.height===0.07)||(g.width===0.07&&g.height===0.035)))c.visible=false});
+  const M=(w,hh,d,c,x,y,z)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,hh,d),lamb(c));b.position.set(x,y,z);u.hip.add(b);return b};
+  if(v==='M'||v==='A')M(0.3,0.06,0.05,0xffffff,0,0.62,0.15); // 흰 깃
+  if(v==='B'){for(let i=0;i<5;i++)M(0.012,0.6,0.01,0x48434f,-0.16+i*0.08,0.32,0.162);M(0.3,0.07,0.06,0x48434f,0,0.63,0.13)} // 골지 니트 + 터틀넥
+  if(v==='C'){u.arms.forEach(a=>a.children[0].material=lamb(0xd8c8a8));for(const s of[-1,1])M(0.19,0.66,0.34,0xd8c8a8,s*0.175,0.31,0.002);M(0.14,0.5,0.02,0xffffff,0,0.36,0.165)} // 베이지 재킷 + 흰 이너
+  const hc={M:0x1d1d26,A:0x1d1d26,B:0x2a2020,C:0x3a2a24}[v],m=smooth(hc);
+  const P={eyes:[],hls:[],lashes:[],cheeks:[],lids:[]};
+  for(const sx of[-1,1]){
+    const e=new THREE.Mesh(new THREE.SphereGeometry(0.042,20,16),basic(0x2a1a14));e.scale.set(0.9,1.15,0.5);e.userData.bs=e.scale.clone();e.position.set(sx*0.09,0.25,0.232);h.add(e);P.eyes.push(e);
+    const hl=new THREE.Mesh(new THREE.SphereGeometry(0.014,12,8),basic(0xffffff));hl.position.set(sx*0.09+0.014,0.268,0.252);h.add(hl);P.hls.push(hl);
+    if(fem){const la=new THREE.Mesh(new THREE.BoxGeometry(0.026,0.011,0.011),basic(0x2a1a14));la.position.set(sx*0.13,0.29,0.24);la.rotation.z=sx*0.5;h.add(la);P.lashes.push(la)}
+    const br=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.013,0.012),basic(0x1d1d26));br.position.set(sx*0.09,0.33,0.262);h.add(br);
+    const ck=new THREE.Mesh(new THREE.CircleGeometry(0.04,20),new THREE.MeshBasicMaterial({color:0xff9fb8,transparent:true,opacity:0.5}));ck.position.set(sx*0.15,0.175,0.216);ck.rotation.y=sx*0.35;h.add(ck);P.cheeks.push(ck)}
+  { // 얇은 동그란 안경
+    const gm=smooth(v==='C'?0xb08a5a:0x22222a);
+    for(const sx of[-1,1]){const ring=new THREE.Mesh(new THREE.TorusGeometry(0.062,0.009,8,28),gm);ring.position.set(sx*0.09,0.252,0.262);h.add(ring)}
+    const bridge=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.009,0.009),gm);bridge.position.set(0,0.26,0.266);h.add(bridge)}
+  const sm=new THREE.Mesh(new THREE.TorusGeometry(0.022,0.009,8,16,Math.PI),basic(0xb85060));sm.rotation.z=Math.PI;sm.position.set(0,0.162,0.246);h.add(sm);P.smile=sm;
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.262,40,20,0,Math.PI*2,0,Math.PI*0.5),m);cap.position.y=0.25;cap.rotation.x=-0.28;h.add(cap);
+  if(v==='M'){
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.264,40,24,Math.PI,Math.PI,0,Math.PI*0.6),m);bk.position.y=0.25;h.add(bk);
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(0.95,0.24,0.42);bang.position.set(0.05,0.415,0.14);bang.rotation.z=0.22;h.add(bang);
+  } else if(v==='A'){ // 긴 생머리 + 옆가르마
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.27,40,24,Math.PI,Math.PI,0,Math.PI*0.85),m);bk.position.y=0.25;h.add(bk);
+    const back=new THREE.Mesh(new THREE.SphereGeometry(0.2,24,16),m);back.scale.set(1.25,1.7,0.6);back.position.set(0,-0.02,-0.12);h.add(back);
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.1,24,16),m);sd.scale.set(0.5,2.0,0.85);sd.position.set(sx*0.225,0.08,0.03);h.add(sd)}
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(0.95,0.24,0.42);bang.position.set(0.05,0.405,0.145);bang.rotation.z=0.25;h.add(bang);
+  } else if(v==='B'){ // 낮은 번(똥머리) + 앞머리 없이 넘김
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI,Math.PI,0,Math.PI*0.7),m);bk.position.y=0.25;h.add(bk);
+    const bun=new THREE.Mesh(new THREE.SphereGeometry(0.1,20,14),m);bun.position.set(0,0.12,-0.29);h.add(bun);
+    for(const sx of[-1,1]){const sw=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);sw.scale.set(0.6,0.2,0.4);sw.position.set(sx*0.09,0.425,0.12);sw.rotation.z=-sx*0.35;h.add(sw)}
+    for(const sx of[-1,1]){const w=new THREE.Mesh(new THREE.SphereGeometry(0.035,12,10),m);w.scale.set(0.5,1.7,0.6);w.position.set(sx*0.21,0.25,0.13);h.add(w)}
+  } else { // C: C컬 단발
+    const bk=new THREE.Mesh(new THREE.SphereGeometry(0.272,40,24,Math.PI,Math.PI,0,Math.PI*0.8),m);bk.position.y=0.25;h.add(bk);
+    for(const sx of[-1,1]){const sd=new THREE.Mesh(new THREE.SphereGeometry(0.1,24,16),m);sd.scale.set(0.6,1.3,1.0);sd.position.set(sx*0.225,0.15,0.03);h.add(sd);
+      const curl=new THREE.Mesh(new THREE.SphereGeometry(0.07,16,12),m);curl.scale.set(0.9,0.6,1.0);curl.position.set(sx*0.19,0.03,0.07);h.add(curl)}
+    const bang=new THREE.Mesh(new THREE.SphereGeometry(0.2,32,16),m);bang.scale.set(0.9,0.24,0.42);bang.position.set(-0.05,0.405,0.145);bang.rotation.z=-0.25;h.add(bang);
+  }
+  p.scale.setScalar(0.8);h.scale.setScalar(1.4);h.position.y=0.62;
+  const mo=new THREE.Mesh(new THREE.SphereGeometry(0.04,20,14),basic(0xb8344f));mo.scale.set(1,0.7,0.4);mo.position.set(0,0.16,0.24);mo.visible=false;h.add(mo);P.open=mo;
+  const tg=new THREE.Mesh(new THREE.SphereGeometry(0.022,14,10),basic(0xff8fa6));tg.scale.set(1,0.5,0.4);tg.position.set(0,0.145,0.25);tg.visible=false;h.add(tg);P.tongue=tg;
+  P.happy=[];for(const sx of[-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(0.033,0.01,8,16,Math.PI),basic(0x2a1a14));a.position.set(sx*0.09,0.245,0.24);a.visible=false;h.add(a);P.happy.push(a)}
+  P.tears=[];for(const sx of[-1,1]){const t=new THREE.Mesh(new THREE.SphereGeometry(0.018,14,10),new THREE.MeshBasicMaterial({color:0x8fd3ff,transparent:true,opacity:0.95}));t.scale.set(1,1.5,0.5);t.position.set(sx*0.1,0.19,0.245);t.visible=false;h.add(t);P.tears.push(t)}
+  P.brows=[];P.pout=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.009,8,16),basic(0xc8405e));P.pout.position.set(0,0.165,0.248);P.pout.visible=false;h.add(P.pout);
+  const phone = new THREE.Group(); box(phone, 0.16, 0.3, 0.03, 0x22222a, 0, 0, 0);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.27), basic(0xdfe6ff)); scr.position.z = 0.017; phone.add(scr);
+  phone.position.set(0, -0.68, 0.12); phone.rotation.x = Math.PI / 2; phone.visible = false; u.arms[1].add(phone);
+  p.userData.P = P; p.userData.phone = phone; p.userData.baseHeadY = h.position.y;
+  return p}
+
+const MODELS = { 'intj-f': () => mkJ('F'), 'intj-m': () => mkJ('N'), 'istp-m': () => mkT('Z'), 'istp-f': () => mkT('A'), 'isfp-f': () => mkS('F'), 'isfp-m': () => mkS('A'), 'enfp-f': mkE, 'enfp-m': mkEm, 'infp-f': () => mkI('F'), 'infp-m': () => mkI('C') };
 
 const FACE = {
   smile() {},
@@ -557,7 +614,7 @@ const Scene3D = {
     if (S.sit) { u.hip.position.y = 0.56; u.legs.forEach(l => { l.rotation.x = -Math.PI / 2; l.visible = !!S.legsOn; }); } else { u.hip.position.y = 0.8; u.legs.forEach(l => { l.rotation.x = 0; l.visible = true; }); }
     this.baseHipY = u.hip.position.y; this.focus = 0; this.focusTarget = 0;
     if (name === 'counter') this.setMenu('');
-    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.sets.room.userData.duo) this.sets.room.userData.duo.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
+    this.staffT = this.notesT = this.busT = this.istjT = this.notifT = this.cakeT = this.coupleT = this.umbT = null; if (this.sets.room.userData.draw) this.sets.room.userData.draw.visible = false; if (this.sets.room.userData.helm) this.sets.room.userData.helm.visible = false; if (this.sets.room.userData.tix) this.sets.room.userData.tix.visible = false; if (this.sets.room.userData.duo) this.sets.room.userData.duo.visible = false; if (this.sets.room.userData.memo) this.sets.room.userData.memo.visible = false; if (this.E.userData.umb) this.E.userData.umb.visible = false; this.sets.cafe.userData.istj.visible = false; this.E.visible = true; if (this.notif) this.notif.forEach(n => n.visible = false); this.sets.street.userData.bus.visible = false; this.lastEmoteExpr = null;
   },
   attach(parent) { if (this.canvas.parentElement !== parent) { parent.prepend(this.canvas); this.ro.observe(parent); } this.resize(); },
   snapshot() { this.renderer.render(this.scene, this.cam); try { return this.renderer.domElement.toDataURL('image/jpeg', 0.9); } catch { return null; } },
@@ -627,6 +684,14 @@ const Scene3D = {
     if (kind === 'istj') { this.istjT = t; this.E.visible = false; this.sets.cafe.userData.istj.visible = true; this.introPan = true; }
     if (kind === 'notif') this.notifT = t;
     if (kind === 'cakeman') this.cakeT = t;
+    if (kind === 'memo') { const R = this.sets.room; if (!R.userData.memo) { const grp = new THREE.Group();
+        const tex = canvasTex(360, 300, (x, w, h) => { x.fillStyle = '#fff6b8'; x.fillRect(0, 0, w, h); x.fillStyle = '#e8d98a'; x.fillRect(0, 0, w, 26);
+          x.fillStyle = '#2a2a3a'; x.font = 'bold 24px sans-serif'; x.fillText('좋았던 점', 22, 64); x.font = '20px sans-serif';
+          ['1. 웃는 게 좋았음', '2. 대화가 편했음', '3. 같이 있으면 계획을', '    안 세워도 불안하지 않음'].forEach((t, i) => x.fillText(t, 22, 110 + i * 40));
+          x.fillStyle = '#ff6f9f'; x.font = 'bold 30px sans-serif'; x.fillText('♥', w - 54, h - 30); });
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(1.08, 0.9), new THREE.MeshBasicMaterial({ map: tex })); m.position.set(1.0, 2.05, -2.12); m.rotation.z = -0.04; grp.add(m);
+        R.add(grp); R.userData.memo = grp; }
+      R.userData.memo.visible = true; }
     if (kind === 'duo') { const R = this.sets.room; if (!R.userData.duo) { const grp = new THREE.Group();
         box(grp, 1.5, 0.9, 0.06, 0x22222a, 1.05, 2.05, -2.13);
         const tex = canvasTex(300, 170, (x, w, h) => { const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#6f5fd8'); gr.addColorStop(1, '#ff8fb8'); x.fillStyle = gr; x.fillRect(0, 0, w, h);

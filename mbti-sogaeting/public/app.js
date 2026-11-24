@@ -14,7 +14,7 @@ const CONFIG = {
 };
 const MBTI = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
 // 지금 열려 있는 상대 (나중에 여기 추가: { mbti:'ISTP', g:'m', file:'istp-m' })
-const PARTNERS = [{ mbti: 'ISTP', g: 'f', file: 'istp-f' }, { mbti: 'ISTP', g: 'm', file: 'istp-m' }, { mbti: 'ISFP', g: 'f', file: 'isfp-f' }, { mbti: 'ISFP', g: 'm', file: 'isfp-m' }, { mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }, { mbti: 'INFP', g: 'f', file: 'infp-f' }, { mbti: 'INFP', g: 'm', file: 'infp-m' }];
+const PARTNERS = [{ mbti: 'INTJ', g: 'f', file: 'intj-f' }, { mbti: 'INTJ', g: 'm', file: 'intj-m' }, { mbti: 'ISTP', g: 'f', file: 'istp-f' }, { mbti: 'ISTP', g: 'm', file: 'istp-m' }, { mbti: 'ISFP', g: 'f', file: 'isfp-f' }, { mbti: 'ISFP', g: 'm', file: 'isfp-m' }, { mbti: 'ENFP', g: 'f', file: 'enfp-f' }, { mbti: 'ENFP', g: 'm', file: 'enfp-m' }, { mbti: 'INFP', g: 'f', file: 'infp-f' }, { mbti: 'INFP', g: 'm', file: 'infp-m' }];
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
