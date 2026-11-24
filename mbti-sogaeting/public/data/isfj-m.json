@@ -1,0 +1,655 @@
+{
+ "id": "isfj-m",
+ "version": 1,
+ "mbti": "ISFJ",
+ "gender": "m",
+ "label": "ISFJ 남자",
+ "color": "#e8a0b0",
+ "img": "img/isfj-m/",
+ "model": "isfj-m",
+ "intro": {
+  "chip": "토요일 PM 12:30 · 샤브샤브집",
+  "text": "소개팅 장소는 따뜻한 샤브샤브집. 문을 열자 김이 모락모락 난다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "꽃 한 송이",
+   "B": "꽃말 얘기",
+   "C": "꽃 이름 배운 거"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람 🌷",
+  "drafts": [
+   "오늘",
+   "잘 들어갔어",
+   "오늘 고마웠",
+   "혹시 춥진 않았어요?"
+  ],
+  "msg": "잘 들어가셨어요? 오늘 정말 즐거웠어요 ☺️ 따뜻하게 주무세요!",
+  "pics": [
+   "🍪"
+  ]
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "shabu",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "안녕하세요! 오시느라 춥지 않았어요?"
+    },
+    {
+     "expr": "smile",
+     "text": "샤브샤브 괜찮아요? 따뜻한 거 드시면 좋을 것 같아서요.",
+     "fx": "menu:샤브샤브 2인"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "딱 먹고 싶었어요. 센스 있으시다",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…다행이다."
+      },
+      {
+       "expr": "happy",
+       "text": "(내 앞접시랑 수저를 먼저 놓아 줌)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "사실 좀 추웠어요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "헉 그럼 빨리 앉아요."
+      },
+      {
+       "expr": "smile",
+       "text": "(따뜻한 물수건을 하나 더 부탁해서 건네줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "저는 아무거나 다 잘 먹어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "다행이에요."
+      },
+      {
+       "expr": "smile",
+       "text": "(그래도 내가 뭘 잘 먹는지 몰래 보는 중)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "챙김",
+   "bg": "shabu",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(고기가 익자마자 내 접시에 먼저 올려 준다)"
+    },
+    {
+     "expr": "smile",
+     "text": "버섯 먼저 건지시길래 좋아하시는 것 같아서 더 넣었어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "어떻게 알았어요? 버섯 진짜 좋아해요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "헤헤."
+      },
+      {
+       "expr": "blush",
+       "text": "(남은 버섯을 전부 내 쪽으로 몰아 줌)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "저도 덜어 드릴게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아…!"
+      },
+      {
+       "expr": "blush",
+       "text": "(챙기기만 하다가 챙김받으니 어쩔 줄 모름)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "편하게 드세요, 저도 잘 챙겨 먹을게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "아 네네!"
+      },
+      {
+       "expr": "smile",
+       "text": "(그래도 눈은 계속 내 접시를 확인함)"
+      }
+     ]
+    }
+   ],
+   "chip": "앞접시 먼저 놓아 준 횟수 3번"
+  },
+  {
+   "id": "s3",
+   "title": "꽃집",
+   "bg": "flower",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(꽃집 앞에서 멈춘다) 잠깐 들어가도 돼요? 저 꽃 좋아해서요."
+    },
+    {
+     "expr": "smile",
+     "text": "이 꽃 이름이 스타티스래요. 꽃말이 '변치 않는 마음'이에요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "한 송이 사 드릴게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…!"
+      },
+      {
+       "expr": "blush",
+       "text": "(받은 꽃을 집에 가서 말려서 보관함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N",
+      "F"
+     ],
+     "text": "꽃말까지 아시네요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "엄마가 꽃을 좋아하셔서 같이 외웠어요."
+      },
+      {
+       "expr": "smile",
+       "text": "(꽃 얘기할 때 목소리가 제일 밝음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S",
+      "T"
+     ],
+     "text": "저는 꽃은 잘 몰라요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요! 저도 처음엔 몰랐어요."
+      },
+      {
+       "expr": "smile",
+       "text": "(가게 나가기 전에 제일 쉬운 꽃 이름 하나만 알려 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "베이킹",
+   "bg": "bakery",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(원데이 베이킹 클래스. 쿠키 반죽 중) 저 넉넉하게 만들어도 돼요?"
+    },
+    {
+     "expr": "happy",
+     "text": "회사 사람들 나눠 주려고요. 아, 제일 예쁜 건 따로 빼 둘게요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "N"
+     ],
+     "text": "제일 예쁜 건 누구 거예요?",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(대답 대신 제일 예쁜 쿠키를 내 상자에 넣음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "저도 같이 넉넉하게 만들래요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "진짜요? 그럼 같이 포장해요."
+      },
+      {
+       "expr": "smile",
+       "text": "(리본 색까지 맞춰서 묶음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "저는 제 것만 만들어 볼게요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네! 그게 제일 맛있을 거예요."
+      },
+      {
+       "expr": "smile",
+       "text": "(그래도 내 쿠키 모양 잡는 걸 슬쩍 도와줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "피크닉",
+   "bg": "picnic",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(한강 피크닉. 가방에서 뭘 계속 꺼낸다)"
+    },
+    {
+     "expr": "happy",
+     "text": "돗자리, 물티슈, 담요, 간식… 혹시 몰라서 다 챙겨 왔어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "준비해 준 거 진짜 고마워요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…아니에요, 별거 아니에요."
+      },
+      {
+       "expr": "happy",
+       "text": "(사실 어젯밤에 체크리스트 만들어서 챙김)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "J"
+     ],
+     "text": "다음엔 제가 챙겨 올게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아…"
+      },
+      {
+       "expr": "happy",
+       "text": "그럼 다음엔 저 몸만 갈게요. 약속이에요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "이거 다 들고 안 무거웠어요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(돌아갈 때 내가 가방을 하나 들어 주자 그제야 웃음)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "blush",
+     "text": "(오늘 찍은 사진 중에 내가 잘 나온 것만 골라 두는 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "smile",
+     "text": "…이 사진은 보내 줘야지.",
+     "act": "phone"
+    },
+    {
+     "expr": "happy",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "잘 들어왔어요! 쿠키 벌써 하나 먹었어요 ㅋㅋ",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(베개 끌어안고 발 동동)",
+       "fx": "kme"
+      },
+      {
+       "expr": "blush",
+       "text": "맛있었대… 다음엔 더 맛있게 해야지."
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "오늘 {cb:s3} 고마웠어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "제가 더 고마워요!",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(받은 메시지를 캡처해서 따로 저장)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "네! 푹 쉬어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네, 푹 쉬어요!",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(답장 온 것만으로 안심)"
+      }
+     ]
+    }
+   ],
+   "chip": "골라 둔 사진 5장"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "bakery",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(베이킹 클래스 2회차. 오늘은 같이 케이크 만들기)"
+    },
+    {
+     "expr": "blush",
+     "text": "지난번에 쿠키 맛있게 먹었다고 해서… 이번엔 케이크 신청했어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "기대된다. 이번엔 제가 더 열심히 할게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "헤헤."
+      },
+      {
+       "expr": "blush",
+       "text": "(생크림 짜는 법을 천천히 알려 줌)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "이번엔 제가 하나 만들어서 드릴게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…저한테요?"
+      },
+      {
+       "expr": "blush",
+       "text": "(받을 생각은 안 해 봐서 귀까지 빨개짐)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "케이크는 처음이라 걱정돼요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요! 제가 옆에 있을게요."
+      },
+      {
+       "expr": "smile",
+       "text": "(실수할 때마다 몰래 수습해 줌)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 제일 예쁜 쿠키",
+   "locked": false,
+   "when": {
+    "s1": "A",
+    "s4": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "bakery",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, ISFJ가 구운 쿠키 상자.",
+    "제일 예쁜 건 항상 따로 포장되어 있다.",
+    "받는 사람 이름은 매번 같다."
+   ],
+   "stat": "따로 포장한 쿠키 52상자",
+   "punch": "제일 예쁜 건 늘 내 몫",
+   "theme": [
+    "#ffb8c8",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"오늘 정말 즐거웠어요! 다음 주에 피크닉 또 갈래요?\"",
+    "\"이번엔 제가 도시락 쌀게요 ☺️\""
+   ],
+   "stat": "도시락 메뉴 고민 중",
+   "punch": "애프터 확정",
+   "theme": [
+    "#e8a0b0",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🍪",
+   "name": "쿠키 친구 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ISFJ한테 연락이 왔다.",
+    "\"오늘 쿠키 구웠는데 나눠 드리고 싶어서요!\"",
+    "…그 뒤로 계절마다 쿠키가 도착한다."
+   ],
+   "stat": "받은 쿠키 상자 4개",
+   "punch": "제일 다정한 친구가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "shabu",
+   "lines": [
+    "ISFJ는 거절도 다정하다.",
+    "\"오늘 정말 감사했어요. 좋은 분이라 더 솔직하게 말씀드리고 싶었어요.\"",
+    "\"저보다 더 잘 맞는 분 꼭 만나실 거예요 ☺️\""
+   ],
+   "stat": "고민한 시간 사흘",
+   "punch": "세상에서 제일 다정한 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "챙겨 온 물건 12개",
+   "앞접시 먼저 놓아 준 횟수 3번",
+   "따로 빼 둔 쿠키 1개"
+  ]
+ }
+}

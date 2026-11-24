@@ -1,0 +1,651 @@
+{
+ "id": "enfj-m",
+ "version": 1,
+ "mbti": "ENFJ",
+ "gender": "m",
+ "label": "ENFJ 남자",
+ "color": "#4f7bd6",
+ "img": "img/enfj-m/",
+ "model": "enfj-m",
+ "intro": {
+  "chip": "토요일 PM 1:00 · 카레 전문점",
+  "text": "소개팅 장소는 따뜻한 조명의 카레집. 향신료 냄새가 좋다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "삐뚤어진 컵",
+   "B": "같이 만든 그릇",
+   "C": "같이 디자인한 무늬"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람 😊",
+  "drafts": [
+   "오늘",
+   "잘 들어갔어요?",
+   "오늘 하루 어땠",
+   "오늘 정말"
+  ],
+  "msg": "잘 들어갔어요? 오늘 하루가 그쪽한테도 좋은 날이었으면 좋겠어요 😊",
+  "pics": []
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "curry",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "안녕하세요! 와, 만나서 반가워요."
+    },
+    {
+     "expr": "smile",
+     "text": "오늘 어떤 하루 보냈어요? 오는 길에 좋은 일 있었어요?",
+     "fx": "menu:치킨 카레"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "오는 길에 날씨가 좋아서 기분 좋았어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그 기분 좋다!"
+      },
+      {
+       "expr": "smile",
+       "text": "(내 하루 이야기를 끝까지 눈 맞추며 들어 줌)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "그쪽 하루는 어땠어요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아 저요?"
+      },
+      {
+       "expr": "blush",
+       "text": "물어봐 줘서 고마워요. 사실 오늘 좀 떨렸어요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "그냥 평범했어요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "평범한 날도 좋은 날이죠."
+      },
+      {
+       "expr": "happy",
+       "text": "(평범한 하루에서 좋은 점 세 개를 찾아 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "질문",
+   "bg": "curry",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(카레를 먹다가) 좋아하는 거 얘기할 때 표정이 확 밝아지시네요."
+    },
+    {
+     "expr": "happy",
+     "text": "그래서 하나 더 물어볼래요. 요즘 제일 좋아하는 게 뭐예요?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "S"
+     ],
+     "text": "요즘은 맛집 다니는 거요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 그럼 다음 맛집은 제가 찾아 둘게요!"
+      },
+      {
+       "expr": "happy",
+       "text": "(폰 메모장에 '맛집 탐방' 적음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "그쪽은요? 저만 말하는 것 같아요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "저는 사람들 이야기 듣는 거요. 지금처럼."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "음… 생각해 볼게요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "천천히요."
+      },
+      {
+       "expr": "happy",
+       "text": "(대답할 때까지 진짜로 기다려 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "도자기 공방",
+   "bg": "pottery",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(도자기 공방. 물레가 돌아간다)"
+    },
+    {
+     "expr": "smile",
+     "text": "손은 이렇게, 힘 빼고. 잘하고 있어요!"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "F"
+     ],
+     "text": "알려 준 대로 해 볼게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "와 완전 잘해요!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(조금 삐뚤어진 컵도 '개성'이라며 칭찬함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "같이 만들어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "좋아요!"
+      },
+      {
+       "expr": "blush",
+       "text": "(물레 위에서 둘 다 진흙투성이가 돼서 웃음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "저는 보는 게 더 재밌어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그럼 제 거 무늬를 같이 정해 줘요."
+      },
+      {
+       "expr": "happy",
+       "text": "(내가 말한 무늬를 그대로 새김)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "수족관",
+   "bg": "aquarium",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(수족관 대형 수조 앞)"
+    },
+    {
+     "expr": "happy",
+     "text": "저 가오리 좀 봐요. 웃는 것 같지 않아요?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "F"
+     ],
+     "text": "진짜 웃는 것 같아요 ㅋㅋ",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "그쵸!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(가오리 앞에서 같이 사진 찍음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "그쪽이 웃으니까 그렇게 보이는 거 아니에요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(대답 대신 수조 쪽을 봄)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "저기 물고기 떼가 더 신기해요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "오 그러네요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(내가 본 쪽을 같이 오래 봐 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "전망대",
+   "bg": "tower",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(전망대. 도시 불빛을 내려다보며)"
+    },
+    {
+     "expr": "blush",
+     "text": "저 사람들 챙기는 거 좋아하는데… 오늘은 이상하게 제가 챙김받은 기분이에요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "오늘은 제가 챙겨 주고 싶었어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(처음으로 할 말을 잃음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "오늘 그쪽 덕분에 즐거웠어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그 말 들으니까 다 좋다."
+      },
+      {
+       "expr": "smile",
+       "text": "(야경보다 내 쪽을 더 봄)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "야경 진짜 예쁘네요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그쵸?"
+      },
+      {
+       "expr": "happy",
+       "text": "(제일 잘 보이는 자리를 내 쪽으로 양보함)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(오늘 들은 이야기를 메모장에 하나씩 적는 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "happy",
+     "text": "…다음에 이 얘기 꼭 다시 물어봐야지.",
+     "act": "phone"
+    },
+    {
+     "expr": "smile",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "덕분에 정말 좋은 날이었어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(폰을 꼭 쥐고 혼자 웃음)",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "그 한마디면 충분해…"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "N"
+     ],
+     "text": "오늘 {cb:s3} 잘 간직할게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "저도요!",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(구워지면 꼭 같이 찾으러 가자고 함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "잘 들어왔어요! 쉬어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네, 좋은 꿈 꿔요!",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(다음에 물어볼 질문 목록을 정리함)"
+      }
+     ]
+    }
+   ],
+   "chip": "메모장에 적은 내 이야기 9개"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "pottery",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(두 번째 만남. 구워진 그릇을 찾으러 공방에)"
+    },
+    {
+     "expr": "blush",
+     "text": "와… 같이 만든 거 진짜 예쁘게 나왔다. 이거 그쪽이 가져가요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "하나씩 나눠 가져요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(제일 예쁜 걸 나한테 주고 싶어서 한참 고름)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "다음엔 큰 거 만들어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "좋아요!! 다음 예약 바로 할게요."
+      },
+      {
+       "expr": "happy",
+       "text": "(진짜로 그 자리에서 예약함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "고마워요, 잘 쓸게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "쓸 때마다 오늘 생각해 줘요."
+      },
+      {
+       "expr": "smile",
+       "text": "(포장까지 꼼꼼하게 해 줌)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 짝 그릇",
+   "locked": false,
+   "when": {
+    "s3": "B",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "pottery",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, 두 집 찬장에 같은 그릇.",
+    "하나는 조금 삐뚤고, 하나는 반듯하다.",
+    "둘이 같이 만들어서 그렇다."
+   ],
+   "stat": "같이 만든 그릇 12개",
+   "punch": "챙겨 주던 사람이 챙김받는 사람이 됐다",
+   "theme": [
+    "#7fc4f0",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"오늘 정말 고마웠어요!\"",
+    "\"다음 주에 맛집 가요. 제가 찾아 둘게요 😊\""
+   ],
+   "stat": "찾아 둔 맛집 5곳",
+   "punch": "애프터 확정",
+   "theme": [
+    "#4f7bd6",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🤝",
+   "name": "든든한 친구 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ENFJ한테 연락이 왔다.",
+    "\"요즘 힘든 거 없어요? 있으면 언제든 말해요!\"",
+    "…그 뒤로 힘들 때 제일 먼저 생각나는 사람."
+   ],
+   "stat": "고민 상담 12번",
+   "punch": "든든한 친구가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "curry",
+   "lines": [
+    "ENFJ는 상대 마음부터 생각한다.",
+    "\"오늘 정말 좋은 시간이었어요. 그래서 솔직하게 말할게요.\"",
+    "\"저보다 더 잘 맞는 분이 꼭 있을 거예요. 응원할게요!\""
+   ],
+   "stat": "응원 메시지 1통",
+   "punch": "응원이 담긴 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "오늘 받은 칭찬 14개",
+   "메모한 내 이야기 9개",
+   "눈 맞춤 시간 측정 불가"
+  ]
+ }
+}

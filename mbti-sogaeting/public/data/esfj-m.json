@@ -1,0 +1,653 @@
+{
+ "id": "esfj-m",
+ "version": 1,
+ "mbti": "ESFJ",
+ "gender": "m",
+ "label": "ESFJ 남자",
+ "color": "#ff9f8a",
+ "img": "img/esfj-m/",
+ "model": "esfj-m",
+ "intro": {
+  "chip": "토요일 PM 12:30 · 중화요리집",
+  "text": "소개팅 장소는 단골이라는 중화요리집. 사장님이 반갑게 인사한다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "머리띠",
+   "B": "세트 머리띠",
+   "C": "자연스러운 사진"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람 🥰",
+  "drafts": [
+   "오늘 너무",
+   "잘 들어갔어요?",
+   "오늘 진짜 즐거웠",
+   "혹시 호떡"
+  ],
+  "msg": "잘 들어가셨어요?? 오늘 너무 즐거웠어요 🥰 사진 보내요!",
+  "pics": [
+   "📸"
+  ]
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "jjajang",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "안녕하세요~! 오는 길 안 막혔어요? 여기 탕수육 진짜 맛있어요!"
+    },
+    {
+     "expr": "happy",
+     "text": "부먹 찍먹 어느 쪽이에요? 맞춰 드릴게요!",
+     "act": "point",
+     "fx": "menu:탕수육"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "저는 둘 다 괜찮아요. 편하신 대로 해요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "어머 배려 천재다."
+      },
+      {
+       "expr": "blush",
+       "text": "그럼 반은 부먹, 반은 찍먹 할게요!"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S"
+     ],
+     "text": "찍먹이요!",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "저도요!! 벌써 잘 맞는다!"
+      },
+      {
+       "expr": "happy",
+       "text": "(소스 그릇을 내 쪽 가까이 놓아 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "부먹이요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아 진짜요?"
+      },
+      {
+       "expr": "happy",
+       "text": "그럼 부먹 확정! 오늘은 그쪽 취향대로."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "첫인상",
+   "bg": "jjajang",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(짜장면을 먹다가) 아 맞다, 제 친구가 꼭 물어보라고 했는데요."
+    },
+    {
+     "expr": "excited",
+     "text": "'첫인상 몇 점?' 이래요 ㅋㅋ 아 이건 대답 안 해도 돼요!"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "100점이요. 리액션이 너무 좋아서요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄 진짜요?!"
+      },
+      {
+       "expr": "blush",
+       "text": "(친구한테 바로 카톡 보내고 싶은 걸 참음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "그쪽은 저 몇 점이에요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "음… 비밀이요!"
+      },
+      {
+       "expr": "blush",
+       "text": "(사실 친구한테 이미 '대박'이라고 보냄)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "점수는 다음에 알려 드릴게요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "오 궁금하게 만드신다!"
+      },
+      {
+       "expr": "smile",
+       "text": "(다음에 만날 이유가 하나 생김)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "인생네컷",
+   "bg": "photobooth",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(사진관 앞) 우리 기념으로 한 장 찍어요! 첫 만남 기념!"
+    },
+    {
+     "expr": "happy",
+     "text": "소품은 제가 골라 드릴게요. 이 머리띠 어때요?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "머리띠 써 볼게요!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄 너무 잘 어울려요!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(사진 한 장은 내 지갑에 넣으라고 줌)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "같은 걸로 맞춰 써요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "세트다 세트!"
+      },
+      {
+       "expr": "blush",
+       "text": "(맞춰 쓴 거울 속 모습에 혼자 웃음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "소품 없이 찍어요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "좋아요! 자연스러운 게 최고죠."
+      },
+      {
+       "expr": "happy",
+       "text": "(포즈만 네 개 알려 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "쇼핑몰",
+   "bg": "mall",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(쇼핑몰) 저 잠깐만요, 친구 생일 선물 고르는 것 좀 도와줄 수 있어요?"
+    },
+    {
+     "expr": "happy",
+     "text": "그 친구는 따뜻한 색 좋아하고, 요즘 캠핑에 빠졌어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "F"
+     ],
+     "text": "그럼 캠핑용 머그컵 어때요?",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "헐 천재다!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(바로 계산. 포장까지 예쁘게 부탁함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "친구 얘기만 들어도 잘 챙기시는 게 보여요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "그런 말 들으니까 좀 쑥스럽네요. 고마워요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "저는 선물 고르는 걸 잘 못해요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "괜찮아요! 같이 보면 되죠."
+      },
+      {
+       "expr": "smile",
+       "text": "(결국 나한테 어울리는 것도 하나 몰래 봐 둠)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "시장",
+   "bg": "market",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(시장 골목. 단골 가게 사장님이 알아본다)"
+    },
+    {
+     "expr": "excited",
+     "text": "사장님 안녕하세요~! 아 여기 호떡 진짜 맛있어요. 제가 살게요!"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "J"
+     ],
+     "text": "그럼 다음은 제가 살게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "약속이에요!"
+      },
+      {
+       "expr": "blush",
+       "text": "(사장님이 둘을 번갈아 보자 손사래 치며 웃음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "사장님이랑 친하시네요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "여기 단골이에요! 10년째."
+      },
+      {
+       "expr": "smile",
+       "text": "(사장님이 덤으로 하나 더 넣어 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "호떡 하나 나눠 먹어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "좋아요!"
+      },
+      {
+       "expr": "happy",
+       "text": "(꿀 많은 쪽을 내 쪽으로 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(오늘 사진을 친구 단톡방에 자랑할지 고민 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "smile",
+     "text": "아냐, 이건 먼저 보내 줘야지.",
+     "act": "phone"
+    },
+    {
+     "expr": "excited",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "E"
+     ],
+     "text": "잘 도착했어요! 오늘 진짜 즐거웠어요 🥰",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(친구 단톡방에 '성공' 한 단어 보냄)",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "이모티콘까지 똑같이 보냈어…!"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "오늘 {cb:s3} 사진 잘 나왔어요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그쵸?? 액자 할래요!",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(진짜로 액자 주문함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "네 잘 들어왔어요! 쉬세요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네! 푹 쉬어요~",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(답장 온 것만으로 안심)"
+      }
+     ]
+    }
+   ],
+   "chip": "친구들 단톡방 대기 중 (5)"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "market",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(두 번째 만남. 그 시장 골목)"
+    },
+    {
+     "expr": "blush",
+     "text": "오늘은 제 단골 가게 다 소개해 줄게요. 사장님들한테도 인사하고요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "F"
+     ],
+     "text": "좋아요. 다 인사드릴게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄 진짜요?!"
+      },
+      {
+       "expr": "blush",
+       "text": "(사장님들이 '잘 어울리네' 할 때마다 웃음 참음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "J"
+     ],
+     "text": "오늘은 제가 살게요, 약속했잖아요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "기억해요?!"
+      },
+      {
+       "expr": "happy",
+       "text": "(약속 기억해 준 게 제일 좋음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "천천히 구경하면서 걸어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "좋아요."
+      },
+      {
+       "expr": "happy",
+       "text": "(가게마다 한마디씩 설명해 줌)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 단골 둘",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "market",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, 시장 골목 호떡 가게.",
+    "사장님이 이제 둘을 같이 알아본다.",
+    "'오늘도 둘이 왔네? 하나 더 넣었어.'"
+   ],
+   "stat": "같이 먹은 호떡 104개",
+   "punch": "온 동네가 아는 사이",
+   "theme": [
+    "#ff8a6a",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"다음 주에 제 친구들이랑 바비큐 하는데 같이 갈래요?\"",
+    "\"다들 벌써 궁금해해요 ㅋㅋ\""
+   ],
+   "stat": "친구들 기대 지수 100%",
+   "punch": "애프터 확정",
+   "theme": [
+    "#ff9f8a",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🎂",
+   "name": "생일파티 친구 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ESFJ한테 연락이 왔다.",
+    "\"이번 주 생일파티 와요! 케이크는 제가 준비해요!\"",
+    "…그 뒤로 모든 생일에 초대된다."
+   ],
+   "stat": "받은 초대장 7장",
+   "punch": "제일 다정한 친구가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "jjajang",
+   "lines": [
+    "ESFJ는 마음을 잘 챙긴다.",
+    "\"오늘 진짜 즐거웠어요! 그래서 더 솔직하게 말하고 싶었어요.\"",
+    "\"우린 좋은 친구가 더 잘 어울릴 것 같아요 🥰\""
+   ],
+   "stat": "고민한 시간 이틀",
+   "punch": "따뜻한 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "오늘 리액션 148번",
+   "인사한 사장님 6명",
+   "찍은 인생네컷 1장"
+  ]
+ }
+}

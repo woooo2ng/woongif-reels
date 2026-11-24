@@ -1,0 +1,656 @@
+{
+ "id": "istj-m",
+ "version": 1,
+ "mbti": "ISTJ",
+ "gender": "m",
+ "label": "ISTJ 남자",
+ "color": "#2f4aa0",
+ "img": "img/istj-m/",
+ "model": "istj-m",
+ "intro": {
+  "chip": "토요일 AM 11:30 · 돈가스집",
+  "text": "소개팅 장소는 오픈 시간에 맞춘 돈가스집. 약속 시간 정각이다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "스트라이크",
+   "B": "감으로 던진 공",
+   "C": "점수 기록"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람",
+  "drafts": [
+   "오늘 감사",
+   "오늘 즐거웠",
+   "조심히",
+   "오늘 즐거웠습니다."
+  ],
+  "msg": "오늘 즐거웠어요. 집에는 잘 도착하셨나요? 다음 주 토요일 2시 어떠세요?",
+  "pics": []
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "donkatsu",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "안녕하세요. 약속 시간 정각이네요."
+    },
+    {
+     "expr": "smile",
+     "text": "여기는 11시 반 오픈이라 지금이 제일 덜 붐벼요. 등심 돈가스가 제일 무난해요.",
+     "act": "point",
+     "fx": "menu:등심 돈가스"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "J",
+      "F"
+     ],
+     "text": "시간까지 알아보셨구나. 덕분에 편하게 왔어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "…다행이에요."
+      },
+      {
+       "expr": "blush",
+       "text": "(미리 동선을 확인해 둔 보람이 있다)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "P"
+     ],
+     "text": "그럼 저는 치즈 돈가스 먹어 볼래요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아."
+      },
+      {
+       "expr": "smile",
+       "text": "좋아요. 치즈도 여기 평이 좋더라고요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "P",
+      "E"
+     ],
+     "text": "저는 사실 좀 늦을 뻔했어요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요. 늦지 않으셨잖아요."
+      },
+      {
+       "expr": "smile",
+       "text": "(도착하면 연락 주는 법을 다음에 알려 줘야겠다고 생각함)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "소스",
+   "bg": "donkatsu",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(돈가스가 나오자 소스를 작은 접시에 따로 덜어 낸다)"
+    },
+    {
+     "expr": "smile",
+     "text": "부어 먹으면 눅눅해져서요. 찍어 먹어야 바삭함이 유지돼요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "J"
+     ],
+     "text": "오 그럼 저도 찍어 먹어 볼게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "(소스 접시를 하나 더 받아서 내 앞에 놓아 줌)"
+      },
+      {
+       "expr": "smile",
+       "text": "바삭한 거 느껴지죠?"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S"
+     ],
+     "text": "한번 정하면 계속 그렇게 드시는 편이에요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네. 제일 맛있는 방법을 찾으면 계속 그렇게 먹어요."
+      },
+      {
+       "expr": "happy",
+       "text": "10년째 이 방법이에요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "P"
+     ],
+     "text": "저는 부어 먹는 걸 좋아해요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그것도 좋아요. 취향이죠."
+      },
+      {
+       "expr": "smile",
+       "text": "(소스 접시를 통째로 내 쪽으로 밀어 줌)"
+      }
+     ]
+    }
+   ],
+   "chip": "소스 따로 덜기 10년째"
+  },
+  {
+   "id": "s3",
+   "title": "볼링장",
+   "bg": "bowling",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(볼링장. 공 무게를 하나하나 들어 보고 골라 준다)"
+    },
+    {
+     "expr": "smile",
+     "text": "팔은 일직선으로, 시선은 가운데 화살표에요. 그럼 대부분 핀 가운데로 가요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "J"
+     ],
+     "text": "알려 준 대로 해 볼게요!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "(스트라이크!)"
+      },
+      {
+       "expr": "excited",
+       "text": "…! 됐다. 제가 더 기쁜 것 같네요."
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "P"
+     ],
+     "text": "저는 감으로 던져 볼게요 ㅋㅋ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "좋아요. 그것도 방법이에요."
+      },
+      {
+       "expr": "smile",
+       "text": "(공이 옆으로 빠지자 말없이 더 가벼운 공을 골라 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "점수 기록은 제가 할까요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "기록은 제가 제일 좋아하는 거예요. 같이 해요."
+      },
+      {
+       "expr": "smile",
+       "text": "(프레임별 점수를 손으로도 따로 적음)"
+      }
+     ]
+    }
+   ],
+   "chip": "볼링 공 고르는 시간 4분"
+  },
+  {
+   "id": "s4",
+   "title": "영화관",
+   "bg": "cinema",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(영화관. 예매해 둔 G열 7, 8번)"
+    },
+    {
+     "expr": "smile",
+     "text": "광고가 10분이라 지금 들어가면 딱 맞아요. 팝콘은 반반으로 시켜 놨어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "J",
+      "F"
+     ],
+     "text": "완벽한데요? 고마워요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(오늘 계획표에 체크 하나 더)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "팝콘은 제가 들게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "고마워요."
+      },
+      {
+       "expr": "happy",
+       "text": "(나란히 앉아서 팝콘을 같은 박자로 먹음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "광고까지 다 보는 편이에요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네. 늦게 들어가면 다른 사람 시야를 가려서요."
+      },
+      {
+       "expr": "smile",
+       "text": "(예절도 계획의 일부)"
+      }
+     ]
+    }
+   ],
+   "chip": "예매 G열 7·8번"
+  },
+  {
+   "id": "s5",
+   "title": "정원",
+   "bg": "garden",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(정원 산책. 해가 지기 시작한다)"
+    },
+    {
+     "expr": "blush",
+     "text": "저 즉흥적인 건 잘 못 하는데… 오늘은 계획보다 30분 더 있고 싶네요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "그럼 30분 더 걸어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…"
+      },
+      {
+       "expr": "smile",
+       "text": "(시계를 보더니 알람을 30분 미룸)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "J",
+      "F"
+     ],
+     "text": "다음 계획에도 오늘 같은 날 넣어 줘요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…다음 계획이요?"
+      },
+      {
+       "expr": "happy",
+       "text": "벌써 넣었어요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "저도 즐거웠어요. 늦지 않게 가요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네, 그래요."
+      },
+      {
+       "expr": "smile",
+       "text": "(아쉬운 티는 안 냈지만 걸음이 느려짐)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(오늘 일정을 다이어리에 정리하는 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "smile",
+     "text": "…맞춤법 한 번만 더 확인하고.",
+     "act": "phone"
+    },
+    {
+     "expr": "smile",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "J"
+     ],
+     "text": "네! 잘 도착했어요. 토요일 2시 좋아요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "(캘린더에 바로 입력. 알림 3개 설정)",
+       "fx": "kme"
+      },
+      {
+       "expr": "blush",
+       "text": "(다이어리 오늘 칸에 ★ 표시)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S",
+      "F"
+     ],
+     "text": "오늘 {cb:s3} 계속 생각나요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "저도요.",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(다이어리 오늘 칸에 한 줄 더 적음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "다음 주는 일정 확인하고 말씀드릴게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "네, 편하실 때요.",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(토요일 칸을 연필로 비워 둠)"
+      }
+     ]
+    }
+   ],
+   "chip": "보내기 전 맞춤법 검사 3번"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "cinema",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(두 번째 만남. 이번에도 G열 7, 8번)"
+    },
+    {
+     "expr": "blush",
+     "text": "지난번에 그 자리 괜찮다고 하셔서요. …다음에도 이 자리로 할까요?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "J",
+      "F"
+     ],
+     "text": "좋아요. 저도 그 자리 좋았어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…"
+      },
+      {
+       "expr": "happy",
+       "text": "(예매 앱 즐겨찾기 좌석에 저장)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "P"
+     ],
+     "text": "이번엔 제가 영화 골라도 돼요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아."
+      },
+      {
+       "expr": "smile",
+       "text": "좋아요. …처음 보는 장르라 기대돼요."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "P"
+     ],
+     "text": "다음엔 다른 자리도 앉아 봐요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "다른 자리…"
+      },
+      {
+       "expr": "smile",
+       "text": "(진지하게 좌석표를 다시 봄. 좋은 변화일지도)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 다이어리 ★",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "cinema",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, ISTJ의 다이어리.",
+    "토요일 칸마다 같은 이름. 빈칸이 하나도 없다.",
+    "첫 장엔 '오늘 30분 더 있고 싶었다.'"
+   ],
+   "stat": "★ 표시 52개",
+   "punch": "계획표에 처음 넣은 즉흥",
+   "theme": [
+    "#2c3a66",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"다음 주 토요일 2시, G열 7·8번 예매해 뒀어요.\"",
+    "\"혹시 불편하시면 변경 가능합니다.\""
+   ],
+   "stat": "예매 완료 · 변경 가능",
+   "punch": "애프터 확정",
+   "theme": [
+    "#2f4aa0",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🎳",
+   "name": "볼링 메이트 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ISTJ한테 연락이 왔다.",
+    "\"요즘 볼링 연습하고 있어요. 다음 달에 같이 칠래요?\"",
+    "…그 뒤로 매달 첫째 주 토요일은 볼링."
+   ],
+   "stat": "정기 볼링 월 1회",
+   "punch": "든든한 정기 모임 멤버가 됐다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "donkatsu",
+   "lines": [
+    "ISTJ는 애매하게 두지 않는다.",
+    "\"오늘 감사했어요. 생각해 봤는데 저와는 맞는 분이 따로 있을 것 같아요.\"",
+    "…정중하고 깔끔했다."
+   ],
+   "stat": "답장 다음 날 오전 9시 정각",
+   "punch": "예의 바른 마무리",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "약속 시간 오차 0분",
+   "소스 따로 덜기 10년째",
+   "다이어리 정리 1일 1회"
+  ]
+ }
+}

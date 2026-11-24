@@ -15,7 +15,7 @@ const MOODS = {
   start:   { tempo: 96,  arp: 2, hat: true,  bass: true,  pad: false, cut: 2400, vol: 0.8 },
 };
 // 코드 진행 (MIDI 번호): Cmaj7 · Am7 · Fmaj7 · G7(sus 느낌)
-['beach', 'river', 'car', 'store', 'park', 'subway', 'lpbar'].forEach(k => { MOODS[k] = MOODS[k] || MOODS.street; });
+['beach', 'river', 'car', 'store', 'park', 'subway', 'lpbar', 'planetarium', 'pocha', 'rooftop', 'forest', 'teahouse', 'cinema', 'lounge', 'tower', 'aquarium', 'festival', 'market'].forEach(k => { MOODS[k] = MOODS[k] || MOODS.street; });
 const CHORDS = [
   { root: 48, notes: [60, 64, 67, 71] },
   { root: 45, notes: [57, 60, 64, 67] },

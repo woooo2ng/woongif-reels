@@ -1,0 +1,659 @@
+{
+ "id": "esfp-m",
+ "version": 1,
+ "mbti": "ESFP",
+ "gender": "m",
+ "label": "ESFP 남자",
+ "color": "#ffd84d",
+ "img": "img/esfp-m/",
+ "model": "esfp-m",
+ "intro": {
+  "chip": "토요일 PM 12:00 · 수제버거집",
+  "text": "소개팅 장소는 노란 간판의 수제버거집. 음악이 신나게 흐른다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "같이 부른 노래",
+   "B": "박수 쳐 준 거",
+   "C": "잔잔한 노래"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람 ✨",
+  "drafts": [
+   "오늘",
+   "오늘 너무 재밌",
+   "ㅋㅋㅋㅋ",
+   "사진 보낼게요"
+  ],
+  "msg": "오늘 너무너무 재밌었어요!!! 사진 보내요 📸",
+  "pics": [
+   "📸",
+   "🍔",
+   "🎤",
+   "🧸",
+   "🎆"
+  ]
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "burger",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "안녕하세요!! 와, 사진보다 실물이 훨씬 좋으시다!"
+    },
+    {
+     "expr": "happy",
+     "text": "여기 버거 진짜 맛있어요. 사진도 엄청 잘 나와요!",
+     "act": "point",
+     "fx": "menu:더블 버거"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "F"
+     ],
+     "text": "칭찬 감사해요 ㅋㅋ 그쪽도요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄 진짜요?"
+      },
+      {
+       "expr": "happy",
+       "text": "(바로 '첫 만남 기념' 버거 사진 제안)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S",
+      "P"
+     ],
+     "text": "사진 찍는 거 좋아하세요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "완전요! 오늘 같은 날은 남겨야죠."
+      },
+      {
+       "expr": "smile",
+       "text": "(버거 사진에 내 손도 같이 나오게 찍음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "버거 추천해 주세요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "더블 버거요! 무조건!"
+      },
+      {
+       "expr": "happy",
+       "text": "(감자튀김을 하나 더 시킴)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "다음 코스",
+   "bg": "burger",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(밀크셰이크 마시다가) 아 맞다, 이따 노래방 갈래요?"
+    },
+    {
+     "expr": "excited",
+     "text": "저 노래방 가면 목 풀 때까지 딱 세 곡만 부를게요. 진짜로.",
+     "fx": "menu:밀크셰이크"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E"
+     ],
+     "text": "좋아요! 저도 한 곡 할게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄 듀엣 가능?!"
+      },
+      {
+       "expr": "happy",
+       "text": "(듀엣곡 목록이 이미 폰에 있음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "노래 듣는 거 좋아해요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그럼 제가 콘서트 해 드릴게요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(관객 한 명을 위한 곡 순서를 짜는 중)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "노래는 자신 없어서… 탬버린 할게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "탬버린이 제일 중요해요!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(탬버린 리듬을 가르쳐 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "노래방",
+   "bg": "karaoke",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(노래방. 첫 곡부터 98점) 와 98점!!"
+    },
+    {
+     "expr": "happy",
+     "text": "다음 곡은 같이 불러요. 이 노래 알죠?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "알아요! 같이 불러요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(화음까지 넣음)"
+      },
+      {
+       "expr": "happy",
+       "text": "우리 목소리 잘 어울린다!"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "제가 박수 칠게요!",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "최고의 관객!"
+      },
+      {
+       "expr": "excited",
+       "text": "(내 쪽 보면서 부름)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "저는 듣는 게 더 좋아요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그럼 듣기 좋은 노래로 할게요."
+      },
+      {
+       "expr": "smile",
+       "text": "(신나는 곡 대신 잔잔한 곡으로 바꿈)"
+      }
+     ]
+    }
+   ],
+   "chip": "첫 곡 98점"
+  },
+  {
+   "id": "s4",
+   "title": "팝업스토어",
+   "bg": "popup",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(팝업스토어 대형 곰돌이 앞) 여기 포토존이에요! 같이 찍어요!"
+    },
+    {
+     "expr": "happy",
+     "text": "포즈는 제가 알려 줄게요. 하나, 둘—"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "포즈 알려 줘요!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(포즈 12개 연속)"
+      },
+      {
+       "expr": "happy",
+       "text": "인생샷 건졌다!!"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "제가 먼저 찍어 드릴게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "진짜요? 그럼 한 장만!"
+      },
+      {
+       "expr": "smile",
+       "text": "(찍고 나서 '같이도!' 하며 옆자리를 비워 둠)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "사진은 좀 어색해서요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요! 그럼 뒷모습으로 찍어요."
+      },
+      {
+       "expr": "happy",
+       "text": "(뒷모습 사진이 제일 잘 나옴)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "축제",
+   "bg": "festival",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(밤 축제. 불빛이 하나둘 켜진다)"
+    },
+    {
+     "expr": "blush",
+     "text": "와 예쁘다… 저 이런 거 보면 지금이 제일 좋은 것 같아요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "저도 지금이 제일 좋아요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "…"
+      },
+      {
+       "expr": "blush",
+       "text": "(웃다가 처음으로 조용해짐)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S",
+      "P"
+     ],
+     "text": "저기 솜사탕 먹을래요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "완전 좋아!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(제일 큰 걸로 두 개)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "사진 찍어 줄까요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "좋아요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(이번엔 사진 찍는 내 모습을 찍음)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(오늘 찍은 사진 147장 정리 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "happy",
+     "text": "베스트 5장만 보내야지!",
+     "act": "phone"
+    },
+    {
+     "expr": "excited",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "F"
+     ],
+     "text": "꺄 사진 너무 잘 나왔다!! 저도 재밌었어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "(친한 친구만 보는 스토리에 바로 올림)",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "답장도 귀여워…"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "오늘 {cb:s3} 최고였어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그쵸!!",
+       "fx": "kme"
+      },
+      {
+       "expr": "excited",
+       "text": "(그때 영상 다시 보내 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "사진 고마워요! 잘 자요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "잘 자요~!",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "(굿나잇 이모티콘 3개)"
+      }
+     ]
+    }
+   ],
+   "chip": "오늘 찍은 사진 147장"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "karaoke",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(두 번째 만남. 그 노래방, 그 방)"
+    },
+    {
+     "expr": "blush",
+     "text": "오늘은 제 노래 말고… 그쪽 좋아하는 노래 듣고 싶어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "F"
+     ],
+     "text": "그럼 제가 한 곡 부를게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "꺄!!"
+      },
+      {
+       "expr": "blush",
+       "text": "(탬버린 들고 제일 진지하게 들음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "같이 부를 노래 골라요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "좋아요!"
+      },
+      {
+       "expr": "excited",
+       "text": "(듀엣 점수 100점)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "오늘도 그쪽 노래 듣고 싶어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…진짜요?"
+      },
+      {
+       "expr": "happy",
+       "text": "(오늘은 잔잔한 곡만 고름)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 듀엣 100점",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "karaoke",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, ESFP의 노래방 앨범.",
+    "듀엣 점수 100점 영상 52개.",
+    "첫 영상 제목: '처음 같이 부른 날'."
+   ],
+   "stat": "듀엣 영상 52개",
+   "punch": "인생 최고의 듀엣 파트너",
+   "theme": [
+    "#ff6fb5",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"다음 주 토요일 페스티벌 티켓 두 장 생겼어요!!\"",
+    "\"같이 가요!! 이번엔 제가 안내할게요 ㅋㅋ\""
+   ],
+   "stat": "티켓 2장 · D-6",
+   "punch": "애프터 확정",
+   "theme": [
+    "#ffd84d",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "🎉",
+   "name": "파티 친구 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ESFP한테 연락이 왔다.",
+    "\"다음 주 파티 하는데 꼭 와요!!\"",
+    "…그 뒤로 모든 파티에 초대된다."
+   ],
+   "stat": "초대받은 파티 9번",
+   "punch": "제일 신나는 친구가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "burger",
+   "lines": [
+    "ESFP는 마무리도 밝다.",
+    "\"오늘 진짜 즐거웠어요! 근데 우리 친구 하면 더 재밌을 것 같아요 ㅎㅎ\"",
+    "…서운할 틈도 없이 밝았다."
+   ],
+   "stat": "마지막 이모티콘 3개",
+   "punch": "제일 밝은 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "오늘 찍은 사진 147장",
+   "노래방 최고 점수 98점",
+   "오늘 웃은 횟수 측정 불가"
+  ]
+ }
+}

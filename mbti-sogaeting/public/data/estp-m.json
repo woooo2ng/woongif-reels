@@ -1,0 +1,658 @@
+{
+ "id": "estp-m",
+ "version": 1,
+ "mbti": "ESTP",
+ "gender": "m",
+ "label": "ESTP 남자",
+ "color": "#ff6f3a",
+ "img": "img/estp-m/",
+ "model": "estp-m",
+ "intro": {
+  "chip": "토요일 PM 1:00 · 춘천 닭갈비집",
+  "text": "소개팅 장소는 시끌벅적한 닭갈비집. 철판에서 지글지글 소리가 난다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "롤러코스터 세 번",
+   "B": "회전목마",
+   "C": "쉬면서 마신 음료"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람 🔥",
+  "drafts": [
+   "ㅋㅋ",
+   "오늘 진짜 재밌",
+   "다음엔",
+   "오늘 재밌었어요"
+  ],
+  "msg": "오늘 진짜 재밌었어요 ㅋㅋㅋ 다음엔 스카이다이빙 어때요?",
+  "pics": [
+   "🎢",
+   "🏎️"
+  ]
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "dakgalbi",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "오 왔다! 안녕하세요~ 배고프죠?"
+    },
+    {
+     "expr": "happy",
+     "text": "사장님 여기 닭갈비 2인에 치즈 사리요!",
+     "act": "point",
+     "fx": "menu:닭갈비 2인"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "좋아요! 저 배 엄청 고파요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "그쵸? 잘 먹는 사람 좋아요."
+      },
+      {
+       "expr": "happy",
+       "text": "(볶는 건 자기가 하겠다고 주걱을 잡음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E",
+      "S"
+     ],
+     "text": "볶는 거 제가 해 볼까요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "오 해 볼래요?"
+      },
+      {
+       "expr": "happy",
+       "text": "(옆에서 응원하다가 결국 같이 볶음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "메뉴 천천히 보고 싶었는데 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "아 맞다, 미안해요!"
+      },
+      {
+       "expr": "smile",
+       "text": "다음 메뉴는 그쪽이 골라요. 볶음밥은 무조건이지만."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "즉흥",
+   "bg": "dakgalbi",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(볶음밥까지 싹 먹고) 아 배부르다. 이제 뭐 할래요?"
+    },
+    {
+     "expr": "excited",
+     "text": "근처에 놀이공원 있는데 지금 갈래요? 자유이용권 마감 1시간 전이에요.",
+     "fx": "menu:볶음밥"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "P",
+      "E"
+     ],
+     "text": "콜! 지금 가요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 이 사람 좋다!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(30초 만에 계산하고 일어남)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "롤러코스터는 무서운데… 그래도 가요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "괜찮아요. 무서우면 맨 뒤에 타요."
+      },
+      {
+       "expr": "smile",
+       "text": "(진짜로 맨 앞자리는 피해서 앉음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "계획 없이 가도 괜찮을까요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "계획은 가서 세우면 돼요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(지도 앱으로 동선 짜는 척하다가 결국 즉흥)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "놀이공원",
+   "bg": "amusement",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(롤러코스터 내리자마자) 한 번 더 타요!!"
+    },
+    {
+     "expr": "happy",
+     "text": "아까 내려갈 때 소리 지르는 거 다 들었어요 ㅋㅋ"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "P"
+     ],
+     "text": "한 번 더 타요!!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "역시!!"
+      },
+      {
+       "expr": "happy",
+       "text": "(세 번 연속 탐)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "이번엔 회전목마 어때요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "회전목마?"
+      },
+      {
+       "expr": "happy",
+       "text": "…좋아요. 의외로 재밌네요 이거."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "잠깐 쉬었다 타요 ㅋㅋ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그래요!"
+      },
+      {
+       "expr": "happy",
+       "text": "(음료 두 개 사 와서 하나 건네줌)"
+      }
+     ]
+    }
+   ],
+   "chip": "자유이용권 마감 D-1시간"
+  },
+  {
+   "id": "s4",
+   "title": "배팅센터",
+   "bg": "batting",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(배팅센터) 120km 쳐 봤어요? 저 이거 좀 쳐요."
+    },
+    {
+     "expr": "smile",
+     "text": "이렇게 잡고, 공을 끝까지 보고!"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "F"
+     ],
+     "text": "알려 준 대로 칠게요!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "(딱! 홈런 존)"
+      },
+      {
+       "expr": "excited",
+       "text": "와 미쳤다!! 처음인데 천재네."
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E",
+      "T"
+     ],
+     "text": "제가 먼저 쳐 볼게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "오 자신감 좋아요!"
+      },
+      {
+       "expr": "smile",
+       "text": "(헛스윙에도 '나이스!' 해 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "치는 거 보는 게 더 재밌어요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그럼 보세요!"
+      },
+      {
+       "expr": "excited",
+       "text": "(일부러 더 세게 침. 다 맞힘)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "카트",
+   "bg": "kart",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(카트장) 내기할래요? 지는 사람이 저녁 사기!"
+    },
+    {
+     "expr": "happy",
+     "text": "봐주는 거 없어요~"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "T",
+      "P"
+     ],
+     "text": "좋아요, 진심으로 갈게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "그 눈빛 좋다!"
+      },
+      {
+       "expr": "happy",
+       "text": "(0.3초 차이로 짐. 진짜로 아쉬워함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "그럼 저는 2등 할게요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋㅋ 둘밖에 없는데요?"
+      },
+      {
+       "expr": "excited",
+       "text": "(결국 같이 결승선 통과하자고 함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "J"
+     ],
+     "text": "내기 없이 그냥 타요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "좋아요!"
+      },
+      {
+       "expr": "happy",
+       "text": "(그래도 몰래 기록을 잼)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(집에 가는 길. 오늘 찍은 영상을 돌려 보는 중…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "happy",
+     "text": "아 이거 보내야지 ㅋㅋ",
+     "act": "phone"
+    },
+    {
+     "expr": "excited",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "ㅋㅋㅋ 스카이다이빙은 고민해 볼게요. 오늘 진짜 재밌었어요!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋㅋㅋ 그럼 번지점프로 협상",
+       "fx": "kme"
+      },
+      {
+       "expr": "excited",
+       "text": "(바로 전화 걸고 싶은 걸 참음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "E"
+     ],
+     "text": "오늘 {cb:s3} 최고였어요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "그쵸!!",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "(영상 다섯 개 연속 전송)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "재밌었어요! 근데 다리가 후들거려요 ㅋㅋ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋㅋㅋ 그게 잘 논 증거예요.",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(스트레칭 영상 링크 보내 줌)"
+      }
+     ]
+    }
+   ],
+   "chip": "답장 속도 0.5초"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "batting",
+   "lines": [
+    {
+     "expr": "happy",
+     "text": "(두 번째 만남. 다시 배팅센터)"
+    },
+    {
+     "expr": "blush",
+     "text": "…오늘은 내기 말고, 그냥 같이 치고 싶어서 불렀어요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "좋아요. 오늘은 같이 쳐요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…"
+      },
+      {
+       "expr": "excited",
+       "text": "(나란히 서서 번갈아 침. 둘 다 홈런)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "T"
+     ],
+     "text": "이번엔 제가 이길게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 도발 좋다!"
+      },
+      {
+       "expr": "happy",
+       "text": "(지고 나서 제일 크게 박수 침)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "끝나고 뭐 먹어요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "아 그거 제가 제일 좋아하는 질문!"
+      },
+      {
+       "expr": "smile",
+       "text": "(먹을 데 세 군데를 바로 말함)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 홈런 콤비",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s4": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "batting",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, 배팅센터 명예의 전당.",
+    "'이번 달 최고 기록' 칸에 이름 두 개.",
+    "나란히, 같은 날짜."
+   ],
+   "stat": "같이 친 공 2,400개",
+   "punch": "제일 신나는 파트너",
+   "theme": [
+    "#d8352a",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"다음 주 토요일 바다 가요. 서핑 배워 봐요!\"",
+    "\"걱정 마요, 제가 다 알려 줄게요 ㅋㅋ\""
+   ],
+   "stat": "출발까지 D-7",
+   "punch": "애프터 확정",
+   "theme": [
+    "#ff6f3a",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "⚽",
+   "name": "운동 메이트 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ESTP한테 연락이 왔다.",
+    "\"이번 주 풋살 한 명 비는데 올래요?\"",
+    "…그 뒤로 주말마다 운동 메이트."
+   ],
+   "stat": "같이 한 운동 7종",
+   "punch": "제일 신나는 친구가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "dakgalbi",
+   "lines": [
+    "ESTP는 돌려 말하지 않는다.",
+    "\"오늘 진짜 재밌었어요! 근데 연애보단 친구로 보면 더 재밌을 것 같아요 ㅋㅋ\"",
+    "…쿨하고, 뒤끝이 없었다."
+   ],
+   "stat": "고민 시간 0.5초",
+   "punch": "제일 쿨한 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "롤러코스터 탑승 3회",
+   "볶음밥 추가 1회",
+   "오늘 걸음 18,000보"
+  ]
+ }
+}

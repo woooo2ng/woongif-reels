@@ -1,0 +1,656 @@
+{
+ "id": "entp-m",
+ "version": 1,
+ "mbti": "ENTP",
+ "gender": "m",
+ "label": "ENTP 남자",
+ "color": "#5a7ab8",
+ "img": "img/entp-m/",
+ "model": "entp-m",
+ "intro": {
+  "chip": "토요일 PM 1:00 · 화덕 피자집",
+  "text": "소개팅 장소는 화덕 피자집. 치즈 냄새가 고소하다."
+ },
+ "callbacks": {
+  "s3": {
+   "A": "우리만의 규칙",
+   "B": "원래 규칙으로 이긴 거",
+   "C": "유리한 규칙"
+  }
+ },
+ "kakao": {
+  "head": "오늘 만난 사람",
+  "drafts": [
+   "오늘",
+   "테두리 클럽 사업",
+   "오늘 재밌었",
+   "근데 하나만"
+  ],
+  "msg": "오늘 재밌었어요. 테두리 클럽 공동 대표 자리 아직 비어 있습니다 ㅋㅋ",
+  "pics": []
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "title": "첫 만남",
+   "bg": "pizza",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "안녕하세요. 피자 반반 어때요? 오늘 첫 토론 주제는 페퍼로니 vs 고르곤졸라.",
+     "act": "point",
+     "fx": "menu:반반 피자"
+    },
+    {
+     "expr": "happy",
+     "text": "지는 쪽이 꿀 찍어 먹기. 농담이에요 ㅋㅋ"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "E"
+     ],
+     "text": "페퍼로니 쪽으로 변론할게요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 바로 받아 주네?"
+      },
+      {
+       "expr": "happy",
+       "text": "(진심으로 반박 세 개를 준비함. 결국 둘 다 웃음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F",
+      "P"
+     ],
+     "text": "둘 다 맛있지 않아요? ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "중립 기어는 반칙인데요 ㅋㅋ"
+      },
+      {
+       "expr": "smile",
+       "text": "근데 설득됐어요. 반반 확정."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "토론은 자신 없어요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "괜찮아요! 제가 혼자 양쪽 다 할게요."
+      },
+      {
+       "expr": "happy",
+       "text": "(1인 2역 토론을 시작함. 웃김)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "아이디어",
+   "bg": "pizza",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(피자 먹다가) 아 방금 사업 아이디어 생각났어요."
+    },
+    {
+     "expr": "excited",
+     "text": "피자 테두리만 모아서 파는 가게. 이름은 '테두리 클럽'. 어때요?"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "P"
+     ],
+     "text": "투자할게요. 지분 30%",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "협상 시작이네요?"
+      },
+      {
+       "expr": "happy",
+       "text": "(냅킨에 사업 계획서를 그리기 시작함)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N",
+      "T"
+     ],
+     "text": "테두리 소스는 뭐로 해요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "오 디테일 좋다."
+      },
+      {
+       "expr": "happy",
+       "text": "꿀, 갈릭, 마라. 마라는 시즌 한정."
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "S"
+     ],
+     "text": "ㅋㅋ 그거 진짜 할 거예요?",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "음… 실행은 아마 안 할 거예요 ㅋㅋ"
+      },
+      {
+       "expr": "smile",
+       "text": "아이디어 내는 게 제일 재밌거든요."
+      }
+     ]
+    }
+   ],
+   "chip": "오늘 떠올린 사업 아이디어 1개째"
+  },
+  {
+   "id": "s3",
+   "title": "보드게임 카페",
+   "bg": "boardgame",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(보드게임 카페) 이거 해 봤어요? 규칙은 제가 알려 줄게요."
+    },
+    {
+     "expr": "happy",
+     "text": "…근데 규칙 하나만 살짝 바꿔도 돼요? 더 재밌어질 것 같아서."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "P"
+     ],
+     "text": "좋아요, 우리만의 규칙으로 해요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "역시 말이 통한다!"
+      },
+      {
+       "expr": "happy",
+       "text": "(새 규칙 3개 추가. 게임이 두 배로 재밌어짐)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "S",
+      "J"
+     ],
+     "text": "원래 규칙으로 먼저 해 봐요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "좋아요. 기본기부터."
+      },
+      {
+       "expr": "happy",
+       "text": "(원래 규칙으로 하다가 내가 이기자 진심으로 감탄함)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "F"
+     ],
+     "text": "그쪽이 정하는 대로 할게요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "책임감 느껴지네요 ㅋㅋ"
+      },
+      {
+       "expr": "smile",
+       "text": "(나한테 유리한 규칙만 골라서 넣어 줌)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "VR 체험관",
+   "bg": "vr",
+   "lines": [
+    {
+     "expr": "excited",
+     "text": "(VR 체험관) 좀비 서바이벌 vs 우주 탐사, 골라요!"
+    },
+    {
+     "expr": "happy",
+     "text": "저는 둘 다 할 거라 상관없어요 ㅋㅋ"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "S",
+      "P"
+     ],
+     "text": "좀비 서바이벌!",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "좋아요, 등은 제가 지킬게요."
+      },
+      {
+       "expr": "happy",
+       "text": "(VR 안에서 제일 크게 소리 지름)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N"
+     ],
+     "text": "우주 탐사요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "우주! 외계인 만나면 뭐라고 할지 정해요."
+      },
+      {
+       "expr": "smile",
+       "text": "(외계인 인사말을 즉석에서 만들어 냄)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "F"
+     ],
+     "text": "무서운 건 빼고요 ㅎㅎ",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "그럼 우주로 가요."
+      },
+      {
+       "expr": "smile",
+       "text": "(우주에서도 몰래 장난을 침)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "빈티지샵",
+   "bg": "thrift",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(빈티지샵에서 특이한 모자를 쓰고) 이거 어때요? 솔직하게."
+    },
+    {
+     "expr": "happy",
+     "text": "아, 솔직하게 어울린다고 하면 사는 걸로."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "E",
+      "P"
+     ],
+     "text": "솔직히 잘 어울려요 ㅋㅋ",
+     "score": 3,
+     "react": [
+      {
+       "expr": "surprised",
+       "text": "진짜?"
+      },
+      {
+       "expr": "happy",
+       "text": "(진짜로 삼. 다음 만남에 쓰고 옴)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "F"
+     ],
+     "text": "제가 하나 골라 줄게요",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 기대된다."
+      },
+      {
+       "expr": "happy",
+       "text": "(내가 골라 준 걸 제일 오래 거울에 비춰 봄)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "음… 다른 것도 써 봐요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "ㅋㅋ 돌려 말하기 접수."
+      },
+      {
+       "expr": "smile",
+       "text": "(다음 모자 7개를 연속으로 써 봄)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "그날 밤",
+   "bg": "room",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(집에 가서 오늘 대화를 떠올리다 혼자 웃음…)",
+     "act": "phone",
+     "fx": "ktyping"
+    },
+    {
+     "expr": "happy",
+     "text": "드립 하나만 넣자.",
+     "act": "phone"
+    },
+    {
+     "expr": "smile",
+     "text": "(보냄)",
+     "act": "phone",
+     "fx": "kmsg"
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "N",
+      "E"
+     ],
+     "text": "공동 대표 지원합니다 ㅋㅋ 저도 재밌었어요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "합격입니다. 첫 회의는 다음 주.",
+       "fx": "kme"
+      },
+      {
+       "expr": "happy",
+       "text": "(진짜로 회의 날짜를 잡음)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N",
+      "P"
+     ],
+     "text": "오늘 {cb:s3} 계속 생각나요 ㅋㅋ",
+     "score": 2,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그거 특허 낼까요?",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(새 규칙 2개를 더 만들어서 보내 줌)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "I"
+     ],
+     "text": "ㅋㅋ 잘 자요!",
+     "score": 1,
+     "react": [
+      {
+       "expr": "smile",
+       "text": "잘 자요. 테두리 꿈 꾸세요.",
+       "fx": "kme"
+      },
+      {
+       "expr": "smile",
+       "text": "(답장 보고 혼자 웃음)"
+      }
+     ]
+    }
+   ],
+   "chip": "보낼까 말까 고민한 드립 5개"
+  },
+  {
+   "id": "s7",
+   "title": "두 번째 만남",
+   "bg": "boardgame",
+   "lines": [
+    {
+     "expr": "smile",
+     "text": "(두 번째 만남. 그 보드게임 카페. 지난번 모자를 쓰고 왔다)"
+    },
+    {
+     "expr": "blush",
+     "text": "오늘은 규칙 안 바꿀게요. …이기고 싶어서가 아니라, 오래 하고 싶어서요."
+    }
+   ],
+   "choices": [
+    {
+     "key": "A",
+     "tags": [
+      "F"
+     ],
+     "text": "그럼 오래 해요",
+     "score": 3,
+     "react": [
+      {
+       "expr": "blush",
+       "text": "…"
+      },
+      {
+       "expr": "happy",
+       "text": "(일부러 천천히 둠)"
+      }
+     ]
+    },
+    {
+     "key": "B",
+     "tags": [
+      "N",
+      "E"
+     ],
+     "text": "오늘은 제가 규칙 하나 만들어도 돼요?",
+     "score": 2,
+     "react": [
+      {
+       "expr": "excited",
+       "text": "오 드디어!"
+      },
+      {
+       "expr": "happy",
+       "text": "(내 규칙을 진지하게 받아 적음)"
+      }
+     ]
+    },
+    {
+     "key": "C",
+     "tags": [
+      "T"
+     ],
+     "text": "이번엔 제가 이길 거예요",
+     "score": 1,
+     "react": [
+      {
+       "expr": "happy",
+       "text": "그 도발 받아 줄게요."
+      },
+      {
+       "expr": "smile",
+       "text": "(지고 나서 제일 크게 웃음)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "endings": [
+  {
+   "id": "hidden",
+   "emoji": "✨",
+   "name": "히든 · 테두리 클럽",
+   "locked": false,
+   "when": {
+    "s3": "A",
+    "s5": "A",
+    "s7": "A"
+   },
+   "chip": "1년 뒤",
+   "expr": "blush",
+   "set": "boardgame",
+   "act": "shy",
+   "lines": [
+    "1년 뒤, 냅킨에 그린 사업 계획서.",
+    "'테두리 클럽' 공동 대표 두 명.",
+    "실행은 0개, 같이 웃은 날은 365일."
+   ],
+   "stat": "같이 낸 아이디어 312개",
+   "punch": "제일 웃긴 공동 대표",
+   "theme": [
+    "#ff9f43",
+    "#f6f2fb",
+    "#ffe7a8"
+   ]
+  },
+  {
+   "id": "after",
+   "emoji": "💗",
+   "name": "애프터 성공",
+   "minPct": 75,
+   "expr": "happy",
+   "set": "bus",
+   "act": "phone",
+   "lines": [
+    "집 가는 버스. 카톡이 왔다.",
+    "\"다음 주에 또 토론해요. 주제는 민트초코.\"",
+    "\"제가 반대편 할게요 ㅋㅋ\""
+   ],
+   "stat": "토론 주제 예약 완료",
+   "punch": "애프터 확정",
+   "theme": [
+    "#5a7ab8",
+    "#f3eef8",
+    "#ffe0f0"
+   ]
+  },
+  {
+   "id": "friend",
+   "emoji": "😂",
+   "name": "밈 메이트 엔딩",
+   "minPct": 50,
+   "expr": "smile",
+   "set": "room",
+   "act": "phone",
+   "lines": [
+    "며칠 뒤 ENTP한테 연락이 왔다.",
+    "\"이거 보고 그쪽 생각나서요 ㅋㅋ\"",
+    "…그 뒤로 하루에 웃긴 짤이 세 개씩 온다."
+   ],
+   "stat": "받은 짤 412개",
+   "punch": "최고의 밈 메이트가 생겼다",
+   "theme": [
+    "#6f7398",
+    "#ecebf7",
+    "#fff3c4"
+   ]
+  },
+  {
+   "id": "matchmaker",
+   "emoji": "🙏",
+   "name": "정중한 거절 엔딩",
+   "minPct": 0,
+   "expr": "smile",
+   "set": "pizza",
+   "lines": [
+    "ENTP는 마무리도 재치 있다.",
+    "\"오늘 진짜 재밌었어요. 근데 우리, 연인보다 토론 메이트가 더 잘 맞을 것 같아요 ㅋㅋ\"",
+    "…반박할 수가 없었다."
+   ],
+   "stat": "반박 시도 0회",
+   "punch": "반박 불가 정중한 거절",
+   "theme": [
+    "#5b6b8f",
+    "#e6ebf5",
+    "#f3e9ee"
+   ]
+  }
+ ],
+ "result": {
+  "funStats": [
+   "오늘 바꾼 규칙 3개",
+   "떠올린 사업 아이디어 7개",
+   "써 본 모자 8개"
+  ]
+ }
+}
