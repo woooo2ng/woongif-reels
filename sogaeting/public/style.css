@@ -194,3 +194,21 @@ h1,h2,.btn,.cell,.chip,.stat,.who,.choice,.tag,.end-name,.end-punch,.card-tag,.c
 .dex-grid b.on{background:#ff8fc8;color:#fff}
 .dex-sub{font-size:12px;color:#c9b8cc;margin-top:8px;text-align:center}
 .card,.dex,.result-btns{flex-shrink:0}
+
+/* 카톡 연출 (6장면) */
+.fx .kchat{position:absolute;left:12px;right:12px;bottom:18px;background:#b2c7da;border-radius:20px;overflow:hidden;box-shadow:0 14px 30px rgba(40,20,50,.35);animation:fxin .35s cubic-bezier(.3,1.5,.5,1);font-size:14px}
+.fx .khead{background:#a3b8cc;padding:8px 12px;font-family:var(--cute);font-size:15px;color:#2b2b3a}
+.fx .kbody{display:flex;flex-direction:column;gap:6px;padding:10px;min-height:70px;max-height:170px;overflow:hidden;justify-content:flex-end}
+.fx .kb{max-width:80%;padding:7px 11px;border-radius:14px;font-weight:700;word-break:keep-all;animation:fxin .25s ease}
+.fx .kb.mine{align-self:flex-end;background:#fee500;border-radius:14px 4px 14px 14px}
+.fx .kb.other{align-self:flex-start;background:#fff;border-radius:4px 14px 14px 14px}
+.fx .kpics{align-self:flex-end;display:flex;gap:3px;animation:fxin .3s ease}
+.fx .kpics i{width:30px;height:30px;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px}
+.fx .kinput{background:#fff;margin:0 8px 8px;border-radius:999px;padding:7px 12px;font-weight:700;color:#333;min-height:32px}
+.fx .kinput i{font-style:normal;color:#ff6fb5;animation:blink 1s infinite}
+/* 궁합 순위 */
+.dex-rank{list-style:none;padding:0;margin:0 0 10px;display:flex;flex-direction:column;gap:5px}
+.dex-rank li{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:12px;padding:7px 12px;font-family:var(--cute)}
+.dex-rank li span{color:#ff8fc8;width:28px}.dex-rank li b{flex:1;font-weight:400}.dex-rank li em{font-style:normal;color:#ffd84d}
+.dex-grid b{display:flex;flex-direction:column;line-height:1.2}.dex-grid b small{font-size:8px;opacity:.85}
+.stage.room{background:linear-gradient(#f3e3f0 0,#f3e3f0 60%,#e8cfb8 60.2%,#d9bba0 100%)}

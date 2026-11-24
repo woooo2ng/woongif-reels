@@ -92,6 +92,8 @@ $('#dialog').onclick = () => {
   if (tapResolve) { const r = tapResolve; tapResolve = null; r(); }
 };
 function preload(d) { ['smile','excited','happy','blush','pout','teary','surprised'].forEach(e => { const i = new Image(); i.src = d.img + e + '.png'; }); }
+// {cb:s3} → 앞 장면에서 고른 선택에 맞는 말로 바꿈
+const tpl = t => String(t).replace(/\{cb:(\w+)\}/g, (_, id) => ((S.data.callbacks || {})[id] || {})[S.picks[id]] || '');
 const use3D = () => !!(window.Scene3D && Scene3D.ready);
 function setExpr(e, bounce = true, act) {
   if (use3D()) { Scene3D.setExpr(e, act); return; }
@@ -124,7 +126,7 @@ function setProg(i) { $('#prog').innerHTML = S.data.scenes.map((_, k) => `<i cla
 function statChip(text) { const el = $('#stat-chip'); el.classList.remove('on'); if (!text) return; el.innerHTML = text.replace(/(\d[\d,]*)/g, '<b>$1</b>'); setTimeout(() => el.classList.add('on'), 700); }
 // 장면별 연출 컷 (대본의 fx)
 const fxEl = $('#fx'); let menuN = 0, galN = 0;
-function clearFx() { fxEl.innerHTML = ''; galN = 0; }
+function clearFx() { clearInterval(fxEl._typing); fxEl.innerHTML = ''; galN = 0; }
 function fx(f) {
   if (!f) return;
   const [kind, arg] = f.split(':');
@@ -143,6 +145,27 @@ function fx(f) {
   } else if (kind === 'staff' || kind === 'notes' || kind === 'bus') {
     if (use3D()) Scene3D.special(kind);
     Snd.play(kind === 'bus' ? 'bus' : kind === 'staff' ? 'ding' : 'tick');
+  } else if (kind === 'seabus') {
+    if (fxEl.querySelector('.flight')) return;
+    fxEl.innerHTML = '<div class="flight"><div class="route">🚌 바다행 버스</div><div class="meta">지금 출발 · 약 2시간 · 도착하면 해 지기 직전</div><div class="row"><span class="left">막차 21:40</span><span class="buy">탈까?</span></div></div>';
+    Snd.play('ding');
+  } else if (kind === 'ktyping') {
+    fxEl.innerHTML = '<div class="kchat"><div class="khead">오늘 만난 사람 💗</div><div class="kbody"></div><div class="kinput"><span class="kdraft"></span><i>|</i></div></div>';
+    const drafts = ['오늘 진짜 재밌었', '혹시 오늘 나 너무 말 많', 'ㅋㅋㅋㅋ 잘 들어갔', '오늘 즐거웠어요 :)', '너 오늘'], el = fxEl.querySelector('.kdraft');
+    let di = 0, ci = 0, del = false;
+    fxEl._typing = setInterval(() => { const dr = drafts[di % drafts.length];
+      if (!del) { ci++; el.textContent = dr.slice(0, ci); if (ci >= dr.length) del = true; }
+      else { ci -= 2; el.textContent = dr.slice(0, Math.max(0, ci)); if (ci <= 0) { del = false; ci = 0; di++; } } }, 70);
+  } else if (kind === 'kmsg') {
+    clearInterval(fxEl._typing);
+    const body = fxEl.querySelector('.kbody'), inp = fxEl.querySelector('.kdraft'); if (!body) return;
+    if (inp) inp.textContent = '';
+    body.innerHTML += '<div class="kb mine">오늘 진짜 재밌었어!!!!! 🥹🥹</div><div class="kpics mine">' + ['🍰', '☕', '🧟', '🌧️', '🌊'].map(e => `<i>${e}</i>`).join('') + '</div>';
+    Snd.play('ding');
+  } else if (kind === 'kme') {
+    const body = fxEl.querySelector('.kbody'); if (!body) return;
+    body.innerHTML += `<div class="kb other">${S.lastText.replace(/^\(.*?\)\s*/, '')}</div>`;
+    Snd.play('ding');
   } else if (kind === 'flight') {
     if (fxEl.querySelector('.flight')) return;
     fxEl.innerHTML = '<div class="flight"><div class="route">김포 ✈ 제주</div><div class="meta">다음 주 토요일 · 07:10 출발 · 성인 2명</div><div class="row"><span class="left">잔여 4석!</span><span class="buy">바로 예매</span></div></div>';
@@ -161,16 +184,16 @@ function sceneCard(n, title, swap) {
 }
 function ask(choices) {
   if (use3D()) Scene3D.setFocus(false);
-  clearFx();
+  if (!fxEl.querySelector('.kchat')) clearFx(); // 카톡 화면은 선택하는 동안에도 유지
   return new Promise(res => {
-    choicesEl.innerHTML = choices.map((c, i) => `<button class="choice" data-i="${i}">${c.text}</button>`).join('');
+    choicesEl.innerHTML = choices.map((c, i) => `<button class="choice" data-i="${i}">${tpl(c.text)}</button>`).join('');
     choicesEl.querySelectorAll('.choice').forEach(b => b.onclick = () => { choicesEl.innerHTML = ''; Snd.play('pop'); res(choices[+b.dataset.i]); });
   });
 }
 
 async function startGame(file) {
   const r = await fetch('data/' + file + '.json');
-  S.data = await r.json(); S.partner = file; S.score = 0; S.picks = {}; S.ending = null;
+  S.data = await r.json(); S.partner = file; S.score = 0; S.picks = {}; S.tags = []; S.ending = null;
   preload(S.data);
   track('start', { file, me: S.me });
   show('game');
@@ -197,9 +220,9 @@ async function startGame(file) {
     statChip(sc.chip || '');
     for (const l of sc.lines) { setExpr(l.expr, true, l.act); fx(l.fx); await say('her', l.text); }
     const c = await ask(sc.choices);
-    S.picks[sc.id] = c.key; S.score += c.score;
+    S.picks[sc.id] = c.key; S.score += c.score; S.tags.push(...(c.tags || [])); S.lastText = tpl(c.text);
     track('choice', { file, scene: sc.id, key: c.key });
-    await say('me', c.text);
+    await say('me', tpl(c.text));
     if (c.score > 0) heart();
     for (const l of c.react) { setExpr(l.expr, true, l.act); fx(l.fx); await say('her', l.text); }
   }
@@ -208,11 +231,28 @@ async function startGame(file) {
 }
 
 // ===== 엔딩 =====
+function scoreRange() {
+  let lo = 0, hi = 0; S.data.scenes.forEach(sc => { const s = sc.choices.map(c => c.score); lo += Math.min(...s); hi += Math.max(...s); });
+  return [lo, hi];
+}
+function pct() {
+  if (S.ending && S.ending.id === 'hidden') return 99;
+  const [lo, hi] = scoreRange();
+  return Math.max(12, Math.min(98, Math.round(20 + (S.score - lo) / (hi - lo) * 78)));
+}
 function pickEnding() {
   const E = S.data.endings;
   const hid = E.find(e => e.when && Object.entries(e.when).every(([k, v]) => S.picks[k] === v));
-  if (hid) return hid;
-  return E.filter(e => e.min != null).sort((a, b) => b.min - a.min).find(e => S.score >= e.min);
+  if (hid && !hid.locked) return hid;
+  const p = pct();
+  return E.filter(e => e.minPct != null).sort((a, b) => b.minPct - a.minPct).find(e => p >= e.minPct);
+}
+// 고른 선택지 태그로 '너는 ○○였어'
+function pattern() {
+  const c = {}; S.tags.forEach(t => c[t] = (c[t] || 0) + 1);
+  const pj = (c.P || 0) - (c.J || 0), ft = (c.F || 0) - (c.T || 0);
+  const label = pj === 0 && ft === 0 ? '밸런스 장인' : pj >= 0 ? (ft >= 0 ? '즉흥 감성 파트너' : '쿨한 모험가') : (ft >= 0 ? '다정한 계획러' : '든든한 현실파');
+  return { type: label, line: `${S.data.mbti} 앞에서 너는 '${label}'였어.` };
 }
 function finish() {
   const e = pickEnding(); S.ending = e;
@@ -223,7 +263,9 @@ function finish() {
   $('#end-chip').textContent = e.chip || `${S.data.mbti}와의 소개팅 끝`;
   $('#end-char').src = S.data.img + (e.expr || 'smile') + '.png';
   // 도감 기록
-  const dex = store.get('dex', {}); dex[S.partner] = [...new Set([...(dex[S.partner] || []), e.id])]; store.set('dex', dex);
+  const dex = store.get('dex', {}), cur = dex[S.partner];
+  const prev = Array.isArray(cur) ? { ends: cur, best: 0 } : (cur || { ends: [], best: 0 });
+  dex[S.partner] = { mbti: S.data.mbti, ends: [...new Set([...prev.ends, e.id])], best: Math.max(prev.best || 0, pct()) }; store.set('dex', dex);
   const es = $('.end-stage'); es.classList.toggle('three', use3D());
   if (use3D()) {
     Scene3D.attach(es); Scene3D.setSet(e.set || 'cafe'); Scene3D.setFocus(false);
@@ -249,36 +291,29 @@ function finish() {
 }
 
 // ===== 결과 카드 =====
-function pct() {
-  if (S.ending.id === 'hidden') return 99;
-  const max = S.data.scenes.length * 3, min = -3;
-  return Math.max(12, Math.min(97, Math.round(30 + (S.score - min) / (max - min) * 66)));
-}
-function pattern() {
-  const cnt = { A: 0, B: 0, C: 0 }; Object.values(S.picks).forEach(k => cnt[k]++);
-  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
-  return S.data.result.pattern[top[1] >= 3 ? top[0] : 'mix'];
-}
 function dexHTML() {
-  const dex = store.get('dex', {}), d = S.data, got = dex[S.partner] || [];
+  const dex = store.get('dex', {}), d = S.data, me = dex[S.partner] || { ends: [] }, got = me.ends || [];
   const ends = d.endings.map(e => `<i class="${got.includes(e.id) ? 'on' : ''}" title="${e.name}">${got.includes(e.id) ? e.emoji : '?'}</i>`).join('');
-  const done = new Set(Object.keys(dex).map(f => f.split('-')[0].toUpperCase()));
-  const grid = MBTI.map(m => `<b class="${done.has(m) ? 'on' : ''}">${m}</b>`).join('');
-  return { ends, grid, n: got.length, total: d.endings.length, people: done.size };
+  const rows = Object.values(dex).filter(x => x && x.mbti).sort((a, b) => b.best - a.best);
+  const done = new Set(rows.map(x => x.mbti));
+  const grid = MBTI.map(m => { const r = rows.find(x => x.mbti === m); return `<b class="${r ? 'on' : ''}">${m}${r ? `<small>${r.best}%</small>` : ''}</b>`; }).join('');
+  const rank = rows.slice(0, 3).map((x, i) => `<li><span>${i + 1}위</span><b>${x.mbti}</b><em>${x.best}%</em></li>`).join('');
+  return { ends, grid, rank, n: got.length, total: d.endings.length, people: done.size };
 }
 $('#btn-result').onclick = () => {
   const d = S.data, e = S.ending, p = pattern(), n = pct();
   S.shot = use3D() ? Scene3D.snapshot() : null;
   const card = $('#card'), th = e.theme || ['#ff6fb5', '#ffe0f0', '#fff3c4'];
   card.style.setProperty('--ac', th[0]); card.style.setProperty('--b1', th[1]); card.style.setProperty('--b2', th[2]);
-  $('#card-who').textContent = `${S.me && S.me !== '모름' ? S.me + ' × ' : ''}${d.label}`;
+  $('#card-who').textContent = `${S.me && S.me !== '모름' ? S.me : '나'} × ${d.mbti} 궁합`;
   const ph = $('#card-photo'); ph.src = S.shot || (d.img + (e.expr || 'smile') + '.png'); ph.classList.toggle('png', !S.shot);
   $('#card-end').textContent = `${e.emoji} ${e.name}`;
   $('#card-pattern').textContent = p.line;
   $('#card-fun').innerHTML = d.result.funStats.map(s => `<li>${s}</li>`).join('');
   const dx = dexHTML();
   $('#card-dex').innerHTML = `<div class="dex-row"><span>${d.mbti} 엔딩 ${dx.n}/${dx.total}</span><span class="dex-ends">${dx.ends}</span></div>`;
-  $('#dex').innerHTML = `<div class="dex-title">소개팅 도감 <small>${dx.people}/16명</small></div><div class="dex-grid">${dx.grid}</div><div class="dex-sub">${d.mbti} 엔딩 ${dx.n}/${dx.total}개 발견 · ${dx.n < dx.total ? '다른 선택을 하면 다른 엔딩이 나와요!' : '엔딩 전부 발견!'}</div>`;
+  $('#dex').innerHTML = `<div class="dex-title">내 궁합 순위 <small>${dx.people}/16명 소개팅함</small></div><ol class="dex-rank">${dx.rank}</ol>` +
+    `<div class="dex-grid">${dx.grid}</div><div class="dex-sub">${dx.people < 16 ? `아직 ${16 - dx.people}명이 남았어요. 진짜 찰떡은 아직 못 만났을 수도?` : '16명 전부 만나 봤어요!'}</div>`;
   $('#ad-slot').hidden = !CONFIG.adSlot;
   show('result');
   const el = $('#card-pct'); let k = 0; const t = setInterval(() => { k = Math.min(n, k + Math.ceil(n / 25)); el.textContent = k; if (k >= n) clearInterval(t); }, 30);
