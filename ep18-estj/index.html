@@ -295,6 +295,13 @@ S[0]=()=>{
   const boss=makePerson(rng(77),{shirt:0x2f9a5a,pants:0x33384a});boss.position.set(-3.5,0,2.05);boss.rotation.y=0.35;sc.add(boss);
   {const h=boss.userData.head;h.children[1].material=smooth(0x9a9aa2);const ms=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.035,0.02),basic(0x6a6a72));ms.position.set(0,0.165,0.248);h.add(ms);
    for(const s of[-1,1]){const br=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.018,0.012),basic(0x6a6a72));br.position.set(s*0.09,0.33,0.236);br.rotation.z=s*-0.35;h.add(br)}}
+  {const bd=new THREE.Mesh(new THREE.PlaneGeometry(0.16,0.07),basic(0xffffff));bd.position.set(0.12,0.5,0.165);boss.userData.hip.add(bd);
+   const bt=canvasPlane(0.15,0.065,800,(x,w,h)=>{x.fillStyle='#1f6a3a';x.font=`900 ${h*0.72}px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillText('사장',w/2,h/2+2)});bt.position.set(0.12,0.5,0.167);boss.userData.hip.add(bt);
+   const cord=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.008,6,24,Math.PI),basic(0xe8324a));cord.rotation.z=Math.PI;cord.position.set(0,0.62,0.17);boss.userData.hip.add(cord);
+   const wh=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.04,0.04),lamb(0xd8dde4));wh.position.set(0,0.44,0.19);boss.userData.hip.add(wh)}
+  const cfront=canvasPlane(1.7,0.5,300,(x,w,h)=>{x.fillStyle='#2f9a5a';rr(x,0,0,w,h,16);x.fill();x.fillStyle='#fff';x.font=`900 ${h*0.42}px ${FONT}`;x.textAlign='center';x.textBaseline='middle';x.fillText('ESTJ 피트니스 · 회원 등록',w/2,h/2+2)});
+  cfront.position.set(-3.5,0.72,3.06);sc.add(cfront);
+  const ntag=labelSprite('헬스장 사장님',{bg:'#2f9a5a',fg:'#fff',fs:60,size:0.0019,r:30});ntag.position.set(-0.55,1.55,0.2);boss.add(ntag);
   const bb=bT('…원래 1월만 이래야 되는데.',{fs:60,size:0.0019});bb.position.set(0,2.22,0);boss.add(bb);
   const sw=sweatDrop();sw.position.set(0.24,0.42,0.12);boss.userData.head.add(sw);
   const cam=new THREE.PerspectiveCamera(56,W/H,0.1,200);
@@ -317,7 +324,7 @@ S[0]=()=>{
     for(const q of ppl){walkPose(q.p,t*7+q.ph,0.5);bub(q.b,t,0.5+q.d);scaleBubble(q.tk,pop((t-TK-q.d*0.6)/0.22)*(t<B?1:1))}
     // 사장님
     const bk=ease((t-B+0.1)/0.5);
-    scaleBubble(bb,pop((t-B-0.15)/0.25));sw.visible=t>B+0.4;sw.position.y=0.42-((t-B)*0.3%0.25);
+    scaleBubble(ntag,pop((t-B+0.45)/0.25));scaleBubble(bb,pop((t-B-0.25)/0.25));sw.visible=t>B+0.4;sw.position.y=0.42-((t-B)*0.3%0.25);
     boss.userData.head.rotation.y=-0.4*bk+Math.sin(t*2)*0.05*bk;boss.rotation.y=0.35+0.25*bk;
     // 카메라: 와이드 → 달 넘길 때 살짝 흔들림 → 사장님 클로즈업
     const sh=m>0&&t<B?Math.max(0,1-(t-F[m-1])/0.3)*0.08:0;
@@ -424,7 +431,7 @@ S[3]=()=>{
   const door=new THREE.Mesh(new THREE.PlaneGeometry(1.3,2.3),basic(0xffe9b8));door.position.set(0,1.15,-2.09);sc.add(door);
   const ppl=[];const POS=[[-3.2,0.2],[-2.2,0.9],[-1.2,0.1],[-0.3,1.0],[0.6,0.2],[1.5,1.0],[2.4,0.3],[3.3,1.0],[-1.7,1.9],[1.0,1.9]];
   POS.forEach(([x,z],i)=>{const p=i%2?mkWoman(r):makePerson(r);smileMouth(p);p.position.set(x,0,z-0.4);p.rotation.y=(r()-0.5)*0.4;phoneIn(p,1);sc.add(p);
-    const b=bT('입금 ✔',{fs:56,size:0.0028});b.position.y=2.15;if(Math.abs(x)<2.0)p.add(b);ppl.push({p,b})});
+    const b=bT('입금 ✔',{fs:56,size:0.0028});b.position.y=2.15;if(Math.abs(x)<1.3)p.add(b);ppl.push({p,b})});
   const cam=new THREE.PerspectiveCamera(52,W/H,0.1,100);
   const ch=chip('PM 10:12 · 회식 끝');
   const names=['김','이','박','최','정','강','조','윤','장','임'];
