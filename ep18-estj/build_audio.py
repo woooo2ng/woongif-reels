@@ -25,14 +25,14 @@ def ld(name):
 SC = [
     [('n1', 0.0), ('n2a', 0.5), ('n2b', 0.35), ('b1', 0.35)],
     [('n3a', 0.0), ('n3b', 0.55)],
-    [('n4a', 0.0), ('n4b', 1.0)],
+    [('n4a', 0.0)],
     [('n5a', 0.3), ('n5b', 0.3)],
     [('n6a', 0.0), ('n6b', 0.55)],
     [('n7a', 0.0), ('n7b', 0.3)],
     [('n8a', 0.3), ('n8b', 0.8)],
     [('n9', 0.2)],
 ]
-POST = {0: 0.6, 1: 0.6, 2: 0.9, 3: 0.6, 4: 0.9, 5: 0.9, 6: 1.0, 7: 0.8}
+POST = {0: 0.6, 1: 0.6, 2: 1.5, 3: 0.6, 4: 0.9, 5: 0.9, 6: 1.0, 7: 0.8}
 info = []
 for si, lines in enumerate(SC):
     t = 0; L = {}; xs = []
@@ -89,7 +89,6 @@ for si, d in enumerate(info):
         ev['mail0'] = round(ve('n4a', -1.2), 3)
         ts = [ev['mail0'] + 1.9 * (k / 31) ** 0.8 for k in range(32)]; ev['mails'] = [round(x, 3) for x in ts]
         for k in ts[::2]: place(b, mailding(0.09), k)
-        ev['sweat'] = round(ve('n4b', 0.05), 3)
     if si == 3:
         ev['reg'] = 0.3; place(b, register(0.22), 0.3)
         ev['bill'] = round(vt('n5a', 1.6), 3); place(b, kakao(0.18), ev['bill'])

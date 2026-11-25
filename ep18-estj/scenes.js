@@ -171,7 +171,7 @@ S[2]=()=>{
   const mail=el(`<div class="mail" style="opacity:0"><div class="mh">받은편지함<span class="badge">0</span></div><div class="ml"></div></div>`);
   const badge=mail.querySelector('.badge'),ml=mail.querySelector('.ml');
   const COL=['#5ccf7a','#7fb7c9','#e0c070','#d98c8c','#a58cd0','#90b86c'];
-  const MS=EV(2,'mails'),M0=EV(2,'mail0'),N4B=LS(2,'n4b'),SW=EV(2,'sweat');let shown=0;
+  const MS=EV(2,'mails'),M0=EV(2,'mail0'),N4B=999;let shown=0;
   return t=>{
     let n=0;MS.forEach(m=>{if(t>=m)n++});
     if(n!==shown){shown=n;badge.textContent=n;ml.innerHTML='';for(let k=n;k>=Math.max(1,n-8);k--)ml.insertAdjacentHTML('beforeend',`<div class="it"><i style="background:${COL[k%6]}"></i>${k}조 · 조별과제 제출합니다<span>오전 9:${String(k).padStart(2,'0')}</span></div>`)}
