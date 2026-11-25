@@ -605,7 +605,6 @@ S[7]=()=>{
   stars(sc,180,r,{y0:6,h:14,z:-20,w:40});
   const moon=glowSprite('rgba(255,246,216,1)',2.2);moon.position.set(3.5,7.5,-12);sc.add(moon);
   const ppl=[];[[-1.1,0],[0,0.3],[1.1,0]].forEach(([x,z],i)=>{const p=i===1?mkWoman(r,{shirt:0x5ccf7a}):makePerson(r);smileMouth(p);p.position.set(x,0,z+0.6);p.rotation.y=(1-i)*0.15;sc.add(p);
-    const nb=new THREE.Group();const cv=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.38,0.03),lamb(0x5ccf7a));nb.add(cv);nb.position.set(0,-0.62,0.12);p.userData.arms[0].add(nb);p.userData.arms[0].rotation.x=-1.0;
     const b=bT('✔',{fs:70,size:0.0034});b.position.y=2.15;p.add(b);ppl.push({p,b,i})});
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   ui.innerHTML=`<div class="end1 out" style="font-size:100px">여러분 주변의<br><span style="color:${C_T}">ESTJ</span>는<br>어떤가요?</div><div class="end2 out" style="top:860px">댓글에 ESTJ 친구를 태그해 주세요!</div><div class="end3 out" style="top:1530px">다음 본편은? 신청소에서 골라 주세요</div>`;
