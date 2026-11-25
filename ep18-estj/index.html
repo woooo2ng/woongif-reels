@@ -235,7 +235,7 @@ const tickLabel=()=>labelSprite('✔',{bg:'#5ccf7a',fg:'#fff',fs:64,size:0.0034,
 function hairColor(p){return p.userData.head.children[1].material.color.getHex()}
 function mkWoman(r,o={}){const p=makePerson(r,o);const h=p.userData.head;const hc=o.hair??hairColor(p);
   h.children[1].material=smooth(hc);
-  const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI*0.75,Math.PI*1.5,0,Math.PI*0.72),smooth(hc));bk.position.y=0.25;bk.scale.set(1.04,1.18,1.04);h.add(bk);
+  if(!o.noBob){const bk=new THREE.Mesh(new THREE.SphereGeometry(0.268,40,24,Math.PI*0.75,Math.PI*1.5,0,Math.PI*0.72),smooth(hc));bk.position.y=0.25;bk.scale.set(1.04,1.18,1.04);h.add(bk);}
   p.userData.hip.children[0].scale.x=0.9;return p}
 function smileMouth(p){const m=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.011,8,16,Math.PI),basic(0xc0506a));m.rotation.z=Math.PI;m.position.set(0,0.165,0.245);p.userData.head.add(m);p.userData.smile=m;return m}
 function notebook(p,col=0x5ccf7a){const g=new THREE.Group();const cv=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.03,0.38),lamb(col));g.add(cv);
@@ -346,7 +346,7 @@ S[1]=()=>{
   for(let x=-30;x<30;){const w=3.5+r()*3,h=6+r()*12;const bd=makeBuilding(r,w,h,5);bd.position.set(x+w/2,bd.position.y,-10);sc.add(bd);x+=w+0.3}
   for(let x=-24;x<=24;x+=6)tree(sc,x,-1.6,1,0x6fae6a);
   // 주인공 두 사람
-  const A=makePerson(rng(41),{shirt:0x6c8ebf});smileMouth(A);const B=mkWoman(rng(42),{shirt:0xe39a6b});smileMouth(B);sc.add(A,B);
+  const A=makePerson(rng(41),{shirt:0x6c8ebf});smileMouth(A);const B=mkWoman(rng(42),{shirt:0xe39a6b,noBob:true});smileMouth(B);sc.add(A,B);
   const ph=phoneIn(B,1);ph.visible=false;B.userData.arms[1].rotation.x=0;
   const ba=bT('언제 밥 한번 먹자!',{fs:62,size:0.0021}),bb=bT('언제요? 목요일 7시 어때요?',{fs:62,size:0.0021});
   ba.position.y=2.15;A.add(ba);bb.position.y=2.15;B.add(bb);
