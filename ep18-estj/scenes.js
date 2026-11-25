@@ -160,7 +160,7 @@ S[2]=()=>{
   const lsc=new THREE.Mesh(new THREE.PlaneGeometry(0.54,0.34),basic(0x9fc3ff));lsc.position.set(0,0.2,-0.188);lap.add(lsc);
   const lect=new THREE.Mesh(new THREE.BoxGeometry(1.0,1.05,0.6),lamb(0x8a6a4a));lect.position.set(1.6,0.52,-4.4);sc.add(lect);lap.position.set(1.6,1.08,-4.4);lap.rotation.y=Math.PI;sc.add(lap);
   const pb=bT('조별과제 마감은 2주 뒤예요!',{fs:60,size:0.0030});pb.position.set(-0.3,2.3,0);prof.add(pb);
-  const pb2=bT('…채점 기준 아직 안 만들었는데.',{fs:60,size:0.0019});pb2.position.set(0,2.2,0);prof.add(pb2);
+  const pb2=bT('…벌써요? 2주 남았는데요?',{fs:60,size:0.0019});pb2.position.set(0,2.2,0);prof.add(pb2);
   const sw=sweatDrop();sw.position.set(0.25,0.4,0.12);prof.userData.head.add(sw);
   for(let row=0;row<4;row++){const y=row*0.35,z=-2.4+row*1.5;
     const step=new THREE.Mesh(new THREE.BoxGeometry(9,y+0.02,1.5),lamb(0xbf9c72));step.position.set(0,(y+0.02)/2,z+0.2);sc.add(step);
@@ -171,7 +171,7 @@ S[2]=()=>{
   const mail=el(`<div class="mail" style="opacity:0"><div class="mh">받은편지함<span class="badge">0</span></div><div class="ml"></div></div>`);
   const badge=mail.querySelector('.badge'),ml=mail.querySelector('.ml');
   const COL=['#5ccf7a','#7fb7c9','#e0c070','#d98c8c','#a58cd0','#90b86c'];
-  const MS=EV(2,'mails'),M0=EV(2,'mail0'),N4B=999;let shown=0;
+  const MS=EV(2,'mails'),M0=EV(2,'mail0'),N4B=MS[MS.length-1]+0.45;let shown=0;
   return t=>{
     let n=0;MS.forEach(m=>{if(t>=m)n++});
     if(n!==shown){shown=n;badge.textContent=n;ml.innerHTML='';for(let k=n;k>=Math.max(1,n-8);k--)ml.insertAdjacentHTML('beforeend',`<div class="it"><i style="background:${COL[k%6]}"></i>${k}조 · 조별과제 제출합니다<span>오전 9:${String(k).padStart(2,'0')}</span></div>`)}
