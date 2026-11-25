@@ -3,11 +3,12 @@ import numpy as np, subprocess, json, os
 from sfxlib import *
 os.makedirs('lines', exist_ok=True)
 CUT = {
- 'raw/nar.mp3': {'n1': (0, 2.08), 'n2a': (2.60, 4.94), 'n2b': (5.25, 10.01), 'n3a': (10.37, 12.70), 'n3b': (13.05, 15.78),
+ 'raw/nar.mp3': {'n1': (0, 2.08), 'n2a': (2.60, 4.94), 'n2b': (5.25, 10.01), 
                  'n4a': (16.18, 20.10), 'n4b': (20.10, 22.81), 'n5a': (23.19, 26.80), 'n5b': (26.98, 30.07),
                  'n6a': (30.45, 32.98), 'n6b': (32.98, 35.41), 'n7a': (35.74, 37.64), 'n7b': (37.96, 42.35),
                  'n8a': (42.70, 44.80), 'n8b': (45.09, 48.55), 'n9': (48.98, 54.16)},
  'raw/boss.mp3': {'b1': (0, 2.36)},
+ 'raw/nar2.mp3': {'n3a': (0, 3.53), 'n3b': (3.79, 6.8)},
 }
 for f, d in CUT.items():
     for k, (a, b) in d.items():
@@ -24,7 +25,7 @@ def ld(name):
 
 SC = [
     [('n1', 0.0), ('n2a', 0.5), ('n2b', 0.35), ('b1', 0.35)],
-    [('n3a', 0.0), ('n3b', 0.55)],
+    [('n3a', 0.3), ('n3b', 0.45)],
     [('n4a', 0.0)],
     [('n5a', 0.3), ('n5b', 0.3)],
     [('n6a', 0.0), ('n6b', 0.55)],
@@ -32,7 +33,7 @@ SC = [
     [('n8a', 0.3), ('n8b', 0.8)],
     [('n9', 0.2)],
 ]
-POST = {0: 0.6, 1: 0.6, 2: 3.0, 3: 0.6, 4: 0.9, 5: 0.9, 6: 1.0, 7: 0.8}
+POST = {0: 0.6, 1: 1.5, 2: 3.0, 3: 0.6, 4: 0.9, 5: 0.9, 6: 1.0, 7: 0.8}
 info = []
 for si, lines in enumerate(SC):
     t = 0; L = {}; xs = []
@@ -79,12 +80,13 @@ for si, d in enumerate(info):
         for k in ev['ticks']: place(b, chk(0.18), k)
         ev['boss'] = round(vt('b1'), 3)
     if si == 1:
-        ev['write'] = round(vt('n3a', 0.6), 3); place(b, scribble(1.4, 0.05), ev['write'])
-        ev['ticks'] = [round(vt('n3b', 0.1 + k * 0.06), 3) for k in range(12)]
-        for k in ev['ticks']: place(b, chk(0.2), k)
-        ev['ticks2'] = [round(vt('n3b', 0.9 + k * 0.06), 3) for k in range(12)]
-        for k in ev['ticks2']: place(b, chk(0.2), k)
-        place(b, rumble(T, 0.05)[:len(b)], 0)
+        place(b, murmur(T, 0.035)[:len(b)], 0)
+        ev['ask'] = round(vt('n3a', 0.7), 3); place(b, pop(0.25), ev['ask'])
+        ev['reply'] = round(vt('n3a', 1.9), 3); place(b, pop(0.25), ev['reply'])
+        ev['cal'] = round(ve('n3a', -0.25), 3); place(b, kakao(0.2), ev['cal'])
+        ev['wide'] = round(vt('n3b', 0.05), 3); place(b, whoosh(0.8, 0.12), ev['wide'])
+        ev['pairs'] = [round(ev['wide'] + 0.9 + k * 0.12, 3) for k in range(10)]
+        for k in ev['pairs']: place(b, chk(0.2), k)
     if si == 2:
         ev['mail0'] = round(ve('n4a', -1.2), 3)
         ts = [ev['mail0'] + 1.9 * (k / 31) ** 0.8 for k in range(32)]; ev['mails'] = [round(x, 3) for x in ts]

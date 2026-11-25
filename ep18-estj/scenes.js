@@ -105,42 +105,50 @@ S[0]=()=>{
   };
 };
 
-// ---------- S1: 출근길 지하철 — 전원 투두 쓰고 동시에 체크 ----------
+// ---------- S1: "언제 밥 한번 먹자"가 빈말이 아닌 세상 ----------
 S[1]=()=>{
-  bgEl.style.background='linear-gradient(#cfe7ff,#eef6ff)';
-  const r=rng(1811);const sc=new THREE.Scene();addLights(sc,{hemi:1.7,dir:1.0,dpos:[2,8,4]});
-  floorPlane(sc,0x9aa3ad,8,40);
-  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(4,40),lamb(0xf4f6f8));ceil.rotation.x=Math.PI/2;ceil.position.y=2.75;sc.add(ceil);
-  for(let z=3;z>-14;z-=1.6){const l=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.04,1.0),basic(0xffffff));l.position.set(0,2.72,z);sc.add(l)}
-  const wins=[];
-  for(const s of[-1,1]){const w=new THREE.Mesh(new THREE.BoxGeometry(0.1,2.75,40),lamb(0xe3e8ee));w.position.set(s*1.75,1.375,-6);sc.add(w);
-    const bench=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.45,16),lamb(0x5fb3a6));bench.position.set(s*1.4,0.25,-5);sc.add(bench);
-    const back=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.6,16),lamb(0x4f9f93));back.position.set(s*1.66,0.75,-5);sc.add(back);
-    for(let z=2.2;z>-13;z-=2.6){const wn=new THREE.Mesh(new THREE.PlaneGeometry(1.8,0.9),basic(0xbfe3ff));wn.position.set(s*1.69,1.75,z);wn.rotation.y=-s*Math.PI/2;sc.add(wn);
-      const st=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.9),basic(0x9fcff5));st.position.set(s*1.685,1.75,z);st.rotation.y=-s*Math.PI/2;sc.add(st);wins.push({st,z,s})}}
-  for(let z=1.2;z>-13;z-=2.6)for(const s of[-1,1]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,2.75,8),lamb(0xf2c84b));pole.position.set(s*0.75,1.375,z);sc.add(pole)}
-  const ppl=[];
-  for(const s of[-1,1])for(let i=0;i<6;i++){const z=1.6-i*1.25;const p=(i+(s>0?1:0))%2?mkWoman(r):makePerson(r);smileMouth(p);
-    p.position.set(s*1.3,0,z);p.rotation.y=-s*Math.PI/2;sitPose(p);const nb=notebook(p);nb.position.set(0,0.12,0.38);sc.add(p);
-    const tk=tickLabel();tk.position.set(0,2.0,0);p.add(tk);ppl.push({p,tk,d:i*0.06+(s>0?0.03:0),nb})}
-  for(let i=0;i<4;i++){const p=i%2?makePerson(r):mkWoman(r);smileMouth(p);p.position.set((i%2?0.35:-0.35),0,-2.2-i*2.0);p.rotation.y=(i%2?-1:1)*0.6+Math.PI*0;notebook(p);sc.add(p);
-    const tk=tickLabel();tk.position.set(0,2.32,0);p.add(tk);ppl.push({p,tk,d:0.1+i*0.08})}
-  const cam=new THREE.PerspectiveCamera(58,W/H,0.1,100);
-  const ch=chip('AM 7:40 · 출근길 지하철');
-  const nb=el(`<div class="nb" style="top:380px"><h2>오늘 할 일</h2><div class="rw"><div class="mbox"><span class="ck">✔</span></div>일어나기</div><div class="rw"><div class="mbox"><span class="ck">✔</span></div>지하철 타기</div></div>`);
-  const cks=nb.querySelectorAll('.ck');const rws=nb.querySelectorAll('.rw');
-  const W0=EV(1,'write'),T1=EV(1,'ticks')[0],T2=EV(1,'ticks2')[0];
+  bgEl.style.background='linear-gradient(#9fd3ff,#d6ecff 60%,#eef7ff)';
+  const r=rng(1812);const sc=new THREE.Scene();addLights(sc,{hemi:1.7,dir:1.3,dpos:[5,10,8]});
+  floorPlane(sc,0xa9b49a,200,200);
+  const road=new THREE.Mesh(new THREE.PlaneGeometry(200,6),lamb(0x5b5f68));road.rotation.x=-Math.PI/2;road.position.set(0,0.01,-4.2);sc.add(road);
+  for(let x=-40;x<40;x+=4){const l=new THREE.Mesh(new THREE.PlaneGeometry(1.8,0.18),basic(0xf2f2f2));l.rotation.x=-Math.PI/2;l.position.set(x,0.02,-4.2);sc.add(l)}
+  const walk=new THREE.Mesh(new THREE.BoxGeometry(200,0.12,9),lamb(0xd8d2c6));walk.position.set(0,0.06,1.6);sc.add(walk);
+  for(let x=-30;x<30;){const w=3.5+r()*3,h=6+r()*12;const bd=makeBuilding(r,w,h,5);bd.position.set(x+w/2,bd.position.y,-10);sc.add(bd);x+=w+0.3}
+  for(let x=-24;x<=24;x+=6)tree(sc,x,-1.6,1,0x6fae6a);
+  // 주인공 두 사람
+  const A=makePerson(rng(41),{shirt:0x6c8ebf});smileMouth(A);const B=mkWoman(rng(42),{shirt:0xe39a6b});smileMouth(B);sc.add(A,B);
+  const ph=phoneIn(B,1);ph.visible=false;B.userData.arms[1].rotation.x=0;
+  const ba=bT('언제 밥 한번 먹자!',{fs:62,size:0.0021}),bb=bT('언제요? 목요일 7시 어때요?',{fs:62,size:0.0021});
+  ba.position.y=2.15;A.add(ba);bb.position.y=2.15;B.add(bb);
+  // 거리 곳곳의 다른 사람들
+  const pairs=[];const PP=[[-8.5,0.4],[-5.6,3.4],[-3.5,-0.8],[4.8,3.6],[5.6,0.0],[8.6,2.6],[-10.5,3.0],[10.6,-0.4],[-1.6,3.6],[2.4,-1.4]];
+  PP.forEach(([x,z],i)=>{const p1=i%2?mkWoman(r):makePerson(r),p2=i%2?makePerson(r):mkWoman(r);smileMouth(p1);smileMouth(p2);
+    p1.position.set(x-0.45,0.12,z);p2.position.set(x+0.45,0.12,z);p1.rotation.y=Math.PI/2-0.4;p2.rotation.y=-Math.PI/2+0.4;sc.add(p1,p2);
+    const q=bT('언제 밥?',{fs:62,size:0.0042});q.position.y=2.25;p1.add(q);const k=tickLabel();k.scale.multiplyScalar(1.4);k.userData.base=[k.scale.x,k.scale.y];k.position.y=2.3;p2.add(k);
+    pairs.push({q,k,d:i*0.11,p2})});
+  const cam=new THREE.PerspectiveCamera(52,W/H,0.1,300);
+  const ch=chip('PM 1:00 · 길에서 우연히');
+  const cal=el(`<div class="card" style="opacity:0;top:330px"><div class="ch">캘린더<small>11월</small></div>
+    <div class="rw" style="height:120px;font-size:46px"><b>✔</b><div>목 19:00 · 저녁 약속<div style="font-size:32px;color:#778;font-weight:700">강남역 2번 출구</div></div></div></div>`);
+  const QA=EV(1,'ask'),QB=EV(1,'reply'),CL=EV(1,'cal'),WD=EV(1,'wide'),PS=EV(1,'pairs');
+  let lastN=-1;
   return t=>{
-    chipPop(ch,t,0.1);if(t>=T2+0.6)ch.textContent='AM 7:40 · 이미 한 일 2개 ✔';
-    wins.forEach(w=>{w.st.position.z=w.z+((t*6)%2.6)-1.3});
-    popEl(nb,t,W0-0.2,'',T2+1.4);
-    rws.forEach((rw,i)=>{rw.style.opacity=clamp01((t-W0-i*0.6)/0.2)});
-    cks[0].style.transform=`scale(${pop((t-T1)/0.2)})`;cks[1].style.transform=`scale(${pop((t-T2)/0.2)})`;
-    for(const q of ppl){const k1=t>=T1+q.d,k2=t>=T2+q.d;
-      if(k2&&t<T2+q.d+0.6){q.tk.position.y=2.0;scaleBubble(q.tk,pop((t-T2-q.d)/0.2))}else if(k1&&t<T2+q.d){scaleBubble(q.tk,pop((t-T1-q.d)/0.2)*(1-ease((t-T1-q.d-0.5)/0.15)))}else if(t>=T2+q.d+0.6)scaleBubble(q.tk,1);else scaleBubble(q.tk,0);
-      q.p.userData.head.rotation.x=0.35-0.35*ease((t-T2-q.d-0.3)/0.3)}
-    const sh=Math.sin(t*23)*0.012;
-    cam.position.set(0.0+sh,2.3,6.0-t*0.15);cam.lookAt(0,1.15,-6);
+    // 둘이 걸어와서 마주침
+    const mk=ease(t/1.0);A.position.set(-2.6+1.95*mk,0.12,1.4);B.position.set(2.6-1.95*mk,0.12,1.4);
+    if(mk<1){walkPose(A,t*8,0.5);walkPose(B,t*8+1,0.5);A.rotation.y=Math.PI/2;B.rotation.y=-Math.PI/2}
+    else{standPose(A);standPose(B);A.rotation.y=Math.PI/2-0.5;B.rotation.y=-Math.PI/2+0.5;armUp(A,1,1);A.userData.arms[1].rotation.z=2.5+Math.sin(t*9)*0.3*(t<QA+0.8?1:0)}
+    if(t>=QB-0.3){ph.visible=true;B.userData.arms[1].rotation.x=-1.4}
+    bub(ba,t,QA,QB+0.2);bub(bb,t,QB,WD+0.3);
+    popEl(cal,t,CL,'',WD);
+    // 와이드: 거리 곳곳에서 약속 확정
+    pairs.forEach(p=>{bub(p.q,t,WD+p.d,PS[0]+p.d);scaleBubble(p.k,pop((t-PS[0]-p.d)/0.22));p.p2.userData.head.rotation.x=t>WD+p.d?0.25:0});
+    // 칩: 오늘 잡힌 약속 0 → 48만 건
+    if(t>=WD){const k=ease((t-WD-0.2)/(PS[PS.length-1]-WD+0.4));const n=Math.round(480000*k);
+      const s=n>=10000?`${Math.floor(n/10000)}만 ${String(n%10000).padStart(4,'0')}`:`${n}`;const txt=k>=1?'오늘 잡힌 약속 48만 건 ✔':`오늘 잡힌 약속 ${s}건`;
+      if(txt!==ch.textContent){ch.textContent=txt}if(lastN<0){lastN=0}chipPop(ch,t,WD)}else chipPop(ch,t,0.1);
+    const wk=ease((t-WD)/0.9);
+    const p0=new THREE.Vector3(0,1.9,7.2),l0=new THREE.Vector3(0,1.9,1.2);const p1=new THREE.Vector3(0,7.2,13.5),l1=new THREE.Vector3(0,1.6,-0.2);
+    cam.position.lerpVectors(p0,p1,wk);cam.lookAt(new THREE.Vector3().lerpVectors(l0,l1,wk));
     caption(1,t);renderer.render(sc,cam);
   };
 };
