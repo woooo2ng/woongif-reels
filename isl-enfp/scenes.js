@@ -389,7 +389,7 @@ S[5]=()=>{
   const isl=new THREE.Group();isl.position.set(-100,0,0);scene.add(isl);const B=beach(isl,r,{shore:-3});
   // beach()는 scene에 붙이므로 isl 기준으로 옮길 수 없음 → 해변 메쉬를 직접 만듦
   palm(isl,-4.6,-0.8,1.6,0.3,0.3);palm(isl,4.8,-0.4,1.7,-0.3,1.4);
-  const lb=banner();lb.rotation.x=-Math.PI/2+0.15;lb.position.set(1.2,0.05,-1.4);lb.scale.setScalar(0.55);isl.add(lb);
+  
   const IC=CAST.map((_,i)=>enfp(i));IC.forEach(p=>{isl.add(p);const tube=new THREE.Mesh(new THREE.TorusGeometry(0.36,0.11,10,20),smooth([0xff8fc8,0xffd84d,0x8fd3ff,0x8fe3b0,0xb79bff,0xffb38a,0xff8f8f][p.userData.idx]));tube.rotation.x=Math.PI/2;tube.position.y=0.25;p.userData.hip.add(tube)});
   const HL=heliOpen();HL.scale.setScalar(0.9);isl.add(HL);const R=rescuerP(r);R.scale.setScalar(0.62);R.position.set(0.9,-0.82,0.2);R.rotation.y=0.4;HL.add(R);sitPose(R);
   const rb=bub(R,'…또요?',{y:2.3,bg:'#fff3c2',fg:'#7a5a12',fs:70,size:0.0042});
@@ -413,7 +413,7 @@ S[5]=()=>{
         talk(5,t,C);
         cam.position.set(0,5.6,10.5);cam.lookAt(0,2.0,0.4);
       }else{
-        const k=(t-FL)/(BK-FL);const sh=Math.min(2,Math.floor(k*3));
+        const k=(t-FL)/(BK-FL);const sh=Math.min(1,Math.floor(k*2));
         bgEl.style.background='linear-gradient(#7fc6ef,#c9eef6 55%,#eafaf8)';
         fbFaces.forEach(p=>{resetP(p);dark(p,true);eyesK(p,0.45);face(p,'none')});hid.forEach(p=>{resetP(p);face(p,'smile')});
         if(sh===0){cam.position.set(100,1.2,6);cam.lookAt(100+3,0.2,-30)}

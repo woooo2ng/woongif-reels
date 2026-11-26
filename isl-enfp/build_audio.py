@@ -236,30 +236,8 @@ e = place(2, 'b_morning', M['dawn'] + 0.5)
 e = place(2, 'n4', e + 0.2)
 D.append(e + 0.5)
 
-# 3 깜짝 생일파티
-X += [(3, waves(25, 0.025), 0.0)]
-e = place(3, 'c_bday', 0.4)
-M['ears'] = e + 0.05
-X += [(3, ping(0.1), M['ears']), (3, ping(0.08), M['ears'] + 0.12)]
-M['walk'] = M['ears'] + 0.45
-X += [(3, whistle(2.6, 0.07), M['walk']), (3, steps(15, 0.17, 0.1), M['walk'])]
-e = M['walk'] + 2.7
-M['prep'] = e + 0.1
-X += [(3, marimba(3.6, 0.035, 132), M['prep']), (3, thud(0.15), M['prep'] + 0.4), (3, thud(0.15), M['prep'] + 0.8), (3, sparkle(0.05), M['prep'] + 1.3)]
-e = place(3, 'b_shh', M['prep'] + 1.8)
-M['eve'] = e + 0.2
-X += [(3, giggle(0.05, 1.6), M['eve'] + 0.1), (3, crickets(2.0, 0.02), M['eve'])]
-e = place(3, 'c_acting', M['eve'] + 0.4)
-M['surp'] = e + 0.15
-X += [(3, popper(0.3), M['surp']), (3, popper(0.25), M['surp'] + 0.15), (3, sparkle(0.08), M['surp'] + 0.1)]
-e = place(3, 'g_surp', M['surp'])
-e = place(3, 'c_knew', e + 0.15)
-M['cry'] = e + 0.55
-X += [(3, sadpiano(3.0, 0.035), M['cry'] - 0.1)]
-
-e = M['cry'] + 1.2
-e = place(3, 'n5', e + 0.2)
-D.append(e + 0.5)
+# 3 깜짝 생일파티 — 지웅 결정으로 뺌 (길이 0, 렌더·합치기에서 제외)
+D.append(0.0)
 
 # 4 구조: 헬기 → 무전 보고 말투 변화 → 오열
 X += [(4, waves(32, 0.02), 0.0), (4, heli(3.2, 0.2), 0.0), (4, thud(0.3), 1.2)]
@@ -288,8 +266,8 @@ D.append(e + 0.5)
 X += [(5, warm(2.6, 0.035), 0.0)]
 e = place(5, 'b_happy', 0.35)
 M['flash'] = e + 0.1
-X += [(5, swoosh(0.1), M['flash']), (5, horn(0.06, 0.9), M['flash'] + 0.2), (5, swoosh(0.08), M['flash'] + 0.8), (5, swoosh(0.08), M['flash'] + 1.6)]
-M['back'] = M['flash'] + 1.9
+X += [(5, swoosh(0.1), M['flash']), (5, horn(0.06, 0.9), M['flash'] + 0.2), (5, swoosh(0.08), M['flash'] + 0.8), ]
+M['back'] = M['flash'] + 1.5
 e = place(5, 'a_again', M['back'] + 0.2)
 e = place(5, 'g_gaja', e + 0.1)
 M['beach'] = e + 0.15
