@@ -5,11 +5,11 @@ function title(){
   return (t,hide)=>{const o=hide?0:1;el[0].style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;el[0].style.opacity=o;
     el.slice(1).forEach((e,i)=>{const t0=0.1+i*0.25;e.style.transform=`scale(${pop((t-t0)/0.35)})`;e.style.opacity=clamp01((t-t0)/0.1)*o})};
 }
-// ENFP 7명: 0 리더(남) · 1 연희(긴머리) · 2 유비(단발) · 3 지은(번 머리, 생일 주인공·썰) · 4~6
+// ENFP 7명: 0 리더(남) · 1 연희(긴머리) · 2 남(Henry) · 3 지은(번 머리, 생일 주인공·썰) · 4~6
 const CAST=[
   {shirt:0x8fd3ff,pants:0x4a5a7a,hair:0x2a2220},
   {shirt:0xff9fc8,pants:0xf5f0e6,hair:0x3a2a22,long:true},
-  {shirt:0xffc46b,pants:0x6a7fa8,hair:0x1d1d24,bob:true},
+  {shirt:0xffc46b,pants:0x6a7fa8,hair:0x1d1d24},  // ENFP2: 남자(목소리 Henry)
   {shirt:0xb79bff,pants:0xf2e6ff,hair:0x4a3426,bun:true},
   {shirt:0x8fe3b0,pants:0x55506a,hair:0x1d1d24},
   {shirt:0xffb38a,pants:0x5a6a8a,hair:0x3a2f2a,long:true},
