@@ -718,7 +718,7 @@ function buildStreet(r) {
   for (let i = 0; i < 5; i++) box(bus, 0.5, 0.45, 1.24, 0, -1.25 + i * 0.6, 1.1, 0, basic(0xfff2c0));
   for (const x of [-1.1, 1.1]) for (const z of [-0.6, 0.6]) { const w = cyl(bus, 0.25, 0.25, 0.15, 0x2b2b30, x, 0.25, z, 12); w.rotation.x = Math.PI / 2; }
   const num = texPlane(bus, 0.9, 0.3, canvasTex(240, 80, (x, w, h) => { x.fillStyle = '#2b2b30'; rr(x, 0, 0, w, h, 12); x.fill(); x.fillStyle = '#ffd84d'; x.font = `900 52px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('100-1', w / 2, h / 2 + 2); }), 1.2, 1.35, 0.62);
-  bus.position.set(-12, 0, 2.9); bus.visible = false; g.add(bus); g.userData.bus = bus;
+  bus.position.set(-12, 0, -2.6); bus.visible = false; g.add(bus); g.userData.bus = bus;
   // 별
   const sgeo = new THREE.BufferGeometry(); const sp = []; for (let i = 0; i < 90; i++) sp.push((r() - 0.5) * 20, 4 + r() * 6, -8 - r() * 3);
   sgeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); g.add(new THREE.Points(sgeo, new THREE.PointsMaterial({ color: 0xfff6d8, size: 0.06 })));
@@ -1181,7 +1181,7 @@ function deco(g, r, k) {
       break; }
     // ---------- 코스 장소 ----------
     case 'escape': {
-      for (let i = 0; i < 5; i++) frame(g, 0.24, 0.3, -0.75 + i * 0.3, 2.4 + (i % 2) * 0.1, -2.13, (c, w, h) => { c.fillStyle = '#d8c8a0'; c.fillRect(0, 0, w, h); c.fillStyle = '#5a4030'; c.fillRect(8, h * 0.3, w - 16, 4); c.fillRect(8, h * 0.5, w - 26, 4); }, '#3a2a22');
+      for (let i = 0; i < 4; i++) frame(g, 0.22, 0.28, -1.3 + i * 0.26, 1.85 + (i % 2) * 0.1, -2.13, (c, w, h) => { c.fillStyle = '#d8c8a0'; c.fillRect(0, 0, w, h); c.fillStyle = '#5a4030'; c.fillRect(8, h * 0.3, w - 16, 4); c.fillRect(8, h * 0.5, w - 26, 4); }, '#3a2a22');
       T(0.9, 0.6, 0.9, 1.7, -2.13, (c, w, h) => { c.fillStyle = '#e8dcc0'; c.fillRect(0, 0, w, h); c.strokeStyle = '#8a5a3a'; c.lineWidth = 4; c.strokeRect(6, 6, w - 12, h - 12); c.strokeStyle = '#d8352a'; c.setLineDash([8, 6]); c.beginPath(); c.moveTo(20, h - 20); c.lineTo(w * 0.4, h * 0.4); c.lineTo(w * 0.7, h * 0.6); c.stroke(); txt(c, '✕', w, h, '#d8352a', 40, h * 0.6); c.fillStyle = '#d8352a'; });
       for (const x of [-0.45, 1.35]) { cyl(g, 0.05, 0.06, 0.25, 0xd4a94a, x, 1.55, -2.0, 10); sph(g, 0.06, 0xffb84d, x, 1.72, -2.0, true); box(g, 0.2, 0.04, 0.16, 0x3a2a22, x, 1.4, -2.0); }
       const hg = new THREE.Group(); for (const s of [1, -1]) { const c = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.1, 10), new THREE.MeshLambertMaterial({ color: 0xdff6ff, transparent: true, opacity: 0.6 })); c.position.y = s * 0.05; c.rotation.x = s > 0 ? Math.PI : 0; hg.add(c); } hg.position.set(1.3, 0.45, -1.4); g.add(hg);
@@ -1197,7 +1197,7 @@ function deco(g, r, k) {
       break; }
     case 'pocha': {
       box(g, 1.4, 0.9, 0.5, 0xb8bcc4, 1.1, 0.45, -1.5); cyl(g, 0.22, 0.2, 0.18, 0x8a8a90, 0.85, 1.0, -1.5, 14); steam(g, 0.85, 1.2, -1.5); for (let i = 0; i < 6; i++) box(g, 0.025, 0.3, 0.025, 0xc8a070, 1.1 + (i % 3) * 0.12, 1.05, -1.5 + Math.floor(i / 3) * 0.1); // 어묵통·꼬치
-      T(1.1, 0.75, -0.55, 2.1, -1.7, (c, w, h) => { c.fillStyle = '#fff3c4'; c.fillRect(0, 0, w, h); c.fillStyle = '#d8352a'; c.font = `900 30px ${FONT}`; c.textAlign = 'left'; ['닭발 15,000', '계란말이 9,000', '오뎅탕 12,000', '소주 5,000'].forEach((s, i) => c.fillText(s, 14, 36 + i * 38)); });
+      T(0.7, 0.5, 0.95, 2.05, -1.9, (c, w, h) => { c.fillStyle = '#fff3c4'; c.fillRect(0, 0, w, h); c.fillStyle = '#d8352a'; c.font = `900 30px ${FONT}`; c.textAlign = 'left'; ['닭발 15,000', '계란말이 9,000', '오뎅탕 12,000', '소주 5,000'].forEach((s, i) => c.fillText(s, 14, 36 + i * 38)); });
       for (let i = 0; i < 4; i++) cyl(g, 0.12, 0.12, 0.03, 0xffffff, -0.9 + i * 0.03, 0.55 + i * 0.03, 1.1, 12); // 쌓인 의자? → 접시 더미
       for (let i = 0; i < 3; i++) { const p = cyl(g, 0.2, 0.2, 0.45, 0xff6f6f, -1.4 + i * 0.5, 0.22, -0.9, 14); } person(g, 0xffffff, 1.6, -1.2, 0.95, 0x2b2b30);
       break; }
@@ -1330,7 +1330,7 @@ function deco(g, r, k) {
     case 'track': {
       box(g, 6, 0.06, 0.06, 0xffffff, 0, 0.8, -1.1); for (let i = 0; i < 10; i++) box(g, 0.05, 0.8, 0.05, 0xffffff, -3 + i * 0.66, 0.4, -1.1);
       T(0.8, 0.5, 1.4, 1.4, -1.05, (c, w, h) => { c.fillStyle = '#1d1d24'; rr(c, 0, 0, w, h, 10); c.fill(); txt(c, '1 LAP', w, h * 0.38, '#8fffa8', 32); txt(c, '400m', w, h, '#fff', 26, h * 0.72); });
-      for (let i = 0; i < 3; i++) { const p = person(g, pick(r, [0xff9f43, 0x8fd3ff, 0xffffff]), [-0.5, 0.95, 1.4][i], -0.5 - i * 0.25, 0.85); p.rotation.y = Math.PI / 2; }
+      for (let i = 0; i < 3; i++) { const p = person(g, pick(r, [0xff9f43, 0x8fd3ff, 0xffffff]), [-1.2, 1.45, 2.1][i], -0.7 - i * 0.2, 0.85); p.rotation.y = Math.PI / 2; }
       for (let j = 0; j < 3; j++) { box(g, 3, 0.15, 0.4, 0xb8bcc4, 0.3, 0.3 + j * 0.3, -2.4 - j * 0.35); for (let i = 0; i < 4; i++) person(g, pick(r, [0xffd6e0, 0xcde9ff, 0xfff3c4]), -0.8 + i * 0.6 + j * 0.2, -2.4 - j * 0.35, 0.6).position.y = 0.35 + j * 0.3; }
       for (let i = 0; i < 10; i++) { const fl = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 3), basic(pick(r, [0xff6fb5, 0xffd84d, 0x8fd3ff, 0x9df2c8]))); fl.rotation.x = Math.PI; fl.position.set(-0.9 + i * 0.25, 2.6 - Math.sin(i / 9 * Math.PI) * 0.15, -1.2); g.add(fl); }
       const sun = new THREE.Mesh(new THREE.CircleGeometry(0.5, 24), basic(0xffb88a)); sun.position.set(0.8, 2.2, -8); g.add(sun);
@@ -1383,7 +1383,7 @@ function deco(g, r, k) {
       T(0.55, 0.2, 1.4, 1.0, -1.14, (c, w, h) => { c.fillStyle = '#d4a94a'; c.fillRect(0, 0, w, h); txt(c, 'LIVE 9PM', w, h, '#2a1a18', 22); });
       break; }
     case 'skating': {
-      for (let i = 0; i < 4; i++) { const p = person(g, pick(r, [0xff6fb5, 0x8fd3ff, 0xffd84d, 0xffffff]), -1.8 + i * 1.2, -1.6 - (i % 2) * 0.4, 0.8); p.rotation.z = (i % 2 ? 0.15 : -0.15); }
+      for (let i = 0; i < 4; i++) { const p = person(g, pick(r, [0xff6fb5, 0x8fd3ff, 0xffd84d, 0xffffff]), [-0.85, -1.5, 1.25, 1.85][i], -2.6 - (i % 2) * 0.5, 0.75); p.rotation.z = (i % 2 ? 0.15 : -0.15); }
       const tr = new THREE.Group(); const cn = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.4, 8), lamb(0x3f8f5f)); cn.position.y = 0.9; tr.add(cn); sph(tr, 0.08, 0xffd84d, 0, 1.65, 0, true); for (let i = 0; i < 8; i++) sph(tr, 0.04, pick(r, [0xff6fb5, 0xffd84d, 0x8fd3ff]), Math.cos(i) * 0.3, 0.5 + i * 0.1, Math.sin(i) * 0.3 + 0.1, true); tr.position.set(1.6, 0, -2.2); g.add(tr);
       for (let i = 0; i < 30; i++) sph(g, 0.02, 0xffffff, (r() - 0.5) * 4, 1 + r() * 2.2, -1.5 + r() * 1.5, true); // 눈
       for (let i = 0; i < 4; i++) { const sc = new THREE.Mesh(new THREE.TorusGeometry(0.6 + i * 0.25, 0.008, 4, 40, Math.PI * 0.8), basic(0xffffff)); sc.rotation.x = -Math.PI / 2; sc.position.set(0.3, 0.01, 0.4); sc.rotation.z = i; g.add(sc); }
@@ -1823,7 +1823,7 @@ const Scene3D = {
           const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c, transparent: true, depthWrite: false })); sp.scale.set(0.34, 0.19, 1); sp.visible = false; this.sets.room.add(sp); this.notif.push(sp); } }
       const a = t - this.notifT; this.notif.forEach((n, i) => { const lt = ((a * 0.35) + i / 12) % 1; n.visible = true; const ang = i * 2.4; n.position.set(Math.cos(ang) * (0.55 + lt * 0.5), 1.0 + lt * 1.5, 0.3 + Math.sin(ang) * 0.2); n.material.opacity = Math.sin(lt * Math.PI); });
     }
-    if (this.set === 'street' && this.busT != null) { const bus = this.sets.street.userData.bus, a = t - this.busT; bus.position.x = -12 + 10.6 * ease(a / 2.4); }
+    if (this.set === 'street' && this.busT != null) { const bus = this.sets.street.userData.bus, a = t - this.busT; bus.position.x = -12 + 11.6 * ease(a / 2.4); }
   },
 
   now() { return (performance.now() - this.t0) / 1000; },
