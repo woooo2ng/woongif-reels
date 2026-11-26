@@ -125,7 +125,7 @@
      "expr": "smile",
      "text": "(빛 들어오는 쪽으로 접시를 옮기고 각도 맞추는 중…)",
      "act": "phone",
-     "fx": "gallery:23"
+     "fx": "gallery:23:🥞🍓☕🥐🌿🍳"
     },
     {
      "expr": "blush",
@@ -296,7 +296,7 @@
        "expr": "excited",
        "text": "(사진 200장 보여 줌)",
        "act": "phone",
-       "fx": "gallery:200"
+       "fx": "gallery:200:🐱🐈😺🐾🐱🌷"
       },
       {
        "expr": "happy",

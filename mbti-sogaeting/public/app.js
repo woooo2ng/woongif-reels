@@ -139,7 +139,7 @@ const fxEl = $('#fx'); let menuN = 0, galN = 0;
 function clearFx() { clearInterval(fxEl._typing); fxEl.innerHTML = ''; galN = 0; }
 function fx(f) {
   if (!f) return;
-  const [kind, arg] = f.split(':');
+  const [kind, arg, arg2] = f.split(':');
   if (kind === 'menu') {
     const seq = arg.split('>'); menuN++;
     const show1 = (m, i) => { if (use3D()) Scene3D.setMenu(m); fxEl.innerHTML = `<div class="menu-pill">주문 변경 <b>${menuN}</b>회 · <b>${m}</b></div>`; };
@@ -148,9 +148,9 @@ function fx(f) {
     const to = +arg, from = galN; galN = to;
     let ph = fxEl.querySelector('.phone');
     if (!ph) { fxEl.innerHTML = '<div class="phone"><div class="scr"><div class="bar"><span>📷 갤러리</span><span><b class="cnt">1</b>장</span></div><div class="tiles"></div></div></div>'; ph = fxEl.querySelector('.phone'); }
-    const tiles = ph.querySelector('.tiles'), cnt = ph.querySelector('.cnt'), cols = ['#cde9ff', '#ffe0f0', '#fff3c4', '#d8f0c8', '#e9ddff'];
+    const pics = [...(arg2 || '📷🌷☕🍰🌿')], tiles = ph.querySelector('.tiles'), cnt = ph.querySelector('.cnt'), cols = ['#cde9ff', '#ffe0f0', '#fff3c4', '#d8f0c8', '#e9ddff'];
     const add = Math.min(15, to) - tiles.children.length;
-    for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = '🐧'; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
+    for (let i = 0; i < add; i++) { const t = document.createElement('i'); t.textContent = pics[(tiles.children.length) % pics.length]; t.style.background = cols[(tiles.children.length) % 5]; t.style.animationDelay = (i * 0.05) + 's'; tiles.prepend(t); }
     let k = from || 1; const step = Math.max(1, Math.ceil((to - k) / 20)); const iv = setInterval(() => { k = Math.min(to, k + step); cnt.textContent = k; if (k >= to) clearInterval(iv); }, 40);
   } else if (kind === 'staff' || kind === 'notes' || kind === 'bus' || kind === 'cakeman' || kind === 'couple' || kind === 'umbrella' || kind === 'fireworks') {
     if (use3D()) Scene3D.special(kind);
