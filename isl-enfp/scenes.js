@@ -69,7 +69,7 @@ function banner(){const g=new THREE.Group();const tex=canvasTex(1400,380,(x,w,h)
   g.userData.b=b;return g}
 function bush(scene,x,z,s=1){const g=new THREE.Group();for(let i=0;i<5;i++){const c=new THREE.Mesh(new THREE.IcosahedronGeometry(0.7,1),lamb(i%2?0x5fb36a:0x4ba05c));c.position.set((i-2)*0.65,0.55+((i*7)%3)*0.1,(i%2)*0.2);c.scale.y=0.8;g.add(c)}g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);return g}
 function rescuerP(r){const p=rescuer(r);const u=p.userData;const helm=u.head.children[u.head.children.length-1];u.helm=helm;addFaceTo(p);
-  const rad=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.18,0.05),lamb(0x2b2b30));rad.position.set(0,-0.66,0.05);u.arms[1].add(rad);const ant=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,0.12,4),lamb(0x2b2b30));ant.position.set(0.025,-0.52,0.05);u.arms[1].add(ant);u.radio=[rad,ant];
+  const rg=new THREE.Group();rg.position.set(0,-0.7,0.06);u.arms[1].add(rg);const rad=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.3,0.08),lamb(0x26262c));rg.add(rad);const grill=new THREE.Mesh(new THREE.PlaneGeometry(0.1,0.12),basic(0x55555f));grill.position.set(0,-0.03,0.041);rg.add(grill);const ant=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,0.24,6),lamb(0x26262c));ant.position.set(0.04,0.26,0);rg.add(ant);const led=new THREE.Mesh(new THREE.SphereGeometry(0.022,8,6),basic(0xff3b3b));led.position.set(-0.035,0.16,0.02);rg.add(led);u.radio=[rg];u.led=led;u.rg=rg;
   u.bands=[];for(let i=0;i<7;i++){const b=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.018,6,12),lamb([0xffb3c6,0xfff0a8,0xbfe6ff,0xd9c8ff,0xc8f2d6,0xffd6b8,0xff8fc8][i]));b.rotation.x=Math.PI/2;b.position.y=-0.42-i*0.028;u.arms[0].add(b);b.visible=false;u.bands.push(b)}
   return p}
 function addFaceTo(p){const u=p.userData;const h=u.head;
@@ -102,6 +102,41 @@ function heliOpen(){const g=new THREE.Group();const red=lamb(0xff6b5a),wh=lamb(0
   const rot=new THREE.Group();rot.position.y=1.2;g.add(rot);for(let i=0;i<2;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(6.0,0.04,0.22),lamb(0x333338));b.rotation.y=i*Math.PI/2;rot.add(b)}
   for(const z of[-0.7,0.7]){add(new THREE.BoxGeometry(3.0,0.08,0.1),dk,0,-1.15,z);for(const x of[-0.7,0.7])add(new THREE.BoxGeometry(0.06,0.4,0.06),dk,x,-0.95,z)}
   g.userData.rot=rot;return g}
+
+function heliFly(r){const g=new THREE.Group();const red=lamb(0xff6b5a),dred=lamb(0xd9534a),wh=lamb(0xffffff),dk=lamb(0x3a3a44);
+  const add=(geo,m,x,y,z,p=g)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);p.add(o);return o};
+  add(new THREE.BoxGeometry(3.0,0.16,1.6),red,0,-0.72,0);                       // 바닥
+  add(new THREE.BoxGeometry(3.1,0.16,1.7),red,0,0.78,0);const hump=add(new THREE.SphereGeometry(1,28,14,0,Math.PI*2,0,Math.PI/2),red,0.1,0.84,0);hump.scale.set(1.5,0.32,0.82); // 지붕 + 둥근 엔진 덮개
+  add(new THREE.BoxGeometry(3.0,1.5,0.1),red,0,0.0,-0.78);                      // 반대쪽 벽
+  add(new THREE.BoxGeometry(3.0,1.46,0.04),lamb(0x8a4a48),0,0.0,-0.72);         // 안쪽 그늘
+  add(new THREE.BoxGeometry(0.1,1.5,1.6),red,-1.5,0.0,0);                       // 뒷벽
+  add(new THREE.BoxGeometry(3.0,0.28,0.08),red,0,-0.58,0.78);                   // 문턱
+  add(new THREE.BoxGeometry(3.04,0.1,0.1),wh,0,-0.42,0.8);                      // 흰 줄
+    for(const x of[-1.5,1.42])add(new THREE.BoxGeometry(0.14,1.5,0.14),red,x,0.0,0.8); // 문틀
+  // 뒤로 밀린 슬라이딩 문
+  const door=add(new THREE.BoxGeometry(1.1,1.3,0.06),dred,-2.05,0.0,0.84);const dw=add(new THREE.PlaneGeometry(0.6,0.5),basic(0xbfe8ff),-2.05,0.25,0.875);
+  add(new THREE.BoxGeometry(2.8,0.18,0.5),lamb(0x4a5a7a),0,-0.52,-0.35);       // 좌석
+  add(new THREE.BoxGeometry(2.8,0.6,0.12),lamb(0x4a5a7a),0,-0.2,-0.6);
+  // 조종석: 둥근 코 + 반투명 유리 + 조종사
+  const nose=add(new THREE.SphereGeometry(0.85,28,18,0,Math.PI),red,1.5,-0.15,0);nose.rotation.y=Math.PI/2;nose.scale.set(1.1,0.75,0.95);
+  const gm=new THREE.MeshLambertMaterial({color:0xbfe8ff,transparent:true,opacity:0.45});
+  const glass=add(new THREE.SphereGeometry(0.78,28,18,0,Math.PI,0,Math.PI/2),gm,1.55,0.05,0);glass.rotation.y=Math.PI/2;glass.scale.set(1.2,1.05,0.95);
+  const pilot=rescuer(r);pilot.scale.setScalar(0.62);pilot.position.set(1.75,-0.62,0.05);pilot.rotation.y=Math.PI/2;sitPose(pilot);pilot.userData.arms.forEach(a=>a.rotation.x=-1.1);g.add(pilot);
+  // 꼬리 + 꼬리 프로펠러
+  const tail=add(new THREE.CylinderGeometry(0.12,0.3,2.8,10),red,-2.9,0.3,0);tail.rotation.z=Math.PI/2;
+  add(new THREE.BoxGeometry(2.8,0.07,0.32),wh,-2.9,0.3,0);
+  const fin=add(new THREE.BoxGeometry(0.45,0.9,0.08),red,-4.2,0.7,0);fin.rotation.z=-0.3;
+  const tr=new THREE.Group();tr.position.set(-4.25,0.75,0.12);g.add(tr);for(let i=0;i<2;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.0,0.03),lamb(0x333338));b.rotation.z=i*Math.PI/2;tr.add(b)}
+  // 메인 로터: 허브 + 블레이드 4장
+  add(new THREE.CylinderGeometry(0.12,0.16,0.4,10),dk,0,1.1,0);
+  const rot=new THREE.Group();rot.position.y=1.32;g.add(rot);add(new THREE.SphereGeometry(0.16,12,8),dk,0,0,0,rot);
+  for(let i=0;i<4;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(6.4,0.04,0.24),lamb(0x333338));b.rotation.y=i*Math.PI/4*2;rot.add(b)}
+  // 스키드
+  for(const z of[-0.7,0.7]){add(new THREE.BoxGeometry(3.3,0.08,0.1),dk,0,-1.18,z);const tip=add(new THREE.BoxGeometry(0.4,0.08,0.1),dk,1.78,-1.1,z);tip.rotation.z=0.4;for(const x of[-0.7,0.7])add(new THREE.BoxGeometry(0.06,0.42,0.06),dk,x,-0.97,z)}
+  // 구조 마크
+  const mk=canvasTex(256,256,(x,w,h)=>{x.fillStyle='#ffffff';x.beginPath();x.arc(w/2,h/2,120,0,Math.PI*2);x.fill();x.fillStyle='#ff6b5a';x.fillRect(w/2-28,40,56,176);x.fillRect(40,h/2-28,176,56)});
+  const cross=new THREE.Mesh(new THREE.PlaneGeometry(0.55,0.55),new THREE.MeshBasicMaterial({map:mk,transparent:true}));cross.position.set(-2.4,0.32,0.31);g.add(cross);
+  g.userData={rot,tr};return g}
 
 // ===== S0 타이틀: 폭풍 해변 오열 → "근데 이거 영화 같지 않아?" → 헐 맞아!! → 바다로 =====
 S[0]=()=>{
@@ -295,7 +330,7 @@ S[4]=()=>{
   const R=rescuerP(r);scene.add(R);const C=CAST.map((_,i)=>enfp(i));C.forEach(p=>scene.add(p));
   // 하늘 세트(비행 중)
   const air=new THREE.Group();air.position.set(0,40,0);scene.add(air);
-  const H2=heliOpen();H2.scale.setScalar(1.6);air.add(H2);
+  const H2=heliFly(r);H2.scale.setScalar(1.5);air.add(H2);const speed=[];for(let i=0;i<16;i++){const s=new THREE.Mesh(new THREE.BoxGeometry(1.6+r()*1.6,0.03,0.03),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7}));air.add(s);speed.push({s,y:-2.5+r()*6,z:-3+r()*4,ph:r()*20})}const chj=bub(R,'치직',{x:0.55,y:2.0,bg:'#2b2b3a',fg:'#ffd84d',fs:56,size:0.0018});
   const cl=[cloud(air,-6,2,-8,1.4),cloud(air,7,-2,-10,1.6),cloud(air,-3,-4,-6,1.0),cloud(air,4,4,-12,1.2)];
   // 착륙장 세트
   const pad=new THREE.Group();pad.position.set(-80,0,0);scene.add(pad);
@@ -319,19 +354,19 @@ S[4]=()=>{
       C.forEach((p,i)=>{p.position.set(-1.9+(i%2)*0.45,0,0.4+i*0.5);p.rotation.y=1.1;eyesK(p,1.5)});
       cam.position.set(0,4.0,12.5);cam.lookAt(0,1.9,0.8);
     }else if(phase===1){
-      H2.userData.rot.rotation.y=t*40;H2.position.set(0,Math.sin(t*2)*0.1,0);cl.forEach((c,i)=>c.position.x+=0);cl.forEach((c,i)=>{c.position.x=((-8+i*5-(t-IN)*3)%20+20)%20-10});
+      H2.userData.rot.rotation.y=t*40;H2.userData.tr.rotation.z=t*50;H2.position.set(0,Math.sin(t*2)*0.12,0);H2.rotation.set(0,0,-0.07+Math.sin(t*1.3)*0.015);speed.forEach(q=>{q.s.position.set(9-((t*14+q.ph)%22),q.y,q.z)});cl.forEach((c,i)=>c.position.x+=0);cl.forEach((c,i)=>{c.position.x=((-8+i*5-(t-IN)*3)%20+20)%20-10});
       // 기내: 가운데 구조대원, 양옆 ENFP
-      H2.add(R);R.scale.setScalar(0.92);R.position.set(0,-0.8,-0.05);R.rotation.y=0;sitPose(R);R.userData.legs.forEach(l=>l.rotation.x=-1.3);
-      const kids=[1,2,5,6].map(i=>C[i]);kids.forEach((p,j)=>{H2.add(p);p.position.set(seatX[j]*1.15,-0.72,-0.3);p.rotation.y=(j<2?0.5:-0.5);sitPose(p);p.userData.legs.forEach(l=>l.rotation.x=-1.3);p.scale.setScalar(0.92)});
+      H2.add(R);R.scale.setScalar(0.74);R.position.set(0,-0.64,-0.05);R.rotation.y=0;sitPose(R);R.userData.legs.forEach(l=>l.rotation.x=-1.3);
+      const kids=[1,2,5,6].map(i=>C[i]);kids.forEach((p,j)=>{H2.add(p);p.position.set(seatX[j]*1.1,-0.64,-0.3);p.rotation.y=(j<2?0.5:-0.5);sitPose(p);p.userData.legs.forEach(l=>l.rotation.x=-1.3);p.scale.setScalar(0.72)});
       [0,3,4].forEach(i=>{C[i].visible=false});
-      const u=R.userData;u.radio.forEach(m=>m.visible=t<M5);if(t<M5)u.arms[1].rotation.set(-2.5,0,0.75);
+      const u=R.userData;u.radio.forEach(m=>m.visible=t<M5);const rOn=TM.lines.some(l=>l.s===4&&(l.k==='r2'||l.k==='r3')&&t>l.t0-0.1&&t<l.t1);if(t<M5){u.arms[1].rotation.set(-2.15,0,0.12);u.rg.rotation.set(2.15,0,-0.12);u.arms[0].rotation.set(-0.5,0,0.2)}u.led.material.color.setHex(rOn&&Math.sin(t*18)>0?0x5bff7a:0xff3b3b);scaleBubble(chj,rOn?pop((t%1.2)/0.2)*0+1:0);
       if(t<M3){rface(R,'flat');kids.forEach(p=>{eyesK(p,1.4);p.userData.hip.rotation.x=0.15})}
       else if(t<M5){u.helm.rotation.x=-0.2;u.helm.position.y=0.3;rface(R,'flat');kids.forEach((p,j)=>{p.userData.hip.rotation.x=0.3;p.userData.hip.rotation.z=(j<2?-1:1)*0.06;eyesK(p,1.5)})}
       else if(t<M8){u.helm.rotation.x=-0.45;u.helm.position.y=0.36;u.rblush.forEach(b=>b.visible=true);rface(R,'smile');kids.forEach((p,j)=>{p.userData.hip.rotation.x=0.25;laughPose(p,t,0.6,j)})}
       else{u.helm.visible=false;u.bands.forEach(b=>b.visible=true);u.rblush.forEach(b=>b.visible=true);rface(R,Math.sin(t*14)>0?'open':'smile');u.hip.rotation.x=-0.15+Math.sin(t*10)*0.05;u.arms[0].rotation.set(-1.0,0,0.3);u.arms[1].rotation.set(-1.0,0,-0.3);kids.forEach((p,j)=>laughPose(p,t,1,j))}
       q.forEach((b,j)=>{b.material.depthTest=false;b.renderOrder=10;showB(b,t,ASK+j*0.18,M5)});showB(lol,t,M8+0.3,BY);
       const mm=t<M3?1:t<M5?3:t<M8?5:8;chipSet(ck,`비행 <b>${mm}분째</b>`);chipPop(ck,t,IN+0.05);
-      cam.position.set(0,40+0.3,11.0);cam.lookAt(0,40+0.55,0);
+      cam.position.set(3.6,40+0.55,11.8);cam.lookAt(-0.2,40+0.4,0);
     }else{
       // 착륙장: ENFP들은 손 흔들며 떠나고, 구조대원 오열
       scaleBubble(lol,0);pad.add(R);R.scale.setScalar(1);R.position.set(-1.1,0,2.0);R.rotation.y=0.6;const u=R.userData;u.helm.visible=false;u.bands.forEach(b=>b.visible=true);rface(R,'sad');rcry(R,t,true);u.arms[1].rotation.set(-1.6,0,-0.2);u.arms[1].rotation.x=-1.6+Math.sin(t*6)*0.1;u.hip.position.x=Math.sin(t*30)*0.012;
