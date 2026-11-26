@@ -471,66 +471,47 @@ S[0]=()=>{
   };
 };
 
-// ===== S1 정찰대 2명 → 7명 → 언덕 위 썰 → 구조선 지나감 =====
+// ===== S1 정찰대 2명 → 7명 → 몇 시간 뒤 돌아오니 짐이 바다로 =====
 S[1]=()=>{
   sky('#7fc6ef','#c9eef6','#eafaf8');
-  const scene=IS();const r=rng(1211);const B=beach(scene,r,{shore:-4});
-  palm(scene,-5.2,-1.4,1.6,0.3,0.3);palm(scene,6.0,-0.6,1.7,-0.3,1.4);palm(scene,7.2,2.6,1.4,-0.2,2.1);rock(scene,-3.8,2.8,0.6);
-  // 짐 더미
-  const pile=new THREE.Group();pile.position.set(-1.6,0,1.6);scene.add(pile);
-  [[0,0,0xff8fc8],[0.55,0.1,0x8fd3ff],[-0.5,0.25,0xffc46b],[0.2,0.6,0xb79bff],[0.9,0.55,0x8fe3b0]].forEach(([x,z,c],i)=>{const s=suitcaseS(c);s.position.set(x,i>2?0.42:0,z);s.rotation.y=(i-2)*0.3;pile.add(s)});
+  const scene=IS();const r=rng(1211);const B=beach(scene,r,{shore:-3});
+  palm(scene,-5.2,-0.8,1.6,0.3,0.3);palm(scene,6.0,0.2,1.7,-0.3,1.4);rock(scene,-3.8,3.2,0.6);
+  const pile=new THREE.Group();pile.position.set(-1.2,0,1.0);scene.add(pile);
+  const PC=[0xff8fc8,0x8fd3ff,0xffc46b,0xb79bff,0x8fe3b0];
+  [[0,0],[0.65,0.1],[-0.6,0.25],[0.2,0.6],[0.9,0.55]].forEach(([x,z],i)=>{const s=suitcaseS(PC[i]);s.position.set(x,i>2?0.42:0,z);s.rotation.y=(i-2)*0.3;pile.add(s)});
+  // 떠내려가는 가방들 + 파도 자국
+  const fl=PC.map((c,i)=>{const s=suitcaseS(c);s.scale.setScalar(1.7);scene.add(s);return {s,x:-2.2+i*1.1,ph:i*1.3}});
+  const wet=new THREE.Mesh(new THREE.CircleGeometry(1.7,24),lamb(WET));wet.rotation.x=-Math.PI/2;wet.scale.set(1.3,0.8,1);wet.position.set(-1.0,0.006,1.2);scene.add(wet);
   const C=CAST.map((_,i)=>enfp(i));C.forEach(p=>scene.add(p));
-  // 언덕 세트(멀리 떨어진 곳)
-  const hill=new THREE.Group();hill.position.set(60,0,0);scene.add(hill);
-  const hg=new THREE.Mesh(new THREE.CylinderGeometry(9,11,1.2,24),lamb(0x8cc96f));hg.position.set(0,-0.57,2);hill.add(hg);
-  const sea2=new THREE.Mesh(new THREE.PlaneGeometry(400,200),lamb(SEA));sea2.rotation.x=-Math.PI/2;sea2.position.set(0,-3,-100);hill.add(sea2);
-  for(const [x,z] of [[-5,4],[5.5,3.5],[-6,0]]){const f=new THREE.Mesh(new THREE.IcosahedronGeometry(0.5,0),lamb(0x6aa860));f.position.set(x,0.2,z);hill.add(f)}
-  const ship=ferry();ship.scale.setScalar(1.5);hill.add(ship);
-  const HG=new THREE.Group();hill.add(HG);
-  const L1=ln(1,'l1');const F1=MK('f1'),F2=MK('f2'),F3=MK('f3'),LD=MK('lead'),HL=MK('hill'),HU=MK('huddle'),ST=MK('story'),S0_=MK('ship0'),S1_=MK('ship1'),TU=MK('turn'),DOT=MK('dot');
-  const gj=ln(1,'g_jinjja');
+  const L1=ln(1,'l1');const GO=MK('go'),F1=MK('f1'),F2=MK('f2'),F3=MK('f3'),LD=MK('lead'),LT=MK('later'),FZ=MK('freeze');
   const ck=chip('');ck.style.opacity=0;
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,400);
-  // 떠나는 순서: 4,5(정찰대) → 2(F1) → 1(F2) → 6,3(F3) → 0 리더(LD)
   const leave={4:0.0,5:0.15,2:F1,1:F2,6:F3,3:F3+0.25,0:LD};
-  const home=[[-1.6,3.6],[0.6,2.2],[1.4,2.0],[-0.3,2.7],[0.4,1.0],[1.2,0.9],[2.2,2.6]];
-  const ring=[[0,-0.6],[-1.5,0.9],[-0.8,1.6],[0,1.9],[0.8,1.6],[1.5,0.9],[0,0]];
+  const home=[[-1.8,2.9],[0.6,2.2],[1.4,2.0],[-0.3,2.6],[0.3,0.9],[1.1,0.8],[2.0,2.6]];
+  const ret=[[-1.8,3.6],[-1.1,3.2],[-0.4,3.6],[0.3,3.2],[1.0,3.6],[1.7,3.2],[2.4,3.6]];
+  const qs=C.map(p=>bubE(p,'?!',{y:2.15,size:0.0024}));
   return t=>{B.upd(t);
-    const onHill=t>=HL;
-    if(!onHill){
-      // 출발 지점: 해변. 정찰대 출발 GO=MK('go') 이전에는 서 있음
-      const GO=MK('go');
-      C.forEach((p,i)=>{resetP(p);face(p,'smile');const [hx,hz]=home[i];const t0=i===4||i===5?GO+leave[i]:leave[i];
+    const later=t>=LT;pile.visible=!later;wet.visible=later;
+    fl.forEach((q,i)=>{q.s.visible=later;const d=t-LT;q.s.position.set(q.x+Math.sin(d*0.8+q.ph)*0.2,-0.12+Math.sin(d*2.4+q.ph)*0.06,-4.2-i*0.7-d*0.5);q.s.rotation.set(Math.sin(d*2+q.ph)*0.2,q.ph+d*0.3,Math.sin(d*1.7+q.ph)*0.25)});
+    C.forEach((p,i)=>{resetP(p);face(p,'smile');
+      if(!later){const [hx,hz]=home[i];const t0=i===4||i===5?GO+leave[i]:leave[i];
         if(i===0&&t<LD){p.position.set(hx,0,hz);p.rotation.y=0.5;if(t<L1.t1){armUp(p,1,0.7);p.userData.arms[1].rotation.z=0.9}
-          if(t>LD-0.6){p.rotation.y=-2.0;p.userData.head.rotation.y=0.6}}
-        else if(t<t0){p.position.set(hx,0,hz);if(i===4||i===5){p.rotation.y=-0.3}else{sitPose(p);p.rotation.y=i===2?0.3:0.1;
-          // 따라가기 직전: 떠나는 친구 쳐다봄
-          p.userData.head.rotation.y=0.5*ease((t-GO)/0.5)}}
-        else{const d=t-t0;p.rotation.y=Math.PI*0.62;walkPose(p,d*11,0.7);p.position.set(hx+d*2.1,0,hz-d*1.0);}
-        if(i!==0&&t>t0-0.25&&t<t0+0.4&&(i===2||i===1||i===6)){face(p,'open')}});
-      talk(1,t,C);
-      const n=2+[F1,F2,F3,F3+0.25,LD].filter(x=>t>x).length;chipSet(ck,`정찰대 <b>2명 → ${n}명</b>`);chipPop(ck,t,F1-0.1);
-      cam.position.set(1.0,4.6,10.2);cam.lookAt(1.0,0.9,0.8);
-    }else{
-      // 언덕: 썰 푸는 지은(3)과 둘러앉은 6명, 뒤로 바다
-      C.forEach((p,i)=>{resetP(p);face(p,'smile');HG.add(p);const [x,z]=({0:[-2.0,0.2],1:[-1.5,1.1],2:[-0.7,1.7],4:[0.7,1.7],5:[1.5,1.1],6:[2.0,0.2]})[i]||[0,0];
-        if(i===3){p.position.set(0,0,-0.6);p.rotation.y=0;
-          if(t<HU){p.rotation.y=Math.PI*(1-ease((t-HL-0.3)/0.3));}
-          else if(t<TU){const g=Math.sin(t*6);p.userData.arms[0].rotation.set(-1.2+g*0.4,0,0.3);p.userData.arms[1].rotation.set(-1.0-g*0.4,0,-0.3);p.userData.hip.rotation.z=Math.sin(t*3)*0.05}
-          else{p.rotation.y=Math.PI*ease((t-TU)/0.3);armUp(p,1,1)}}
-        else{p.position.set(x,0,z+0.6);p.rotation.y=Math.atan2(-x,-0.6-(z+0.6));sitPose(p);
-          if(t>HU&&t<TU){p.userData.hip.rotation.x=0.18+Math.sin(t*2+i)*0.05;p.userData.head.rotation.x=0.05}
-          if(t>gj.t0-0.05&&t<gj.t1+0.3){p.userData.arms[0].rotation.set(-2.3,0,0.4);p.userData.arms[1].rotation.set(-2.3,0,-0.4);eyesK(p,1.4)}
-          if(t>TU){standPose(p);p.rotation.y=Math.PI*0.9+(x*0.05);armUp(p,1,0.85);p.userData.arms[1].rotation.z=0.4;}}
-        if(t>TU+0.1&&t<DOT+1.5){eyesK(p,1.5);face(p,'open')}});
-      talk(1,t,C,{skip:[]});
-      // 배: 수평선 왼쪽 → 오른쪽 (아무도 안 봄)
-      const sk=clamp01((t-S0_)/(S1_-S0_+0.6));ship.position.set(-16+sk*24+Math.max(0,t-TU)*3,-1.6,-30);ship.rotation.y=0;ship.userData.label.visible=t<TU+0.4;
-      const ot=t-ST;const mins=Math.min(17,Math.max(0,Math.floor(ot/((TU-ST)/17))));chipSet(ck,t<TU?`본론까지 <b>${mins}분째</b>`:`본론까지 걸린 시간 <b>17분</b>`);chipPop(ck,t,ST);if(t<ST)ck.style.opacity=0;
-      const c=ease((t-HL)/1.2);
-      if(t<TU){cam.position.set(60+0.6,4.2,10.5);cam.lookAt(60+0.0,1.9,-2.0)}
-      else{const cc=ease((t-TU)/0.8);cam.position.set(60+0.6,4.2,10.5+cc*0.5);cam.lookAt(60+0.2+cc*3.5,2.0,-3.0-cc*8)}
-    }
+          if(t>LD-0.9){p.rotation.y=-2.2;p.userData.head.rotation.y=0.5}}
+        else if(t<t0){p.position.set(hx,0,hz);if(i===4||i===5){p.rotation.y=-0.3}else{sitPose(p);p.rotation.y=i===2?0.3:0.1;p.userData.head.rotation.y=0.6*ease((t-GO)/0.5)}}
+        else{const d=t-t0;p.rotation.y=Math.PI*0.62;walkPose(p,d*11,0.7);p.position.set(hx+d*2.1,0,hz-d*1.0)}
+        if(i!==0&&t>t0-0.25&&t<t0+0.4&&(i===2||i===1))face(p,'open')}
+      else{const [rx,rz]=ret[i];const d=t-LT-i*0.06;const k=clamp01(d/1.3);
+        p.position.set(rx+(1-ease(k))*6.5,0,rz);
+        if(t<FZ){p.rotation.y=-Math.PI/2+0.3;walkPose(p,d*10,0.6);laughPose(p,t,0.6,i);face(p,'open')}
+        else{const fz=ease((t-FZ-i*0.03)/0.2);p.rotation.y=(-Math.PI/2+0.3)*(1-fz)+Math.PI*fz;eyesK(p,1+0.6*fz);face(p,'open');p.userData.mouth.scale.set(1.3,2.0,0.4);
+          if(i%2)armUp(p,0,0.8*fz)}}});
+    qs.forEach((b,i)=>showB(b,t,FZ+0.35+i*0.03));
+    if(!later){const n=2+[F1,F2,F3,F3+0.25,LD].filter(x=>t>x).length;chipSet(ck,`정찰대 <b>2명 → ${n}명</b>`);chipPop(ck,t,F1-0.1)}
+    else if(t<FZ){chipSet(ck,'몇 시간 뒤');chipPop(ck,t,LT)}
+    else{chipSet(ck,'정찰대 <b>2명 → 7명</b> · 남은 짐 <b>0개</b>');chipPop(ck,t,FZ+0.2)}
+    if(!later){cam.position.set(0.1,4.6,11.5);cam.lookAt(0.1,1.4,0.8)}
+    else if(t<FZ){cam.position.set(0.3,4.2,11.5);cam.lookAt(0.3,1.6,1.0)}
+    else{const c=ease((t-FZ)/0.6);cam.position.set(0.3,4.2+c*2.4,11.5+c*1.5);cam.lookAt(0.3,1.6-c*1.2,1.0-c*4.0)}
     caption(1,t);renderer.render(scene,cam);
   };
 };
@@ -712,7 +693,7 @@ S[5]=()=>{
   // 회상 세트 3개 (멀리)
   const fb=new THREE.Group();fb.position.set(100,0,0);scene.add(fb);
   const fsea=new THREE.Mesh(new THREE.PlaneGeometry(200,200),lamb(SEA));fsea.rotation.x=-Math.PI/2;fsea.position.set(0,-0.2,-60);fb.add(fsea);
-  const fship=ferry();fship.scale.setScalar(0.25);fship.position.set(8,-0.1,-40);fb.add(fship);fship.userData.label.visible=false;
+  const fsc=[0xff8fc8,0x8fd3ff,0xffc46b].map((c,i)=>{const g=suitcaseS(c);g.position.set(1.5+i*1.4,-0.3,-8-i*2.5);g.rotation.set(0.2,i,0.25);fb.add(g);return g});
   const fbFaces=[0,1,2].map(i=>{const p=enfp(i+1);dark(p,true);eyesK(p,0.45);fb.add(p);p.position.set(-0.8+i*0.8,-1.0,20);return p});
   const fban=banner();fban.position.set(0,-0.5,40);fban.scale.setScalar(0.6);fb.add(fban);const hid=[4,5,6].map(i=>{const p=enfp(i);fb.add(p);p.position.set(-0.7+(i-4)*0.7,-0.5,41.0);return p});
   // 재입도 해변
@@ -746,7 +727,7 @@ S[5]=()=>{
         const k=(t-FL)/(BK-FL);const sh=Math.min(1,Math.floor(k*2));
         bgEl.style.background='linear-gradient(#7fc6ef,#c9eef6 55%,#eafaf8)';
         fbFaces.forEach(p=>{resetP(p);dark(p,true);eyesK(p,0.45);face(p,'none')});hid.forEach(p=>{resetP(p);face(p,'smile')});
-        if(sh===0){cam.position.set(100,1.2,6);cam.lookAt(100+3,0.2,-30)}
+        if(sh===0){fsc.forEach((g,i)=>g.position.y=-0.3+Math.sin(t*2.4+i)*0.06);cam.position.set(100,1.4,4);cam.lookAt(100+2.2,-0.2,-10)}
         else if(sh===1){cam.position.set(100,0.6,24.6);cam.lookAt(100,0.5,20)}
         else{cam.position.set(100,2.4,47);cam.lookAt(100,1.4,40)}
       }
