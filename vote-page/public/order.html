@@ -107,6 +107,7 @@ a{color:inherit}
 .ta{background:#fff;border:2px solid var(--ink);border-radius:20px;padding:14px 14px 10px}
 .ta textarea{width:100%;border:none;outline:none;resize:none;font-size:15px;line-height:1.6;background:transparent}
 .sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sug button{cursor:pointer;color:var(--ink);height:32px;padding:0 12px;border-radius:16px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
+.tip{padding:14px 16px;border-radius:16px;background:#fff6cc;border:2px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-size:14px;line-height:1.55;font-weight:600}
 .ylist{list-style:none;margin:16px 0 0;padding:12px 14px;background:#fff6cc;border:2px solid var(--ink);border-radius:16px;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.5;font-weight:700}
 .ylist li,.wlist li{display:flex;gap:8px;align-items:flex-start}
 .skip{border:2px dashed rgba(26,26,26,.35);border-radius:22px;background:#fff;padding:20px 18px;text-align:center}
@@ -352,8 +353,9 @@ function renderS2(){
 
 function renderS3(){
   $("#app").innerHTML = fhead("사연 쓰기", "두 사람 이야기를<br>들려주세요") + `<div class="body">
-    <label class="lbl" for="stI">영상에 넣고 싶은 우리 이야기</label>
-    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 민지는 길치라 맨날 반대로 가고, 웅이는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
+    <div class="tip">💡 <b>사연을 자세히 적을수록 영상이 '진짜 우리 얘기'처럼 나와요.</b><br>장면 하나하나가 여기 적어 주신 내용으로 만들어져요.</div>
+    <label class="lbl" for="stI" style="margin-top:16px">영상에 넣고 싶은 우리 이야기</label>
+    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 민지는 길치라 맨날 반대로 가고, 웅이는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#55606a"><span id="stQ"></span><span><span id="stN">${S.story.length}</span>&nbsp;/ 500</span></div></div>
     <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
     <div class="sug">${(SUGS[S.rel]||SUGS["커플"]).map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
@@ -361,7 +363,9 @@ function renderS3(){
   const ok = ()=> S.story.trim().length>=10;
   bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
   document.querySelectorAll("[data-sug]").forEach(b=>b.onclick=()=>{ const ta=$("#stI"); const add=(ta.value.trim()?"\n":"")+b.dataset.sug+": "; ta.value=(ta.value.trimEnd()+add).slice(0,500); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); ta.dispatchEvent(new Event("input")); });
-  $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,500); $("#stN").textContent=S.story.length; save(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
+  const qual = ()=>{ const n=S.story.trim().length, q=$("#stQ"); if(!q) return; q.textContent = n<10?"":n<80?"✏️ 조금만 더 자세히 써 주세요":n<200?"👍 좋아요! 더 쓰면 더 좋아요":"🎉 충분해요, 멋진 장면 나오겠어요"; q.style.color = n<80?"#d4163b":"#23855a"; };
+  qual();
+  $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,500); $("#stN").textContent=S.story.length; save(); qual(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
 }
 
 function renderS4(){
