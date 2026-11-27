@@ -3,7 +3,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.m
 
 // 주문서 선택지 → 릴스 색 (순서는 order.html의 HC·SK·CL과 같아야 해요)
 export const HAIR = [0x2a2220, 0x4a3426, 0x8a5a36, 0xd9b264, 0xe7a0b8];
-export const SKIN = [0xf3cfae, 0xebb995, 0xc98f68];
+export const SKIN = [0xffe3cf, 0xf1c6a2, 0xd09a72];   // 궁합편 매끈한 피치 피부(밝은 톤 = 궁합편 그대로)
 export const SHIRT = [0xff9ec4, 0xffc94d, 0x8cc9a0, 0x6c8ebf, 0xa58cd0, 0xe39a6b, 0x90b86c, 0xb8bec6];
 
 const matCache = {};
@@ -39,37 +39,79 @@ function makePerson(o) {
   g.userData = { hip, legs, arms, head };
   return g;
 }
-function femHair(p, col, o = {}) {
-  const h = p.userData.head; h.children[1].visible = false; const m = smooth(col);
-  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.268, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.55), m); cap.position.y = 0.25; cap.rotation.x = -0.42; h.add(cap);
-  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(1.15, 0.34, 0.6); bang.position.set(-0.03, 0.43, 0.12); bang.rotation.z = -0.2; h.add(bang);
-  if (o.bun) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.13, 30, 20), m); b.position.set(0, 0.5, -0.14); h.add(b); }
-  else {
-    const cg = (r, l) => new THREE.CapsuleGeometry(r, l, 8, 24);
-    const back = new THREE.Mesh(cg(0.2, o.short ? 0.25 : 0.55), m); back.scale.set(1.3, 1, 0.55); back.position.set(0, o.short ? 0.12 : -0.02, -0.13); h.add(back);
-    for (const sx of [-1, 1]) { const sd = new THREE.Mesh(cg(0.07, o.short ? 0.22 : 0.46), m); sd.position.set(sx * 0.225, o.short ? 0.16 : 0.04, 0.05); h.add(sd); }
+// ---------- 궁합편 캐릭터 ----------
+// 여자: 궁합편 여자 디자인 (#015 ENFP · #010 INFP · #017 ESTJ) — 몸 0.8배·머리 1.4배, 큰 눈 하이라이트, 동그란 볼터치, 웃는 입
+// 머리: 묶은 머리 = ENFP 양갈래 만두머리, 긴 머리 = INFP 긴 생머리, 짧은 머리 = ESTJ 턱선 단발
+// 남자: #015 INTJ 디자인 (단정한 옆가르마, 눈썹, 흰 깃) + 웃는 입
+const skinMat = (c) => matCache["k" + c] || (matCache["k" + c] = new THREE.MeshLambertMaterial({ color: c, emissive: 0x2a1a10 }));
+function hideDefaultFace(h) {
+  h.children.forEach((c) => { const g = c.geometry && c.geometry.parameters;
+    if (g && ((g.width === 0.05 && g.height === 0.07) || (g.width === 0.07 && g.height === 0.035))) c.visible = false; });
+  h.children.filter((c) => c.geometry && c.geometry.type === "TorusGeometry").forEach((c) => (c.visible = false));
+}
+function bigEyes(h, o = {}) {
+  for (const sx of [-1, 1]) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.045, 20, 16), basic(0x2a1a14)); e.scale.set(0.9, 1.2, 0.5); e.position.set(sx * 0.095, 0.25, 0.232); h.add(e);
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 8), basic(0xffffff)); hl.position.set(sx * 0.095 + 0.015, 0.27, 0.252); h.add(hl);
+    if (o.lash) { const la = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.012, 0.012), basic(0x2a1a14)); la.position.set(sx * 0.135, 0.29, 0.226); la.rotation.z = sx * 0.6; h.add(la); }
+    if (o.brow) { const br = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.016, 0.012), basic(o.brow)); br.position.set(sx * 0.095, 0.33, 0.236); h.add(br); }
+    const ck = new THREE.Mesh(new THREE.CircleGeometry(0.045, 20), new THREE.MeshBasicMaterial({ color: 0xff9fb8, transparent: true, opacity: 0.75 })); ck.position.set(sx * 0.15, 0.175, 0.216); ck.rotation.y = sx * 0.35; h.add(ck);
   }
-  if (o.lash) for (const sx of [-1, 1]) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.018, 0.02), lamb(0x1a1a1a)); l.position.set(sx * 0.09, 0.29, 0.236); h.add(l); }
+  const sm = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.011, 8, 16, Math.PI), basic(0xd8506e)); sm.rotation.z = Math.PI; sm.position.set(0, 0.165, 0.245); h.add(sm);
 }
-function glasses(p) {
-  const h = p.userData.head;
-  for (const s of [-1, 1]) { const g = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.012, 8, 20), basic(0x222222)); g.position.set(s * 0.09, 0.25, 0.25); h.add(g); }
-  const br = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.012, 0.01), basic(0x222222)); br.position.set(0, 0.26, 0.252); h.add(br);
+function hairENFP(h, m) {   // 양갈래 만두머리
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.262, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.22; h.add(cap);
+  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.85, 0.22, 0.42); bang.position.set(0, 0.39, 0.14); h.add(bang);
+  const bk = new THREE.Mesh(new THREE.SphereGeometry(0.266, 40, 24, Math.PI, Math.PI, 0, Math.PI * 0.72), m); bk.position.y = 0.25; h.add(bk);
+  for (const sx of [-1, 1]) {
+    const bun = new THREE.Mesh(new THREE.SphereGeometry(0.1, 24, 18), m); bun.position.set(sx * 0.17, 0.47, -0.06); h.add(bun);
+    const tie = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.018, 8, 16), smooth(0xff4d8d)); tie.position.set(sx * 0.15, 0.42, -0.05); tie.rotation.set(0.3, 0, sx * 0.75); h.add(tie);
+  }
 }
-// 주문서 선택 → 캐릭터 (남: 기본 남자 모델, 여: 릴스 girl() 모델 + 치마)
+function hairINFP(h, m) {   // 긴 생머리
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.27, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.3; h.add(cap);
+  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.95, 0.24, 0.45); bang.position.set(-0.02, 0.4, 0.13); bang.rotation.z = -0.15; h.add(bang);
+  const cg = (r, l) => new THREE.CapsuleGeometry(r, l, 8, 24);
+  const back = new THREE.Mesh(cg(0.2, 0.5), m); back.scale.set(1.3, 1, 0.55); back.position.set(0, 0.0, -0.13); h.add(back);
+  for (const sx of [-1, 1]) { const sd = new THREE.Mesh(cg(0.065, 0.4), m); sd.position.set(sx * 0.225, 0.07, 0.04); h.add(sd); }
+  const pin = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.016, 8, 16), smooth(0xb48cff)); pin.position.set(0.16, 0.41, 0.17); h.add(pin);
+}
+function hairESTJ(h, m) {   // 턱선 단발
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.262, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.22; h.add(cap);
+  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.95, 0.2, 0.42); bang.position.set(0, 0.385, 0.145); h.add(bang);
+  const bob = new THREE.Mesh(new THREE.SphereGeometry(0.268, 40, 24, Math.PI * 0.82, Math.PI * 1.36, 0, Math.PI * 0.78), m); bob.position.y = 0.25; bob.scale.set(1.06, 1, 1.02); h.add(bob);
+}
+function hairINTJ(h, m, style) {   // 남자: 옆가르마 (+ 긴 머리 / 묶은 머리)
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.262, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.3; h.add(cap);
+  const bk = new THREE.Mesh(new THREE.SphereGeometry(0.264, 40, 24, Math.PI, Math.PI, 0, Math.PI * (style === "long" ? 0.8 : 0.6)), m); bk.position.y = 0.25; h.add(bk);
+  const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.95, 0.24, 0.42); bang.position.set(0.05, 0.425, 0.13); bang.rotation.z = 0.22; h.add(bang);
+  if (style === "tied") { const t = new THREE.Mesh(new THREE.SphereGeometry(0.08, 20, 16), m); t.position.set(0, 0.36, -0.27); h.add(t); }
+}
+function glasses(h) {
+  const gm = lamb(0x22222a);
+  for (const sx of [-1, 1]) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.011, 8, 24), gm); ring.position.set(sx * 0.095, 0.25, 0.258); h.add(ring); }
+  const br = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.011, 0.011), gm); br.position.set(0, 0.26, 0.262); h.add(br);
+}
 export function person(c) {
   const female = c.g === "여";
   const skin = SKIN[c.skin] ?? SKIN[0], hair = HAIR[c.hc] ?? HAIR[0], shirt = SHIRT[c.cl] ?? SHIRT[0];
-  const p = makePerson({ shirt, pants: female ? skin : 0x3d4a6b, skin, hair });
-  const u = p.userData;
+  const p = makePerson({ shirt, pants: female ? skin : 0x2c3040, skin, hair });
+  const u = p.userData, h = u.head;
+  h.children[0].material = skinMat(skin); u.arms.forEach((a) => (a.children[1].material = lamb(skin)));
+  h.children[1].visible = false; hideDefaultFace(h);
+  const m = smooth(hair);
   if (female) {
-    u.hip.children[0].scale.x = 0.9;
-    const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.36, 0.36, 16), lamb(lighten(shirt, 0.45))); sk.position.y = -0.14; u.hip.add(sk);
+    u.hip.children[0].scale.x = 0.9; u.legs.forEach((l) => (l.children[0].material = lamb(skin)));
+    const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.36, 0.36, 16), lamb(lighten(shirt, 0.5))); sk.position.y = -0.14; u.hip.add(sk);
+    bigEyes(h, { lash: true });
+    if (c.hair === "long") hairINFP(h, m); else if (c.hair === "short") hairESTJ(h, m); else hairENFP(h, m);
+    p.scale.setScalar(0.8); h.scale.setScalar(1.4); h.position.y = 0.62;
+  } else {
+    bigEyes(h, { brow: 0x1d1d26 });
+    hairINTJ(h, m, c.hair);
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), lamb(0xffffff)); col.position.set(0, 0.62, 0.15); u.hip.add(col);
   }
-  if (c.hair === "long") femHair(p, hair, { lash: female });
-  else if (c.hair === "tied") femHair(p, hair, { bun: true, lash: female });
-  else if (female) femHair(p, hair, { short: true, lash: true });
-  if (c.gl) glasses(p);
+  if (c.gl) glasses(h);
   return p;
 }
 

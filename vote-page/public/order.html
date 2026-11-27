@@ -168,9 +168,9 @@ const TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","I
 const G = {NT:"#ddd2ff",NF:"#c9f0dc",SJ:"#d3e6f7",SP:"#ffeab0"};
 const grp = (t)=> t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
 const HC=[["검정","#2a2220"],["갈색","#4a3426"],["밝은 갈색","#8a5a36"],["금발","#d9b264"],["핑크","#e7a0b8"]];
-const SK=[["밝은 톤","#f3cfae"],["중간 톤","#ebb995"],["어두운 톤","#c98f68"]];
+const SK=[["밝은 톤","#ffe3cf"],["중간 톤","#f1c6a2"],["어두운 톤","#d09a72"]];
 const CL=[["분홍","#ff9ec4"],["노랑","#ffc94d"],["민트","#8cc9a0"],["파랑","#6c8ebf"],["보라","#a58cd0"],["주황","#e39a6b"],["연두","#90b86c"],["회색","#b8bec6"]];
-const HS=[["short","짧은 머리"],["long","긴 머리"],["tied","묶은 머리"]];
+const HS=[["tied","만두머리"],["long","긴 머리"],["short","짧은 머리"]];
 const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
 const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드 3~4장면을 넣고 제작 전에 대본을 먼저 보여 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","스페셜에 포함돼요. 제작 전 대본 미리보기에서 1회, 완성 후 자막·대사 작은 수정 1회를 요청할 수 있어요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
 const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="10" fill="#c9f0dc" stroke="#1a1a1a" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -184,7 +184,7 @@ const FOOTER = `<footer class="biz"><nav aria-label="정책"><a href="/terms">�
 <div style="margin-top:6px">© 웅이프(@woong.if). 결제는 토스페이먼츠가 처리해요.</div></footer>`;
 
 // ---------- 상태 ----------
-const blankChar = (g)=>({g, hair:g==="여"?"long":"short", hc:0, skin:0, cl:g==="여"?4:3, gl:false, feat:""});
+const blankChar = (g)=>({g, hair:g==="여"?"tied":"short", hc:0, skin:0, cl:g==="여"?4:3, gl:false, feat:""});
 const init = ()=>({step:"home", pkg:"special", rel:"커플", a:"ENFP", b:"ISTJ", slot:"a", nameA:"", nameB:"", chars:{a:blankChar("여"), b:blankChar("남")}, story:"", email:"", kakao:"", reels:false, terms:false, faq:0});
 let S = init();
 try { const saved = JSON.parse(sessionStorage.getItem("wf_order")||"null"); if(saved) S = {...S, ...saved}; } catch(e){}
