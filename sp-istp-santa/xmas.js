@@ -22,11 +22,11 @@ function makeSanta(){
   const nose=new THREE.Mesh(new THREE.SphereGeometry(0.04,20,14),smooth(0xf2a08a));nose.position.set(0,0.205,0.25);h.add(nose);
   u.cheeks.forEach(c=>{c.position.y=0.2;c.position.x*=1.05});
   // 모자
-  const hat=new THREE.Group();hat.position.set(0,0.43,-0.01);h.add(hat);
-  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.255,0.5,40,1,true),smooth(SRED));cone.position.y=0.22;cone.rotation.x=-0.3;cone.rotation.z=0.25;hat.add(cone);
-  const cap=new THREE.Mesh(new THREE.CircleGeometry(0.255,40),smooth(SRED));cap.rotation.x=Math.PI/2;hat.add(cap);
-  const brim=new THREE.Mesh(new THREE.TorusGeometry(0.255,0.065,16,40),smooth(WHITE));brim.rotation.x=Math.PI/2;brim.position.y=0.0;hat.add(brim);
-  const pom=new THREE.Mesh(new THREE.SphereGeometry(0.075,24,16),smooth(WHITE));pom.position.set(-0.13,0.41,-0.12);hat.add(pom);
+  const hat=new THREE.Group();hat.position.set(0,0.425,0);hat.rotation.x=-0.1;h.add(hat);
+  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.205,0.48,40,1,true),smooth(SRED));cone.position.y=0.24;hat.add(cone);
+  const cap=new THREE.Mesh(new THREE.CircleGeometry(0.205,40),smooth(SRED));cap.rotation.x=Math.PI/2;hat.add(cap);
+  const brim=new THREE.Mesh(new THREE.TorusGeometry(0.205,0.06,16,40),smooth(WHITE));brim.rotation.x=Math.PI/2;hat.add(brim);
+  const pom=new THREE.Mesh(new THREE.SphereGeometry(0.07,24,16),smooth(WHITE));pom.position.set(0,0.49,0);hat.add(pom);
   u.hat=hat;u.beard=beard;
   eyesK(p,0.75);return p;
 }
@@ -35,10 +35,10 @@ function makeElf(o={}){
   const col=new THREE.Mesh(new THREE.ConeGeometry(0.4,0.16,8,1,true),lamb(0xffd84d));col.rotation.x=Math.PI;col.position.y=0.62;u.hip.add(col);
   const belt=new THREE.Mesh(new THREE.BoxGeometry(0.54,0.07,0.34),lamb(0x4a3020));belt.position.y=0.12;u.hip.add(belt);
   for(const s of[-1,1]){const ear=new THREE.Mesh(new THREE.ConeGeometry(0.05,0.17,12),smooth(0xf3cfae));ear.rotation.z=s*-1.25;ear.position.set(s*0.27,0.27,0);u.head.add(ear)}
-  const hat=new THREE.Group();hat.position.set(0,0.42,-0.02);u.head.add(hat);
-  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.25,0.55,36,1,true),smooth(o.hat??0x3f9e5c));cone.position.y=0.25;cone.rotation.z=-0.35;hat.add(cone);
-  const brim=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.05,12,36),smooth(0xd94848));brim.rotation.x=Math.PI/2;hat.add(brim);
-  const bell=new THREE.Mesh(new THREE.SphereGeometry(0.06,16,12),smooth(GOLD));bell.position.set(0.2,0.48,0);hat.add(bell);
+  const hat=new THREE.Group();hat.position.set(0,0.4,0);hat.rotation.x=-0.08;u.head.add(hat);
+  const cone=new THREE.Mesh(new THREE.ConeGeometry(0.205,0.52,36,1,true),smooth(o.hat??0x3f9e5c));cone.position.y=0.26;hat.add(cone);
+  const brim=new THREE.Mesh(new THREE.TorusGeometry(0.205,0.05,12,36),smooth(0xd94848));brim.rotation.x=Math.PI/2;hat.add(brim);
+  const bell=new THREE.Mesh(new THREE.SphereGeometry(0.06,16,12),smooth(GOLD));bell.position.set(0,0.53,0);hat.add(bell);
   u.legs.forEach(l=>{const sh=l.children[1];sh.scale.set(1,1,1.5);sh.position.z=0.1});
   flatMouth(p);mood(p,'flat');p.scale.setScalar(o.s||0.82);return p;
 }

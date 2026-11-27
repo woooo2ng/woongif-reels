@@ -52,7 +52,7 @@ S[0]=()=>{
     // 클로즈업
     if(t>=CLOSE){const d=t-CLOSE;streak.forEach(q=>{const zz=((q.z+d*14+q.ph*8)%8)-6;q.s.position.set(q.x,q.y,zz)});
       resetP(csa);sitPose(csa);csa.userData.legs.forEach(l=>l.rotation.x=-1.35);csa.userData.arms.forEach(a=>a.rotation.x=-1.1);
-      const bl=(d>1.6&&d<1.75)?0.12:0.7;eyesK(csa,bl);showB(cb,t,CLOSE+0.35);csl.position.y=Math.sin(d*2.2)*0.06;csa.userData.hat.rotation.z=Math.sin(d*5)*0.04}
+      const bl=(d>1.6&&d<1.75)?0.12:0.7;eyesK(csa,bl);showB(cb,t,CLOSE+0.35);csl.position.y=Math.sin(d*2.2)*0.06}
     if(t<LIFT+0.2){bgEl.style.background='linear-gradient(#16204a,#33468a 55%,#8aa2d8)';cam.position.set(4.0,2.9,6.6-t*0.12);cam.lookAt(0.0,2.75,0.2)}
     else if(t<VIL){const d=t-LIFT-0.2;cam.position.set(5.6-d*0.6,3.2+d*0.8,8.4+d*0.4);cam.lookAt(0,2.6+d*2.0,1.6+d*3)}
     else if(t<CLOSE){const d=t-VIL;cam.position.set(120+d*0.4,4.2,14);cam.lookAt(120+d*0.4,5.6,-2)}
