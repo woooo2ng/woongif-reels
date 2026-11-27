@@ -176,10 +176,18 @@ const TOPS=[["tee","티셔츠"],["hood","후드티"],["shirt","셔츠·넥타이
 const BOTS=[["skirt","치마"],["pants","바지"],["shorts","반바지"]];
 const BC=[["남색","#2c3040"],["검정","#1f1f24"],["베이지","#d9c3a0"],["청","#5b7fb8"],["노랑","#fff0a8"],["분홍","#ffd1e3"]];
 const SUGS={
-  "커플":["처음 만난 날","처음 반한 순간","고백한 날","고백한 말","첫 데이트","첫 손잡은 날","서로 부르는 애칭","자주 하는 말버릇","연락 스타일","데이트 단골 코스","기념일에 한 일","받은 선물 중 최고","같이 간 여행","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","요즘 빠진 것"],
-  "부부":["처음 만난 날","처음 반한 순간","프러포즈한 날","결혼식 날","신혼 때 에피소드","서로 부르는 호칭","자주 하는 말버릇","집안일 나누는 법","주말에 같이 하는 일","같이 간 여행","기념일에 한 일","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식"],
-  "가족":["서로 부르는 호칭","자주 하는 말","단골 잔소리","서로 닮은 점","정반대인 점","가족 여행","명절 풍경","집에서 자주 하는 일","같이 보는 TV","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간"],
-  "친구":["처음 친해진 계기","서로 부르는 별명","자주 하는 말버릇","단골 아지트","같이 간 여행","잊지 못할 흑역사","단톡방 분위기","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간"]};
+  "커플":["처음 만난 날","처음 반한 순간","고백한 날","고백한 말","첫 데이트","첫 손잡은 날","서로 부르는 애칭","자주 하는 말버릇","연락 스타일","데이트 단골 코스","기념일에 한 일","받은 선물 중 최고","같이 간 여행","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","요즘 빠진 것","마지막 한마디"],
+  "부부":["처음 만난 날","처음 반한 순간","프러포즈한 날","결혼식 날","신혼 때 에피소드","서로 부르는 호칭","자주 하는 말버릇","집안일 나누는 법","주말에 같이 하는 일","같이 간 여행","기념일에 한 일","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","마지막 한마디"],
+  "가족":["서로 부르는 호칭","자주 하는 말","단골 잔소리","서로 닮은 점","정반대인 점","가족 여행","명절 풍경","집에서 자주 하는 일","같이 보는 TV","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간","마지막 한마디"],
+  "친구":["처음 친해진 계기","서로 부르는 별명","자주 하는 말버릇","단골 아지트","같이 간 여행","잊지 못할 흑역사","단톡방 분위기","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간","마지막 한마디"]};
+const STORY_MAX=800;
+const jo=(w,a,b)=>{const c=w.charCodeAt(w.length-1);return w+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?a:b);};
+const EXS={
+  "커플":(a,b)=>`처음 만난 날: 동아리 MT에서 ${jo(a,"이","가")} 제 슬리퍼를 신고 나갔어요. "그거 제 건데요?" "아 진짜?"가 첫 대화\n말버릇: ${jo(b,"은","는")} 뭐든 "아 진짜?"로 대답하고, ${jo(a,"은","는")} 삐지면 갑자기 존댓말 써요\n둘만 아는 웃긴 순간: 첫 여행 때 ${jo(a,"이","가")} 반대 방향 버스를 타서 1시간을 돌아갔어요. 그 뒤로 지도는 ${b} 담당\n정반대인 점: ${jo(a,"은","는")} 당일 즉흥파, ${jo(b,"은","는")} 여행 계획을 엑셀로 짜요\n마지막 한마디: "300일 축하해, 길은 앞으로도 내가 찾을게"`,
+  "부부":(a,b)=>`처음 만난 날: 회사 엘리베이터에서 매일 같은 층 버튼을 누르다 친해졌어요\n신혼 때 에피소드: 첫 김장한다고 배추 10포기 샀다가 둘 다 손목이 나갔어요\n서로 부르는 호칭: 평소엔 "여보", 싸우면 "${b} 씨"\n집안일 나누는 법: 설거지는 ${b} 담당인데 꼭 컵 하나를 남겨 둬요\n마지막 한마디: "결혼 5주년, 컵은 이제 내가 마저 씻을게"`,
+  "가족":(a,b)=>`서로 부르는 호칭: ${jo(a,"은","는")} ${jo(b,"을","를")} "김여사"라고 불러요\n단골 잔소리: "밥은 먹었니?" 하루 세 번. 답장 안 하면 아빠 폰으로 또 와요\n가족 여행: 제주도에서 ${jo(b,"이","가")} 렌터카 키를 차 안에 두고 문을 잠가서 둘이 한 시간 동안 웃었어요\n서로 닮은 점: 드라마 보다 우는 타이밍이 똑같아요\n마지막 한마디: "환갑 축하해, 잔소리 평생 해 줘"`,
+  "친구":(a,b)=>`처음 친해진 계기: 고1 때 둘 다 지각해서 교문 앞에서 같이 벌 서다 친해졌어요\n서로 부르는 별명: ${jo(a,"은","는")} "감자", ${jo(b,"은","는")} "멸치"\n잊지 못할 흑역사: 수학여행 장기자랑에서 춤추다 둘이 동시에 넘어졌어요\n단톡방 분위기: 하루 300개 중 280개가 "ㅋㅋㅋ"\n마지막 한마디: "10년 우정 기념, 다음 흑역사도 같이 쓰자"`};
+const storyEx=()=>{const a=S.nameA.trim()||"민지", b=S.nameB.trim()||"준호"; return (EXS[S.rel]||EXS["커플"])(a,b);};
 const HATS=[["none","없음"],["cap","캡모자"],["beanie","비니"]];
 const HSF=[["tied","만두머리"],["long","긴 생머리"],["short","단발"]];
 const HSM=[["short","옆가르마"],["spiky","삐죽머리"],["basic","짧은 머리"],["dandy","덮은 머리"],["long","장발"],["tied","포마드"]];
@@ -355,19 +363,19 @@ function renderS2(){
 
 function renderS3(){
   $("#app").innerHTML = fhead("사연 쓰기", "두 사람 이야기를<br>들려주세요") + `<div class="body">
-    <div class="tip">💡 <b>사연을 자세히 적을수록 영상이 '진짜 우리 얘기'처럼 나와요.</b><br>장면 하나하나가 여기 적어 주신 내용으로 만들어져요.</div>
+    <div class="tip">💡 <b>이렇게 쓰면 영상이 확 살아요</b><br>① <b>장면이 그려지게</b> — 언제·어디서·무슨 일이 있었는지<br>② <b>실제로 한 말은 "따옴표"로</b> — 그대로 대사가 돼요<br>③ <b>에피소드는 3개 이상</b> — 장면 4개가 여기서 나와요<br>④ <b>마지막 한마디</b> — 축하 메시지는 엔딩에 넣어요</div>
     <label class="lbl" for="stI" style="margin-top:16px">영상에 넣고 싶은 우리 이야기</label>
-    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 민지는 길치라 맨날 반대로 가고, 웅이는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#55606a"><span id="stQ"></span><span><span id="stN">${S.story.length}</span>&nbsp;/ 500</span></div></div>
+    <div class="ta"><textarea id="stI" maxlength="${STORY_MAX}" rows="13" placeholder="${esc("예)\n"+storyEx())}">${esc(S.story)}</textarea><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#55606a"><span id="stQ"></span><span><span id="stN">${S.story.length}</span>&nbsp;/ ${STORY_MAX}</span></div></div>
     <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
     <div class="sug">${(SUGS[S.rel]||SUGS["커플"]).map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
     <p class="hint">자세히 쓸수록 두 사람다운 장면이 나와요. 문장이 서툴러도 괜찮으니 생각나는 대로 많이 적어 주세요.</p></div>${FOOTER}`;
   const ok = ()=> S.story.trim().length>=10;
   bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
-  document.querySelectorAll("[data-sug]").forEach(b=>b.onclick=()=>{ const ta=$("#stI"); const add=(ta.value.trim()?"\n":"")+b.dataset.sug+": "; ta.value=(ta.value.trimEnd()+add).slice(0,500); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); ta.dispatchEvent(new Event("input")); });
-  const qual = ()=>{ const n=S.story.trim().length, q=$("#stQ"); if(!q) return; q.textContent = n<10?"":n<80?"✏️ 조금만 더 자세히 써 주세요":n<200?"👍 좋아요! 더 쓰면 더 좋아요":"🎉 충분해요, 멋진 장면 나오겠어요"; q.style.color = n<80?"#d4163b":"#23855a"; };
+  document.querySelectorAll("[data-sug]").forEach(b=>b.onclick=()=>{ const ta=$("#stI"); const add=(ta.value.trim()?"\n":"")+b.dataset.sug+": "; ta.value=(ta.value.trimEnd()+add).slice(0,STORY_MAX); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); ta.dispatchEvent(new Event("input")); });
+  const qual = ()=>{ const n=S.story.trim().length, q=$("#stQ"); if(!q) return; q.textContent = n<10?"":n<80?"✏️ 조금만 더 자세히 써 주세요":n<250?"👍 좋아요! 에피소드 하나만 더 써 볼까요?":"🎉 충분해요, 멋진 장면 나오겠어요"; q.style.color = n<80?"#d4163b":"#23855a"; };
   qual();
-  $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,500); $("#stN").textContent=S.story.length; save(); qual(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
+  $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,STORY_MAX); $("#stN").textContent=S.story.length; save(); qual(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
 }
 
 function renderS4(){

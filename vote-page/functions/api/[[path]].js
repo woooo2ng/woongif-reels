@@ -985,7 +985,7 @@ export async function onRequest({ request, env, params, waitUntil }) {
     const insta = cleanInsta(body.insta);
     if (!insta) return err("인스타그램 아이디를 확인해 주세요");
     if (!body.terms) return err("이용약관·환불정책에 동의해 주세요");
-    const story = pkg === "special" ? String(body.story ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, "").trim().slice(0, 500) : "";
+    const story = pkg === "special" ? String(body.story ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, "").trim().slice(0, 800) : "";
     if (pkg === "special" && story.length < 10) return err("사연을 10자 이상 적어 주세요");
     const chars = { a: cleanChar(body.chars?.a), b: cleanChar(body.chars?.b) };
     if (pkg !== "special") { chars.a.feat = ""; chars.b.feat = ""; }
