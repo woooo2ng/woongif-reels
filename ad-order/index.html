@@ -1,0 +1,231 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Noto Sans CJK KR',sans-serif;}
+#bg{position:absolute;inset:0}
+#c{position:absolute;inset:0;width:1080px;height:1920px}
+#ui{position:absolute;inset:0;overflow:hidden}
+.out{color:#fff;font-weight:900;
+  text-shadow:0 0 2px #111,
+   5px 0 0 #111,-5px 0 0 #111,0 5px 0 #111,0 -5px 0 #111,
+   4px 4px 0 #111,-4px 4px 0 #111,4px -4px 0 #111,-4px -4px 0 #111,
+   0 10px 14px rgba(0,0,0,.35);}
+.cap{position:absolute;left:70px;right:70px;top:1250px;text-align:center;font-size:62px;line-height:1.32;letter-spacing:-1px;word-break:keep-all}
+.tag{position:absolute;left:50%;transform:translateX(-50%);top:250px;background:#ffd84d;color:#3a2a00;font-weight:900;font-size:50px;padding:6px 26px;border-radius:16px;white-space:nowrap}
+.title1{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:96px;letter-spacing:-3px}
+.title2{position:absolute;left:0;right:0;top:450px;text-align:center;font-size:96px;line-height:1.12;letter-spacing:-3px;color:#ffd84d}
+.clock{white-space:nowrap;position:absolute;left:50%;transform:translateX(-50%);top:150px;background:rgba(255,255,255,.95);color:#333;font-weight:900;font-size:52px;padding:10px 34px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.clock b{color:#e2557a}
+.phone{position:absolute;left:50%;top:270px;transform:translateX(-50%);width:622px;height:960px;border-radius:70px;background:#1b1b22;padding:20px;box-sizing:border-box;box-shadow:0 30px 70px rgba(40,60,90,.35)}
+.phone img{display:block;width:582px;height:920px;border-radius:52px;object-fit:cover;object-position:top}
+.card{position:absolute;left:110px;right:110px;top:300px;background:#fff6cc;border:8px solid #1a1a1a;border-radius:56px;box-shadow:0 16px 0 #1a1a1a;padding:50px 40px 54px;text-align:center}
+.card .k{display:inline-block;background:#ff3b5c;color:#fff;font-weight:900;font-size:46px;padding:6px 26px;border-radius:18px;border:5px solid #1a1a1a;transform:rotate(-2deg)}
+.card .big{margin-top:26px;font-size:104px;font-weight:900;letter-spacing:-3px;line-height:1.15;color:#1a1a1a}
+.card .big em{font-style:normal;color:#e2264d}
+.card .sm{margin-top:22px;font-size:50px;font-weight:900;color:#3b4650}
+.end1{position:absolute;left:0;right:0;top:700px;text-align:center;font-size:84px;line-height:1.25;letter-spacing:-2px}
+</style>
+<script type="importmap">{"imports":{"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js":"./node_modules/three/build/three.module.js"}}</script>
+</head>
+<body>
+<div id="bg"></div>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div id="ui"></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+import { person } from './char3d.js';
+const W=1080,H=1920;
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,H,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
+const bgEl=document.getElementById('bg'),ui=document.getElementById('ui');
+const FONT='"Noto Sans CJK KR"';
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const ease=x=>{x=clamp01(x);return x*x*(3-2*x)};
+const pop=x=>{x=clamp01(x);if(x>=1)return 1;const c=1.70158*1.3;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const matCache={};
+function lamb(c){return matCache[c]||(matCache[c]=new THREE.MeshLambertMaterial({color:c,flatShading:true}))}
+function basic(c){return new THREE.MeshBasicMaterial({color:c})}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+const texCache={};
+function bubbleTex(text,bg,fg,fs){
+  const key=text+bg+fg+fs; if(texCache[key])return texCache[key];
+  const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font=`900 ${fs}px ${FONT}`;const tw=ctx.measureText(text).width;
+  const pad=fs*0.55,h=fs*1.55,tail=fs*0.32;
+  c.width=Math.ceil(tw+pad*2)+8;c.height=Math.ceil(h+tail)+8;
+  ctx.translate(4,4);
+  ctx.fillStyle='rgba(0,0,0,0.18)';rr(ctx,0,4,c.width-8,h,h/2);ctx.fill();
+  ctx.fillStyle=bg;rr(ctx,0,0,c.width-8,h,h/2);ctx.fill();
+  ctx.beginPath();const cx=(c.width-8)/2;ctx.moveTo(cx-tail*0.8,h-2);ctx.lineTo(cx,h+tail);ctx.lineTo(cx+tail*0.8,h-2);ctx.fill();
+  ctx.font=`900 ${fs}px ${FONT}`;ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(text,cx,h/2+fs*0.06);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
+  return texCache[key]={t,w:c.width,h:c.height};
+}
+function makeBubble(text,o={}){const {t,w,h}=bubbleTex(text,o.bg||'#ffffff',o.fg||'#2b2b3a',o.fs||72);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));
+  const k=o.size||0.0068;s.scale.set(w*k,h*k,1);s.center.set(0.5,0);s.userData.base=[w*k,h*k];return s}
+function scaleBubble(s,k){const b=s.userData.base;s.scale.set(b[0]*k,b[1]*k,1);s.visible=k>0.01}
+function textSprite(text,fs,col,size){const c=document.createElement('canvas'),ctx=c.getContext('2d');ctx.font=`900 ${fs}px ${FONT}`;const w=ctx.measureText(text).width+20;c.width=w;c.height=fs*1.4;ctx.font=`900 ${fs}px ${FONT}`;ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=fs*0.12;ctx.strokeStyle='rgba(40,40,60,0.9)';ctx.strokeText(text,w/2,c.height/2);ctx.fillText(text,w/2,c.height/2);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));s.scale.set(w*size,c.height*size,1);s.userData.base=[w*size,c.height*size];return s}
+function windowTexture(cols,rows,wall,win,lit,r){
+  const c=document.createElement('canvas');c.width=cols*32;c.height=rows*40;const x=c.getContext('2d');
+  x.fillStyle=wall;x.fillRect(0,0,c.width,c.height);
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){x.fillStyle=r()<lit?'#ffe9a8':win;x.fillRect(i*32+7,j*40+8,18,22);x.fillStyle='rgba(255,255,255,0.25)';x.fillRect(i*32+7,j*40+8,18,3)}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const WALLS=['#c9b8c9','#b9c4d6','#d3c2b2','#aebccc','#c8b4a4','#bfcabf'];
+function makeBuilding(r,w,h,d){
+  const wall=WALLS[Math.floor(r()*WALLS.length)];const rows=Math.max(2,Math.round(h/1.4));
+  const side=new THREE.MeshLambertMaterial({map:windowTexture(Math.max(2,Math.round(w/1.1)),rows,wall,'#5d6f8a',0.35,r)});
+  const sideD=new THREE.MeshLambertMaterial({map:windowTexture(Math.max(2,Math.round(d/1.1)),rows,wall,'#5d6f8a',0.35,r)});
+  const top=new THREE.MeshLambertMaterial({color:new THREE.Color(wall).multiplyScalar(0.8)});
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[sideD,sideD,top,top,side,side]);m.position.y=h/2;return m;
+}
+// ---------- 등장인물: 주문서에서 꾸민 그대로 (선우 INTJ 여 · 웅이 ISFP 남) ----------
+const SUNWOO={g:'여',hair:'long',hc:0,skin:0,cl:0,gl:true,top:'tee',bottom:'skirt',bc:4,hat:'none',scarf:false};
+const WOONG={g:'남',hair:'dandy',hc:0,skin:0,cl:3,gl:false,top:'hood',bottom:'pants',bc:0,hat:'none',scarf:false};
+function umbrella(col=0xff8fb3){
+  const g=new THREE.Group();
+  const can=new THREE.Mesh(new THREE.ConeGeometry(0.95,0.42,10,1,true),new THREE.MeshLambertMaterial({color:col,flatShading:true,side:THREE.DoubleSide}));can.position.y=0.21;g.add(can);
+  const tip=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,6),lamb(0x333333));tip.position.y=0.44;g.add(tip);
+  const sh=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,1.05,6),lamb(0x444444));sh.position.y=-0.3;g.add(sh);
+  const hd=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.02,6,10,Math.PI),lamb(0x6a4a3a));hd.position.y=-0.83;hd.rotation.z=Math.PI;g.add(hd);
+  return g;
+}
+function alley(scene,r,o={}){
+  const g=new THREE.Mesh(new THREE.PlaneGeometry(120,120),lamb(o.ground??0x8e98a8));g.rotation.x=-Math.PI/2;g.position.y=-0.01;scene.add(g);
+  for(const s of[-1,1]){let z=6;while(z>-60){const w=3+r()*2.5,h=5+r()*9,d=4;const b=makeBuilding(r,d,h,w);b.position.set(s*(3.6+d/2),b.position.y,z-w/2);scene.add(b);z-=w+0.3}}
+  // 가로등
+  for(const [x,z] of [[-2.6,-3],[2.6,-9]]){const p=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,3.2,6),lamb(0x3a3f4a));p.position.set(x,1.6,z);scene.add(p);
+    const l=new THREE.Mesh(new THREE.SphereGeometry(0.18,10,8),basic(0xfff1b8));l.position.set(x,3.25,z);scene.add(l)}
+  // 웅덩이
+  for(const [x,z,s] of [[0.9,1.2,0.7],[-1.2,-1.5,0.9],[1.5,-4,0.6]]){const pd=new THREE.Mesh(new THREE.CircleGeometry(s,20),new THREE.MeshLambertMaterial({color:0xaab8cc,transparent:true,opacity:0.75}));pd.rotation.x=-Math.PI/2;pd.position.set(x,0.005,z);pd.scale.y=0.6;scene.add(pd)}
+}
+function rain(scene,n,r,area){
+  const pos=new Float32Array(n*6),seed=[];
+  for(let i=0;i<n;i++){seed.push([(r()-0.5)*area[0],r()*7,(r()-0.5)*area[1]-2,r()])}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const ln=new THREE.LineSegments(geo,new THREE.LineBasicMaterial({color:0xdfe9ff,transparent:true,opacity:0.55}));scene.add(ln);
+  return (t,k=1)=>{ln.visible=k>0.02;ln.material.opacity=0.55*k;for(let i=0;i<n;i++){const [x,y0,z]=seed[i];const y=((y0-t*9)%7+7)%7;pos.set([x+0.05,y,z,x,y+0.32,z],i*6)}geo.attributes.position.needsUpdate=true};
+}
+const LIGHT=(scene)=>{scene.add(new THREE.HemisphereLight(0xdfe8ff,0x6a7080,1.5));const d=new THREE.DirectionalLight(0xffffff,1.3);d.position.set(4,10,8);scene.add(d);scene.add(new THREE.AmbientLight(0xffffff,0.2))};
+
+// ---------- 자막 ----------
+const CAPS={0:["웅이프한테 우리 커플 영상을","주문하면 생기는 일."],1:["먼저, 두 사람 MBTI를 고르고."],2:["캐릭터를 직접 꾸며요.","머리도, 안경도, 옷도요."],3:["그리고 우리만 아는","이야기를 적으면,"],4:["그 이야기가,","진짜 우리 영상이 돼요."],5:["오픈 기념, 선착순 10명 할인!","여러분 커플은 무슨 MBTI인가요?"]};
+let LEAD=0.25,VOICE=[];
+window.setTiming=(lead,voice)=>{LEAD=lead;VOICE=voice};
+function caption(si,t){
+  const parts=CAPS[si];if(!parts)return;
+  let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
+  const L=parts.map(p=>p.length);const v=VOICE[si]||3,tot=L.reduce((a,b)=>a+b,0);
+  let acc=LEAD,idx=0;for(let i=0;i<parts.length;i++){const len=v*L[i]/tot;if(t>=acc-0.05)idx=i;acc+=len}
+  if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=parts[idx]}
+  const st=LEAD+v*L.slice(0,idx).reduce((a,b)=>a+b,0)/tot;
+  const k=pop((t-st+0.05)/0.18);el.style.transform=`scale(${0.85+0.15*k})`;el.style.opacity=clamp01((t-st+0.1)/0.1);
+}
+const S=[];
+// ---------- 0: 후킹 — 비 오는 골목, 우산 하나 같이 쓴 선우·웅이 ----------
+S[0]=()=>{
+  bgEl.style.background='linear-gradient(#5f7398,#9fb2cf 55%,#c9d5e6)';
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xb4c2d8,12,45);LIGHT(scene);
+  const r=rng(11);alley(scene,r);
+  const A=person(SUNWOO),B=person(WOONG);A.position.set(-0.32,0,0);B.position.set(0.36,0,0);A.rotation.y=0.25;B.rotation.y=-0.25;scene.add(A,B);
+  const um=umbrella();um.position.set(0.05,2.35,0.05);um.rotation.z=0.16;scene.add(um);
+  B.userData.arms[0].rotation.x=-2.5;B.userData.arms[0].rotation.z=-0.35;
+  const rn=rain(scene,520,r,[12,12]);
+  const cam=new THREE.PerspectiveCamera(42,W/H,0.1,200);
+  ui.innerHTML='<div class="tag">맞춤 궁합 영상 주문</div><div class="title1 out">웅이프한테</div><div class="title2 out">우리 커플 영상<br>주문하면?</div>';
+  const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2');
+  return t=>{
+    rn(t);
+    A.userData.head.rotation.y=Math.sin(t*1.2)*0.1+0.2;B.userData.head.rotation.y=-0.15+Math.sin(t*1.1)*0.08;
+    const z=8.1-t*0.15;cam.position.set(0.15,1.9,z);cam.lookAt(0,1.94,0);
+    tag.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
+    t1.style.transform=`scale(${pop((t-0.1)/0.35)})`;t1.style.opacity=clamp01((t-0.1)/0.1);
+    t2.style.transform=`scale(${pop((t-0.35)/0.4)})`;t2.style.opacity=clamp01((t-0.35)/0.1);
+    caption(0,t);renderer.render(scene,cam);
+  };
+};
+// ---------- 1~3: 주문 페이지 실제 화면 ----------
+const STEP={1:['STEP 1','MBTI 고르기'],2:['STEP 2','캐릭터 꾸미기'],3:['STEP 3','우리 이야기 쓰기']};
+const PH={};
+function phoneScene(si){return()=>{
+  bgEl.style.background='linear-gradient(#bfe0f4,#e6f3fb 60%,#f4f9fc)';
+  renderer.domElement.style.visibility='hidden';
+  ui.innerHTML=`<div class="clock"><b>${STEP[si][0]}</b> · ${STEP[si][1]}</div><div class="phone"><img id="ph"></div>`;
+  const clk=ui.querySelector('.clock'),ph=ui.querySelector('.phone'),img=ui.querySelector('#ph');
+  const n=PH[si]||1;
+  return async t=>{
+    const f=Math.min(n,Math.max(1,Math.floor(t*30)+1));
+    const src=`frames/s${si}/${String(f).padStart(4,'0')}.jpg`;
+    if(img.getAttribute('src')!==src){img.src=src;await img.decode().catch(()=>{})}
+    clk.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
+    const k=si===1?pop(t/0.35):1;ph.style.transform=`translateX(-50%) scale(${0.9+0.1*k})`;ph.style.opacity=si===1?clamp01(t/0.15):1;
+    caption(si,t);
+  };
+}}
+S[1]=phoneScene(1);S[2]=phoneScene(2);S[3]=phoneScene(3);
+// ---------- 4: 사연이 3D로 — 처음 만난 날, 비 → 웅이가 우산을 씌워 줌 ----------
+let MK={};
+S[4]=()=>{
+  bgEl.style.background='linear-gradient(#6a7ea3,#a9bad4 55%,#cfdaea)';
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xb8c6db,12,45);LIGHT(scene);
+  const r=rng(23);alley(scene,r);
+  const A=person(SUNWOO),B=person(WOONG);A.position.set(-0.45,0,0);A.rotation.y=0.15;scene.add(A);
+  B.position.set(3.2,0,0.3);B.rotation.y=-Math.PI/2;scene.add(B);
+  const um=umbrella(0x8cc9a0);scene.add(um);um.visible=false;
+  const rn=rain(scene,560,r,[12,12]);
+  const qb=makeBubble('비 온다…',{bg:'#ffffff',fs:68,size:0.0036});qb.position.set(0,2.75,0);A.add(qb);
+  const hb=makeBubble('♥',{bg:'#ffd1e3',fg:'#e2264d',fs:90,size:0.0045});hb.position.set(-0.05,3.0,0.1);scene.add(hb);
+  const drops=[];for(let i=0;i<6;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.035,8,6),basic(0x9fd3ff));d.scale.set(0.8,1.3,0.8);scene.add(d);drops.push(d)}
+  const cam=new THREE.PerspectiveCamera(42,W/H,0.1,200);
+  ui.innerHTML='<div class="clock">처음 만난 날 · 비 오는 골목</div>';const clk=ui.querySelector('.clock');
+  const WALK=[0.4,1.7],OPEN=1.9,HEART=2.6;MK={umb:OPEN,heart:HEART};
+  return t=>{
+    rn(t);clk.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
+    // 선우: 손으로 머리 가림
+    const ua=A.userData;const cover=1-ease((t-OPEN)/0.4);ua.arms[0].rotation.x=-2.7*cover;ua.arms[1].rotation.x=-2.7*cover;ua.arms[0].rotation.z=-0.35*cover;ua.arms[1].rotation.z=0.35*cover;
+    scaleBubble(qb,pop((t-0.2)/0.3)*(1-clamp01((t-OPEN)/0.2)));
+    // 웅이: 걸어 들어옴
+    const ub=B.userData,k=ease((t-WALK[0])/(WALK[1]-WALK[0]));
+    B.position.x=3.2-k*2.85;const walking=t>WALK[0]&&t<WALK[1];
+    if(walking){const s=Math.sin(t*11);ub.legs[0].rotation.x=s*0.55;ub.legs[1].rotation.x=-s*0.55;ub.hip.position.y=0.8+Math.abs(Math.cos(t*11))*0.04}else{ub.legs.forEach(l=>l.rotation.x=0);ub.hip.position.y=0.8}
+    B.rotation.y=t<WALK[1]?-Math.PI/2:-Math.PI/2+ease((t-WALK[1])/0.3)*(Math.PI/2-0.3);
+    ua.head.rotation.y=t>WALK[1]?ease((t-WALK[1])/0.3)*0.5:0;
+    // 우산 펼치기 → 선우 쪽으로 기울임
+    um.visible=t>OPEN;const o=pop((t-OPEN)/0.35);um.scale.set(o,o,o);
+    ub.arms[0].rotation.x=-2.5*ease((t-OPEN+0.15)/0.3);ub.arms[0].rotation.z=-0.35*ease((t-OPEN+0.15)/0.3);
+    const tilt=ease((t-OPEN-0.4)/0.6);um.position.set(B.position.x-0.32-tilt*0.15,2.35,0.15);um.rotation.z=0.12+tilt*0.22;
+    // 웅이 어깨에만 떨어지는 빗방울
+    drops.forEach((d,i)=>{const lt=((t*1.6+i/6)%1);d.visible=t>OPEN+0.6;d.position.set(B.position.x+0.25+(i%2)*0.06,2.2-lt*0.9,0.2+(i%3)*0.05)});
+    scaleBubble(hb,pop((t-HEART)/0.3));hb.position.y=3.0+Math.sin(t*4)*0.04;
+    cam.position.set(0.1+Math.sin(t*0.4)*0.15,1.9,8.0-t*0.12);cam.lookAt(0.05,1.94,0);
+    caption(4,t);renderer.render(scene,cam);
+  };
+};
+// ---------- 5: 할인 카드 + 질문 (비 그치고 둘이 손 흔들기) ----------
+S[5]=()=>{
+  bgEl.style.background='linear-gradient(#ffd8b0,#ffe9d2 50%,#fff6ec)';
+  const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xffe6cf,14,50);
+  scene.add(new THREE.HemisphereLight(0xfff2e0,0x8a7a70,1.6));const d=new THREE.DirectionalLight(0xffffff,1.3);d.position.set(4,10,8);scene.add(d);
+  const r=rng(31);alley(scene,r,{ground:0xa9a39a});
+  const A=person(SUNWOO),B=person(WOONG);A.position.set(-0.45,0,0);B.position.set(0.45,0,0);A.rotation.y=0.2;B.rotation.y=-0.2;scene.add(A,B);
+  const cam=new THREE.PerspectiveCamera(40,W/H,0.1,200);cam.position.set(0,1.9,7.9);cam.lookAt(0,1.94,0);
+  ui.innerHTML=`<div class="card"><span class="k">오픈 기념</span><div class="big">선착순 <em>10명</em><br>할인</div><div class="sm">프로필 링크에서 주문 ♥</div></div><div class="end1 out" style="opacity:0">여러분 커플은<br>무슨 MBTI인가요?</div>`;
+  const card=ui.querySelector('.card'),e1=ui.querySelector('.end1');
+  const Q=LEAD+(VOICE[5]||5.3)*0.47;MK.q=Q;
+  return t=>{
+    card.style.transform=`scale(${pop(t/0.4)}) rotate(${-1+Math.sin(t*2)*0.6}deg)`;
+    const q=clamp01((t-Q)/0.25);card.style.opacity=1-q*0.0;
+    if(t>Q){const e=ease((t-Q)/0.4);card.style.top=`${300-e*160}px`;card.style.transform=`scale(${1-0.2*e}) rotate(${-1+Math.sin(t*2)*0.6}deg)`}
+    e1.style.opacity=clamp01((t-Q)/0.12);e1.style.transform=`scale(${pop((t-Q)/0.35)})`;
+    [A,B].forEach((p,i)=>{const u=p.userData,a=u.arms[i?1:0],sg=i?1:-1;a.rotation.z=sg*(1.7+Math.sin(t*7+i)*0.35);u.hip.position.y=0.8+Math.abs(Math.sin(t*4+i))*0.04});
+    caption(5,t);renderer.render(scene,cam);
+  };
+};
+let curUpd=null,cur=-1;
+window.setPhone=(o)=>{Object.assign(PH,o)};
+window.renderFrame=async(si,t)=>{if(si!==cur){ui.innerHTML='';renderer.domElement.style.visibility='visible';curUpd=S[si]();cur=si}await curUpd(t)};
+document.fonts.load(`900 60px ${FONT}`).then(()=>document.fonts.load(`500 40px ${FONT}`)).then(()=>{window.ready=true});
+</script></body></html>
