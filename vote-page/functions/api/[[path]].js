@@ -32,10 +32,16 @@ const DAILY_IP_REPLIES = 30;
 // ---------- 맞춤 궁합 영상 주문 ----------
 // 가격은 서버에서만 정함 (화면에서 보낸 금액은 믿지 않음). sale: 오픈 할인가(없으면 null)
 const PRODUCTS = {
-  basic:   { name: "기본 · 우리 조합 궁합편",   price: 14900, sale: null },
-  special: { name: "스페셜 · 우리 이야기편", price: 29900, sale: null },
+  basic:   { name: "기본 · 우리 조합 궁합편",   price: 14900, sale: 9900 },
+  special: { name: "스페셜 · 우리 이야기편", price: 29900, sale: 19900 },
 };
-const priceOf = (pkg) => PRODUCTS[pkg].sale ?? PRODUCTS[pkg].price;
+// 선착순 할인: 결제 완료된 주문(취소 제외)이 SALE_LIMIT건이 될 때까지 할인가
+const SALE_LIMIT = 10;
+async function saleLeft(db) {
+  const r = await db.prepare("SELECT COUNT(*) n FROM orders WHERE status IN ('paid','script','making','done') AND paid_at IS NOT NULL AND amount IN (9900,19900)").first();
+  return Math.max(0, SALE_LIMIT - (r?.n || 0));
+}
+const priceOf = (pkg, left) => (left > 0 && PRODUCTS[pkg].sale) ? PRODUCTS[pkg].sale : PRODUCTS[pkg].price;
 const ORDER_RELS = ["커플", "부부", "가족", "친구"];
 const ORDER_STATUS = ["paid", "script", "making", "done", "canceled"];   // pending = 결제 전
 const DELIVERY_DAYS = 7;
@@ -962,9 +968,10 @@ export async function onRequest({ request, env, params, waitUntil }) {
 
   // ---------- 맞춤 궁합 영상 주문 ----------
   if (path === "order/config" && method === "GET") {
-    const products = Object.fromEntries(Object.entries(PRODUCTS).map(([k, p]) => [k, { name: p.name, price: p.price, sale: p.sale, pay: priceOf(k) }]));
+    const left = await saleLeft(db);
+    const products = Object.fromEntries(Object.entries(PRODUCTS).map(([k, p]) => [k, { name: p.name, price: p.price, sale: left > 0 ? p.sale : null, pay: priceOf(k, left) }]));
     const ck = tossKeys(env).ck;
-    return json({ products, clientKey: ck, test: ck.startsWith("test_"), days: DELIVERY_DAYS });
+    return json({ products, clientKey: ck, test: ck.startsWith("test_"), days: DELIVERY_DAYS, sale: { left, limit: SALE_LIMIT } });
   }
   if (path === "order/create" && method === "POST") {
     const pkg = PRODUCTS[body.pkg] ? body.pkg : null;
@@ -987,7 +994,7 @@ export async function onRequest({ request, env, params, waitUntil }) {
     if (n.n >= DAILY_IP_ORDERS) return err("오늘은 주문서를 너무 많이 만들었어요. 내일 다시 해 주세요", 429);
     const voter = validVoter(body.voter) ? body.voter : null;
     const owner = (await readSession(request, env)) || voter;
-    const id = newOrderId(), amount = priceOf(pkg);
+    const id = newOrderId(), amount = priceOf(pkg, await saleLeft(db));
     await db.prepare(`INSERT INTO orders (id, pkg, amount, rel, a_type, b_type, name_a, name_b, chars, story, email, kakao, insta, reels, status, owner, voter, ip, created_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,'pending',?,?,?,?)`)
       .bind(id, pkg, amount, body.rel, body.a, body.b, nameA, nameB, JSON.stringify(chars), story, email, clean(body.kakao, 30), insta, owner, voter, ip, Date.now()).run();

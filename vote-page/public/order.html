@@ -41,6 +41,7 @@ a{color:inherit}
 .prod.on{background:#fff6cc;box-shadow:0 4px 0 var(--ink)}
 .prod .bd{min-height:26px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .rec{display:inline-block;background:var(--red);border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800;color:#fff;transform:rotate(-2deg)}
+.salebar{margin-top:12px;display:flex;align-items:center;gap:6px;padding:10px 14px;border-radius:14px;background:#ffe8ec;border:2px solid #d4163b;color:#a3102e;font-size:14px}.salebar b{flex:1;font-weight:900}.salebar span{font-size:13px;font-weight:800}.salebar em{font-style:normal;font-size:16px;font-weight:900}
 .salebd{display:inline-block;background:#fff;border:2px dashed #d4163b;border-radius:8px;padding:2px 7px;font-size:11px;font-weight:900;color:#d4163b}
 .radio{width:18px;height:18px;border-radius:9px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
 .radio i{width:8px;height:8px;border-radius:4px;background:#fff}.prod.on .radio i{background:var(--ink)}
@@ -268,7 +269,7 @@ function pxBox(){ return `<div class="px"><small>${sp()?"스페셜 영상":"기�
 function prodCard(k){
   const p = CFG.products[k], on = S.pkg===k, inc = k==="special" ? [1,1,1,1] : [1,1,1,0];
   return `<button type="button" class="prod${on?" on":""}" data-pkg="${k}" aria-pressed="${on}">
-    <span class="bd">${k==="special"?`<span class="rec">추천</span>`:""}${p.sale?`<span class="salebd">오픈 기념</span>`:""}</span>
+    <span class="bd">${k==="special"?`<span class="rec">추천</span>`:""}${p.sale?`<span class="salebd">선착순 할인</span>`:""}</span>
     <span class="nm"><span class="radio"><i></i></span>${k==="special"?"스페셜":"기본"}</span>
     <span class="sb">${k==="special"?"우리 이야기편":"우리 조합 궁합편"}</span>
     ${p.sale?`<span class="was">${won(p.price)}</span><span class="pr" style="margin-top:0">${won(p.sale)}</span>`:`<span class="pr">${won(p.price)}</span>`}
@@ -288,6 +289,7 @@ function renderHome(){
     <li><span class="n" style="background:#ddd2ff">3</span><b>전달</b><small>${CFG.days}일 이내<br>다운로드 링크</small></li></ol></section>
   <section class="sec" style="padding-top:28px"><h2>상품 고르기</h2>
     <p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#3b4650;font-weight:600">둘 다 50초+ 풀버전, 웅이프 릴스와 같은 퀄리티예요.<br>차이는 얼마나 ‘우리 얘기’인지예요.</p>
+    ${CFG.sale&&CFG.sale.left>0?`<div class="salebar">🔥 <b>오픈 기념 선착순 ${CFG.sale.limit}명 할인</b><span>남은 자리 <em>${CFG.sale.left}</em>명</span></div>`:""}
     <div class="prods">${prodCard("basic")}${prodCard("special")}</div>
     <p class="note">${CHECK}두 상품 모두 결제 후 ${CFG.days}일 이내 링크로 전달 · 커플·부부·가족·친구 모두 가능</p></section>
   <section class="sec" style="padding-top:28px"><h2>자주 묻는 질문</h2><div class="faq">${FAQ.map(([q,a],i)=>`<div><button type="button" data-faq="${i}" aria-expanded="${S.faq===i}"><span>${q}</span><span>${S.faq===i?"−":"+"}</span></button>${S.faq===i?`<p>${a}</p>`:""}</div>`).join("")}</div></section>
