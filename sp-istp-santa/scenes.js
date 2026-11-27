@@ -71,15 +71,15 @@ S[1]=()=>{
   const scene=roomScene();const r=rng(2101);
   const fl=new THREE.Mesh(new THREE.PlaneGeometry(40,40),lamb(0xb48a64));fl.rotation.x=-Math.PI/2;scene.add(fl);
   const wall=new THREE.Mesh(new THREE.BoxGeometry(20,7,0.2),lamb(0xe9d3b4));wall.position.set(0,3.5,-2.6);scene.add(wall);
-  for(let i=0;i<20;i++){const p=new THREE.Mesh(new THREE.PlaneGeometry(0.06,7),lamb(0xd9bf9c));p.position.set(-9.5+i,3.5,-2.49);scene.add(p)}
+  for(let i=0;i<20;i++){const p=new THREE.Mesh(new THREE.PlaneGeometry(0.06,7),lamb(0xd9bf9c));p.position.set(-9.5+i,3.5,-2.47);scene.add(p)}
   // 창(밖은 눈 내리는 밤)
-  const win=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.7),basic(0x2a3a6a));win.position.set(-2.4,2.8,-2.48);scene.add(win);
-  for(const [w2,h2,x,y] of[[0.08,1.7,-2.4,2.8],[2.2,0.08,-2.4,2.8],[2.36,0.14,-2.4,1.95],[2.36,0.14,-2.4,3.65]]){const f=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),basic(0xf2ebe0));f.position.set(x,y,-2.46);scene.add(f)}
+  const win=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.7),basic(0x2a3a6a));win.position.set(-2.4,2.8,-2.47);scene.add(win);
+  for(const [w2,h2,x,y] of[[0.08,1.7,-2.4,2.8],[2.2,0.08,-2.4,2.8],[2.36,0.14,-2.4,1.95],[2.36,0.14,-2.4,3.65]]){const f=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),basic(0xf2ebe0));f.position.set(x,y,-2.44);scene.add(f)}
   const SN=snowfall(scene,80,r,{w:2.1,h:1.6,z:-2.45,d:0.01,y0:1.95,size:0.05});
   // 사물함 + 옷걸이 + 달력
   for(let i=0;i<3;i++){const lk=new THREE.Mesh(new THREE.BoxGeometry(0.9,2.6,0.6),lamb([0xc9303a,0x3f8a5c,0xc9303a][i]));lk.position.set(1.2+i*0.95,1.3,-2.2);scene.add(lk);
     const hd=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.3,0.05),lamb(GOLD));hd.position.set(1.5+i*0.95,1.4,-1.88);scene.add(hd)}
-  const cal=new THREE.Mesh(new THREE.PlaneGeometry(0.9,1.0),new THREE.MeshBasicMaterial({map:canvasTex(180,200,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#e2335a';x.fillRect(0,0,w,50);x.fillStyle='#fff';x.font='900 34px "Noto Sans CJK KR"';x.textAlign='center';x.fillText('12월',w/2,38);x.fillStyle='#e2335a';x.font='900 110px "Noto Sans CJK KR"';x.fillText('24',w/2,170)})}));cal.position.set(-0.2,3.1,-2.48);scene.add(cal);
+  const cal=new THREE.Mesh(new THREE.PlaneGeometry(0.9,1.0),new THREE.MeshBasicMaterial({map:canvasTex(180,200,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#e2335a';x.fillRect(0,0,w,50);x.fillStyle='#fff';x.font='900 34px "Noto Sans CJK KR"';x.textAlign='center';x.fillText('12월',w/2,38);x.fillStyle='#e2335a';x.font='900 110px "Noto Sans CJK KR"';x.fillText('24',w/2,170)})}));cal.position.set(-0.2,3.1,-2.46);scene.add(cal);
   const gar=[];for(let i=0;i<20;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),basic([0xff4d5e,0xffd84d,0x5fd38a,0x5fb0ff][i%4]));b.position.set(-5+i*0.5,4.6-Math.sin((i%5)/4*Math.PI)*0.25,-2.4);scene.add(b);gar.push(b)}
   const bench=new THREE.Mesh(new THREE.BoxGeometry(3.0,0.45,0.8),lamb(0x8a5a3a));bench.position.set(-0.6,0.42,-0.6);scene.add(bench);
   const sack=new THREE.Mesh(new THREE.SphereGeometry(0.5,24,18),smooth(0x8a5a3a));sack.scale.set(1,0.9,0.9);sack.position.set(-1.8,0.95,-0.7);scene.add(sack);
@@ -101,12 +101,12 @@ S[1]=()=>{
     // 산타
     resetP(sa);const u=sa.userData;eyesK(sa,0.7);
     const STAND=WK-1.4;
-    if(t<STAND){sa.position.set(-0.4,0,-0.88);sa.rotation.y=0.15;sitPose(sa);u.hip.position.y=0.7;u.legs.forEach(l=>l.rotation.x=-1.35);
+    if(t<STAND){sa.position.set(-0.4,0,-0.42);sa.rotation.y=0.15;sitPose(sa);u.hip.position.y=0.7;u.legs.forEach(l=>l.rotation.x=-0.62);
       u.arms[1].rotation.x=-1.25;u.arms[0].rotation.x=-0.3;u.head.rotation.x=t<DN?0.35:0.1;phone3.visible=t<DN+0.6;
       if(t>DN+0.5){u.arms[1].rotation.x=-0.3;}
       if(t>DN+1.2&&t<STAND){const s=Math.sin((t-DN-1.2)*2);u.hip.position.y=0.7-0.02*Math.max(0,s);u.head.rotation.x=0.18}}
-    else{const d=t-STAND;const k=ease(d/0.5);const zf=-0.88+0.95*k;sa.position.set(-0.4+Math.max(0,d-0.9)*1.6,0,zf+Math.max(0,d-0.9)*0.4);
-      if(d<0.5){sitPose(sa);u.hip.position.y=0.7+0.1*k;u.legs.forEach(l=>l.rotation.x=-1.35*(1-k))}
+    else{const d=t-STAND;const k=ease(d/0.5);const zf=-0.42+0.5*k;sa.position.set(-0.4+Math.max(0,d-0.9)*1.6,0,zf+Math.max(0,d-0.9)*0.4);
+      if(d<0.5){sitPose(sa);u.hip.position.y=0.7+0.1*k;u.legs.forEach(l=>l.rotation.x=-0.62*(1-k))}
       else if(d<0.9){sa.rotation.y=0.15-ease((d-0.5)/0.4)*1.0;}
       else{sa.rotation.y=Math.PI/2-0.3;walkPose(sa,(d-0.9)*8,0.45)}
       sack.position.set(sa.position.x-0.05,d>0.6?1.95:0.95,sa.position.z-0.35);tie.position.set(sack.position.x,sack.position.y+0.55,sack.position.z);
@@ -259,7 +259,7 @@ S[4]=()=>{
   // 지붕 세트(멀리)
   const rf=new THREE.Group();rf.position.set(100,0,0);scene.add(rf);const hs=makeXHouse(r,{w:3.2,h:2.2,cx:0.0});rf.add(hs);snowGround(rf);
   const SN=snowfall(rf,260,r,{w:12,h:10,d:10});
-  const rbox=giftBox(0xd8343c,GOLD,0.8);rf.add(rbox);
+  const rbox=giftBox(0xd8343c,GOLD,1.1);rf.add(rbox);
   const rsa=makeSanta();rf.add(rsa);
   const rb=bubT(rsa,'…',{y:2.6,size:0.0026});
   // 문 밖(분할 화면 위)
@@ -271,17 +271,29 @@ S[4]=()=>{
   const ST=MK('stuck'),DN=MK('m_down'),LD=MK('land'),EY=MK('eye'),FO=MK('fo'),CR=MK('crawl'),SD=MK('stand'),DU=MK('dust'),WK=MK('walk'),STP=MK('stop'),CH=MK('m_chip');
   const K1=ln(4,'k1'),S3=ln(4,'s3'),S4=ln(4,'s4'),K2=ln(4,'k2'),N6=ln(4,'n6');
   const SPLIT=N6.t0+wt6();function wt6(){return 2.6}
-  const ck=chip('대화 <b>4마디</b> · 둘 다 <b>안도</b>');
+  const ck=chip('대화 <b>4마디</b> · 둘 다 <b>안도</b>');const ck0=chip('상자 <b>&gt;</b> 굴뚝');
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,300),cam2=new THREE.PerspectiveCamera(40,W/(H/2),0.1,300),cam3=new THREE.PerspectiveCamera(40,W/(H/2),0.1,300);
   const sbub=bubT(sa,'…',{y:2.6,size:0.0024});
   return t=>{updRoom(R,t);SN.upd(t);SN2.upd(t);
-    // 지붕 장면
-    resetP(rsa);eyesK(rsa,0.7);rsa.position.set(-1.1,3.0,0.5);rsa.rotation.y=0.5;
-    const ch=hs.userData.chim;const bk=clamp01((t-ST+0.35)/0.35);
-    rbox.position.set(ch.x,ch.y+0.15+(1-ease(bk))*1.6,ch.z);rbox.rotation.set(0.35*bk,0.6,0.25*bk);
-    if(t>ST)rbox.position.x+=Math.sin((t-ST)*40)*0.03*Math.max(0,1-(t-ST)*4);
-    showB(rb,t,ST+0.25);
-    if(t>ST+0.4){rsa.userData.hip.position.y=0.8-0.04*Math.sin(clamp01((t-ST-0.4)/0.4)*Math.PI);rsa.userData.head.rotation.x=0.2}
+    // 지붕 장면: 턱 걸림 → 꾹꾹 눌러 봄 → 올라가서 쿵쿵 → 한숨
+    const PU=MK('push'),HP=MK('hop'),SP=MK('stomp'),SG=MK('sigh');
+    resetP(rsa);eyesK(rsa,0.7);const ch=hs.userData.chim;
+    const bk=clamp01((t-ST+0.35)/0.35);let by=ch.y+0.12+(1-ease(bk))*1.6;
+    if(t>ST&&t<ST+0.35)by+=Math.sin((t-ST)/0.35*Math.PI)*0.25;
+    let wob=0;if(t>PU&&t<HP)wob=Math.sin((t-PU)*30)*0.04;SP.forEach(x=>{if(t>x&&t<x+0.25)by-=Math.sin((t-x)/0.25*Math.PI)*0.06});
+    rbox.position.set(ch.x+wob,by,ch.z);rbox.rotation.set(0.3*bk,0.6,0.22*bk+wob);
+    const slopeY=x=>2.2+1.4*(1-Math.abs(x)/1.85);
+    if(t<PU-0.3){rsa.position.set(-1.1,slopeY(-1.1),ch.z+0.2);rsa.rotation.y=0.5}
+    else if(t<HP){const k=ease((t-PU+0.3)/0.3);const x=-1.1+0.32*k;rsa.position.set(x,slopeY(x),ch.z+0.2);rsa.rotation.y=0.5+0.5*k;
+      if(t>PU){armUp(rsa,0,1);armUp(rsa,1,1);const pk=Math.abs(Math.sin((t-PU)*7));rsa.userData.arms.forEach(a=>a.rotation.x=-2.6-pk*0.3);rsa.userData.hip.position.y=0.8-pk*0.06}}
+    else if(t<SP[1]+0.4){const k=ease((t-HP)/0.25);const x0=-0.78,y0=slopeY(-0.78),tx=ch.x,ty=ch.y+0.8;
+      rsa.position.set(x0+(tx-x0)*k,y0+(ty-y0)*k+Math.sin(k*Math.PI)*0.5,ch.z);rsa.rotation.y=0.3;
+      SP.forEach(x=>{if(t>x-0.15&&t<x+0.2){const q=Math.sin(clamp01((t-x+0.15)/0.35)*Math.PI);rsa.position.y+=q*0.3;rsa.userData.legs[0].rotation.x=-0.6*q}});
+      armUp(rsa,0,0.5);armUp(rsa,1,0.5);eyesK(rsa,0.9)}
+    else{const k=ease((t-SP[1]-0.4)/0.3);const x0=ch.x,y0=ch.y+0.8,tx=-0.78;rsa.position.set(x0+(tx-x0)*k,y0+(slopeY(tx)-y0)*k+Math.sin(k*Math.PI)*0.3,ch.z+0.2*k);rsa.rotation.y=0.5;
+      if(t>SG){const q=Math.sin(clamp01((t-SG)/0.6)*Math.PI);rsa.userData.hip.position.y=0.8-0.06*q;rsa.userData.head.rotation.x=0.25*q}}
+    showB(rb,t,SG-0.05,DN);
+    chipPop(ck0,t,ST+0.3);if(t>DN)ck0.style.opacity=0;
     // 거실
     resetP(kid);sitPose(kid);const ku=kid.userData;ku.legs.forEach(l=>l.rotation.x=-1.35);ku.arms.forEach(a=>a.rotation.x=-1.15);kid.rotation.y=Math.PI;mood(kid,'flat');eyesK(kid,0.8);
     const lookS=t>EY&&t<K2.t0;ku.head.rotation.y=lookS?ease((t-EY)/0.25)*0.9:0;
@@ -312,7 +324,7 @@ S[4]=()=>{
     chipPop(ck,t,CH);
     // 카메라
     renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);
-    if(t<DN){bgEl.style.background='linear-gradient(#16204a,#33468a 55%,#8aa2d8)';cam.position.set(100+1.8,4.4,6.4);cam.lookAt(100+0.0,3.6,0)}
+    if(t<DN){bgEl.style.background='linear-gradient(#16204a,#33468a 55%,#8aa2d8)';cam.position.set(100+1.4,5.6,8.6);cam.lookAt(100-0.25,4.9,0)}
     else{bgEl.style.background='linear-gradient(#3a2a2a,#5a3e36 55%,#7a5444)';
       if(t<EY){cam.position.set(-1.3,1.9,2.6);cam.lookAt(-2.3,1.15,-2.5)}
       else if(t<EY+0.9){cam.position.set(-0.7,1.75,0.9);cam.lookAt(0.8,1.45,2.15)}           // 아이 얼굴

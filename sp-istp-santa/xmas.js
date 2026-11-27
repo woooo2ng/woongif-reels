@@ -131,10 +131,10 @@ function makeXHouse(r,o={}){
   g.userData.chim=new THREE.Vector3(cx,slopeY+1.03,-d*0.15);
   // 창·문
   const lit=o.lit??0xffd98a;
-  for(const x of[-w*0.28,w*0.28]){const wn=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.7),basic(lit));wn.position.set(x,hh*0.6,d/2+0.01);g.add(wn);
-    const fx=new THREE.Mesh(new THREE.PlaneGeometry(0.05,0.7),basic(0x5a4030));fx.position.set(x,hh*0.6,d/2+0.02);g.add(fx);
-    const fy=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.05),basic(0x5a4030));fy.position.set(x,hh*0.6,d/2+0.02);g.add(fy)}
-  const door=new THREE.Mesh(new THREE.PlaneGeometry(0.62,1.15),lamb(0x6a3f2a));door.position.set(0,0.58,d/2+0.01);g.add(door);
+  for(const x of[-w*0.28,w*0.28]){const wn=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.7),basic(lit));wn.position.set(x,hh*0.6,d/2+0.03);g.add(wn);
+    const fx=new THREE.Mesh(new THREE.PlaneGeometry(0.05,0.7),basic(0x5a4030));fx.position.set(x,hh*0.6,d/2+0.05);g.add(fx);
+    const fy=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.05),basic(0x5a4030));fy.position.set(x,hh*0.6,d/2+0.05);g.add(fy)}
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(0.62,1.15),lamb(0x6a3f2a));door.position.set(0,0.58,d/2+0.03);g.add(door);
   const wr=new THREE.Mesh(new THREE.TorusGeometry(0.16,0.06,8,18),lamb(0x2f7a45));wr.position.set(0,0.85,d/2+0.06);g.add(wr);
   const wb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),basic(0xe2335a));wb.position.set(0,0.7,d/2+0.1);g.add(wb);
   // 처마 전구
@@ -172,7 +172,7 @@ function livingRoom(scene,o={}){
   const wallB=new THREE.Mesh(new THREE.BoxGeometry(20,7,0.2),lamb(o.wall??0xf1e3cf));wallB.position.set(0,3.5,-3.2);g.add(wallB);
   const wallL=new THREE.Mesh(new THREE.BoxGeometry(0.2,7,14),lamb(0xe8d6bf));wallL.position.set(-6.5,3.5,2);g.add(wallL);
   // 벽지 줄무늬
-  for(let i=0;i<14;i++){const s=new THREE.Mesh(new THREE.PlaneGeometry(0.18,7),lamb(0xe9d6bd));s.position.set(-6.4+i*1.0,3.5,-3.09);g.add(s)}
+  for(let i=0;i<14;i++){const s=new THREE.Mesh(new THREE.PlaneGeometry(0.18,7),lamb(0xe9d6bd));s.position.set(-6.4+i*1.0,3.5,-3.065);g.add(s)}
   // 벽난로
   const fp=new THREE.Group();fp.position.set(-2.4,0,-2.9);g.add(fp);
   // 벽난로: 산타가 드나들 수 있게 실제로 뚫린 입구(1.5×1.4)
@@ -211,20 +211,20 @@ function livingRoom(scene,o={}){
   const knob=new THREE.Mesh(new THREE.SphereGeometry(0.06,10,8),lamb(GOLD));knob.position.set(6.1,1.1,0.2);g.add(knob);
   const dwr=new THREE.Mesh(new THREE.TorusGeometry(0.22,0.07,8,18),lamb(0x2f7a45));dwr.rotation.y=Math.PI/2;dwr.position.set(6.1,1.75,0.6);g.add(dwr);
   // 창문(밤/낮)
-  const winMat=new THREE.MeshBasicMaterial({color:0x2a3a6a});const win=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.6),winMat);win.position.set(-4.6,3.0,-3.08);g.add(win);
-  for(const [w2,h2,x,y] of[[0.08,1.6,-4.6,3.0],[1.8,0.08,-4.6,3.0]]){const f=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),basic(0xf2ebe0));f.position.set(x,y,-3.07);g.add(f)}
+  const winMat=new THREE.MeshBasicMaterial({color:0x2a3a6a});const win=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.6),winMat);win.position.set(-4.6,3.0,-3.06);g.add(win);
+  for(const [w2,h2,x,y] of[[0.08,1.6,-4.6,3.0],[1.8,0.08,-4.6,3.0]]){const f=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),basic(0xf2ebe0));f.position.set(x,y,-3.04);g.add(f)}
   return {g,fp,fire,flames,gar,tree,sofa,tv,tvg,door,winMat,scr};
 }
 function updRoom(R,t){if(R.fireOff){R.flames.forEach(f=>f.visible=false);R.fire.visible=false}R.flames.forEach((f,i)=>{f.scale.set(1,0.8+0.35*Math.abs(Math.sin(t*9+i*2)),1)});R.fire.scale.setScalar(1.5+Math.sin(t*7)*0.12);twinkle(R.gar,t);twinkle(R.tree.userData.orn,t,1);R.tvg.material.opacity=0.6+0.2*Math.sin(t*5)}
 // 북극 작업장
 function workshop(){const g=new THREE.Group();
-  const wall=new THREE.Mesh(new THREE.BoxGeometry(7,3.4,4),lamb(0x9a5a3a));wall.position.y=1.7;g.add(wall);
-  for(let i=0;i<7;i++){const pl=new THREE.Mesh(new THREE.BoxGeometry(0.05,3.4,0.02),lamb(0x7a4428));pl.position.set(-3.5+i+0.5,1.7,2.01);g.add(pl)}
+  const wt=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#9a5a3a';x.fillRect(0,0,w,h);x.fillStyle='rgba(110,60,36,0.55)';for(let i=1;i<7;i++)x.fillRect(i*w/7-4,0,8,h)});
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(7,3.4,4),new THREE.MeshLambertMaterial({map:wt}));wall.position.y=1.7;g.add(wall);
   const sh=new THREE.Shape();sh.moveTo(-3.9,0);sh.lineTo(3.9,0);sh.lineTo(0,2.3);sh.closePath();const rg=new THREE.ExtrudeGeometry(sh,{depth:4.6,bevelEnabled:false});rg.translate(0,0,-2.3);
   const roof=new THREE.Mesh(rg,lamb(0xfafcff));roof.position.y=3.4;g.add(roof);
-  const door=new THREE.Mesh(new THREE.PlaneGeometry(2.0,2.4),basic(0xffd98a));door.position.set(0,1.2,2.02);g.add(door);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(2.0,2.4),basic(0xffd98a));door.position.set(0,1.2,2.05);g.add(door);
   const dg=glowSprite('rgba(255,210,130,1)',4.5);dg.position.set(0,1.3,2.3);g.add(dg);
-  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.4,0.75),new THREE.MeshBasicMaterial({map:canvasTex(680,150,(x,w,h)=>{x.fillStyle='#c9303a';rr(x,0,0,w,h,30);x.fill();x.fillStyle='#fff';x.font='900 84px "Noto Sans CJK KR"';x.textAlign='center';x.textBaseline='middle';x.fillText('산타 작업장',w/2,h/2+4)})}));sign.position.set(0,2.95,2.04);g.add(sign);
-  for(const x of[-2.6,2.6]){const w=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.9),basic(0xffd98a));w.position.set(x,1.9,2.02);g.add(w)}
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.4,0.75),new THREE.MeshBasicMaterial({map:canvasTex(680,150,(x,w,h)=>{x.fillStyle='#c9303a';rr(x,0,0,w,h,30);x.fill();x.fillStyle='#fff';x.font='900 84px "Noto Sans CJK KR"';x.textAlign='center';x.textBaseline='middle';x.fillText('산타 작업장',w/2,h/2+4)})}));sign.position.set(0,2.95,2.09);g.add(sign);
+  for(const x of[-2.6,2.6]){const w=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.9),basic(0xffd98a));w.position.set(x,1.9,2.05);g.add(w)}
   const bulbs=[];for(let i=0;i<=24;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),basic([0xff4d5e,0xffd84d,0x5fd38a,0x5fb0ff][i%4]));b.position.set(-3.6+7.2*i/24,3.35,2.35);g.add(b);bulbs.push(b)}
   g.userData.bulbs=bulbs;return g}
