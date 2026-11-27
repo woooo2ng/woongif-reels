@@ -349,7 +349,7 @@ function renderS3(){
     <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
     <div class="sug">${["처음 만난 날","서로 부르는 별명","자주 하는 말버릇","둘만 아는 웃긴 순간","같이 자주 가는 곳","좋아하는 음식"].map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
-    <p class="hint">자세히 쓸수록 두 사람다운 장면이 나와요. 문장이 서툴러도 괜찮으니 생각나는 대로 많이 적어 주세요. 실명·전화번호 같은 개인정보는 빼 주세요.</p></div>${FOOTER}`;
+    <p class="hint">자세히 쓸수록 두 사람다운 장면이 나와요. 문장이 서툴러도 괜찮으니 생각나는 대로 많이 적어 주세요.</p></div>${FOOTER}`;
   const ok = ()=> S.story.trim().length>=10;
   bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
   document.querySelectorAll("[data-sug]").forEach(b=>b.onclick=()=>{ const ta=$("#stI"); const add=(ta.value.trim()?"\n":"")+b.dataset.sug+": "; ta.value=(ta.value.trimEnd()+add).slice(0,500); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); ta.dispatchEvent(new Event("input")); });
