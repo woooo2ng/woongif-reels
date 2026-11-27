@@ -133,6 +133,8 @@ table.st tr.now td{background:#fffbe6}
   <section id="s-stats">
     <h2>오늘 <span class="sub" id="st-day"></span> <button id="st-reload" style="font-size:12px;padding:3px 8px;margin-left:6px">새로고침</button></h2>
     <div class="kpis" id="kpis"></div>
+    <h2>🎬 주문 페이지(/order) 방문</h2>
+    <div id="ostats2"><p class="sub">불러오는 중…</p></div>
     <h2>최근 14일</h2>
     <div class="card" style="overflow-x:auto"><table class="st" id="st-table"></table></div>
     <h2>오늘 많이 눌린 것</h2>
@@ -205,7 +207,7 @@ async function loadOrderStats(){
   const d = await api("admin/order-stats"); const T=d.total, won=(n)=>Number(n||0).toLocaleString()+"원";
   const pct=(a,b)=>b?Math.round(a/b*100)+"%":"-";
   const today=d.days[d.days.length-1];
-  $("#ostats").innerHTML = `<div class="card"><b>주문 페이지 방문 (사람 수, 하루 1번씩)</b>
+  $("#ostats").innerHTML = $("#ostats2").innerHTML = `<div class="card"><b>주문 페이지 방문 (사람 수, 하루 1번씩)</b>
     <div class="sub" style="margin-top:6px">오늘: 방문 <b>${today.view}</b> → 주문 시작 <b>${today.start}</b> → 결제 화면 <b>${today.confirm}</b> → 결제 버튼 <b>${today.pay}</b> → 결제 완료 <b>${today.paid}</b> (${won(today.won)})</div>
     <div class="sub">전체: 방문 <b>${T.view||0}</b>명 · 주문 시작 ${T.start||0} (${pct(T.start||0,T.view||0)}) · 결제 화면 ${T.confirm||0} · 결제 버튼 ${T.pay||0} · 결제 완료 <b>${T.paid}</b>건 · 매출 <b>${won(T.won)}</b></div>
     <table style="width:100%;margin-top:8px;font-size:12px;border-collapse:collapse"><tr style="text-align:right"><th style="text-align:left">날짜</th><th>방문</th><th>시작</th><th>결제화면</th><th>결제버튼</th><th>완료</th><th>매출</th></tr>
@@ -330,6 +332,7 @@ $("#backup").onclick=async()=>{
 };
 
 async function loadStats(){
+  loadOrderStats().catch(e=>{ const el=$("#ostats2"); if(el) el.innerHTML=`<p class="sub">${esc(e.message)}</p>`; });
   const d = await api("admin/stats");
   const t = d.days[d.days.length-1], y = d.days[d.days.length-2];
   $("#st-day").textContent = d.today;
