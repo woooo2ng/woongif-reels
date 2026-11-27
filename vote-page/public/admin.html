@@ -173,7 +173,7 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["stats","pending","live","mbti","combo","scenes","town","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["stats","orders","pending","live","mbti","combo","scenes","town","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
 async function load(){ await Promise.all([loadOrders(), loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll(), loadTown()]); }
@@ -193,20 +193,23 @@ function renderReplies(){
 
 // ---------- 맞춤 영상 주문 ----------
 let orders = [], oFilter = "open";
+const OSB = {pending:["⏳ 결제 안 함","#eceff2","#55606a"], paid:["✅ 결제 완료 · 접수","#c9f0dc","#1d6b46"], script:["✅ 결제 완료 · 대본 확인","#c9f0dc","#1d6b46"], making:["🎬 제작 중","#d6e8ff","#1f4f99"], done:["🎉 완성","#ece5fb","#5a3fb0"], canceled:["❌ 취소·환불됨","#ffd9de","#b0172f"]};
+const obadge = (st)=>{ const [t,bg,fg]=OSB[st]||[st,"#eee","#333"]; return `<span style="display:inline-block;background:${bg};color:${fg};border-radius:99px;padding:3px 10px;font-size:13px;font-weight:800">${t}</span>`; };
 const OST = {pending:"결제 전", paid:"접수", script:"대본 확인", making:"제작 중", done:"완성", canceled:"취소됨"};
 const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","파랑","보라","주황","연두","회색"], hair:{short:"단발/옆가르마",long:"긴 머리/장발",tied:"만두머리/꽁지머리",spiky:"삐죽머리",basic:"짧은 머리",dandy:"덮은 머리"}};
 const TOPN={tee:"티셔츠",hood:"후드티",shirt:"셔츠·넥타이"}, BOTN={skirt:"치마",pants:"바지",shorts:"반바지"}, BCN=["남색","검정","베이지","청","노랑","분홍"], HATN={none:"",cap:"캡모자",beanie:"비니"};
 const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} ${TOPN[c.top]||"옷"}${c.bottom?` · ${BCN[c.bc]||""} ${BOTN[c.bottom]}`:""}${c.hat&&c.hat!=="none"?" · "+HATN[c.hat]:""}${c.scarf?" · 목도리":""}${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
 document.addEventListener("click", async (e)=>{ if(e.target.id!=="mailtest") return; try{ await api("admin/notify-test",{}); toast("보냈어요! 메일함(스팸함도) 확인해 보세요"); }catch(err){ toast(err.message); } });
 async function loadOrders(){
-  const d = await api("admin/orders"); orders = d.orders;
+  const d = await api("admin/orders?all=1"); orders = d.orders;
   $("#otest").innerHTML = d.test ? `<span class="badge" style="background:#ffd84d;color:#1a1a1a">테스트 결제 모드</span>` : "";
   renderOrders();
 }
 function renderOrders(){
   const open = orders.filter(o=>["paid","script","making"].includes(o.status));
   $("#odn").innerHTML = open.length ? `<span class="badge">${open.length}</span>` : "";
-  const F = [["open","진행 중 ("+open.length+")"],["done","완성"],["canceled","취소"],["all","전체"]];
+  const cnt = (st)=>orders.filter(o=>o.status===st).length;
+  const F = [["open","✅ 진행 중 ("+open.length+")"],["done","🎉 완성 ("+cnt("done")+")"],["canceled","❌ 취소 ("+cnt("canceled")+")"],["pending","⏳ 결제 안 함 ("+cnt("pending")+")"],["all","전체 ("+orders.length+")"]];
   $("#ofl").innerHTML = F.map(([k,l])=>`<button data-of="${k}" style="${oFilter===k?"background:#fff0a8":""}">${l}</button>`).join("");
   document.querySelectorAll("[data-of]").forEach(b=>b.onclick=()=>{ oFilter=b.dataset.of; renderOrders(); });
   const list = oFilter==="all" ? orders : oFilter==="open" ? open : orders.filter(o=>o.status===oFilter);
@@ -214,16 +217,18 @@ function renderOrders(){
   $("#orders").innerHTML = list.length ? list.map(o=>{
     const steps = ["paid","making","done"];
     return `<div class="card" data-oid="${esc(o.id)}">
+    <div style="margin-bottom:6px">${obadge(o.status)}</div>
     <div class="txt"><b>${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}</b></div>
-    <div class="sub">${esc(o.id)} · ${esc(o.product)} · ${Number(o.amount).toLocaleString()}원 · ${esc(o.method||"")} · 결제 ${when(o.paidAt)} · <b>${o.due?md(o.due)+"까지":""}</b></div>
+    <div class="sub">${esc(o.id)} · ${esc(o.product)} · ${Number(o.amount).toLocaleString()}원${o.method?" · "+esc(o.method):""}</div>
+    <div class="sub">주문서 ${when(o.at)}${o.paidAt?` · 결제 ${when(o.paidAt)}`:" · 결제 안 함"}${o.canceledAt?` · <b style="color:#b0172f">취소 ${when(o.canceledAt)}</b>`:""}${o.status!=="canceled"&&o.status!=="pending"&&o.due?` · <b>${md(o.due)}까지</b>`:""}</div>
     <div class="sub">상태 <b>${OST[o.status]}</b> · ✉️ ${esc(o.email)}${o.insta?` · 📷 <a href="https://www.instagram.com/${esc(o.insta)}/" target="_blank">@${esc(o.insta)}</a>`:""}${o.kakao?` · 카톡 ${esc(o.kakao)}`:""}</div>
     <div class="sub">A ${esc(o.nameA)}: ${chs(o.chars.a)}<br>B ${esc(o.nameB)}: ${chs(o.chars.b)}</div>
     ${o.story?`<div class="txt" style="white-space:pre-wrap;background:#fff8dc;border-radius:8px;padding:8px;margin-top:6px">${esc(o.story)}</div>`:""}
-    ${o.status==="canceled"?`<div class="sub">취소: ${esc(o.cancelReason||"")}</div>`:`
+    ${o.status==="pending"?`<div class="sub" style="color:#55606a">결제창에서 결제를 끝내지 않은 주문이에요. 만들 필요 없어요.</div>`:o.status==="canceled"?`<div class="sub" style="color:#b0172f">취소 사유: ${esc(o.cancelReason||"")} · 결제 금액은 환불됐어요</div>`:`
     <div class="row" style="margin-top:8px">${steps.map(k=>`<button data-ost="${k}" style="${o.status===k?"background:#fff0a8;font-weight:800":""}">${OST[k]}</button>`).join("")}</div>
     <input data-olink placeholder="완성 영상 다운로드 링크" value="${esc(o.link||"")}" style="width:100%;margin-top:6px">
     <textarea data-onote placeholder="메모 (나만 보임)" style="width:100%;margin-top:6px;min-height:40px">${esc(o.note||"")}</textarea>
-    <div class="row" style="margin-top:6px"><button class="pri" data-osave>저장</button><button class="no" data-orefund>환불</button></div>`}</div>`; }).join("") : `<p class="empty">주문이 없어요</p>`;
+    <div class="row" style="margin-top:6px"><button class="pri" data-osave>저장</button><button class="no" data-orefund>환불</button></div>`}</div>`; }).join("") : `<p class="empty">${oFilter==="open"?"진행 중인 주문이 없어요":"주문이 없어요"}</p>`;
   const card = (b)=>b.closest("[data-oid]");
   const val = (c,sel)=>{ const e=c.querySelector(sel); return e?e.value:undefined; };
   document.querySelectorAll("[data-ost]").forEach(b=>b.onclick=async()=>{ const c=card(b); try{ await api("admin/order/update",{id:c.dataset.oid,status:b.dataset.ost}); toast(OST[b.dataset.ost]+"(으)로 바꿨어요"); loadOrders(); }catch(e){ toast(e.message); } });

@@ -126,7 +126,7 @@ function orderRow(o, full) {
     nameA: o.name_a, nameB: o.name_b, status: o.status, due: o.due_day, link: o.status === "done" ? o.link : null,
     script: o.script_link || null, at: o.created_at, paidAt: o.paid_at, email: o.email,
   };
-  if (full) Object.assign(r, { chars: JSON.parse(o.chars || "{}"), story: o.story, kakao: o.kakao, insta: o.insta, reels: !!o.reels, method: o.method, note: o.note, link: o.link, cancelReason: o.cancel_reason, owner: o.owner });
+  if (full) Object.assign(r, { chars: JSON.parse(o.chars || "{}"), story: o.story, kakao: o.kakao, insta: o.insta, reels: !!o.reels, method: o.method, note: o.note, link: o.link, cancelReason: o.cancel_reason, canceledAt: o.canceled_at || null, owner: o.owner });
   return r;
 }
 
