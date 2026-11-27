@@ -117,15 +117,16 @@ const LIGHT=(scene)=>{scene.add(new THREE.HemisphereLight(0xdfe8ff,0x6a7080,1.5)
 
 // ---------- 자막 ----------
 const CAPS={0:["웅이프한테 우리 커플 영상을","주문하면 생기는 일."],1:["먼저, 두 사람 MBTI를 고르고."],2:["캐릭터를 직접 꾸며요.","머리도, 안경도, 옷도요."],3:["그리고 우리만 아는","이야기를 적으면,"],4:["그 이야기가,","진짜 우리 영상이 돼요."],5:["오픈 기념, 선착순 10명 할인!","여러분 커플은 무슨 MBTI인가요?"]};
-let LEAD=0.25,VOICE=[];
+let LEAD=0.25,VOICE=[];const CLEAD={4:5.9};
 window.setTiming=(lead,voice)=>{LEAD=lead;VOICE=voice};
 function caption(si,t){
   const parts=CAPS[si];if(!parts)return;
   let el=ui.querySelector('.cap');if(!el){el=document.createElement('div');el.className='cap out';ui.appendChild(el)}
+  const LD=CLEAD[si]??LEAD;if(t<LD-0.1){el.style.opacity=0;return}
   const L=parts.map(p=>p.length);const v=VOICE[si]||3,tot=L.reduce((a,b)=>a+b,0);
-  let acc=LEAD,idx=0;for(let i=0;i<parts.length;i++){const len=v*L[i]/tot;if(t>=acc-0.05)idx=i;acc+=len}
+  let acc=LD,idx=0;for(let i=0;i<parts.length;i++){const len=v*L[i]/tot;if(t>=acc-0.05)idx=i;acc+=len}
   if(el.dataset.i!=idx){el.dataset.i=idx;el.textContent=parts[idx]}
-  const st=LEAD+v*L.slice(0,idx).reduce((a,b)=>a+b,0)/tot;
+  const st=LD+v*L.slice(0,idx).reduce((a,b)=>a+b,0)/tot;
   const k=pop((t-st+0.05)/0.18);el.style.transform=`scale(${0.85+0.15*k})`;el.style.opacity=clamp01((t-st+0.1)/0.1);
 }
 const S=[];
@@ -187,7 +188,7 @@ S[4]=()=>{
   const drops=[];for(let i=0;i<6;i++){const d=new THREE.Mesh(new THREE.SphereGeometry(0.035,8,6),basic(0x9fd3ff));d.scale.set(0.8,1.3,0.8);scene.add(d);drops.push(d)}
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,200);
   ui.innerHTML='<div class="clock">처음 만난 날 · 비 오는 골목</div>';const clk=ui.querySelector('.clock');
-  const WALK=[0.5,1.8],ASK=1.95,OPEN=2.9,YES=3.6,HEART=4.4;MK={umb:OPEN,heart:HEART};
+  const WALK=[0.5,1.8],ASK=1.9,OPEN=4.2,YES=4.9,HEART=5.6;MK={umb:OPEN,heart:HEART};
   return t=>{
     rn(t);clk.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
     // 선우: 손으로 머리 가림

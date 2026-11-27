@@ -10,7 +10,10 @@ def put(x, t, g=1.0):
     if i < len(out): out[i:j] += x[:j - i] * g
 voice = np.zeros_like(out)
 for si, (a, b) in enumerate(VS):
-    x = cut('raw/narr.mp3', a, b); i = int((starts[si] + LEAD) * SR); voice[i:i+len(x)] += x[:len(voice)-i]
+    x = cut('raw/narr.mp3', a, b); i = int((starts[si] + (5.9 if si == 4 else LEAD)) * SR); voice[i:i+len(x)] += x[:len(voice)-i]
+# 사연 장면 캐릭터 대사: 선우(연희) · 웅이(준호)
+for src, a, b2, t in [('raw/sunwoo.mp3', 0.0, 1.32, 0.15), ('raw/woong.mp3', 0.0, 2.24, 1.9), ('raw/sunwoo.mp3', 2.0, 2.64, 4.9)]:
+    x = cut(src, a, b2) * 1.05; i = int((starts[4] + t) * SR); voice[i:i+len(x)] += x[:len(voice)-i]
 # ---------- 효과음 ----------
 def bell(f, d, vol):
     n = int(d * SR); t = np.arange(n) / SR
@@ -56,10 +59,10 @@ for si in (1, 2, 3): put(ping(0.08), starts[si] + 0.05)   # STEP 칩 팝
 # 4: 비 → 우산 펼침 → 하트
 put(raintex(D[4] + 0.1, 0.04), starts[4])
 put(pop_(0.15), starts[4] + 0.2)                 # 아 비 온다…
-put(pop_(0.15), starts[4] + 1.95)                # 같이 쓸래요?
-put(umbrella_open(), starts[4] + 2.9)
-put(pop_(0.18), starts[4] + 3.6)                 # …네!
-put(sparkle(0.07), starts[4] + 4.4); put(pop_(0.2), starts[4] + 4.4)
+put(pop_(0.15), starts[4] + 1.9)                 # 같이 쓸래요?
+put(umbrella_open(), starts[4] + 4.2)
+put(pop_(0.18), starts[4] + 4.9)                 # …네!
+put(sparkle(0.07), starts[4] + 5.6); put(pop_(0.2), starts[4] + 5.6)
 # 5: 카드 팝 + 질문
 put(pop_(0.25), starts[5] + 0.05); put(ping(0.12), starts[5] + 0.1)
 Q = LEAD + T['V'][5] * 0.47; put(sparkle(0.06), starts[5] + Q)
