@@ -67,6 +67,7 @@ table.st tr.now td{background:#fffbe6}
   <section id="s-orders" hidden>
     <h2>맞춤 궁합 영상 주문 <span id="otest"></span></h2>
     <p class="sub">상태를 바꾸면 구매자 '내 주문'에 바로 보여요. 완성 링크를 넣고 '완성'으로 바꾸면 다운로드 버튼이 생겨요. 이메일은 직접 보내 주세요.</p>
+    <div class="row"><button id="mailtest">✉️ 주문 알림 메일 테스트</button></div>
     <div class="row" id="ofl"></div>
     <div id="orders"></div>
   </section>
@@ -196,6 +197,7 @@ const OST = {pending:"결제 전", paid:"접수", script:"대본 확인", making
 const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","파랑","보라","주황","연두","회색"], hair:{short:"단발/옆가르마",long:"긴 머리/장발",tied:"만두머리/꽁지머리",spiky:"삐죽머리",basic:"짧은 머리",dandy:"덮은 머리"}};
 const TOPN={tee:"티셔츠",hood:"후드티",shirt:"셔츠·넥타이"}, BOTN={skirt:"치마",pants:"바지",shorts:"반바지"}, BCN=["남색","검정","베이지","청","노랑","분홍"], HATN={none:"",cap:"캡모자",beanie:"비니"};
 const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} ${TOPN[c.top]||"옷"}${c.bottom?` · ${BCN[c.bc]||""} ${BOTN[c.bottom]}`:""}${c.hat&&c.hat!=="none"?" · "+HATN[c.hat]:""}${c.scarf?" · 목도리":""}${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
+document.addEventListener("click", async (e)=>{ if(e.target.id!=="mailtest") return; try{ await api("admin/notify-test",{}); toast("보냈어요! 메일함(스팸함도) 확인해 보세요"); }catch(err){ toast(err.message); } });
 async function loadOrders(){
   const d = await api("admin/orders"); orders = d.orders;
   $("#otest").innerHTML = d.test ? `<span class="badge" style="background:#ffd84d;color:#1a1a1a">테스트 결제 모드</span>` : "";

@@ -79,6 +79,41 @@ function cleanChar(c) {
     bc: n(c.bc, 6), hat: ["none", "cap", "beanie"].includes(c.hat) ? c.hat : "none", scarf: !!c.scarf,
   };
 }
+// ---------- 주문 알림 메일 (Resend) ----------
+// Cloudflare 환경 변수 RESEND_API_KEY(Secret)가 있으면 새 주문·취소 때 NOTIFY_EMAIL(기본 ddd12340@naver.com)로 메일
+const NOTIFY_DEFAULT = "ddd12340@naver.com";
+const H = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const C_HAIR = { short: "짧은(단발/옆가르마)", long: "긴 머리/장발", tied: "만두머리/포마드", spiky: "삐죽머리", basic: "짧은 머리", dandy: "덮은 머리" };
+const C_TOP = { tee: "티셔츠", hood: "후드티", shirt: "셔츠·넥타이" }, C_BOT = { skirt: "치마", pants: "바지", shorts: "반바지" };
+const C_HC = ["검정", "갈색", "밝은 갈색", "금발", "핑크"], C_SK = ["밝은", "중간", "어두운"], C_CL = ["분홍", "노랑", "민트", "파랑", "보라", "주황", "연두", "회색"], C_BC = ["남색", "검정", "베이지", "청", "노랑", "분홍"];
+function charText(c) {
+  if (!c) return "";
+  return `${c.g === "남" ? "남자" : "여자"} · ${C_HAIR[c.hair] || c.hair} · 머리 ${C_HC[c.hc]} · 피부 ${C_SK[c.skin]} · ${C_CL[c.cl]} ${C_TOP[c.top] || ""} · ${C_BC[c.bc] || ""} ${C_BOT[c.bottom] || ""}`
+    + (c.hat && c.hat !== "none" ? ` · ${c.hat === "cap" ? "캡모자" : "비니"}` : "") + (c.scarf ? " · 목도리" : "") + (c.gl ? " · 안경" : "") + (c.feat ? ` · "${c.feat}"` : "");
+}
+async function notifyOrder(env, o, kind, origin) {
+  if (!env.RESEND_API_KEY) return;
+  const ch = JSON.parse(o.chars || "{}");
+  const title = kind === "cancel" ? `[웅이프] 주문 취소 ${o.id}` : `[웅이프] 새 주문 ${o.id} · ${PRODUCTS[o.pkg]?.name.split(" · ")[0]} ${o.amount.toLocaleString()}원`;
+  const row = (k, v) => `<tr><td style="padding:6px 10px;color:#666;white-space:nowrap;vertical-align:top">${k}</td><td style="padding:6px 10px">${v}</td></tr>`;
+  const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6">
+    <h2 style="margin:0 0 12px">${kind === "cancel" ? "주문이 취소됐어요 (자동 환불)" : "새 주문이 들어왔어요 🎬"}</h2>
+    <table style="border-collapse:collapse;border:1px solid #ddd">
+    ${row("주문번호", H(o.id))}${row("상품", H(PRODUCTS[o.pkg]?.name) + " · " + o.amount.toLocaleString() + "원")}
+    ${row("두 사람", `${H(o.name_a)} ${o.a_type} × ${H(o.name_b)} ${o.b_type} · ${H(o.rel)}`)}
+    ${row("캐릭터 A", H(charText(ch.a)))}${row("캐릭터 B", H(charText(ch.b)))}
+    ${o.story ? row("사연", H(o.story).replace(/\n/g, "<br>")) : ""}
+    ${row("인스타", o.insta ? `<a href="https://www.instagram.com/${H(o.insta)}/">@${H(o.insta)}</a>` : "-")}${row("이메일", H(o.email))}
+    ${kind === "cancel" ? "" : row("전달 기한", `<b>${H(o.due_day)}</b>까지`)}</table>
+    <p><a href="${origin}/admin">관리 페이지에서 보기 →</a></p></div>`;
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + String(env.RESEND_API_KEY).trim(), "Content-Type": "application/json" },
+      body: JSON.stringify({ from: env.NOTIFY_FROM || "웅이프 주문 <onboarding@resend.dev>", to: [env.NOTIFY_EMAIL || NOTIFY_DEFAULT], subject: title, html }),
+    });
+  } catch (e) { /* 메일 실패해도 주문은 그대로 */ }
+}
 function orderRow(o, full) {
   const r = {
     id: o.id, pkg: o.pkg, product: PRODUCTS[o.pkg]?.name || o.pkg, amount: o.amount, rel: o.rel, a: o.a_type, b: o.b_type,
@@ -382,7 +417,7 @@ function isAdmin(req, env) {
   return !!pw && key.trim() === pw;
 }
 
-export async function onRequest({ request, env, params }) {
+export async function onRequest({ request, env, params, waitUntil }) {
   if (!env.DB) return err("D1 데이터베이스(DB) 바인딩이 없어요", 500);
   const db = env.DB;
   await setup(db);
@@ -972,6 +1007,8 @@ export async function onRequest({ request, env, params }) {
     const method2 = r.data.easyPay?.provider ? `${r.data.method} · ${r.data.easyPay.provider}` : r.data.method || "";
     await db.prepare("UPDATE orders SET status='paid', payment_key=?, method=?, paid_at=?, due_day=? WHERE id=? AND status='pending'")
       .bind(r.data.paymentKey, method2, now, due, o.id).run();
+    const mail = notifyOrder(env, { ...o, due_day: due }, "new", url.origin);
+    if (waitUntil) waitUntil(mail); else await mail;
     return json({ order: orderRow({ ...o, status: "paid", payment_key: r.data.paymentKey, method: method2, paid_at: now, due_day: due }) });
   }
   if (path === "orders/mine" && method === "GET") {
@@ -994,6 +1031,8 @@ export async function onRequest({ request, env, params }) {
     const r = await toss(env, `payments/${encodeURIComponent(o.payment_key)}/cancel`, { cancelReason: "구매자 취소 (제작 시작 전)" }, "cancel-" + o.id);
     if (!r.ok) return err(r.data.message || "취소에 실패했어요. 메일로 문의해 주세요", 400);
     await db.prepare("UPDATE orders SET status='canceled', cancel_reason=?, canceled_at=? WHERE id=?").bind("구매자 취소", Date.now(), o.id).run();
+    const mail = notifyOrder(env, o, "cancel", url.origin);
+    if (waitUntil) waitUntil(mail); else await mail;
     return json({ ok: true });
   }
 
@@ -1338,6 +1377,13 @@ export async function onRequest({ request, env, params }) {
       const all = url.searchParams.get("all") === "1";
       const r = await db.prepare(`SELECT * FROM orders ${all ? "" : "WHERE status<>'pending'"} ORDER BY CASE status WHEN 'paid' THEN 0 WHEN 'script' THEN 1 WHEN 'making' THEN 2 ELSE 3 END, created_at DESC LIMIT 500`).all();
       return json({ orders: r.results.map((o) => orderRow(o, true)), test: tossKeys(env).ck.startsWith("test_") });
+    }
+    if (path === "admin/notify-test" && method === "POST") {
+      if (!env.RESEND_API_KEY) return err("RESEND_API_KEY가 아직 없어요");
+      const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + String(env.RESEND_API_KEY).trim(), "Content-Type": "application/json" },
+        body: JSON.stringify({ from: env.NOTIFY_FROM || "웅이프 주문 <onboarding@resend.dev>", to: [env.NOTIFY_EMAIL || NOTIFY_DEFAULT], subject: "[웅이프] 주문 알림 테스트", html: "<p>주문 알림 메일이 잘 와요 ✅</p>" }) }).catch(() => null);
+      const d = r ? await r.json().catch(() => ({})) : {};
+      return r && r.ok ? json({ ok: true }) : err(d.message || "메일을 못 보냈어요");
     }
     if (path === "admin/order/update" && method === "POST") {
       const o = await db.prepare("SELECT * FROM orders WHERE id=?").bind(String(body.id || "")).first();
