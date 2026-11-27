@@ -829,7 +829,7 @@ S[6]=()=>{
   IN.forEach((p,i)=>{p.userData.sweat.position.y=0.38;p.rotation.y=(i%2?-0.12:0.12)});
   const b1=sb(scene,'…!!',-0.85,1.72,0.6,{c:IC,size:0.0024}),b2=sb(scene,'…help',0.95,1.72,0.6,{c:IC,size:0.0022});scaleBubble(b1,1);scaleBubble(b2,1);
   const C=cam(52);setCam(C,[0.0,1.55,6.6],[0,3.05,-4],54);IN.forEach(p=>p.userData.legs.forEach(l=>l.rotation.x=-1.25));
-  ui.insertAdjacentHTML('beforeend',`<div class="tag" style="top:200px">WHAT IF…</div><div class="title1 out" style="color:${C_E};font-size:140px;letter-spacing:-3px;top:265px">ENFP Nation</div><div class="title2 out" style="color:${C_I};font-size:130px;letter-spacing:-3px;top:430px">& INFP Nation</div><div class="title3 out" style="top:605px">went to war?</div>`);
+  ui.insertAdjacentHTML('beforeend',`<div class="tag" style="top:200px;font-size:62px;padding:8px 32px">ENFP vs INFP × WAR</div><div class="title1 out" style="color:${C_E};font-size:160px;letter-spacing:-5px;top:300px">ENFP Nation</div><div class="title2 out" style="color:${C_I};font-size:150px;letter-spacing:-5px;top:480px">& INFP Nation</div><div class="title3 out" style="top:670px;font-size:132px">went to war?</div>`);
   return t=>{renderer.render(scene,C)};
 };
 let curUpd=null,cur=-1;
