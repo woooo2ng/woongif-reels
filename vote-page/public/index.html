@@ -383,7 +383,7 @@ const popEl = (sel) => { const el=$(sel); if(el){ el.classList.add("pop"); setTi
 // ---------- 상태 ----------
 const S = { tab:"vote", vtab:"mbti", town:null, mbti:null, pair:null, sit:null, board:{type:null, sort:"top", data:null}, me:null, picked:[],
   cf:"all", sf:"all", cMore:false, form:{rel:"커플", a:"ISFJ", b:"ENTP", custom:""}, sform:{type:"INFP", text:""}, sc:{type:"INFP", text:""}, townSort:"res" };
-const ORDER_OPEN = false;   // 맞춤 영상 주문 입구(배너·우리 버전 주문·푸터 링크). 다 다듬으면 true로
+const ORDER_OPEN = true;   // 맞춤 영상 주문 입구(배너·우리 버전 주문·푸터 링크). 다 다듬으면 true로
 const myType = () => S.town?.me?.type || null;
 
 // ---------- 헤더 조각 ----------
