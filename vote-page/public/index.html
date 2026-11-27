@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>만약에 신청소 · @woong.if</title>
-<meta name="description" content="@woong.if '온 세상이 MBTI라면?' 릴스 — 다음 편 MBTI·궁합·상황에 하트를 눌러주세요">
+<meta name="description" content="@woong.if '온 세상이 MBTI라면?' — 다음 편 투표, 우리 유형 응원, 유형별 한마디">
 <meta property="og:title" content="만약에 신청소 · @woong.if">
-<meta property="og:description" content="다음 편 MBTI · 궁합 · 상황에 하트를 눌러주세요">
+<meta property="og:description" content="다음 편 투표하고, 우리 유형 응원하고, 다른 유형에게 한마디">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og.png">
 <meta property="og:image:width" content="1200">
@@ -16,794 +16,921 @@
 <meta name="theme-color" content="#bfe0f4">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
-:root{
-  --ink:#2b2b3a; --sub:#5a5466; --mute:#8a8494; --line:#efeae2; --soft:#f6f3ee;
-  --sky:#bfe0f4; --yellow:#ffd84d; --cream:#fff6d6; --mint-t:#9df2c8; --pink:#ff5d7a;
-  --nt:#ddd2ff; --nf:#c9f0dc; --sj:#d3e6f7; --sp:#ffeab0;
-}
+:root{--ink:#1a1a1a;--sky:#bfe0f4;--bg:#f4f9fc;--yellow:#ffd84d;--red:#ff3b5c;--sub:#66717a;--mute:#8a949c;--line:#eef3f6;--nav:84px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:#fff;color:var(--ink);font-family:Pretendard,-apple-system,system-ui,sans-serif}
-body{min-height:100vh;padding-bottom:calc(30px + env(safe-area-inset-bottom))}
-.wrap{max-width:520px;margin:0 auto;padding:0 20px}
+html,body{margin:0;background:#dfeef7;color:var(--ink);font-family:Pretendard,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
 [hidden]{display:none !important}
-button{font:inherit;color:var(--ink)}
-a{color:var(--ink)}
+.hs{scrollbar-width:none}.hs::-webkit-scrollbar{display:none}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:calc(var(--nav) + 30px + env(safe-area-inset-bottom));box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.app.with-composer{padding-bottom:calc(var(--nav) + 150px + env(safe-area-inset-bottom))}
 
-/* 하늘 배너 (릴스 첫 장면처럼) */
-.banner{background:var(--sky);padding-top:calc(18px + env(safe-area-inset-top))}
-.banner .in{max-width:520px;margin:0 auto;padding:0 20px;display:flex;flex-direction:column;align-items:center}
-.banner .top{align-self:stretch;display:flex;justify-content:space-between;align-items:center}
-.banner .brand{font-weight:900;font-size:15px}
-.banner .ig{font-weight:900;font-size:13px;background:#fff;padding:7px 12px;border-radius:999px;text-decoration:none}
-.btag{margin-top:28px;background:var(--yellow);color:#3a2a00;font-weight:900;font-size:15px;padding:3px 12px;border-radius:8px}
-.out{color:#fff;font-weight:900;text-align:center;
-  text-shadow:3px 0 0 var(--ink),-3px 0 0 var(--ink),0 3px 0 var(--ink),0 -3px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink),2px -2px 0 var(--ink),-2px -2px 0 var(--ink),0 6px 0 var(--ink)}
-.t1{margin-top:10px;font-size:34px;letter-spacing:-1px;line-height:1.15}
-.t2{font-size:50px;letter-spacing:-2px;line-height:1.12;color:var(--mint-t);word-break:keep-all}
-.t2.long{font-size:38px;letter-spacing:-1.5px}
-.bpill{margin:14px 0 24px;background:rgba(255,255,255,.92);font-weight:900;font-size:14px;padding:8px 16px;border-radius:999px;text-align:center}
-.grass{height:24px;background:#9fc98a;border-top:6px solid #b6d99e}
-
-/* 탭 */
-.tabs{position:-webkit-sticky;position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);transform:translateZ(0)}
-.tabs .in{max-width:520px;margin:0 auto;padding:12px 20px 0;display:flex;gap:22px}
-.tabs button{border:0;background:none;padding:6px 0 11px;font-size:17px;font-weight:700;color:var(--mute);cursor:pointer;margin-bottom:-2px;border-bottom:3px solid transparent}
-.tabs button.on{font-weight:900;color:var(--ink);border-bottom-color:var(--ink)}
+/* 헤더 */
+.hd{background:var(--sky);padding:calc(6px + env(safe-area-inset-top)) 20px 18px;border-bottom:2px solid var(--ink)}
+.hd.round{border-radius:0 0 32px 32px;padding-bottom:22px}
+.brand{display:flex;align-items:center;justify-content:space-between;height:44px;gap:8px}
+.brand .nm{display:flex;align-items:baseline;gap:6px}
+.brand .nm b{font-size:18px;font-weight:900}
+.brand .nm span{font-size:12px;font-weight:600;opacity:.6}
+.pill{height:32px;padding:0 4px 0 11px;border-radius:16px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;white-space:nowrap;max-width:62%}
+.pill .nk{overflow:hidden;text-overflow:ellipsis}
+.pill.plain{padding:0 14px;font-size:13px}
+.tb{font-size:11px;font-weight:800;padding:2px 7px;border-radius:10px;flex:none}
+.tag{display:inline-block;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800;transform:rotate(-2deg)}
+.out{font-weight:900;color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;line-height:1.15;letter-spacing:-.5px}
+.ttl{margin-top:8px;font-size:30px}
+.seg{display:flex;margin-top:14px;padding:3px;border-radius:14px;border:2px solid var(--ink);background:#fff}
+.seg button{flex:1;height:36px;border:0;border-radius:10px;background:transparent;font-size:14px;font-weight:700;color:var(--sub)}
+.seg button.on{background:var(--yellow);color:var(--ink);font-weight:900}
 
 /* 공통 */
-.sec{font-weight:900;font-size:19px;margin:30px 0 12px;display:flex;justify-content:space-between;align-items:baseline}
-.sec small{font-size:13px;font-weight:700;color:var(--mute)}
-.g-NT{background:var(--nt)}.g-NF{background:var(--nf)}.g-SJ{background:var(--sj)}.g-SP{background:var(--sp)}
-.hpill{flex:none;display:inline-flex;flex-direction:column;align-items:center;gap:1px;font-size:12px;font-weight:800;color:var(--sub);line-height:1.1;min-width:36px}
-.hpill svg{width:22px;height:22px}
-.hpill svg path{fill:rgba(255,255,255,.7);stroke:var(--ink);stroke-width:1.8}
-.row .hpill svg path,.topcard .hpill svg path{fill:#fff}
-.on > .hpill,.hpill.on{color:#ff3b5c}
-.on > .hpill svg path,.hpill.on svg path{fill:#ff3b5c;stroke:#ff3b5c}
-.pop .hpill svg{animation:pop .3s ease-out}
-@keyframes pop{50%{transform:scale(1.4)}}
-.hint{display:flex;align-items:center;gap:8px;margin:18px 0 10px;font-size:13px;font-weight:700;color:var(--sub)}
-.badge{display:inline-block;background:var(--ink);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;vertical-align:2px;white-space:nowrap}
-.badge.today{background:#e0456a}
-.empty{text-align:center;color:var(--sub);padding:22px 10px;font-size:14px;line-height:1.6}
-.skel{height:70px;border-radius:18px;background:linear-gradient(90deg,var(--soft),#fff,var(--soft));background-size:200% 100%;animation:sk 1.2s infinite}
+.pad{padding:20px 20px 0}
+.h2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.h2 b{font-size:17px;font-weight:900}
+.h2 span{font-size:12px;font-weight:700;color:var(--sub)}
+.card{background:#fff;border:2px solid var(--ink);border-radius:20px}
+.card.big{border-radius:22px;box-shadow:0 4px 0 var(--ink);padding:18px}
+.muted{font-size:12px;color:var(--sub)}
+.empty{padding:24px;text-align:center;font-size:13px;color:var(--sub);line-height:1.6}
+.skel{height:120px;border-radius:22px;background:linear-gradient(90deg,#eaf2f7,#fff,#eaf2f7);background-size:200% 100%;animation:sk 1.2s infinite}
 @keyframes sk{to{background-position:-200% 0}}
+.ic{width:20px;height:20px;flex:none}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.45)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+.pop svg{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}
 
-/* 1위 카드: 흰 카드 + 큰 글씨 (유형 색은 밑줄만) */
-.topcard{position:relative;overflow:hidden;margin-top:18px;background:#fff;border:2px solid var(--line);border-radius:20px;padding:14px 16px 14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;width:100%;text-align:left}
-.topcard .rk1,.topcard .big{display:none !important}
-.topcard .rk1{position:absolute;right:-6px;top:-24px;font-size:120px;font-weight:900;color:#f4f1ec;line-height:1;pointer-events:none}
-.topcard .bd{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
-.topcard .lbl{font-size:12px;font-weight:800;color:var(--mute)}
-.topcard .lbl.mk{color:#e0456a}
-.topcard .big{font-size:52px;font-weight:900;letter-spacing:-2.5px;line-height:1;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
-.topcard .big.sm{font-size:36px;letter-spacing:-1.5px}
-.topcard .big .xx{font-size:.5em;color:var(--mute);letter-spacing:0}
-.hl{padding:0 2px}
-.hl-NT{background:linear-gradient(transparent 62%,var(--nt) 62%)}.hl-NF{background:linear-gradient(transparent 62%,var(--nf) 62%)}
-.hl-SJ{background:linear-gradient(transparent 62%,var(--sj) 62%)}.hl-SP{background:linear-gradient(transparent 62%,var(--sp) 62%)}
-.topcard .line{font-size:21px;font-weight:900;letter-spacing:-.4px;line-height:1.35;word-break:keep-all}
-.topcard .bd{gap:3px}
-.topcard .line .mbc{font-size:inherit;padding:0 6px;border-radius:8px}
-.topcard .gap{font-size:12px;font-weight:700;color:var(--mute)}
-.topcard .hpill{position:relative;font-size:15px;min-width:52px}
-.topcard .hpill svg{width:30px;height:30px}
-.topcard:active .hpill svg{transform:scale(.9)}
-.topcard.flash{animation:flash 2s ease-out}
+/* 하트 버튼 */
+.hbig{width:100%;height:52px;border-radius:16px;border:2px solid var(--ink);background:var(--red);color:#fff;font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+.hbig path{fill:#fff;stroke:#fff}
+.hbig.on{background:#ffe8ec;color:var(--red)}
+.hbig.on path{fill:var(--red);stroke:var(--red)}
+.hbig .n{opacity:.85}
+.hsm{flex:none;display:flex;align-items:center;gap:4px;height:32px;padding:0 10px 0 8px;border-radius:16px;border:1.5px solid var(--ink);background:#fff;font-size:13px;font-weight:800}
+.hsm svg{width:15px;height:15px}
+.hsm path{fill:none;stroke:var(--ink)}
+.hsm.on{border-color:var(--red);background:#ffe8ec;color:var(--red)}
+.hsm.on path{fill:var(--red);stroke:var(--red)}
 
-/* 진행 막대 */
-.prog{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:12px}
-.prog b{font-weight:900}
-.prog .track{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden}
-.prog .track i{display:block;height:100%;background:var(--ink);border-radius:999px}
-.prog span{font-weight:700;color:var(--sub)}
+/* MBTI 탭 */
+.prog{margin-top:10px;height:14px;border-radius:7px;border:2px solid var(--ink);background:#fff;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--yellow);border-right:2px solid var(--ink)}
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.toprow .r{font-size:12px;font-weight:700;color:var(--sub)}
+.bigt{margin-top:14px;font-size:54px;font-weight:900;line-height:1;-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;letter-spacing:-1px}
+.subt{margin-top:10px;font-size:18px;font-weight:900;word-break:keep-all}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:20px}
+.tile{position:relative;height:104px;border-radius:16px;border:2px solid var(--ink);overflow:hidden;text-decoration:none;color:var(--ink);display:block}
+.tile .nm{padding:8px 8px 0;font-size:15px;font-weight:900}
+.tile .st{display:inline-block;margin:6px 0 0 8px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--yellow);border:1.5px solid var(--ink)}
+.tile .st.today{background:var(--red);color:#fff}
+.tile .hb{position:absolute;left:6px;right:6px;bottom:6px;height:30px;border-radius:10px;border:1.5px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:800;padding:0}
+.tile .hb svg{width:13px;height:13px}
+.tile .hb path{fill:none;stroke:var(--ink)}
+.tile .hb.on{border-color:var(--red);background:#ffe8ec;color:var(--red)}
+.tile .hb.on path{fill:var(--red);stroke:var(--red)}
+.tile.done .stripe{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.6) 0 5px,transparent 5px 10px)}
+.tile.done img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.tile.done .ep{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--ink);color:#fff}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:14px;background:#fff;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.play::after{content:"";border-left:8px solid var(--ink);border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:2px}
+.tile.done .lb{position:absolute;left:6px;right:6px;bottom:6px;text-align:center;font-size:12px;font-weight:900;background:#fff;border-radius:8px;padding:2px 0}
+.note{margin:10px 2px 0;font-size:12px;color:var(--sub)}
 
-/* 16칸 */
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.t{position:relative;height:108px;border:0;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0;text-decoration:none;color:var(--ink);transition:transform .08s}
-.t:active{transform:scale(.96)}
-.t b{font-size:16px;font-weight:900;letter-spacing:-.2px}
-.t.first{outline:3px solid var(--ink);outline-offset:-3px}
-.t .badge{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:10px}
-.t.done{background:#e9e6ef}
-.t.done img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
-.t.done::after{content:"";position:absolute;inset:0;background:rgba(43,43,58,.45)}
-.t.done b,.t.done .ep,.t.done .play{position:relative;z-index:1}
-.t.done b{color:#fff}
-.t .ep{position:absolute !important;left:6px;top:6px;background:var(--yellow);color:#3a2a00;font-size:10px;font-weight:900;padding:1px 6px;border-radius:6px}
-.t .play{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center}
-.t .play svg{width:10px;height:10px;margin-left:2px}
-.legend{display:flex;gap:12px;margin-top:10px;font-size:11px;font-weight:700;color:var(--sub);flex-wrap:wrap}
-.legend span{display:flex;align-items:center;gap:4px}
-.legend i{width:10px;height:10px;border-radius:3px}
+/* 폼 */
+.form{margin-top:24px;padding:16px}
+.form .t{font-size:16px;font-weight:900}
+.form .lbl{font-size:13px;font-weight:800;margin:14px 0 8px}
+.row{display:flex;gap:8px;align-items:center}
+.sel{position:relative;flex:1}
+.sel select{width:100%;height:46px;border-radius:12px;border:2px solid var(--ink);background:#fff;padding:0 12px;font-size:16px;font-weight:800;-webkit-appearance:none;appearance:none;outline:none}
+.sel::after{content:"▼";position:absolute;right:12px;top:15px;font-size:11px;pointer-events:none}
+.inp{width:100%;height:46px;border-radius:12px;border:2px solid var(--ink);padding:0 12px;font-size:16px;background:var(--bg);outline:none}
+textarea.inp{height:76px;padding:10px 12px 18px;line-height:1.4;resize:none}
+.cnt{position:absolute;right:10px;bottom:8px;font-size:11px;color:var(--mute)}
+.btn{width:100%;height:52px;border-radius:16px;border:2px solid var(--ink);background:var(--yellow);font-size:16px;font-weight:900}
+.btn:disabled{background:#e8edf0;color:var(--mute)}
+.btn.sm{height:46px;font-size:14px;border-radius:14px}
+.btn.shadow{height:58px;border-radius:18px;box-shadow:0 4px 0 var(--ink);font-size:17px}
+.btn.shadow:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.preview{margin-top:14px;border:2px dashed rgba(26,26,26,.3);border-radius:14px;background:#eaf5fc;padding:12px 14px}
+.preview small{font-size:11px;font-weight:700;color:var(--sub)}
+.preview div{font-size:16px;font-weight:900;margin-top:4px;word-break:keep-all}
+.dupbox{margin-top:12px;background:#fff6cc;border:2px solid var(--ink);border-radius:14px;padding:12px 14px}
+.dupbox b{font-size:14px;font-weight:900}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:18px 20px 0}
+.chip{flex:none;height:34px;padding:0 12px;border-radius:17px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:13px;font-weight:800}
+.chip.on{background:var(--yellow);border:2px solid var(--ink)}
+.wrapchips{display:flex;flex-wrap:wrap;gap:6px}
 
-/* 목록 (궁합·상황) */
-.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:16px -20px 0;padding:2px 20px}
-.chips::-webkit-scrollbar{display:none}
-.chips button{flex:none;border:0;background:var(--soft);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.chips button.on{background:var(--ink);color:#fff;font-weight:900}
-.list{margin-top:4px}
-.row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1.5px solid #f2eee8;cursor:pointer}
-.row .rk{width:18px;flex:none;font-size:13px;font-weight:900;color:var(--mute);text-align:center}
-.row .bd{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
-.row .by,.topcard .by{font-size:11px;font-weight:700;color:var(--mute)}
-.row.flash{animation:flash 2s ease-out}
-@keyframes flash{0%,40%{background:var(--cream)}100%{background:transparent}}
-.duo{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.mbc{font-weight:900;font-size:13px;padding:3px 8px;border-radius:8px;white-space:nowrap}
-.topcard .mbc{font-size:15px}
-.duo .x{font-size:13px;font-weight:900;color:var(--mute)}
-.rl{font-size:12px;font-weight:700;color:var(--sub)}
-.stx{font-size:15px;font-weight:700;line-height:1.35;word-break:keep-all}
-.more{display:block;width:100%;margin-top:12px;border:0;background:var(--soft);border-radius:12px;min-height:44px;font-size:14px;font-weight:900;cursor:pointer}
+/* 목록 */
+.list{margin:12px 20px 0;overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1.5px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .n{width:16px;font-size:13px;font-weight:900;color:var(--sub);flex:none}
+.li .bd{flex:1;min-width:0}
+.li .tt{font-size:14px;font-weight:800;line-height:1.4;word-break:keep-all}
+.li .mt{display:flex;gap:6px;align-items:center;margin-top:4px;font-size:12px;color:var(--mute)}
+.mini{font-size:11px;font-weight:800;padding:1px 6px;border-radius:6px;background:var(--line);color:#3b4650;white-space:nowrap}
+.more{width:100%;height:46px;border:0;border-top:1.5px solid var(--line);background:#fff;font-size:13px;font-weight:800}
+.duo{display:flex;align-items:center;gap:8px;margin-top:14px}
+.duo span{flex:1;height:60px;border-radius:16px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900}
+.duo i{font-style:normal;font-size:20px;font-weight:900}
+.thumbs{display:flex;gap:10px;overflow-x:auto;padding:12px 20px 4px}
+.th{flex:none;width:140px;text-decoration:none}
+.th .im{position:relative;height:180px;border-radius:16px;border:2px solid var(--ink);background:repeating-linear-gradient(135deg,#dcedf8 0 6px,#bfe0f4 6px 12px);overflow:hidden}
+.th .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%}
+.th .im .ep{position:absolute;top:8px;left:8px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;background:var(--ink);color:#fff;z-index:1}
+.th .cap{font-size:13px;font-weight:800;margin-top:8px;line-height:1.35}
+.dchips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 20px 0}
+.dchip{display:flex;align-items:center;gap:8px;min-height:38px;padding:6px 14px 6px 10px;border-radius:19px;border:2px solid var(--ink);background:#fff;font-size:13px;font-weight:800;text-decoration:none}
+.dchip i{width:20px;height:20px;border-radius:10px;background:var(--yellow);border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;flex:none}
+.dchip i::after{content:"";border-left:6px solid var(--ink);border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:2px}
+.sec{padding:28px 20px 0;font-size:17px;font-weight:900}
 
-/* 신청 칸 */
-.form{margin-top:28px;border:2px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
-.form h3{margin:0;font-weight:900;font-size:17px}
-.form .desc{margin:-4px 0 0;font-size:13px;color:var(--sub);line-height:1.5}
-.fl{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:900}
-.fl small{font-weight:700;color:var(--mute);font-size:13px}
-.inp,.sel,textarea.inp{width:100%;font:inherit;font-size:16px;color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:10px 12px;min-height:46px;background:#fff;outline:none}
-.inp:focus{border-color:var(--ink)}
-textarea.inp{resize:none;line-height:1.5}
-.sel{text-align:left;font-weight:900;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-.sel.empty{color:var(--mute);font-weight:700}
-.sel::after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg) translateY(-3px)}
-.sel.filled{border-color:transparent}
-.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.rels{display:flex;gap:6px;flex-wrap:wrap}
-.rels button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;min-height:40px;font-size:14px;font-weight:700;cursor:pointer}
-.rels button.on{border-color:var(--ink);background:var(--yellow);font-weight:900}
-.preview{background:var(--sky);border-radius:14px;padding:14px;text-align:center;font-weight:900;font-size:17px;letter-spacing:-.3px;line-height:1.4;word-break:keep-all}
-.preview.empty-p{background:var(--soft);color:var(--mute);font-weight:700;font-size:14px}
-.go{width:100%;border:2.5px solid var(--ink);background:var(--yellow);color:#3a2a00;border-radius:999px;min-height:52px;font-size:16px;font-weight:900;box-shadow:0 4px 0 var(--ink);cursor:pointer}
-.go:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.go:disabled{opacity:.5}
-.go.white{background:#fff}
-.go.on{background:#ffe3e8}
-.fnote{margin:0;font-size:12px;color:var(--mute);text-align:center}
-.found{background:var(--soft);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
-.found .lbl{font-size:13px;font-weight:700;color:var(--sub)}
-.found .lbl b{color:var(--ink)}
-.reset{align-self:center;border:0;background:none;font-size:13px;font-weight:800;color:var(--mute);cursor:pointer}
+/* 알림 카드 */
+.notice{margin-top:10px;background:#fff;border:2px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink);padding:14px 16px}
+.notice .top{display:flex;align-items:center;justify-content:space-between}
+.notice .top span{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--red)}
+.notice .top span::before{content:"";width:8px;height:8px;border-radius:4px;background:var(--red)}
+.notice .x{border:0;background:none;font-size:13px;font-weight:700;color:var(--mute);padding:4px}
+.notice .bd{display:flex;gap:12px;align-items:center;margin-top:10px}
+.notice .im{position:relative;width:56px;height:70px;flex:none;border-radius:12px;border:2px solid var(--ink);background:repeating-linear-gradient(135deg,#dcedf8 0 5px,#bfe0f4 5px 10px);overflow:hidden}
+.notice .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.notice .im .play{width:24px;height:24px}
+.notice .tt{font-size:16px;font-weight:900;line-height:1.35;word-break:keep-all}
 
-/* 나온 편 */
-.thumbs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px}
-.thumbs::-webkit-scrollbar{display:none}
-.thumbs a,.thumbs span.th{flex:none;width:150px;text-decoration:none;display:flex;flex-direction:column;gap:6px}
-.thumbs img{width:150px;height:200px;object-fit:cover;object-position:center 20%;border-radius:14px;background:var(--soft)}
-.thumbs .cap{font-weight:900;font-size:13px}
-.chiplist{display:flex;flex-wrap:wrap;gap:6px}
-.chiplist a,.chiplist span{font-size:13px;font-weight:800;padding:7px 11px;border-radius:999px;background:var(--soft);text-decoration:none}
+/* 우리 유형 */
+.hero{display:flex;gap:8px;margin-top:14px}
+.hero .bd{flex:1;min-width:0}
+.hero .t1{margin-top:12px;font-size:40px;-webkit-text-stroke:8px var(--ink);line-height:1.12;letter-spacing:-1px}
+.hero p{margin:12px 0 0;font-size:14px;line-height:1.5;font-weight:500;color:#2a3a46}
+.hero .art{width:116px;height:150px;flex:none;border-radius:20px;border:2px solid var(--ink);background:#fff url(/thumbs/ISFP.jpg) center 20%/cover}
+.steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative}
+.steps::before{content:"";position:absolute;left:30px;right:30px;top:13px;height:2px;background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 8px)}
+.steps div{display:flex;flex-direction:column;align-items:center;gap:6px;width:74px;position:relative}
+.steps i{width:28px;height:28px;border-radius:14px;background:#fff;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;font-style:normal}
+.steps .on i{background:var(--yellow)}
+.steps span{font-size:12px;font-weight:600;color:#55606a}
+.steps .on span{font-weight:800;color:var(--ink)}
+.bars{padding:8px;display:flex;flex-direction:column;gap:0}
+.bar{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px}
+.bar.me{background:#fff3b8;outline:2px solid var(--ink)}
+.bar .n{width:18px;font-size:12px;font-weight:900;color:var(--sub)}
+.bar .t{width:40px;font-size:13px;font-weight:700}
+.bar.me .t{font-weight:900}
+.bar .tr{flex:1;height:16px;border-radius:8px;background:var(--line);overflow:hidden}
+.bar .tr i{display:block;height:100%;border-right:2px solid var(--ink);border-radius:8px;transition:width .4s}
+.bar .v{width:48px;text-align:right;font-size:12px;font-weight:700;color:#3b4650}
+.mini-seg{display:flex;padding:3px;border-radius:12px;border:2px solid var(--ink);background:#fff}
+.mini-seg button{height:28px;padding:0 10px;border:0;border-radius:8px;font-size:12px;font-weight:800;background:transparent}
+.mini-seg button.on{background:var(--yellow)}
+.cta{display:flex;align-items:center;justify-content:space-between;background:var(--yellow);border:2px solid var(--ink);border-radius:18px;padding:16px 18px;width:100%;text-align:left}
+.cta b{font-size:16px;font-weight:900;display:block}
+.cta small{font-size:12px;color:#3b4650}
+.cta span{font-size:22px;font-weight:900}
 
-/* 호감 투표 */
-.pcount{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:2px solid var(--line);border-radius:18px;padding:14px 16px}
-.pcount b{font-size:22px;font-weight:900}
-.pcount span{font-size:13px;font-weight:700;color:var(--sub);line-height:1.5}
-.pq{font-weight:900;font-size:17px;margin:24px 0 10px}
-.pq small{font-weight:700;font-size:13px;color:var(--mute);margin-left:4px}
-.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.pgrid button{position:relative;height:64px;border:0;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;transition:transform .08s}
-.pgrid button:active{transform:scale(.96)}
-.pgrid button.on{outline:3px solid var(--ink);outline-offset:-3px}
-.pgrid button.on::after{content:"";position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
-.pdone{margin-top:22px;background:var(--soft);border-radius:18px;padding:16px;text-align:center;font-size:14px;font-weight:700;line-height:1.6;color:var(--sub)}
-.pdone b{color:var(--ink);font-weight:900}
-.ptop{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end}
-.ptop div{border-radius:16px;padding:14px 6px;text-align:center;font-weight:900}
-.ptop div small{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
-.ptop div b{font-size:22px}
-.ptop .p1{padding-top:26px}.ptop .p1 b{font-size:28px}
+/* 한마디 */
+.post{background:#fff;border:1.5px solid var(--ink);border-radius:18px;padding:14px 16px}
+.post .hd2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.post .nk{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.post .ft{font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;white-space:nowrap;flex:none}
+.post p{margin:8px 0 10px;font-size:15px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+.post .bt{display:flex;align-items:center;justify-content:space-between}
+.post .bt .l{display:flex;align-items:center;gap:10px}
+.post .lk{display:flex;align-items:center;gap:4px;height:30px;padding:0 10px 0 8px;border-radius:15px;border:1.5px solid rgba(255,59,92,.35);background:#fff;font-size:12px;font-weight:800;color:var(--red)}
+.post .lk svg{width:15px;height:15px}
+.post .lk path{fill:none;stroke:var(--red)}
+.post .lk.on{background:#ffe8ec;border-color:var(--red)}
+.post .lk.on path{fill:var(--red)}
+.post .tm{font-size:12px;color:var(--mute)}
+.post .ac{border:0;background:none;padding:4px;font-size:12px;font-weight:600;color:var(--mute)}
+.post .ac.del{color:var(--red)}
+.posts{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.bsort{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 8px}
+.bsort span{font-size:12px;font-weight:600;color:var(--sub)}
+.bsort div{display:flex;gap:12px}
+.bsort button{border:0;background:none;padding:0;font-size:13px;font-weight:700;color:var(--mute)}
+.bsort button.on{color:var(--ink)}
+.bempty{margin:12px 20px 0;border:2px dashed rgba(26,26,26,.25);border-radius:22px;padding:32px 20px;text-align:center}
+.bempty b{display:block;font-size:16px;font-weight:800}
+.bempty small{display:block;margin-top:6px;font-size:13px;color:var(--sub)}
+.composer{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:480px;bottom:calc(var(--nav) + env(safe-area-inset-bottom));background:#fff;border-top:2px solid var(--ink);padding:10px 16px 12px;z-index:9}
+.composer .w{font-size:11px;color:var(--mute);margin:0 4px 8px}
+.composer .row{align-items:stretch}
+.composer .ta{flex:1;position:relative}
+.composer textarea{width:100%;height:64px;border-radius:14px;border:2px solid var(--ink);padding:10px 12px 18px;font-size:15px;line-height:1.4;background:var(--bg);resize:none;outline:none}
+.composer .go{width:72px;border-radius:14px;border:2px solid var(--ink);background:var(--yellow);font-size:14px;font-weight:900}
+.composer .go:disabled{background:#e8edf0;color:var(--mute)}
 
-/* 내가 누른 게 뽑힘 */
-.pk{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:16px;padding:12px 12px 12px 14px;margin-top:14px}
-.pk .tx{flex:1;min-width:0;font-size:14px;font-weight:700;line-height:1.45;word-break:keep-all}
-.pk .tx b{font-weight:900}
-.pk a{flex:none;background:var(--ink);color:#fff;text-decoration:none;font-weight:800;font-size:13px;padding:9px 11px;border-radius:10px}
-.pk .x{flex:none;border:none;background:none;font-size:18px;color:var(--mute);cursor:pointer;padding:4px 6px;min-height:36px}
+/* 내 정보 */
+.prof{display:flex;align-items:center;gap:14px}
+.prof .av{width:60px;height:60px;border-radius:20px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex:none}
+.prof b{font-size:19px;font-weight:900;display:block}
+.prof small{font-size:12px;color:var(--sub)}
+.two{display:flex;gap:8px;margin-top:14px}
+.two button{flex:1;height:40px;border-radius:12px;border:2px solid var(--ink);background:#fff;font-size:13px;font-weight:800}
+.two button.y{background:var(--yellow)}
+.mi{padding:12px 14px;border-bottom:1.5px solid var(--line)}
+.mi:last-child{border-bottom:0}
+.mi .tp{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.badge{flex:none;font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;border:2px solid var(--ink)}
+.badge.done{background:var(--ink);color:#fff}
+.badge.today{background:var(--red);color:#fff}
+.badge.making{background:var(--yellow)}
+.badge.open{background:var(--line);color:#3b4650;border-color:transparent}
+.mi .rt{font-size:12px;font-weight:800;color:var(--mute)}
+.mi .rt.link{color:var(--ink);text-decoration:underline}
+.mi .tt{font-size:14px;font-weight:800;margin-top:6px;word-break:keep-all}
+.mi .ct{display:flex;align-items:center;gap:4px;margin-top:3px;font-size:12px;color:var(--red);font-weight:700}
+.mypost{background:#fff;border:1.5px solid var(--ink);border-radius:16px;padding:12px 14px}
+.mypost .to{font-size:12px;font-weight:800;color:#55606a}
+.mypost p{margin:6px 0 8px;font-size:14px;line-height:1.5;word-break:keep-all}
+.mypost .ft{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+.mypost .ft button{border:0;background:none;padding:0;color:var(--red);font-weight:700;font-size:12px}
+.logout{width:100%;height:48px;border-radius:14px;border:2px solid rgba(26,26,26,.2);background:transparent;font-size:14px;font-weight:700;color:var(--sub)}
 
-/* 시트 & 토스트 */
-.dim{position:fixed;inset:0;background:rgba(43,43,58,.4);z-index:20;display:none;align-items:flex-end;justify-content:center}
+/* 하단 탭 */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;height:calc(var(--nav) + env(safe-area-inset-bottom));background:#fff;border-top:2px solid var(--ink);display:flex;gap:4px;padding:8px 10px env(safe-area-inset-bottom);z-index:10}
+.nav button{flex:1;height:42px;border:2px solid transparent;border-radius:14px;background:none;font-size:13px;font-weight:700;color:var(--sub)}
+.nav button.on{border-color:var(--ink);background:var(--yellow);color:var(--ink);font-weight:900}
+
+/* 시트 */
+.dim{position:fixed;inset:0;background:rgba(18,32,44,.5);z-index:30;display:none;align-items:flex-end;justify-content:center}
 .dim.show{display:flex}
-.sheet{background:#fff;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+.sheet{width:100%;max-width:480px;background:#fff;border-radius:30px 30px 0 0;border-top:2px solid var(--ink);padding:12px 24px calc(28px + env(safe-area-inset-bottom));animation:up .22s ease-out;max-height:92vh;overflow-y:auto}
 @keyframes up{from{transform:translateY(40px);opacity:0}}
-.sheet h3{margin:0 0 12px;font-size:20px;font-weight:900}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:#d5dbe0;margin:0 auto}
+.sheet h2{margin:12px 0 0;text-align:center;font-size:24px;font-weight:900;letter-spacing:-.5px}
+.sheet .d{margin:8px 0 0;text-align:center;font-size:14px;line-height:1.55;color:#55606a}
+.kakao{margin-top:24px;width:100%;height:54px;border:0;border-radius:12px;background:#FEE500;color:rgba(0,0,0,.85);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.later{margin-top:8px;width:100%;height:48px;border:0;background:none;font-size:14px;font-weight:600;color:var(--sub)}
+.fine{margin:4px 0 0;text-align:center;font-size:12px;color:var(--mute)}
 .tgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.tgrid button{height:54px;border:0;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer}
-.closebtn{width:100%;margin-top:14px;border:2px solid var(--line);background:#fff;border-radius:999px;min-height:48px;font-weight:900;cursor:pointer}
-.toast{pointer-events:none;position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-20px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:12px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:30;max-width:90vw;text-align:center}
+.tgrid button{height:46px;border-radius:14px;border:1.5px solid rgba(26,26,26,.2);background:#fff;font-size:15px;font-weight:800;transition:all .12s}
+.tgrid button.on{border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.glabel{font-size:12px;font-weight:700;color:#55606a;margin:12px 0 6px}
+.menu{position:fixed;z-index:31;top:calc(56px + env(safe-area-inset-top));right:max(16px,calc(50% - 224px));width:250px;background:#fff;border:2px solid var(--ink);border-radius:20px;box-shadow:0 4px 0 var(--ink);padding:16px}
+.menu .mrow{display:flex;justify-content:space-between;width:100%;padding:10px 0;font-size:14px;font-weight:600;border:0;background:none;text-align:left}
+.menu .mrow span:last-child{color:var(--mute)}
+.mdim{position:fixed;inset:0;z-index:30;background:rgba(18,32,44,.25)}
+
+/* 주민 등록 화면 */
+.setup{position:fixed;inset:0;z-index:25;background:var(--bg);overflow-y:auto;padding-bottom:120px}
+.setup .in{max-width:480px;margin:0 auto}
+.setup .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;padding:14px 20px calc(20px + env(safe-area-inset-bottom));background:var(--bg);border-top:1.5px solid rgba(26,26,26,.1)}
+.back{border:0;background:none;padding:0;font-size:14px;font-weight:700}
+
+.toast{pointer-events:none;position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-20px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:12px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:50;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-footer{text-align:center;color:var(--mute);font-size:12px;margin-top:30px;line-height:1.8}
-footer a{color:var(--sub);font-weight:700}
+footer{text-align:center;color:var(--mute);font-size:12px;margin-top:32px;line-height:1.8}
 </style>
 </head>
 <body>
-<header class="banner">
-  <div class="in">
-    <div class="top">
-      <span class="brand">만약에 신청소</span>
-      <a class="ig" href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a>
-    </div>
-    <span class="btag" id="b-tag">다음 편 투표 중</span>
-    <div class="out t1" id="b-t1">다음 편,<br>온 세상이</div>
-    <div class="out t2" id="b-t2">○○라면?</div>
-    <div class="bpill" id="b-pill">보고 싶은 유형에 하트 · 1등이 다음 편</div>
-  </div>
-  <div class="grass"></div>
-</header>
-
-<nav class="tabs" id="modes"><div class="in" role="tablist">
-  <button data-mode="world" class="on" role="tab">MBTI</button>
-  <button data-mode="pair" role="tab">궁합</button>
-  <button data-mode="sit" role="tab">상황</button>
-</div></nav>
-
-<div class="wrap">
-  <div id="picked"></div>
-
-  <!-- MBTI -->
-  <section id="m-world">
-    <div class="prog" id="prog"></div>
-    <div id="podium"><div class="skel" style="margin-top:18px"></div></div>
-    <div class="hint"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.6 1.2 5.4 3.2C13.8 6.2 15.3 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z" fill="#ff3b5c"/></svg>보고 싶은 칸을 누르면 하트 · 다시 누르면 취소</div>
-    <div class="grid" id="grid"></div>
-    <div class="legend">
-      <span><i class="g-NT"></i>분석가</span><span><i class="g-NF"></i>외교관</span><span><i class="g-SJ"></i>관리자</span><span><i class="g-SP"></i>탐험가</span><span>사진 칸 = 나온 편</span>
-    </div>
-
-    <div class="form">
-      <h3>장면 제보</h3>
-      <p class="desc">"온 세상이 ○○라면" 영상에 넣고 싶은 장면을 알려 주세요. 운영자만 보고, 영상에 나올 수도 있어요.</p>
-      <div class="fl">MBTI<button class="sel empty" id="sc-type" type="button">골라 주세요</button></div>
-      <label class="fl">장면<textarea class="inp" id="sc-text" maxlength="80" rows="3" placeholder="예: 온 세상이 ISFP라면, 출근 시간인데 다들 이불 속에서 안 나오는 장면 (누워 있는 걸 너무 좋아해서)"></textarea></label>
-      <label class="fl"><span>인스타 아이디 <small>(선택)</small></span><input class="inp insta" id="sc-author" maxlength="31" placeholder="@아이디 · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off"></label>
-      <button class="go" id="sc-go">장면 보내기</button>
-    </div>
-  </section>
-
-  <!-- 궁합 -->
-  <section id="m-pair" hidden>
-    <div id="pair-rank"><div class="skel" style="margin-top:18px"></div></div>
-    <div id="pair-rest-card" hidden>
-      <div class="chips" id="pair-filter"></div>
-      <div class="list" id="pair-rest"></div>
-    </div>
-
-    <div class="form" id="pair-form">
-      <h3>새 궁합 신청</h3>
-      <div class="fl">관계<div class="rels" id="rels"></div></div>
-      <input class="inp" id="rel-custom" maxlength="12" placeholder="예: 엄마와 아들, 선생님과 학생" hidden>
-      <div class="two">
-        <div class="fl"><span id="pa-who">남자</span><button class="sel empty" id="pa" type="button">골라 주세요</button></div>
-        <div class="fl"><span id="pb-who">여자</span><button class="sel empty" id="pb" type="button">골라 주세요</button></div>
-      </div>
-      <div id="pair-found"></div>
-      <div id="pair-newbox" style="display:flex;flex-direction:column;gap:12px">
-        <div class="preview" id="pair-prev"></div>
-        <label class="fl"><span>인스타 아이디 <small>(선택)</small></span><input class="inp insta" id="pair-author" maxlength="31" placeholder="@아이디 · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off"></label>
-        <button class="go" id="pair-go">궁합 신청하기</button>
-        <p class="fnote">이미 있는 궁합이면 그 글에 바로 하트를 누를 수 있어요</p>
-      </div>
-      <button class="reset" id="pair-reset" hidden>다시 고르기</button>
-    </div>
-
-    <div id="pair-done-card" hidden>
-      <div class="sec">이미 나온 궁합편</div>
-      <div class="thumbs" id="pair-done"></div>
-    </div>
-  </section>
-
-  <!-- 상황 -->
-  <section id="m-sit" hidden>
-    <div id="sit-rank"><div class="skel" style="margin-top:18px"></div></div>
-    <div id="sit-rest-card" hidden>
-      <div class="chips" id="sit-filter"></div>
-      <div class="list" id="sit-rest"></div>
-    </div>
-
-    <div class="form">
-      <h3>새 상황 신청</h3>
-      <div class="fl">MBTI<button class="sel empty" id="st" type="button">골라 주세요</button></div>
-      <label class="fl">상황<input class="inp" id="sit-custom" maxlength="30" placeholder="예: 좀비가 나타난다면"></label>
-      <div class="preview" id="sit-prev"></div>
-      <label class="fl"><span>인스타 아이디 <small>(선택)</small></span><input class="inp insta" id="sit-author" maxlength="31" placeholder="@아이디 · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off"></label>
-      <button class="go" id="sit-go">상황 신청하기</button>
-      <p class="fnote">이미 있는 상황이면 그 글에 하트가 눌려요</p>
-    </div>
-
-    <div id="sit-done-card" hidden>
-      <div class="sec">이미 나온 상황편</div>
-      <div class="chiplist" id="sit-done"></div>
-    </div>
-  </section>
-
-  <!-- 호감 투표 -->
-  <section id="m-poll" hidden>
-    <div id="poll-top"></div>
-    <div class="pcount"><span id="poll-cnt-t"></span></div>
-    <div id="poll-form">
-      <div class="pq">제일 호감인 MBTI는? <small>하나만</small></div>
-      <div class="pgrid" id="poll-choice"></div>
-      <div class="pq">내 MBTI는?</div>
-      <div class="pgrid" id="poll-my"></div>
-      <button class="go" id="poll-go" style="margin-top:20px">투표하기</button>
-      <p class="fnote" style="margin-top:10px">한 사람당 한 표 · 마감 전까지 다시 골라서 바꿀 수 있어요</p>
-    </div>
-    <div class="pdone" id="poll-msg" hidden></div>
-  </section>
-
-  <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a><br>
-    문의 <a href="mailto:ddd12340@naver.com">ddd12340@naver.com</a></footer>
+<div class="app" id="app">
+  <div id="view"></div>
+  <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a><br>문의 <a href="mailto:ddd12340@naver.com">ddd12340@naver.com</a></footer>
 </div>
-
-<div class="dim" id="tdim">
-  <div class="sheet" role="dialog" aria-modal="true">
-    <h3 id="tp-title">MBTI 고르기</h3>
-    <div class="tgrid" id="tgrid"></div>
-    <button class="closebtn" id="tp-close">닫기</button>
-  </div>
-</div>
+<div class="composer" id="composer" hidden></div>
+<nav class="nav" id="nav">
+  <button data-tab="vote">투표</button><button data-tab="town">우리 유형</button><button data-tab="board">한마디</button><button data-tab="me">내 정보</button>
+</nav>
+<div class="dim" id="dim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="menuWrap"></div>
+<div class="setup" id="setup" hidden></div>
 <div class="toast" id="toast"></div>
+
 <script>
-const $ = (s) => document.querySelector(s);
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.6 1.2 5.4 3.2C13.8 6.2 15.3 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></svg>';
-const PLAY = '<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z" fill="#2b2b3a"/></svg>';
+const HEART = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2 0 3.4 1.1 4.4 2.5C12 6.1 13.4 5 15.4 5 19 5 21 8.6 19.6 11.8 17.5 16.4 12 21 12 21z" stroke-width="2"/></svg>';
+const KAKAO = '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.7 4.1 6l-1 3.7c-.1.3.3.6.6.4l4.4-2.9c.6.1 1.2.1 1.9.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z" fill="#000"/></svg>';
 const REELS = "https://www.instagram.com/woong.if/reels/";
-const hpill = (n, on)=>`<span class="hpill${on?" on":""}">${HEART}${n}</span>`;
-
-// 기기 식별용 랜덤 ID (개인정보 아님)
-let voter;
-try {
-  voter = localStorage.getItem("wf_voter");
-  if (!voter) { voter = crypto.randomUUID(); localStorage.setItem("wf_voter", voter); }
-} catch { voter = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); }
-
 const TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"];
-const group = (t) => t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
+const G = {NT:{name:"분석가",c:"#ddd2ff",ink:"#5b45b8"},NF:{name:"외교관",c:"#c9f0dc",ink:"#23855a"},SJ:{name:"관리자",c:"#d3e6f7",ink:"#2f6ea3"},SP:{name:"탐험가",c:"#ffeab0",ink:"#94690a"}};
+const grp = (t) => t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
+const gc = (t) => G[grp(t)];
+const fmt = (n) => Number(n||0).toLocaleString("ko-KR");
+const josa = (w,a,b) => { const c=String(w).trim().slice(-1).charCodeAt(0); return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?a:b; };
+const tb = (t) => `<span class="tb" style="background:${gc(t).c};color:${gc(t).ink}">${t}</span>`;
+const ago = (t) => { const m=Math.floor((Date.now()-t)/60000); return m<1?"방금":m<60?m+"분 전":m<1440?Math.floor(m/60)+"시간 전":Math.floor(m/1440)+"일 전"; };
+
+let voter;
+try { voter = localStorage.getItem("wf_voter"); if(!voter){ voter = crypto.randomUUID(); localStorage.setItem("wf_voter", voter); } }
+catch { voter = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2)+Date.now()); }
+const V = encodeURIComponent(voter);
 
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
-async function api(path, opt={}){
+async function api(path, body){
   const ctrl = new AbortController(); const tm = setTimeout(()=>ctrl.abort(), 10000);
   try{
-    const r = await fetch("/api/"+path, {...opt, signal:ctrl.signal, headers:{"content-type":"application/json"}});
+    const r = await fetch("/api/"+path, {method: body?"POST":"GET", signal:ctrl.signal, credentials:"same-origin", headers:{"content-type":"application/json"}, body: body?JSON.stringify({...body, voter}):undefined});
     const d = await r.json().catch(()=>({}));
-    if(!r.ok) throw new Error(d.error || "잠시 후 다시 시도해 주세요");
+    if(!r.ok){ const e = new Error(d.error || "잠시 후 다시 시도해 주세요"); e.status = r.status; throw e; }
     return d;
-  } catch(e){ throw new Error(e.name==="AbortError" ? "연결이 느려요. 다시 시도해 주세요" : e.message); }
+  }catch(e){ if(e.name==="AbortError") throw new Error("연결이 느려요. 다시 시도해 주세요"); throw e; }
   finally{ clearTimeout(tm); }
 }
+const popEl = (sel) => { const el=$(sel); if(el){ el.classList.add("pop"); setTimeout(()=>el.classList.remove("pop"),460); } };
 
-// 인스타 아이디: 한 번 쓰면 다른 칸에도 채워둠
-const instaVal = (id)=> $(id).value.trim().replace(/^@+/,"");
-const instaBad = (id)=>{ const v = instaVal(id); return v && !/^[A-Za-z0-9._]{1,30}$/.test(v); };
-const INSTA_MSG = "인스타 아이디는 영문·숫자·마침표(.)·밑줄(_)만 쓸 수 있어요";
-try{ const saved = localStorage.getItem("wf_insta"); if(saved) document.querySelectorAll(".insta").forEach(i=>i.value=saved); }catch{}
-document.querySelectorAll(".insta").forEach(i=>i.addEventListener("change",()=>{
-  const v=i.value.trim(); document.querySelectorAll(".insta").forEach(x=>x.value=v);
-  try{ localStorage.setItem("wf_insta", v); }catch{}
-}));
+// ---------- 상태 ----------
+const S = { tab:"vote", vtab:"mbti", town:null, mbti:null, pair:null, sit:null, board:{type:null, sort:"top", data:null}, me:null, picked:[],
+  cf:"all", sf:"all", cMore:false, form:{rel:"커플", a:"ISFJ", b:"ENTP", custom:""}, sform:{type:"INFP", text:""}, sc:{type:"INFP", text:""}, townSort:"res" };
+const myType = () => S.town?.me?.type || null;
 
-// MBTI 고르기 칸 (버튼) 채우기
-function setSel(el, t, empty="골라 주세요"){
-  el.textContent = t || empty;
-  el.className = "sel" + (t ? " filled g-"+group(t) : " empty");
+// ---------- 헤더 조각 ----------
+function brandHTML(){
+  const me = S.town?.me;
+  let right;
+  if(me) right = `<button class="pill" id="pf"><span class="nk">${esc(me.nick)}</span>${tb(me.type)}</button>`;
+  else if(S.town?.kakao && !S.town?.loggedIn) right = `<button class="pill plain" id="pf">로그인</button>`;
+  else right = `<button class="pill plain" id="pf">주민 등록</button>`;
+  return `<div class="brand"><div class="nm"><b>웅이프</b><span>@woong.if</span></div>${right}</div>`;
+}
+function bindBrand(){ const b=$("#pf"); if(b) b.onclick = ()=> S.town?.me ? openMenu() : startJoin(); }
+
+// ---------- 라우팅 ----------
+function setTab(tab, opts={}){
+  S.tab = tab;
+  $$("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.tab===tab));
+  const h = tab==="vote" ? (S.vtab==="mbti" ? "" : "#"+S.vtab) : "#"+tab;
+  try{ history.replaceState(null, "", location.pathname + h); }catch{}
+  if(!opts.keepScroll) window.scrollTo(0,0);
+  render();
+}
+$$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+function render(){
+  $("#composer").hidden = S.tab!=="board";
+  $("#app").classList.toggle("with-composer", S.tab==="board");
+  if(S.tab==="vote") renderVote();
+  else if(S.tab==="town") renderTown();
+  else if(S.tab==="board") renderBoard();
+  else renderMe();
 }
 
-// ---------- 탭 ----------
-const BANNER = {
-  world: {tag:"다음 편 투표 중", t1:"다음 편,<br>온 세상이", t2:"○○라면?", pill:"보고 싶은 유형에 하트 · 1등이 다음 편"},
-  pair:  {tag:"궁합편 투표 중", t1:"이 두 유형이", t2:"만난다면?", pill:"보고 싶은 궁합에 하트 · 1등이 다음 편"},
-  poll:  {tag:"12월 1일 1·2·3위 공개", t1:"MBTI 중에", t2:"제일 호감인 유형은?", pill:"11월 30일까지 투표 · 결과는 @woong.if에서", long:true},
-  sit:   {tag:"상황편 투표 중", t1:"온 세상이 ○○인데", t2:"이런 일이 생긴다면?", pill:"보고 싶은 상황에 하트 · 1등이 다음 편", long:true},
-};
-let mode = "world";
-function showMode(m){
-  mode = m;
-  document.querySelectorAll("#modes button").forEach(b=>{ b.classList.toggle("on", b.dataset.mode===m); b.setAttribute("aria-selected", b.dataset.mode===m); });
-  $("#m-world").hidden = m!=="world"; $("#m-pair").hidden = m!=="pair"; $("#m-sit").hidden = m!=="sit"; $("#m-poll").hidden = m!=="poll";
-  const b = BANNER[m];
-  $("#b-tag").textContent = b.tag; $("#b-t1").innerHTML = b.t1; $("#b-t2").textContent = b.t2; $("#b-pill").textContent = b.pill;
-  $("#b-t2").classList.toggle("long", !!b.long);
-  try{ history.replaceState(null,"", m==="world" ? location.pathname : "#"+m); }catch{}
-  if(m==="pair" && !pair) loadPair();
-  if(m==="sit" && !sit) loadSit();
-  if(m==="poll" && !poll) loadPoll();
-}
-// 탭을 바꾸면 새 탭 맨 위(메뉴 바로 아래)부터 보이게
-// 아이폰 사파리: 스크롤과 내용 바꾸기가 겹치면 예전 내용이 그대로 보이는 문제가 있어서
-// 먼저 스크롤 → 다음 화면에서 내용 바꾸기 → 강제로 다시 그리기
-document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{
-  const m = b.dataset.mode;
-  document.querySelectorAll("#modes button").forEach(x=>x.classList.toggle("on", x===b));
-  const y = document.querySelector(".banner").offsetHeight;
-  if(window.scrollY > y) window.scrollTo(0, y);
-  requestAnimationFrame(()=>{
-    showMode(m);
-    const w = document.querySelector(".wrap");
-    w.style.transform = "translateZ(0)"; void w.offsetHeight;
-    requestAnimationFrame(()=>{ w.style.transform = ""; });
-  });
-});
-
-// MBTI 고르기 시트
-let onType = null;
-function typePicker(title, cb){
-  $("#tp-title").textContent = title; onType = cb;
-  $("#tgrid").innerHTML = TYPES.map(t=>`<button class="g-${group(t)}" data-t="${t}">${t}</button>`).join("");
-  $("#tgrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{ $("#tdim").classList.remove("show"); onType(b.dataset.t); });
-  $("#tdim").classList.add("show");
-}
-$("#tp-close").onclick = ()=>$("#tdim").classList.remove("show");
-$("#tdim").onclick = (e)=>{ if(e.target.id==="tdim") $("#tdim").classList.remove("show"); };
-
-const badge = (st)=> st==="today" ? '<span class="badge today">오늘 공개됨</span>' : st==="making" ? '<span class="badge">제작 중</span>' : "";
-
-// 좋아요: 같은 글은 하루 1번, 다시 누르면 오늘 것 취소
-let likeBusy = false;
-async function like(kind, body, board, items, rerender){
-  if(likeBusy) return; likeBusy = true;
-  try{
-    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter})});
-    for(const it of items) if((it.key||it.type)===r.key) it.votes = r.votes;
-    board.todayLikes = r.liked ? [...new Set([...board.todayLikes, r.key])] : board.todayLikes.filter(k=>k!==r.key);
-    if(!r.liked) toast("하트를 취소했어요");
-    rerender();
-    if(r.liked){ const el=document.querySelector(`[data-key="${CSS.escape(r.key)}"]`); if(el){ el.classList.add("pop"); setTimeout(()=>el.classList.remove("pop"),350); } }
-    return r;
-  }catch(e){ toast(e.message); }
-  finally{ likeBusy = false; }
+// ---------- 하트 (로그인 없이, 같은 항목 하루 1번) ----------
+let likeBusy=false;
+async function like(kind, body, after){
+  if(likeBusy) return; likeBusy=true;
+  try{ const r = await api(kind+"/like", body); if(!r.liked) toast("오늘 하트를 취소했어요"); await after(r); return r; }
+  catch(e){ toast(e.message); }
+  finally{ likeBusy=false; }
 }
 
-// 1위 카드
-const mbcHTML = (t)=>`<span class="mbc g-${group(t)}">${t}</span>`;
-const hl = (t)=>`<span class="hl hl-${group(t)}">${t}</span>`;
-function topCardHTML(it, big, line, liked, second, small){
-  const lbl = it.status==="today" ? '<span class="lbl mk">오늘 공개됨</span>' : it.status==="making" ? '<span class="lbl mk">제작 중</span>' : '<span class="lbl">지금 1위</span>';
-  const gap = it.status==="making"||it.status==="today" || !second ? "" : second.votes===it.votes ? "2위와 동점이에요" : `2위와 ${it.votes-second.votes}표 차이`;
-  return `<button class="topcard${liked?" on":""}" data-key="${esc(it.key)}"><span class="rk1" aria-hidden="true">1</span>
-    <span class="bd">${lbl}<span class="big${small?" sm":""}">${big}</span><span class="line">${line}</span>${gap||it.author?`<span class="gap">${[gap, it.author?"신청 @"+esc(it.author):""].filter(Boolean).join(" · ")}</span>`:""}</span>
-    ${hpill(it.votes, liked)}</button>`;
+// ================= 투표 =================
+function renderVote(){
+  const v = $("#view");
+  const segs = [["mbti","MBTI"],["pair","궁합"],["sit","상황"]];
+  v.innerHTML = `<header class="hd">${brandHTML()}<div id="notice"></div>
+    <div style="margin-top:12px"><span class="tag">만약에 신청소</span></div>
+    <div class="out ttl">다음 편, 뭐 볼래?</div>
+    <div class="seg">${segs.map(([k,l])=>`<button data-v="${k}" class="${S.vtab===k?"on":""}">${l}</button>`).join("")}</div></header>
+    <div id="vbody"><div class="pad"><div class="skel"></div></div></div>`;
+  bindBrand(); renderNotice();
+  $$(".seg button", v).forEach(b=>b.onclick=()=>{ S.vtab=b.dataset.v; setTab("vote",{keepScroll:true}); });
+  if(S.vtab==="mbti") S.mbti ? drawMbti() : loadMbti();
+  else if(S.vtab==="pair") S.pair ? drawPair() : loadPair();
+  else S.sit ? drawSit() : loadSit();
 }
 
-// ---------- MBTI ----------
-let mbti = null;
+// --- 알림: 내가 하트 누른 게 제작 중·오늘 공개·나옴
+let seenPicked = {}; try{ seenPicked = JSON.parse(localStorage.getItem("wf_picked")||"{}"); }catch{}
+const pairTitle = (a,b,rel) => rel==="커플" ? `${a}(남자) × ${b}(여자) 커플이라면?` : `${a} × ${b} ${rel}${josa(rel,"이라면?","라면?")}`;
+const sitTitle = (t,text) => `온 세상이 ${t}인데 ${text||"○○한다면"}?`;
+function itemTitle(p){ return p.kind==="mbti" ? `온 세상이 ${p.type}라면?` : p.kind==="pair" ? pairTitle(p.a,p.b,p.rel) : sitTitle(p.type,p.text); }
+function itemThumb(p){ return p.kind==="mbti" ? `/thumbs/${p.type}.jpg` : p.kind==="pair" ? `/thumbs/p_${p.a}_${p.b}.jpg` : ""; }
+async function loadPicked(){ try{ const {picked} = await api("mine?voter="+V); S.picked = picked; renderNotice(); }catch{} }
+function renderNotice(){
+  const box = $("#notice"); if(!box) return;
+  const order = {done:0, today:1, making:2};
+  const p = S.picked.filter(x=>seenPicked[x.kind+"|"+x.key]!==x.status).sort((a,b)=>order[a.status]-order[b.status])[0];
+  if(!p){ box.innerHTML=""; return; }
+  const what = {mbti:"유형", pair:"궁합", situation:"상황"}[p.kind];
+  const msg = p.status==="done" ? `하트 누른 ${what}이 영상으로 나왔어요!` : p.status==="today" ? `하트 누른 ${what}이 오늘 공개돼요!` : `하트 누른 ${what}이 제작에 들어갔어요!`;
+  const th = itemThumb(p);
+  box.innerHTML = `<div class="notice"><div class="top"><span>${msg}</span><button class="x">닫기</button></div>
+    <div class="bd"><div class="im">${th?`<img src="${th}" alt="" onerror="this.remove()">`:""}<span class="play"></span></div>
+    <div style="flex:1;min-width:0"><div class="tt">${esc(itemTitle(p))}</div><div class="muted" style="margin-top:2px">${p.status==="making"?"조금만 기다려 주세요":"@woong.if 릴스에서 볼 수 있어요"}</div></div></div>
+    ${p.status!=="making"?`<a class="btn sm" style="margin-top:12px;display:flex;align-items:center;justify-content:center;text-decoration:none" href="${esc(p.link||REELS)}" target="_blank" rel="noopener">릴스 보러 가기</a>`:""}</div>`;
+  const close = ()=>{ seenPicked[p.kind+"|"+p.key]=p.status; try{ localStorage.setItem("wf_picked", JSON.stringify(seenPicked)); }catch{} renderNotice(); };
+  $(".x", box).onclick = close; const a=$("a", box); if(a) a.addEventListener("click", close);
+}
+
+// --- MBTI
 async function loadMbti(){
-  try{
-    mbti = await api("mbti?voter="+encodeURIComponent(voter));
-    mbti.order = [...mbti.types].sort((a,b)=>b.votes-a.votes).map(t=>t.type);
-    renderMbti();
-  }
-  catch(e){ $("#podium").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+  try{ S.mbti = await api("mbti?voter="+V); S.mbti.order = [...S.mbti.types].sort((a,b)=>b.votes-a.votes).map(t=>t.type); if(S.tab==="vote"&&S.vtab==="mbti") drawMbti(); }
+  catch(e){ $("#vbody").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
-function renderMbti(){
-  const by = Object.fromEntries(mbti.types.map(t=>[t.type,t]));
-  const done = mbti.types.filter(t=>t.status==="done");
-  $("#prog").innerHTML = `<b>${done.length} / 16 나옴</b><span class="track"><i style="width:${done.length/16*100}%"></i></span>`;
-  // 순서는 불러올 때만 정렬 (하트 누를 때마다 줄이 튀지 않게)
-  const open = mbti.types.filter(t=>t.status!=="done").sort((a,b)=>mbti.order.indexOf(a.type)-mbti.order.indexOf(b.type));
-  const first = open[0];
-  $("#podium").innerHTML = first && first.votes>0
-    ? topCardHTML({...first, key:first.type}, hl(first.type), `온 세상이 ${first.type}라면?`, mbti.todayLikes.includes(first.type), open[1])
-    : `<p class="empty">아직 하트가 없어요. 아래에서 보고 싶은 유형을 눌러 주세요!</p>`;
-  const tc = $("#podium .topcard"); if(tc) tc.onclick = ()=>pick(first.type);
-
-  // 이미 그려져 있으면 하트 칸만 바꿈 (나온 편 사진은 그대로 → 깜빡임 없음)
-  const tileHTML = (type)=>{
-    const t = by[type] || {type, votes:0, status:"open"};
-    const liked = mbti.todayLikes.includes(type);
-    return `${badge(t.status)}<b>${type}</b>${hpill(t.votes, liked)}`;
+function drawMbti(){
+  const m = S.mbti, by = Object.fromEntries(m.types.map(t=>[t.type,t]));
+  const done = m.types.filter(t=>t.status==="done");
+  const open = m.types.filter(t=>t.status!=="done").sort((a,b)=>m.order.indexOf(a.type)-m.order.indexOf(b.type));
+  const top = open[0], second = open[1], liked = (t)=>m.todayLikes.includes(t);
+  const topHTML = top && top.votes>0 ? `<div class="card big" style="margin-top:16px">
+      <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span>
+      <span class="r">${second && top.status==="open" ? (second.votes===top.votes ? `2위 ${second.type}와 동점` : `2위 ${second.type}와 ${top.votes-second.votes}표 차이`) : ""}</span></div>
+      <div class="bigt" style="color:${gc(top.type).c}">${top.type}</div>
+      <div class="subt">온 세상이 ${top.type}라면?</div>
+      <div style="margin-top:14px"><button class="hbig${liked(top.type)?" on":""}" id="mtop">${HEART}${liked(top.type)?"오늘 하트 보냄 · 다시 누르면 취소":"하트 보내기"}<span class="n">${fmt(top.votes)}</span></button></div></div>`
+    : `<div class="card" style="margin-top:16px"><p class="empty">아직 하트가 없어요. 아래에서 보고 싶은 유형을 눌러 주세요!</p></div>`;
+  const tiles = TYPES.map(t=>{
+    const x = by[t] || {type:t, votes:0, status:"open"}, c = gc(t).c;
+    if(x.status==="done") return `<a class="tile done" style="background:${c}" href="${esc(x.link||REELS)}" target="_blank" rel="noopener" aria-label="${t} 편 보기">
+      <span class="stripe"></span><img src="/thumbs/${t}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="ep">${x.episode? x.episode+"편":"나옴"}</span><span class="play"></span><span class="lb">${t}</span></a>`;
+    const st = x.status==="making" ? `<span class="st">제작 중</span>` : x.status==="today" ? `<span class="st today">오늘 공개</span>` : "";
+    return `<div class="tile" style="background:${c}"><div class="nm">${t}</div>${st}
+      <button class="hb${liked(t)?" on":""}" data-t="${t}" aria-label="${t}에 하트">${HEART}${fmt(x.votes)}</button></div>`;
+  }).join("");
+  $("#vbody").innerHTML = `<div class="pad">
+    <div class="h2"><b>다음 편, 온 세상이 ○○라면?</b><span style="color:var(--ink);font-weight:800;font-size:13px">${done.length} / 16 나옴</span></div>
+    <div class="prog"><i style="width:${done.length/16*100}%"></i></div>
+    ${topHTML}
+    <div class="grid">${tiles}</div>
+    <p class="note">하트는 유형마다 하루 1번 · 다시 누르면 오늘 것 취소 · 내일 또 누적</p>
+    <div class="card form">
+      <div class="h2"><b style="font-size:16px">장면 제보</b><span>운영자만 봐요</span></div>
+      <p class="muted" style="margin:4px 0 0;font-size:13px;color:#55606a">이 유형 편에 꼭 넣고 싶은 장면이 있다면</p>
+      <div class="row" style="margin-top:12px"><span style="font-size:13px;font-weight:800;width:56px;flex:none">어떤 편?</span>
+        <div class="sel"><select id="scType">${TYPES.map(t=>`<option ${t===S.sc.type?"selected":""}>${t}</option>`).join("")}</select></div></div>
+      <div style="position:relative;margin-top:8px"><textarea class="inp" id="scText" maxlength="80" placeholder="넣고 싶은 장면 (예: 단톡방 공지에 다들 이모티콘만 답할 때)">${esc(S.sc.text)}</textarea><span class="cnt" id="scLen">${S.sc.text.length}/80</span></div>
+      <input class="inp" id="scAuthor" maxlength="31" placeholder="인스타 아이디 (선택) · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off" style="margin-top:8px;font-size:14px">
+      <button class="btn sm" id="scGo" style="margin-top:8px" ${S.sc.text.trim().length<4?"disabled":""}>보내기</button>
+    </div></div>`;
+  const tc=$("#mtop"); if(tc) tc.onclick=()=>likeMbti(top.type, "#mtop");
+  $$(".tile .hb").forEach(b=>b.onclick=()=>likeMbti(b.dataset.t, `.hb[data-t="${b.dataset.t}"]`));
+  $("#scType").onchange = (e)=>S.sc.type=e.target.value;
+  $("#scText").oninput = (e)=>{ S.sc.text=e.target.value; $("#scLen").textContent=S.sc.text.length+"/80"; $("#scGo").disabled = S.sc.text.trim().length<4; };
+  fillInsta("#scAuthor");
+  $("#scGo").onclick = async ()=>{
+    const author = instaVal("#scAuthor"); if(author===false) return;
+    $("#scGo").disabled=true;
+    try{ await api("scenes",{type:S.sc.type, text:S.sc.text.trim(), author}); S.sc.text=""; $("#scText").value=""; $("#scLen").textContent="0/80"; $("#scGo").textContent="보냈어요! 운영자에게 잘 전달됐어요"; }
+    catch(e){ toast(e.message); $("#scGo").disabled=false; }
   };
-  const tileCls = (type)=>["t", "g-"+group(type), first&&first.votes>0&&first.type===type?"first":"", mbti.todayLikes.includes(type)?"on":""].join(" ");
-  const drawn = $("#grid").children.length===16 && $("#grid").dataset.done===done.map(t=>t.type).join(",");
-  if(drawn){
-    $("#grid").querySelectorAll("button.t[data-key]").forEach(b=>{ b.className = tileCls(b.dataset.key); b.innerHTML = tileHTML(b.dataset.key); });
+}
+function likeMbti(t, sel){
+  like("mbti", {type:t}, async (r)=>{
+    const x = S.mbti.types.find(y=>y.type===t); x.votes = r.votes;
+    S.mbti.todayLikes = r.liked ? [...new Set([...S.mbti.todayLikes, t])] : S.mbti.todayLikes.filter(k=>k!==t);
+    drawMbti(); if(r.liked) popEl(sel);
+  });
+}
+
+// 인스타 아이디 (선택)
+const INSTA_RE = /^[A-Za-z0-9._]{1,30}$/;
+function fillInsta(sel){ const el=$(sel); try{ el.value = localStorage.getItem("wf_insta")||""; }catch{} el.onchange=()=>{ try{ localStorage.setItem("wf_insta", el.value.trim()); }catch{} }; }
+function instaVal(sel){ const v=$(sel).value.trim().replace(/^@+/,""); if(v && !INSTA_RE.test(v)){ toast("인스타 아이디는 영문·숫자·마침표(.)·밑줄(_)만 쓸 수 있어요"); return false; } return v; }
+
+// --- 궁합
+const pairKeyOf = (a,b,rel) => (rel==="친구"||rel==="직장 동료" ? [a,b].sort() : [a,b]).join("|")+"|"+rel;
+const BASE_RELS = ["커플","친구","직장 동료"];
+async function loadPair(){
+  try{ S.pair = await api("pair?voter="+V); if(S.tab==="vote"&&S.vtab==="pair") drawPair(); }
+  catch(e){ $("#vbody").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+const pairAll = () => [...S.pair.making, ...S.pair.ranking];
+function smallHeart(id, n, on){ return `<button class="hsm${on?" on":""}" data-h="${esc(id)}">${HEART}${fmt(n)}</button>`; }
+function drawPair(){
+  const P = S.pair, liked = (k)=>P.todayLikes.includes(k);
+  const all = pairAll(), top = all[0];
+  let rest = all.slice(1);
+  const mt = myType();
+  if(S.cf==="mine") rest = mt ? rest.filter(x=>x.a===mt||x.b===mt) : [];
+  else if(S.cf==="new") rest = [...rest].sort((a,b)=>(b.created||0)-(a.created||0));
+  else if(S.cf==="기타") rest = rest.filter(x=>!BASE_RELS.includes(x.rel));
+  else if(S.cf!=="all") rest = rest.filter(x=>x.rel===S.cf);
+  const shown = S.cMore ? rest : rest.slice(0,4);
+  const f = S.form, rel = f.rel==="기타" ? f.custom.trim() : f.rel, ok = rel.length>=2;
+  const dupKey = ok ? pairKeyOf(f.a, f.b, rel) : null;
+  const dup = dupKey && [...all, ...P.done].find(x=>x.key===dupKey);
+  const dupRank = dup ? all.findIndex(x=>x.key===dup.key)+1 : 0;
+  const filters = [["mine","내 MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
+  const relLabel = (x)=> esc(x.rel);
+  $("#vbody").innerHTML = `<div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
+    ${top ? `<div class="card big" style="margin-top:12px">
+      <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span><span class="r">${top.author?"신청 "+esc(top.author):""}</span></div>
+      <div class="duo"><span style="background:${gc(top.a).c}">${top.a}</span><i>×</i><span style="background:${gc(top.b).c}">${top.b}</span></div>
+      <div class="subt" style="font-size:17px;margin-top:12px">${esc(pairTitle(top.a,top.b,top.rel))}</div>
+      <div style="margin-top:14px"><button class="hbig${liked(top.key)?" on":""}" data-h="${esc(top.key)}" id="ptop">${HEART}${liked(top.key)?"오늘 하트 보냄 · 다시 누르면 취소":"하트 보내기"}<span class="n">${fmt(top.votes)}</span></button></div></div>`
+      : `<div class="card" style="margin-top:12px"><p class="empty">아직 신청이 없어요. 아래에서 첫 궁합을 신청해 주세요!</p></div>`}</div>
+    ${all.length>1 ? `<div class="chips hs">${filters.map(([k,l])=>`<button class="chip${S.cf===k?" on":""}" data-f="${k}">${k==="mine"&&mt?mt+" 들어간 것":l}</button>`).join("")}</div>
+    <div class="card list">${shown.map((x,i)=>`<div class="li"><span class="n">${S.cf==="all"?i+2:"·"}</span>
+      <div class="bd"><div class="tt">${esc(pairTitle(x.a,x.b,x.rel))}</div><div class="mt"><span class="mini">${relLabel(x)}</span>${x.author?esc(x.author):""}${x.status!=="open"?` <span class="mini" style="background:var(--yellow);color:var(--ink)">${x.status==="today"?"오늘 공개":"제작 중"}</span>`:""}</div></div>
+      ${smallHeart(x.key, x.votes, liked(x.key))}</div>`).join("") || `<div class="empty">${S.cf==="mine"&&!mt?"우리 유형 탭에서 내 MBTI를 등록하면 찾을 수 있어요":"조건에 맞는 궁합이 아직 없어요"}</div>`}
+      ${rest.length>4 ? `<button class="more" id="pMore">${S.cMore?"접기":`더 보기 (${rest.length-4})`}</button>`:""}</div>` : ""}
+    <div class="card form" style="margin:24px 20px 0">
+      <div class="t">새 궁합 신청</div>
+      <div class="lbl">관계</div>
+      <div class="wrapchips">${[["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","직접 쓰기"]].map(([k,l])=>`<button class="chip${f.rel===k?" on":""}" data-r="${k}">${l}</button>`).join("")}</div>
+      ${f.rel==="기타"?`<input class="inp" id="pCustom" maxlength="12" placeholder="예: 엄마와 아들" value="${esc(f.custom)}" style="margin-top:8px">`:""}
+      <div class="lbl" style="margin-top:16px">두 유형</div>
+      <div class="row" style="align-items:flex-end">
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="muted" style="font-weight:700">${f.rel==="커플"?"남자":"첫 번째"}</span><div class="sel"><select id="pa">${TYPES.map(t=>`<option ${t===f.a?"selected":""}>${t}</option>`).join("")}</select></div></div>
+        <span style="height:46px;display:flex;align-items:center;font-size:18px;font-weight:900">×</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="muted" style="font-weight:700">${f.rel==="커플"?"여자":"두 번째"}</span><div class="sel"><select id="pb">${TYPES.map(t=>`<option ${t===f.b?"selected":""}>${t}</option>`).join("")}</select></div></div>
+      </div>
+      <div class="preview"><small>제목 미리보기</small><div id="pPrev">${esc(pairTitle(f.a,f.b,rel||"○○"))}</div></div>
+      ${dup ? `<div class="dupbox"><b>${dup.status==="done"?"이미 나온 궁합이에요":dup.status!=="open"?"지금 만들고 있는 궁합이에요":`이미 신청된 궁합 · 지금 ${dupRank}위 · 하트 ${fmt(dup.votes)}`}</b>
+        <div class="muted" style="margin-top:2px;color:#55606a">${dup.status==="done"?"릴스에서 볼 수 있어요":"새로 신청하는 대신 하트로 밀어 주세요"}</div>
+        <div style="margin-top:10px">${dup.status==="done" ? `<a class="btn sm" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="${esc(dup.link||REELS)}" target="_blank" rel="noopener">보러 가기</a>`
+          : `<button class="hbig${liked(dup.key)?" on":""}" data-h="${esc(dup.key)}" id="pdup">${HEART}이 궁합에 하트<span class="n">${fmt(dup.votes)}</span></button>`}</div></div>`
+      : `<input class="inp" id="pAuthor" maxlength="31" placeholder="인스타 아이디 (선택) · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off" style="margin-top:12px;font-size:14px">
+        <button class="btn" id="pGo" style="margin-top:8px" ${ok?"":"disabled"}>신청하기</button>`}
+    </div>
+    ${P.done.length ? `<div class="sec">이미 나온 궁합편</div><div class="thumbs hs">${P.done.map(x=>`<a class="th" href="${esc(x.link||REELS)}" target="_blank" rel="noopener">
+      <div class="im"><img src="/thumbs/p_${x.a}_${x.b}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="play"></span></div>
+      <div class="cap">${esc(x.rel==="커플"?`${x.a}(남자) × ${x.b}(여자) 커플`:`${x.a} × ${x.b} ${x.rel}`)}</div></a>`).join("")}</div>` : ""}`;
+  const findItem = (k)=>[...all, ...P.done].find(x=>x.key===k);
+  $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likePair(x.a,x.b,x.rel, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
+  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{ S.cf=b.dataset.f; S.cMore=false; drawPair(); });
+  const pm=$("#pMore"); if(pm) pm.onclick=()=>{ S.cMore=!S.cMore; drawPair(); };
+  $$("#vbody [data-r]").forEach(b=>b.onclick=()=>{ f.rel=b.dataset.r; drawPair(); if(f.rel==="기타") $("#pCustom").focus(); });
+  const pc=$("#pCustom"); if(pc) pc.oninput=(e)=>{ f.custom=e.target.value; const pos=e.target.selectionStart; drawPair(); const n=$("#pCustom"); n.focus(); n.setSelectionRange(pos,pos); };
+  $("#pa").onchange=(e)=>{ f.a=e.target.value; drawPair(); };
+  $("#pb").onchange=(e)=>{ f.b=e.target.value; drawPair(); };
+  const pa=$("#pAuthor"); if(pa) fillInsta("#pAuthor");
+  const go=$("#pGo"); if(go) go.onclick=async()=>{
+    const author = instaVal("#pAuthor"); if(author===false) return;
+    go.disabled=true;
+    try{
+      const r = await api("pair/like", {a:f.a, b:f.b, rel, author, onlyNew:true});
+      if(r.exists){ await api("pair/like", {a:f.a, b:f.b, rel, onlyOn:true}); toast("이미 올라온 궁합이라 하트를 눌렀어요 ❤️"); }
+      else toast("궁합 신청 완료!");
+      f.custom=""; await loadPair();
+    }catch(e){ toast(e.message); go.disabled=false; }
+  };
+}
+function likePair(a,b,rel,sel){
+  like("pair", {a,b,rel}, async (r)=>{
+    for(const x of [...S.pair.making, ...S.pair.ranking, ...S.pair.done]) if(x.key===r.key) x.votes=r.votes;
+    S.pair.todayLikes = r.liked ? [...new Set([...S.pair.todayLikes, r.key])] : S.pair.todayLikes.filter(k=>k!==r.key);
+    drawPair(); if(r.liked) popEl(sel);
+  });
+}
+
+// --- 상황
+async function loadSit(){
+  try{ S.sit = await api("situation?voter="+V); if(S.tab==="vote"&&S.vtab==="sit") drawSit(); }
+  catch(e){ $("#vbody").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function drawSit(){
+  const T = S.sit, liked = (k)=>T.todayLikes.includes(k);
+  const all = [...T.making, ...T.ranking], top = all[0];
+  let rest = all.slice(1); const mt = myType();
+  if(S.sf==="mine") rest = mt ? rest.filter(x=>x.type===mt) : [];
+  else if(S.sf==="new") rest = [...rest].sort((a,b)=>(b.created||0)-(a.created||0));
+  const f = S.sform, text = f.text.trim().replace(/^온\s*세상이\s*\S+?인데\s*/,"").replace(/[?？]+$/,"");
+  const dup = text && [...all, ...T.done].find(x=>x.type===f.type && x.text===text);
+  const dupRank = dup ? all.findIndex(x=>x.key===dup.key)+1 : 0;
+  $("#vbody").innerHTML = `<div class="pad"><b style="font-size:17px;font-weight:900">온 세상이 ○○인데 이런 일이 생긴다면?</b>
+    ${top ? `<div class="card big" style="margin-top:12px">
+      <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span><span style="font-size:12px;font-weight:800;padding:3px 9px;border-radius:8px;border:1.5px solid var(--ink);background:${gc(top.type).c}">${top.type}</span></div>
+      <div style="margin-top:14px;font-size:22px;font-weight:900;line-height:1.35;word-break:keep-all">${esc(sitTitle(top.type, top.text))}</div>
+      <div style="margin-top:14px"><button class="hbig${liked(top.key)?" on":""}" data-h="${esc(top.key)}" id="stop">${HEART}${liked(top.key)?"오늘 하트 보냄 · 다시 누르면 취소":"하트 보내기"}<span class="n">${fmt(top.votes)}</span></button></div></div>`
+      : `<div class="card" style="margin-top:12px"><p class="empty">아직 신청이 없어요. 아래에서 첫 상황을 적어 주세요!</p></div>`}</div>
+    ${all.length>1 ? `<div class="chips hs">${[["all","전체"],["mine",mt?mt+" 상황만":"내 MBTI로 찾기"],["new","최신순"]].map(([k,l])=>`<button class="chip${S.sf===k?" on":""}" data-f="${k}">${l}</button>`).join("")}</div>
+    <div class="card list">${rest.map((x,i)=>`<div class="li"><span class="n">${S.sf==="all"?i+2:"·"}</span>
+      <div class="bd"><span class="mini" style="background:${gc(x.type).c};color:${gc(x.type).ink}">${x.type}</span><div class="tt" style="margin-top:4px">${esc(sitTitle(x.type,x.text))}</div></div>
+      ${smallHeart(x.key, x.votes, liked(x.key))}</div>`).join("") || `<div class="empty">${S.sf==="mine"&&!mt?"우리 유형 탭에서 내 MBTI를 등록하면 찾을 수 있어요":"아직 내 유형 상황이 없어요. 첫 신청을 해 보세요"}</div>`}</div>` : ""}
+    <div class="card form" style="margin:24px 20px 0">
+      <div class="t">새 상황 신청</div>
+      <div class="row" style="margin-top:14px"><span style="font-size:13px;font-weight:800;width:64px;flex:none">온 세상이</span>
+        <div class="sel"><select id="sType">${TYPES.map(t=>`<option ${t===f.type?"selected":""}>${t}</option>`).join("")}</select></div></div>
+      <div style="position:relative;margin-top:8px"><input class="inp" id="sText" maxlength="30" placeholder="상황 (예: 좀비가 나타난다면)" value="${esc(f.text)}" style="padding-right:56px"><span class="cnt" style="bottom:15px">${f.text.length}/30</span></div>
+      <div class="preview"><small>제목 미리보기</small><div>${esc(sitTitle(f.type, text))}</div></div>
+      ${dup ? `<div class="dupbox"><b>${dup.status==="done"?"이미 나온 상황이에요":`이미 신청된 상황 · 지금 ${dupRank||"-"}위 · 하트 ${fmt(dup.votes)}`}</b>
+        ${dup.status==="done"?"":`<div style="margin-top:10px"><button class="hbig${liked(dup.key)?" on":""}" data-h="${esc(dup.key)}" id="sdup">${HEART}이 상황에 하트<span class="n">${fmt(dup.votes)}</span></button></div>`}</div>`
+      : `<input class="inp" id="sAuthor" maxlength="31" placeholder="인스타 아이디 (선택) · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off" style="margin-top:12px;font-size:14px">
+        <button class="btn" id="sGo" style="margin-top:8px" ${text.length>=2?"":"disabled"}>신청하기</button>`}
+    </div>
+    ${T.done.length ? `<div class="sec">이미 나온 상황편</div><div class="dchips">${T.done.map(x=>`<a class="dchip" href="${esc(x.link||REELS)}" target="_blank" rel="noopener"><i></i>${esc(x.type)}인데 ${esc(x.text)}</a>`).join("")}</div>` : ""}`;
+  const findItem = (k)=>[...all, ...T.done].find(x=>x.key===k);
+  $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likeSit(x, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
+  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{ S.sf=b.dataset.f; drawSit(); });
+  $("#sType").onchange=(e)=>{ f.type=e.target.value; drawSit(); };
+  $("#sText").oninput=(e)=>{ f.text=e.target.value; const pos=e.target.selectionStart; drawSit(); const n=$("#sText"); n.focus(); n.setSelectionRange(pos,pos); };
+  const sa=$("#sAuthor"); if(sa) fillInsta("#sAuthor");
+  const go=$("#sGo"); if(go) go.onclick=async()=>{
+    const author = instaVal("#sAuthor"); if(author===false) return;
+    go.disabled=true;
+    try{
+      const r = await api("situation/like", {type:f.type, text, author, onlyNew:true});
+      if(r.exists){ await api("situation/like", {type:f.type, text, onlyOn:true}); toast("이미 올라온 상황이라 하트를 눌렀어요 ❤️"); }
+      else toast("상황 신청 완료!");
+      f.text=""; await loadSit();
+    }catch(e){ toast(e.message); go.disabled=false; }
+  };
+}
+function likeSit(x, sel){
+  like("situation", {type:x.type, sid:x.sid}, async (r)=>{
+    for(const y of [...S.sit.making, ...S.sit.ranking, ...S.sit.done]) if(y.key===r.key) y.votes=r.votes;
+    S.sit.todayLikes = r.liked ? [...new Set([...S.sit.todayLikes, r.key])] : S.sit.todayLikes.filter(k=>k!==r.key);
+    drawSit(); if(r.liked) popEl(sel);
+  });
+}
+
+// ================= 우리 유형 =================
+async function loadTown(){ try{ S.town = await api("town?voter="+V); }catch(e){ S.town = S.town || null; } }
+let recent = null;
+async function renderTown(){
+  const v = $("#view");
+  if(!S.town){ v.innerHTML = `<div class="hd round">${brandHTML()}</div><div class="pad"><div class="skel"></div></div>`; await loadTown(); if(S.tab==="town") renderTown(); return; }
+  const me = S.town.me;
+  const types = S.town.types, key = S.townSort==="res" ? "residents" : "cheers";
+  const rank = [...types].sort((a,b)=>b[key]-a[key] || b.residents-a.residents);
+  const max = Math.max(1, ...rank.map(t=>t[key]));
+  const barRow = (t,i,k=key)=>`<div class="bar${me&&t.type===me.type?" me":""}"><span class="n">${t[k]?i+1:"·"}</span><span class="t">${t.type}</span>
+    <div class="tr"><i style="width:${(t[k]/max*100).toFixed(1)}%;background:${gc(t.type).c};${t[k]?"":"border:0"}"></i></div><span class="v">${fmt(t[k])}</span></div>`;
+  if(!me){
+    const total = types.reduce((a,t)=>a+t.residents,0);
+    const top5 = [...types].sort((a,b)=>b.residents-a.residents).slice(0,5);
+    const m5 = Math.max(1, top5[0]?.residents||0);
+    v.innerHTML = `<header class="hd round" style="padding-bottom:26px">${brandHTML()}
+      <div class="hero"><div class="bd"><span class="tag" style="font-size:13px;padding:4px 10px">만약에 세상 주민센터</span>
+        <div class="out t1">온 세상이<br>MBTI라면?</div>
+        <p>16개 유형 주민들이 서로 응원하고<br>한마디 남기는 곳</p></div><div class="art" role="img" aria-label="웅이프 릴스 장면"></div></div></header>
+      <div class="pad" style="padding-top:22px">
+        <div class="steps"><div class="on"><i>1</i><span>둘러보기</span></div>${S.town.kakao?`<div><i>2</i><span>로그인</span></div>`:""}<div><i>${S.town.kakao?3:2}</i><span>유형 등록</span></div><div><i>${S.town.kakao?4:3}</i><span>응원·한마디</span></div></div>
+        <button class="btn shadow" id="join" style="margin-top:20px">내 유형 주민 등록하기</button>
+        <p class="muted" style="margin:12px 0 0;text-align:center">${S.town.kakao?"카카오로 3초면 끝나요 · 둘러보기는 로그인 없이":"3초면 끝나요 · 등록하면 응원·한마디를 할 수 있어요"}</p></div>
+      <div class="pad" style="padding-top:28px"><div class="h2" style="margin-bottom:12px"><b style="font-size:18px">주민 현황 TOP 5</b><span>${total?`전체 ${fmt(total)}명`:""}</span></div>
+        <div class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">${total ? top5.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:13px;font-weight:900;color:var(--sub)">${i+1}</span><span style="width:40px;font-size:13px;font-weight:800">${t.type}</span>
+          <div style="flex:1;height:20px;border-radius:10px;background:var(--line);overflow:hidden"><div style="height:100%;width:${(t.residents/m5*100).toFixed(1)}%;background:${gc(t.type).c};border-right:2px solid var(--ink);border-radius:10px"></div></div>
+          <span style="width:46px;text-align:right;font-size:12px;font-weight:700;color:#3b4650">${fmt(t.residents)}</span></div>`).join("") : `<div class="empty" style="padding:8px">아직 주민이 없어요. 첫 주민이 되어 주세요!</div>`}</div></div>
+      <div class="pad" style="padding-top:28px"><div class="h2" style="margin-bottom:12px"><b style="font-size:18px">방금 올라온 한마디</b><button id="toBoard" style="border:0;background:none;font-size:13px;font-weight:600;color:var(--sub)">한마디 ›</button></div>
+        <div id="recent" style="display:flex;flex-direction:column;gap:10px"></div></div>`;
+    $("#join").onclick = startJoin;
+    $("#toBoard").onclick = ()=>setTab("board");
+    bindBrand();
+    drawRecent();
     return;
   }
-  $("#grid").dataset.done = done.map(t=>t.type).join(",");
-  $("#grid").innerHTML = TYPES.map(type=>{
-    const t = by[type] || {type, votes:0, status:"open"};
-    if(t.status==="done"){
-      const inner = `<img src="/thumbs/${type}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="ep">${t.episode? t.episode+"편" : "나옴"}</span><b>${type}</b><span class="play">${PLAY}</span>`;
-      return `<a class="t done" href="${esc(t.link||REELS)}" target="_blank" rel="noopener" aria-label="${type} 편 보기">${inner}</a>`;
-    }
-    const liked = mbti.todayLikes.includes(type);
-    const cls = ["t", "g-"+group(type), first&&first.votes>0&&first.type===type?"first":"", liked?"on":""].join(" ");
-    return `<button class="${cls}" data-t="${type}" data-key="${type}" aria-label="${type}에 하트">${badge(t.status)}<b>${type}</b>${hpill(t.votes, liked)}</button>`;
-  }).join("");
-  $("#grid").querySelectorAll("button.t").forEach(b=>b.onclick=()=>pick(b.dataset.t));
+  const my = types.find(t=>t.type===me.type);
+  const cheered = S.town.cheeredToday===me.type;
+  v.innerHTML = `<header class="hd round">${brandHTML()}
+    <div class="card big" style="margin-top:12px">
+      <div class="toprow"><span class="tag">나는 ${me.type} 주민</span><button id="chgType" style="border:0;background:none;padding:0;font-size:12px;font-weight:700;color:var(--sub);text-decoration:underline">유형 바꾸기</button></div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:10px">
+        <div class="bigt" style="margin:0;font-size:48px;color:${gc(me.type).c}">${me.type}</div>
+        <div style="text-align:right;font-size:13px;line-height:1.6;color:#3b4650">${gc(me.type).name} 동네<br><b style="font-size:15px;color:var(--ink)">주민 ${fmt(my.residents)}명</b> · 응원 ${fmt(my.cheers)}</div></div>
+      <button class="hbig${cheered?" on":""}" id="cheer" style="margin-top:16px;height:56px;font-size:16px">${HEART}${cheered?"오늘 응원했어요":me.type+" 응원하기"}</button>
+      <p class="muted" style="margin:8px 0 0;text-align:center">${cheered?"내일 또 응원할 수 있어요 · 다시 누르면 취소":"하루 한 번, 우리 유형에 하트를 보내요"}</p></div></header>
+    <div class="pad" style="padding-top:26px">
+      <div class="h2" style="align-items:center;margin-bottom:12px"><b style="font-size:18px">만약에 세상 주민 현황</b>
+        <div class="mini-seg"><button data-s="res" class="${S.townSort==="res"?"on":""}">주민 수</button><button data-s="cheer" class="${S.townSort!=="res"?"on":""}">응원 수</button></div></div>
+      <div class="card bars">${rank.map((t,i)=>barRow(t,i)).join("")}</div></div>
+    <div class="pad" style="padding-bottom:8px"><button class="cta" id="toBoard"><div><b>다른 유형에게 한마디</b><small>100자로 마음 전하기</small></div><span>›</span></button></div>`;
+  bindBrand();
+  $("#chgType").onclick = ()=>openSetup({changeOnly:true});
+  $("#cheer").onclick = cheer;
+  $$(".mini-seg button").forEach(b=>b.onclick=()=>{ S.townSort = b.dataset.s; renderTown(); });
+  $("#toBoard").onclick = ()=>setTab("board");
 }
-function pick(type){
-  const t = mbti.types.find(x=>x.type===type);
-  if(t.status==="done" && !mbti.todayLikes.includes(type)){ if(t.link) window.open(t.link,"_blank"); else toast(`${type}은(는) 이미 나왔어요!`); return; }
-  like("mbti", {type}, mbti, mbti.types, renderMbti);
+async function drawRecent(){
+  const box = $("#recent"); if(!box) return;
+  try{ if(!recent) recent = (await api("board/recent")).posts; }catch{ recent = []; }
+  if(!$("#recent")) return;
+  $("#recent").innerHTML = recent.length ? recent.slice(0,2).map(p=>postHTML(p,{readonly:true})).join("") : `<div class="card"><p class="empty">아직 한마디가 없어요. 주민 등록하고 첫 한마디를 남겨 보세요!</p></div>`;
+}
+let cheerBusy=false;
+async function cheer(){
+  if(cheerBusy) return; cheerBusy=true;
+  try{ const r = await api("town/cheer", {}); toast(r.liked ? `${S.town.me.type} 응원 완료! 내일 또 와 주세요` : "오늘 응원을 취소했어요"); await loadTown(); renderTown(); if(r.liked) popEl("#cheer"); }
+  catch(e){ toast(e.message); }
+  finally{ cheerBusy=false; }
 }
 
-// ---------- 장면 제보 (비공개) ----------
-let scType = null;
-$("#sc-type").onclick = ()=>typePicker("어떤 유형의 장면?", (t)=>{ scType = t; setSel($("#sc-type"), t); });
-$("#sc-go").onclick = async ()=>{
-  if(instaBad("#sc-author")){ toast(INSTA_MSG); return; }
-  if(!scType){ toast("MBTI를 골라 주세요!"); return; }
-  const text = $("#sc-text").value.trim();
-  if(text.length<4){ toast("어떤 장면인지 조금 더 적어 주세요!"); return; }
-  const btn=$("#sc-go"); btn.disabled=true;
+// ================= 한마디 =================
+function postHTML(p, o={}){
+  const c = gc(p.writer||"INFP");
+  return `<div class="post" data-id="${p.id}"><div class="hd2"><span class="nk">${esc(p.nick)}</span>
+    <span class="ft" style="background:${c.c};color:${c.ink}">${p.writer}${josa(p.writer,"이","가")} ${p.to}에게</span></div>
+    <p>${esc(p.text)}</p>
+    <div class="bt"><div class="l">${o.readonly ? `<span class="lk" style="border:0;padding:0">${HEART}${fmt(p.hearts)}</span>` : `<button class="lk${p.liked?" on":""}" data-like="${p.id}" aria-label="공감">${HEART}${fmt(p.hearts)}</button>`}<span class="tm">${ago(p.at)}</span></div>
+    ${o.readonly ? "" : p.mine ? `<button class="ac del" data-del="${p.id}">지우기</button>` : `<button class="ac" data-rep="${p.id}">신고</button>`}</div></div>`;
+}
+async function renderBoard(){
+  const B = S.board;
+  if(!S.town) await loadTown();
+  if(!B.type){
+    B.type = myType() || [...(S.town?.types||[])].sort((a,b)=>b.residents-a.residents)[0]?.type || "INFP";
+  }
+  const v = $("#view");
+  v.innerHTML = `<header class="hd" style="padding-left:0;padding-right:0;padding-bottom:16px">
+    <div style="padding:0 20px">${brandHTML()}</div>
+    <div style="padding:8px 20px 0;display:flex;align-items:baseline;gap:8px"><span class="out" style="font-size:32px">${B.type}에게</span><span style="font-size:13px;font-weight:700;color:#3b4650">한마디</span></div>
+    <div class="chips hs" id="bChips" style="padding-top:12px">${TYPES.map(t=>`<button class="chip${t===B.type?" on":""}" data-t="${t}" style="${t===B.type?`background:${gc(t).c}`:""}">${t}${B.data?.counts?.[t]?`<span style="color:var(--sub);font-weight:700;margin-left:4px">${B.data.counts[t]}</span>`:""}</button>`).join("")}</div></header>
+    <div class="bsort"><span id="bN"></span><div><button data-o="top" class="${B.sort==="top"?"on":""}">공감순</button><button data-o="new" class="${B.sort==="new"?"on":""}">최신순</button></div></div>
+    <div id="bList"><div class="posts"><div class="skel"></div></div></div>`;
+  bindBrand();
+  const cur = $(`#bChips [data-t="${B.type}"]`); if(cur) cur.scrollIntoView({inline:"center", block:"nearest"});
+  $$("#bChips button").forEach(b=>b.onclick=()=>{ B.type=b.dataset.t; B.data=null; renderBoard(); });
+  $$(".bsort button").forEach(b=>b.onclick=()=>{ B.sort=b.dataset.o; renderBoard(); });
+  drawComposer();
   try{
-    await api("scenes",{method:"POST",body:JSON.stringify({type:scType, text, author:instaVal("#sc-author"), voter})});
-    $("#sc-text").value=""; toast("보냈어요! 고마워요");
-  }catch(e){ toast(e.message); }
-  finally{ btn.disabled=false; }
-};
-
-// ---------- 궁합·상황 공통: 1위 카드 + 나머지 목록 ----------
-const BASE_SHOWN = {pair:8, sit:10};
-const shownRest = {...BASE_SHOWN}; let flashKey = null;
-const restSort = {pair:"top", sit:"top"};
-const restFilter = {pair:{type:null, rel:null}, sit:{type:null, rel:null}};
-const BASE_RELS = ["커플","친구","직장 동료"];
-function filterRest(pre, list){
-  const f = restFilter[pre];
-  return list.filter(it=>{
-    if(f.type && !(pre==="pair" ? (it.a===f.type||it.b===f.type) : it.type===f.type)) return false;
-    if(f.rel && (f.rel==="기타" ? BASE_RELS.includes(it.rel) : it.rel!==f.rel)) return false;
-    return true;
-  });
+    const d = await api(`board?type=${B.type}&sort=${B.sort}&voter=${V}`);
+    if(S.tab!=="board" || d.type!==B.type) return;
+    const hadCounts = !!B.data?.counts; B.data = d;
+    if(!hadCounts){ $$("#bChips button").forEach(b=>{ const n=d.counts[b.dataset.t]; if(n) b.innerHTML = `${b.dataset.t}<span style="color:var(--sub);font-weight:700;margin-left:4px">${n}</span>`; }); }
+    drawPosts();
+  }catch(e){ $("#bList").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
-function renderFilter(pre, redraw){
-  const f = restFilter[pre];
-  const rels = pre==="pair" ? ["커플","친구","직장 동료","기타"] : [];
-  const all = !f.type && !f.rel;
-  const typeBtn = `<button data-c="type" class="${f.type?"on":""}">${f.type ? f.type+" 들어간 것 ✕" : "내 MBTI로 찾기"}</button>`;
-  // 궁합은 '내 MBTI로 찾기'를 맨 앞에
-  $(`#${pre}-filter`).innerHTML = (pre==="pair" ? typeBtn : "")
-    + `<button data-c="all" class="${all?"on":""}">전체</button>`
-    + rels.map(r=>`<button data-r="${r}" class="${f.rel===r?"on":""}">${r}</button>`).join("")
-    + (pre==="pair" ? "" : typeBtn)
-    + `<button data-c="new" class="${restSort[pre]==="new"?"on":""}">최신순</button>`;
-  const reset = ()=>{ shownRest[pre]=BASE_SHOWN[pre]; redraw(); };
-  $(`#${pre}-filter [data-c=all]`).onclick = ()=>{ f.type=null; f.rel=null; reset(); };
-  $(`#${pre}-filter [data-c=new]`).onclick = ()=>{ restSort[pre] = restSort[pre]==="new" ? "top" : "new"; reset(); };
-  $(`#${pre}-filter [data-c=type]`).onclick = ()=>{
-    if(f.type){ f.type=null; reset(); return; }
-    typePicker("이 유형이 들어간 것만", (t)=>{ f.type=t; reset(); });
+function drawPosts(){
+  const d = S.board.data;
+  $("#bN").textContent = `한마디 ${d.posts.length}개`;
+  $("#bList").innerHTML = d.posts.length ? `<div class="posts">${d.posts.map(p=>postHTML(p)).join("")}</div>`
+    : `<div class="bempty"><b>아직 ${d.type}에게 남긴 한마디가 없어요</b><small>첫 한마디의 주인공이 되어 보세요.<br>다정하게 쓰면 더 잘 전해져요.</small></div>`;
+  $$("#bList [data-like]").forEach(b=>b.onclick=()=>postAct(Number(b.dataset.like),"heart"));
+  $$("#bList [data-rep]").forEach(b=>b.onclick=()=>{ if(confirm("이 글을 신고할까요?\n신고가 3번 쌓이면 숨겨져요.")) postAct(Number(b.dataset.rep),"report"); });
+  $$("#bList [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 한마디를 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
+}
+let draft = "";
+function drawComposer(){
+  const t = S.board.type, c = $("#composer");
+  c.innerHTML = `<div class="w">비하·욕설은 신고 3번이면 숨겨져요 · 내 닉네임과 MBTI가 같이 보여요</div>
+    <div class="row"><div class="ta"><textarea id="bText" maxlength="100" placeholder="${t}에게 한마디 (100자)">${esc(draft)}</textarea><span class="cnt" id="bLen">${draft.length}/100</span></div>
+    <button class="go" id="bGo" ${draft.trim().length<4?"disabled":""}>남기기</button></div>`;
+  $("#bText").oninput = (e)=>{ draft=e.target.value; $("#bLen").textContent=draft.length+"/100"; $("#bGo").disabled = draft.trim().length<4; };
+  $("#bText").onfocus = ()=>{ if(!S.town?.me){ $("#bText").blur(); startJoin(); } };
+  $("#bGo").onclick = async ()=>{
+    if(!S.town?.me){ startJoin(); return; }
+    $("#bGo").disabled = true;
+    try{
+      await api("board", {type:S.board.type, text:draft.trim()});
+      draft=""; recent=null; S.me=null; toast("남겼어요! 고마워요");
+      S.board.sort="new"; S.board.data=null; renderBoard();
+    }catch(e){ toast(e.message); $("#bGo").disabled=false; if(e.status===401) startJoin(); }
   };
-  $(`#${pre}-filter`).querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ f.rel = f.rel===b.dataset.r ? null : b.dataset.r; reset(); });
 }
-function rowsHTML(list, titleFn, liked, start, noRank){
-  return list.map((it,j)=>`
-    <div class="row${liked.includes(it.key)?" on":""}" role="button" tabindex="0" data-key="${esc(it.key)}">
-      <span class="rk">${noRank ? "·" : start+j}</span>
-      <span class="bd">${titleFn(it)}${it.author?`<span class="by">신청 @${esc(it.author)}</span>`:""}</span>
-      ${hpill(it.votes, liked.includes(it.key))}
-    </div>`).join("");
+let postBusy=false;
+async function postAct(id, act){
+  if(postBusy) return; postBusy=true;
+  try{
+    const r = await api(`board/${id}/${act}`, {});
+    if(act==="heart"){
+      const p = S.board.data?.posts.find(x=>x.id===id);
+      if(p){ p.hearts=r.hearts; p.liked=r.liked; drawPosts(); if(r.liked) popEl(`[data-like="${id}"]`); }
+    } else {
+      toast(act==="report" ? "신고했어요. 고마워요" : "지웠어요"); recent=null; S.me=null;
+      if(S.tab==="board"){ S.board.data=null; renderBoard(); } else renderMe();
+    }
+  }catch(e){ toast(e.message); }
+  finally{ postBusy=false; }
 }
-function renderBoard(pre, top, titleFn, topTitleFn, empty, today, onTap){
-  const byNew = restSort[pre]==="new";
-  const allRest = top.slice(1);
-  if(flashKey && allRest.some(x=>x.key===flashKey)) restFilter[pre] = {type:null, rel:null};
-  const filtered = filterRest(pre, allRest);
-  const rest = byNew ? filtered.sort((a,b)=>(b.created||0)-(a.created||0)) : filtered;
-  const fi = flashKey ? rest.findIndex(x=>x.key===flashKey) : -1;
-  if(fi >= shownRest[pre]) shownRest[pre] = fi+1;
-  $(`#${pre}-rank`).innerHTML = top.length ? (([big,line,small])=>topCardHTML(top[0], big, line, today.includes(top[0].key), top[1], small))(topTitleFn(top[0])) : `<p class="empty">${empty}</p>`;
-  $(`#${pre}-rest-card`).hidden = !allRest.length;
-  renderFilter(pre, ()=>renderBoard(pre, top, titleFn, topTitleFn, empty, today, onTap));
-  const noRank = byNew || rest.length!==allRest.length;
-  $(`#${pre}-rest`).innerHTML = rest.length ? rowsHTML(rest.slice(0,shownRest[pre]), titleFn, today, 2, noRank)
-    + (rest.length>shownRest[pre] ? `<button class="more" data-more="${pre}">더 보기 (${rest.length-shownRest[pre]})</button>` : "")
-    : `<p class="empty">조건에 맞는 글이 없어요</p>`;
-  document.querySelectorAll(`#${pre}-rank .topcard, #${pre}-rest .row`).forEach(b=>{
-    const go = ()=>onTap(top.find(x=>x.key===b.dataset.key));
-    b.onclick = go; b.onkeydown = (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } };
-  });
-  const m = document.querySelector(`[data-more="${pre}"]`); if(m) m.onclick=()=>{ shownRest[pre]+=10; renderBoard(pre, top, titleFn, topTitleFn, empty, today, onTap); };
-  if(flashKey){
-    const row = [...document.querySelectorAll(`#${pre}-rank .topcard, #${pre}-rest .row`)].find(r=>r.dataset.key===flashKey);
-    if(row){ row.classList.add("flash"); row.scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(()=>row.classList.remove("flash"), 2200); }
-    flashKey = null;
+
+// ================= 내 정보 =================
+async function renderMe(){
+  const v = $("#view");
+  if(!S.town) await loadTown();
+  const me = S.town?.me;
+  v.innerHTML = `<header class="hd round"><div class="brand"><div class="nm"><b>내 정보</b></div></div>
+    ${me ? `<div class="card big" style="margin-top:8px"><div class="prof"><div class="av" style="background:${gc(me.type).c}">${me.type}</div>
+      <div style="min-width:0"><b>${esc(me.nick)}</b><small>${gc(me.type).name} 동네 주민 · ${S.town.loggedIn?"카카오 로그인":"이 기기로 등록"}</small></div></div>
+      <div class="two"><button id="chgNick">닉네임 바꾸기</button><button class="y" id="chgType">MBTI 바꾸기</button></div></div>`
+    : `<div class="card big" style="margin-top:8px"><b style="font-size:17px;font-weight:900">아직 주민이 아니에요</b>
+      <p class="muted" style="margin:6px 0 14px;font-size:13px">내 MBTI로 등록하면 우리 유형 응원과 한마디를 할 수 있어요</p>
+      <button class="btn" id="join">${S.town?.kakao && !S.town?.loggedIn ? "로그인하고 주민 등록하기" : "내 유형 주민 등록하기"}</button></div>`}</header>
+    <div class="pad" style="padding-top:24px"><div class="h2"><b>내가 하트 누른 것</b><span style="font-weight:400">하루 1번 · 매일 누적</span></div><div id="myLikes" style="margin-top:12px"><div class="skel"></div></div></div>
+    ${me ? `<div class="pad" style="padding-top:24px"><div class="h2"><b>내가 쓴 한마디</b><span id="myN"></span></div><div id="myPosts" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div></div>` : ""}
+    ${S.town?.loggedIn ? `<div class="pad" style="padding-top:24px"><button class="logout" id="logout">로그아웃</button></div>` : ""}`;
+  if(me){ $("#chgNick").onclick = editNick; $("#chgType").onclick = ()=>openSetup({changeOnly:true}); }
+  else $("#join").onclick = startJoin;
+  const lo=$("#logout"); if(lo) lo.onclick = logout;
+  try{ if(!S.me) S.me = await api("me?voter="+V); }catch(e){ $("#myLikes").innerHTML = `<p class="empty">${esc(e.message)}</p>`; return; }
+  if(S.tab!=="me") return;
+  const L = S.me.likes;
+  const badge = {done:["done","영상으로 나옴"], today:["today","오늘 공개"], making:["making","제작 중"], open:["open","투표 중"]};
+  $("#myLikes").innerHTML = L.length ? `<div class="card" style="overflow:hidden">${L.map(x=>{ const [cls,lbl]=badge[x.status]||badge.open;
+    const right = x.status==="done" ? `<a class="rt link" href="${esc(x.link||REELS)}" target="_blank" rel="noopener">보러 가기</a>` : x.status==="open" && x.rank ? `<span class="rt">${x.rank}위</span>` : "";
+    return `<div class="mi"><div class="tp"><span class="badge ${cls}">${lbl}</span>${right}</div><div class="tt">${esc(itemTitle(x))}</div>
+      <div class="ct"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2 0 3.4 1.1 4.4 2.5C12 6.1 13.4 5 15.4 5 19 5 21 8.6 19.6 11.8 17.5 16.4 12 21 12 21z" fill="#ff3b5c"/></svg>누적 ${x.n}번${x.today?" · 오늘 보냄":""}</div></div>`; }).join("")}</div>`
+    : `<div class="card"><p class="empty">아직 하트를 누른 게 없어요.<br>투표 탭에서 보고 싶은 편에 하트를 눌러 보세요!</p></div>`;
+  const P = $("#myPosts");
+  if(P){
+    $("#myN").textContent = S.me.posts.length+"개";
+    P.innerHTML = S.me.posts.length ? S.me.posts.map(p=>`<div class="mypost"><div class="to">${p.to}에게</div><p>${esc(p.text)}</p>
+      <div class="ft"><span><b style="color:var(--red)">♥ ${fmt(p.hearts)}</b> · ${ago(p.at)}</span><button data-del="${p.id}">지우기</button></div></div>`).join("")
+      : `<div class="card"><p class="empty">아직 쓴 한마디가 없어요</p></div>`;
+    $$("#myPosts [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 한마디를 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
   }
 }
-
-// ---------- 궁합 ----------
-let pair = null; const pSel = {a:null, b:null, rel:"커플", custom:false};
-// 받침 있거나 '커플'이면 '이라면', 아니면 '라면'
-const irami = (w)=>{ const c=w.trim().slice(-1).charCodeAt(0); return (w==="커플" || (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)) ? "이라면" : "라면"; };
-const pairNames = (a,b,rel)=> rel==="커플" ? `${a}(남자) × ${b}(여자)` : `${a} × ${b}`;
-const pairTitle = (a,b,rel)=>`${pairNames(a,b,rel)} ${rel}${irami(rel)}?`;
-// 관계별 이름표: 커플=남자/여자, '엄마와 딸'처럼 'A와 B'면 A/B
-function duoLabels(rel){
-  if(rel==="커플") return ["남자","여자"];
-  const m = rel.match(/^(.+?)\s*[와과랑]\s*(.+)$/); return m ? [m[1], m[2]] : ["",""];
-}
-function duoHTML(it){
-  const [la,lb] = duoLabels(it.rel);
-  const mb = (t,l)=>`<span class="mbc g-${group(t)}">${t}${l?" "+esc(l):""}</span>`;
-  return `<span class="duo">${mb(it.a,la)}<span class="x">×</span>${mb(it.b,lb)}</span><span class="rl">${esc(it.rel)}${irami(it.rel)}? ${badge(it.status)}</span>`;
-}
-const curRel = ()=> pSel.custom ? $("#rel-custom").value.trim() : pSel.rel;
-async function loadPair(){
-  try{ pair = await api("pair?voter="+encodeURIComponent(voter)); renderPair(); }
-  catch(e){ $("#pair-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
-}
-// 서버와 같은 키: 친구·직장 동료는 순서 상관없음
-const pairKeyOf = (a,b,rel)=> (rel==="친구"||rel==="직장 동료" ? [a,b].sort() : [a,b]).join("|")+"|"+rel;
-function renderPair(){
-  const top = [...pair.making.map(i=>({...i, making:true})), ...pair.ranking];
-  renderBoard("pair", top, duoHTML, (it)=>[`${hl(it.a)}<span class="xx">×</span>${hl(it.b)}`, `${mbcHTML(it.a)}${it.rel==="커플"?"(남자)":""} × ${mbcHTML(it.b)}${it.rel==="커플"?"(여자)":""} ${esc(it.rel)}${irami(it.rel)}? ${badge(it.status)}`, true], "아직 신청이 없어요. 아래에서 첫 궁합을 신청해 주세요!", pair.todayLikes, (it)=>likePair(it.a, it.b, it.rel));
-  $("#rels").innerHTML = pair.rels.map(r=>`<button type="button" class="${!pSel.custom&&pSel.rel===r?"on":""}" data-r="${r}">${r}</button>`).join("")
-    + `<button type="button" class="${pSel.custom?"on":""}" data-r="">직접 쓰기</button>`;
-  $("#rels").querySelectorAll("button").forEach(b=>b.onclick=()=>{
-    pSel.custom = !b.dataset.r; if(b.dataset.r) pSel.rel=b.dataset.r;
-    renderPair(); if(pSel.custom) $("#rel-custom").focus();
-  });
-  $("#rel-custom").hidden = !pSel.custom;
-  const couple = !pSel.custom && pSel.rel==="커플";
-  const [la, lb] = couple ? ["남자","여자"] : pSel.custom ? (()=>{ const l=duoLabels(curRel()); return [l[0]||"앞 사람", l[1]||"뒤 사람"]; })() : ["첫 번째","두 번째"];
-  $("#pa-who").textContent = la; $("#pb-who").textContent = lb;
-  setSel($("#pa"), pSel.a); setSel($("#pb"), pSel.b);
-  renderPairPrev();
-  renderFound();
-  $("#pair-reset").hidden = !(pSel.a || pSel.b);
-  $("#pair-done-card").hidden = !pair.done.length;
-  $("#pair-done").innerHTML = pair.done.map(it=>{
-    const cap = `${it.a} × ${it.b} ${esc(it.rel)}`;
-    const inner = `<img src="/thumbs/p_${it.a}_${it.b}.jpg" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="cap">${cap} ▶</span>`;
-    return `<a href="${esc(it.link||REELS)}" target="_blank" rel="noopener">${inner}</a>`;
-  }).join("");
-}
-function renderPairPrev(){
-  const rel = curRel(), ok = pSel.a && pSel.b && rel.length>=2;
-  $("#pair-prev").className = "preview"+(ok?"":" empty-p");
-  $("#pair-prev").textContent = ok ? pairTitle(pSel.a,pSel.b,rel) : (pSel.a&&pSel.b ? "관계를 적어 주세요" : "두 유형을 고르면 여기에 제목이 나와요");
-}
-// 두 유형 + 관계가 정해지면: 이미 있으면 그 자리에서 하트, 없으면 처음 신청
-function renderFound(){
-  const rel = curRel(), ok = pSel.a && pSel.b && rel.length>=2;
-  const key = ok ? pairKeyOf(pSel.a, pSel.b, rel) : null;
-  const it = key && pairItems().find(x=>x.key===key);
-  $("#pair-newbox").hidden = !!it;
-  if(!it){ $("#pair-found").innerHTML = ""; return; }
-  const rank = [...pair.making, ...pair.ranking].findIndex(x=>x.key===key);
-  const liked = pair.todayLikes.includes(key);
-  const lbl = it.status==="done" ? "이미 나온 궁합이에요"
-    : (it.status==="making"||it.status==="today") ? "지금 만들고 있는 궁합이에요"
-    : `이미 신청된 궁합 · 지금 <b>${rank+1}위</b> · 하트 ${it.votes}`;
-  const btn = it.status==="done" && it.link
-    ? `<a class="go" href="${esc(it.link)}" target="_blank" rel="noopener" style="display:grid;place-items:center;text-decoration:none">보러 가기</a>`
-    : `<button class="go${liked?" on":""}" id="found-like">${liked ? "하트 눌렀어요 (다시 누르면 취소)" : "이 궁합에 하트 누르기"}</button>`;
-  $("#pair-found").innerHTML = `<div class="found"><span class="lbl">${lbl}</span>${duoHTML(it)}${btn}</div>`;
-  const fb = $("#found-like"); if(fb) fb.onclick = ()=>likePair(it.a, it.b, it.rel);
-}
-$("#pair-reset").onclick = ()=>{ pSel.a = pSel.b = null; renderPair(); };
-$("#rel-custom").oninput = ()=>{ renderPair(); $("#rel-custom").focus(); };
-$("#pa").onclick = ()=>typePicker($("#pa-who").textContent+" MBTI", (t)=>{ pSel.a=t; renderPair(); });
-$("#pb").onclick = ()=>typePicker($("#pb-who").textContent+" MBTI", (t)=>{ pSel.b=t; renderPair(); });
-$("#pair-go").onclick = ()=>{
-  if(instaBad("#pair-author")){ toast(INSTA_MSG); return; }
-  if(!pSel.a || !pSel.b){ toast("두 유형을 골라 주세요!"); return; }
-  const rel = curRel(); if(rel.length<2){ toast("관계를 적어 주세요!"); return; }
-  newCombo("pair", {a:pSel.a, b:pSel.b, rel, author:instaVal("#pair-author")}, loadPair, "궁합 신청 완료!");
-};
-const pairItems = ()=>[...pair.making, ...pair.ranking, ...pair.done];
-function likePair(a,b,rel){ like("pair", {a,b,rel}, pair, pairItems(), renderPair); }
-// 새 궁합/상황 신청 = 하트 1개 (이미 눌렀으면 그대로) → 목록에서 반짝
-async function newCombo(kind, body, reload, msg){
-  try{
-    const r = await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter, onlyNew:true})});
-    flashKey = r.key;
-    // 이미 있는 조합이면 목록에서 찾게 하지 말고 바로 하트 (이미 눌렀으면 그대로)
-    if(r.exists){
-      await api(kind+"/like",{method:"POST",body:JSON.stringify({...body, voter, onlyOn:true})});
-      toast(kind==="pair" ? "이미 올라온 궁합이라 하트를 눌렀어요 ❤️" : "이미 올라온 상황이라 하트를 눌렀어요 ❤️"); await reload(); return;
-    }
-    toast(msg); await reload();
-  }catch(e){ toast(e.message); }
+async function logout(){
+  try{ await api("auth/logout", {}); }catch{}
+  S.town=null; S.me=null; toast("로그아웃했어요"); await loadTown(); render();
 }
 
-// ---------- 상황 ----------
-let sit = null; const sSel = {type:null};
-const sitTitle = (t,text)=>`온 세상이 ${t}인데 ${text}?`;
-const sitHTML = (it)=>`<span class="mbc g-${group(it.type)}">${it.type}</span><span class="stx">${esc(it.text)} ${badge(it.status)}</span>`;
-const sitTopHTML = (it)=>[hl(it.type), `온 세상이 ${mbcHTML(it.type)}인데 ${esc(it.text)}? ${badge(it.status)}`];
-async function loadSit(){
-  try{ sit = await api("situation?voter="+encodeURIComponent(voter)); renderSit(); }
-  catch(e){ $("#sit-rank").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+// ================= 로그인 · 주민 등록 =================
+function openSheet(html){ $("#sheet").innerHTML = `<div class="grab"></div>`+html; $("#dim").classList.add("show"); }
+function closeSheet(){ $("#dim").classList.remove("show"); }
+$("#dim").onclick = (e)=>{ if(e.target.id==="dim") closeSheet(); };
+function startJoin(){
+  if(!S.town){ loadTown().then(startJoin); return; }
+  if(S.town.me){ openSetup({changeOnly:true}); return; }
+  if(S.town.kakao && !S.town.loggedIn){
+    openSheet(`<div style="margin-top:18px;text-align:center"><span class="tag">주민 전용</span></div>
+      <h2>참여하려면 3초 로그인</h2>
+      <p class="d">주민 등록·한마디는 주민만 할 수 있어요.<br>투표 하트와 둘러보기는 로그인 없이 계속돼요.</p>
+      <button class="kakao" id="kgo">${KAKAO}카카오 로그인</button>
+      <button class="later" id="klater">나중에 할게요</button>
+      <p class="fine">게시판엔 닉네임만 보여요. 카카오 프로필은 공개되지 않아요.</p>`);
+    $("#kgo").onclick = ()=>{ location.href = "/api/auth/kakao?voter="+V; };
+    $("#klater").onclick = closeSheet;
+    return;
+  }
+  openSetup({});
 }
-function renderSit(){
-  const top = [...sit.making.map(i=>({...i, making:true})), ...sit.ranking];
-  renderBoard("sit", top, sitHTML, sitTopHTML, "아직 신청이 없어요. 아래에서 첫 상황을 적어 주세요!", sit.todayLikes,
-    (it)=>like("situation", {type:it.type, sid:it.sid}, sit, [...sit.making, ...sit.ranking, ...sit.done], renderSit));
-  setSel($("#st"), sSel.type);
-  renderSitPrev();
-  $("#sit-done-card").hidden = !sit.done.length;
-  $("#sit-done").innerHTML = sit.done.map(it=>`<a href="${esc(it.link||REELS)}" target="_blank" rel="noopener">${it.type} · ${esc(it.text)} ▶</a>`).join("");
-}
-const sitCustomText = ()=> $("#sit-custom").value.trim().replace(/^온\s*세상이\s*\S+?인데\s*/,"").replace(/[?？]+$/,"");
-function renderSitPrev(){
-  const text = sitCustomText(), ok = sSel.type && text.length>=2;
-  $("#sit-prev").className = "preview"+(ok?"":" empty-p");
-  $("#sit-prev").textContent = ok ? sitTitle(sSel.type, text) : (sSel.type ? "상황을 적으면 여기에 제목이 나와요" : "MBTI를 고르고 상황을 적어 주세요");
-}
-$("#sit-custom").oninput = renderSitPrev;
-$("#st").onclick = ()=>typePicker("어떤 세상?", (t)=>{ sSel.type=t; renderSit(); });
-$("#sit-go").onclick = ()=>{
-  if(instaBad("#sit-author")){ toast(INSTA_MSG); return; }
-  if(!sSel.type){ toast("MBTI를 골라 주세요!"); return; }
-  const text = sitCustomText(); if(text.length<2){ toast("상황을 적어 주세요!"); return; }
-  newCombo("situation", {type:sSel.type, text, author:instaVal("#sit-author")}, async()=>{ $("#sit-custom").value=""; renderSitPrev(); await loadSit(); }, "상황 신청 완료!");
-};
-
-// ---------- 호감 투표 (결과는 비밀, 참여 인원만) ----------
-let poll = null; const pv = {choice:null, my:null};
-async function loadPoll(){
-  try{ poll = await api("poll?voter="+encodeURIComponent(voter));
-    if(poll.mine){ pv.choice = pv.choice || poll.mine.choice; pv.my = pv.my || poll.mine.my_type; }
-    renderPoll();
-  }catch(e){ $("#poll-msg").hidden=false; $("#poll-msg").textContent = e.message; }
-}
-function renderPoll(){
-  $("#poll-cnt-t").innerHTML = poll.closed ? "투표가 끝났어요<br>12월 1일 인스타에서 1·2·3위만 공개해요" : "순위는 비밀이에요<br>12월 1일 인스타에서 1·2·3위만 공개해요";
-  $("#poll-top").innerHTML = poll.top3 && poll.top3.length ? `<div class="ptop">${[1,0,2].map(i=>poll.top3[i] ? `<div class="g-${group(poll.top3[i])}${i===0?" p1":""}"><small>${i+1}위</small><b>${poll.top3[i]}</b></div>` : "<div></div>").join("")}</div>` : "";
-  const grid = (id, sel, pick)=>{ $(id).innerHTML = TYPES.map(t=>`<button class="g-${group(t)}${sel===t?" on":""}" data-t="${t}" aria-pressed="${sel===t}">${t}</button>`).join("");
-    $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{ pick(b.dataset.t); renderPoll(); }); };
-  $("#poll-form").hidden = poll.closed;
-  grid("#poll-choice", pv.choice, (t)=>pv.choice=t);
-  grid("#poll-my", pv.my, (t)=>pv.my=t);
-  const same = poll.mine && poll.mine.choice===pv.choice && poll.mine.my_type===pv.my;
-  $("#poll-go").textContent = !poll.mine ? "투표하기" : same ? "투표했어요" : "이걸로 바꾸기";
-  $("#poll-go").disabled = !!same;
-  const msg = poll.closed ? `투표가 끝났어요. <b>${Number(poll.reveal.slice(5,7))}월 ${Number(poll.reveal.slice(8,10))}일</b>에 <b>@woong.if</b>에서 1·2·3위만 공개해요!`
-    : poll.mine ? `<b>${poll.mine.choice}</b>에 투표했어요 (내 MBTI ${poll.mine.my_type})<br>12월 1일 <b>@woong.if</b>에서 1·2·3위만 공개해요` : "";
-  $("#poll-msg").hidden = !msg; $("#poll-msg").innerHTML = msg;
-}
-$("#poll-go").onclick = async ()=>{
-  if(!pv.choice){ toast("제일 호감인 MBTI를 골라 주세요!"); return; }
-  if(!pv.my){ toast("내 MBTI도 골라 주세요!"); return; }
-  const btn=$("#poll-go"); btn.disabled=true;
-  try{
-    const r = await api("poll/vote",{method:"POST",body:JSON.stringify({voter, choice:pv.choice, my_type:pv.my})});
-    poll.mine = r.mine;
-    toast(r.changed ? "바꿨어요!" : "투표했어요! 12월 1일에 1·2·3위를 공개해요");
-  }catch(e){ toast(e.message); }
-  finally{ btn.disabled=false; renderPoll(); }
-};
-
-// ---------- 방문 기록 + "내가 누른 게 뽑혔어요" ----------
-api("visit",{method:"POST",body:JSON.stringify({voter})}).catch(()=>{});
-let seenPicked = {};
-try{ seenPicked = JSON.parse(localStorage.getItem("wf_picked")||"{}"); }catch{}
-function pickedLabel(p){
-  if(p.kind==="mbti") return `온 세상이 ${p.type}라면?`;
-  if(p.kind==="pair") return pairTitle(p.a, p.b, p.rel);
-  return sitTitle(p.type, p.text);
-}
-async function loadPicked(){
-  try{
-    const {picked} = await api("mine?voter="+encodeURIComponent(voter));
-    const order = {done:0, today:1, making:2};
-    const show = picked.filter(p=>seenPicked[p.kind+"|"+p.key]!==p.status).sort((a,b)=>order[a.status]-order[b.status]).slice(0,3);
-    const what = {mbti:"유형", pair:"궁합", situation:"상황"};
-    $("#picked").innerHTML = show.map(p=>{
-      const msg = p.status==="done" ? "영상으로 나왔어요!" : p.status==="today" ? "오늘 공개됐어요! 인스타에서 확인해 보세요" : "제작에 들어갔어요!";
-      return `<div class="pk" data-k="${esc(p.kind+"|"+p.key)}" data-s="${p.status}">
-        <div class="tx">하트 누른 ${what[p.kind]}이 ${msg}<br><b>${esc(pickedLabel(p))}</b></div>
-        ${p.link?`<a href="${esc(p.link)}" target="_blank" rel="noopener">보러 가기</a>`:""}
-        <button class="x" aria-label="닫기">✕</button></div>`;
-    }).join("");
-    $("#picked").querySelectorAll(".pk").forEach(el=>{
-      const close=()=>{ seenPicked[el.dataset.k]=el.dataset.s; try{ localStorage.setItem("wf_picked", JSON.stringify(seenPicked)); }catch{} el.remove(); };
-      el.querySelector(".x").onclick = close;
-      const a = el.querySelector("a"); if(a) a.addEventListener("click", close);
+const ADJ = ["눕고싶은","산책하는","새벽감성","야식먹는","계획없는","노래하는","고민많은","햇살같은","출근싫은","멍때리는"];
+const rollNick = (t)=>`${ADJ[Math.floor(Math.random()*ADJ.length)]} ${t} ${10+Math.floor(Math.random()*90)}`;
+function openSetup({changeOnly}){
+  const st = { type: S.town?.me?.type || "INFP", nick: S.town?.me?.nick || null, nickTouched: !!S.town?.me };
+  if(!st.nick) st.nick = rollNick(st.type);
+  const el = $("#setup");
+  const draw = ()=>{
+    el.innerHTML = `<div class="in"><header class="hd" style="padding-top:calc(12px + env(safe-area-inset-top))">
+      <button class="back" id="suBack">‹ 닫기</button>
+      <div style="margin-top:10px"><span class="tag">${changeOnly?"내 유형 바꾸기":"주민 등록 마지막 단계"}</span></div>
+      <div class="out" style="margin-top:10px;font-size:30px">어느 동네<br>주민이세요?</div></header>
+      <div class="pad">
+        ${changeOnly ? "" : `<div style="font-size:14px;font-weight:800;margin-bottom:8px">닉네임</div>
+        <div class="row"><input class="inp" id="suNick" maxlength="16" value="${esc(st.nick)}" style="height:52px;border-radius:14px;background:#fff;font-weight:700"><button id="suRoll" style="height:52px;padding:0 14px;border-radius:14px;border:2px solid var(--ink);background:var(--yellow);font-size:13px;font-weight:800;flex:none">다시 뽑기</button></div>
+        <p class="muted" style="margin:8px 0 0">자동으로 만들었어요. 직접 바꿔도 되고, 나중에 내 정보에서 바꿀 수 있어요.</p>`}
+        <div style="font-size:14px;font-weight:800;margin:${changeOnly?"0":"24px"} 0 4px">내 MBTI</div>
+        ${["NT","NF","SJ","SP"].map(k=>`<div class="glabel">${G[k].name} ${k}</div><div class="tgrid">${TYPES.filter(t=>grp(t)===k).map(t=>`<button data-t="${t}" class="${t===st.type?"on":""}" style="${t===st.type?`background:${G[k].c};color:${G[k].ink}`:""}">${t}</button>`).join("")}</div>`).join("")}
+      </div></div>
+      <div class="foot"><button class="btn shadow" id="suGo">${st.type} 주민으로 ${changeOnly?"바꾸기":"등록하기"}</button></div>`;
+    $("#suBack").onclick = ()=>{ el.hidden=true; document.body.style.overflow=""; };
+    $$("#setup .tgrid button").forEach(b=>b.onclick=()=>{
+      const old = st.type; st.type = b.dataset.t;
+      if(!st.nickTouched) st.nick = st.nick.replace(old, st.type);
+      const n=$("#suNick"); if(n) st.nick = n.value.replace(old, st.nickTouched?old:st.type);
+      draw();
     });
-  }catch{}
+    const n=$("#suNick"); if(n) n.oninput=(e)=>{ st.nick=e.target.value; st.nickTouched=true; };
+    const r=$("#suRoll"); if(r) r.onclick=()=>{ st.nick = rollNick(st.type); st.nickTouched=false; draw(); };
+    $("#suGo").onclick = async ()=>{
+      $("#suGo").disabled = true;
+      try{
+        const body = {type: st.type}; if(!changeOnly) body.nick = st.nick.trim();
+        const res = await api("town/join", body);
+        toast(changeOnly ? (res.changed?`${st.type}(으)로 바꿨어요`:"그대로예요") : `${st.type} 주민이 됐어요! 응원도 눌러 주세요`);
+        el.hidden = true; document.body.style.overflow="";
+        S.town=null; S.me=null; recent=null; S.board.type = S.board.type || st.type;
+        await loadTown(); if(!changeOnly && S.tab!=="board") S.tab="town";
+        setTab(S.tab);
+      }catch(e){ toast(e.message); $("#suGo").disabled=false; if(e.status===401) { el.hidden=true; document.body.style.overflow=""; S.town=null; await loadTown(); startJoin(); } }
+    };
+  };
+  draw(); el.hidden=false; el.scrollTop=0; document.body.style.overflow="hidden";
 }
-loadPicked();
+function editNick(){
+  const me = S.town.me;
+  openSheet(`<h2 style="margin-top:18px">닉네임 바꾸기</h2><p class="d">게시판에 이 이름으로 보여요 (2~16자)</p>
+    <input class="inp" id="nkIn" maxlength="16" value="${esc(me.nick)}" style="margin-top:18px;height:52px;font-weight:700">
+    <div class="row" style="margin-top:10px"><button class="btn sm" id="nkRoll" style="background:#fff">다시 뽑기</button><button class="btn sm" id="nkGo">저장</button></div>`);
+  $("#nkRoll").onclick=()=>{ $("#nkIn").value = rollNick(me.type); };
+  $("#nkGo").onclick=async()=>{
+    try{ await api("town/nick", {nick: $("#nkIn").value.trim()}); toast("닉네임을 바꿨어요"); closeSheet(); S.town=null; S.me=null; recent=null; await loadTown(); render(); }
+    catch(e){ toast(e.message); }
+  };
+}
+function openMenu(){
+  const me = S.town.me;
+  const w = $("#menuWrap");
+  w.innerHTML = `<div class="mdim" id="mdim"></div><div class="menu">
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:15px;font-weight:800">${esc(me.nick)}</span>${tb(me.type)}</div>
+    <div class="muted" style="margin-top:4px">${S.town.loggedIn?"카카오 로그인":"이 기기로 등록"}${me.since?` · ${new Date(me.since).getFullYear()}.${new Date(me.since).getMonth()+1} 주민 등록`:""}</div>
+    <div style="height:1.5px;background:var(--line);margin:12px 0 4px"></div>
+    <button class="mrow" data-m="nick"><span>닉네임 바꾸기</span><span>›</span></button>
+    <button class="mrow" data-m="type"><span>MBTI 바꾸기</span><span>${me.type} ›</span></button>
+    <button class="mrow" data-m="me"><span>내 정보 · 내가 쓴 글</span><span>›</span></button>
+    ${S.town.loggedIn?`<button class="mrow" data-m="out" style="font-size:13px;color:var(--mute)"><span>로그아웃</span><span></span></button>`:""}</div>`;
+  const close = ()=>{ w.innerHTML=""; };
+  $("#mdim").onclick = close;
+  $$(".menu [data-m]").forEach(b=>b.onclick=()=>{ close(); const m=b.dataset.m;
+    if(m==="nick") editNick(); else if(m==="type") openSetup({changeOnly:true}); else if(m==="me") setTab("me"); else logout(); });
+}
 
-const startHash = location.hash;
-if(startHash==="#pair") showMode("pair");
-else if(startHash==="#sit") showMode("sit");
-else showMode("world");
-loadMbti();
+window.addEventListener("hashchange", ()=>{
+  const h = location.hash.replace("#","").split("?")[0];
+  if(h==="pair"||h==="sit"){ if(S.tab!=="vote"||S.vtab!==h){ S.vtab=h; setTab("vote"); } }
+  else if(["town","board","me"].includes(h)){ if(S.tab!==h) setTab(h); }
+  else if(h===""||h==="vote"){ if(S.tab!=="vote"||S.vtab!=="mbti"){ S.vtab="mbti"; setTab("vote"); } }
+});
+
+// ================= 시작 =================
+api("visit", {}).catch(()=>{});
+(async ()=>{
+  const h = location.hash.replace("#","").split("?")[0];
+  if(location.hash.includes("login=fail")) setTimeout(()=>toast("로그인이 안 됐어요. 다시 시도해 주세요"), 300);
+  if(h==="pair"||h==="sit"){ S.tab="vote"; S.vtab=h; }
+  else if(["town","board","me"].includes(h)) S.tab=h;
+  await loadTown();
+  setTab(S.tab);
+  loadPicked();
+  // 카카오 로그인 직후 아직 주민이 아니면 바로 등록 화면
+  if(S.town?.loggedIn && !S.town?.me && h==="town") openSetup({});
+})();
 </script>
 </body>
 </html>

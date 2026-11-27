@@ -59,6 +59,7 @@ table.st tr.now td{background:#fffbe6}
     <button data-t="mbti">MBTI</button>
     <button data-t="combo">궁합·상황</button>
     <button data-t="scenes">장면 제보<span id="scn"></span></button>
+    <button data-t="town">🏘️ 우리 유형<span id="bdn"></span></button>
     <button data-t="safe">🛡️ 차단·백업</button>
   </div>
 
@@ -79,6 +80,16 @@ table.st tr.now td{background:#fffbe6}
     <h2>투표한 사람 MBTI별</h2>
     <p class="sub">왼쪽 = 투표한 사람 MBTI, 오른쪽 = 그 사람들이 고른 호감 MBTI (많은 순)</p>
     <div class="card" style="overflow-x:auto"><table class="st" id="poll-cross"></table></div>
+  </section>
+
+  <section id="s-town" hidden>
+    <h2>주민 현황</h2>
+    <p class="sub">신청소 '우리 유형' 탭에서 내 MBTI를 등록한 사람 수와 응원(하루 1번) 수예요. 다음 편 순서 정할 때 참고하세요.</p>
+    <div class="card" style="overflow-x:auto"><table class="st" id="town-tbl"></table></div>
+    <h2>유형별 한마디</h2>
+    <p class="sub">신고 3번이면 자동으로 숨겨져요. 숨긴 글·신고 많은 글이 위에 와요. "다시 보이기"를 누르면 신고 기록도 지워져요.</p>
+    <div class="row" id="bdf" style="margin:0 0 10px"></div>
+    <div id="bposts"></div>
   </section>
 
   <section id="s-scenes" hidden>
@@ -151,10 +162,35 @@ async function login(){
 $("#lf").onsubmit=(e)=>{e.preventDefault(); key=$("#pw").value; login();};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["stats","pending","live","mbti","combo","scenes","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
+  ["stats","pending","live","mbti","combo","scenes","town","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll()]); }
+async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll(), loadTown()]); }
+let bposts = [], bdFilter = "";
+async function loadTown(){
+  const [t, b] = await Promise.all([api("town"), api("admin/board")]);
+  const tot = Math.max(1, t.types.reduce((a,x)=>a+x.residents,0));
+  $("#town-tbl").innerHTML = "<tr><th>순위</th><th>MBTI</th><th>주민</th><th>비율</th><th>응원</th></tr>" +
+    [...t.types].sort((a,b)=>b.residents-a.residents).map((x,i)=>`<tr${i<3&&x.residents?' class="now"':""}><td>${i+1}</td><td><b>${x.type}</b></td><td>${x.residents}</td><td>${Math.round(x.residents/tot*100)}%</td><td>❤️ ${x.cheers}</td></tr>`).join("");
+  bposts = b.posts; renderPosts();
+}
+function renderPosts(){
+  const flagged = bposts.filter(x=>x.hidden||x.reports).length;
+  $("#bdn").innerHTML = flagged ? `<span class="badge">${flagged}</span>` : "";
+  const types = [...new Set(bposts.map(x=>x.type))].sort();
+  $("#bdf").innerHTML = [""].concat(types).map(t=>`<button data-bdf="${t}" style="${bdFilter===t?"background:#fff0a8":""}">${t||"전체"} (${t?bposts.filter(x=>x.type===t).length:bposts.length})</button>`).join("");
+  document.querySelectorAll("[data-bdf]").forEach(b=>b.onclick=()=>{ bdFilter=b.dataset.bdf; renderPosts(); });
+  const list = bdFilter ? bposts.filter(x=>x.type===bdFilter) : bposts;
+  const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+  $("#bposts").innerHTML = list.length ? list.map(x=>`<div class="card" style="${x.hidden?"opacity:.55":""}">
+    <div class="txt"><span style="background:#ece5fb;border-radius:6px;padding:1px 6px;margin-right:6px">${x.type}에게</span>${esc(x.text)}</div>
+    <div class="sub">${esc(x.nickname||"")} (${x.writer_type||"?"}) · ❤️ ${x.hearts} · ${when(x.created_at)}${x.reports?` · <b style="color:#d4546f">신고 ${x.reports}</b>`:""}${x.hidden?" · 숨김":""}</div>
+    <div class="row"><button data-bh="${x.id}" data-v="${x.hidden?0:1}" class="${x.hidden?"ok":""}">${x.hidden?"다시 보이기":"숨기기"}</button>
+    <button class="no" data-bdel="${x.id}">삭제</button><button class="blk" data-blk="post" data-id="${x.id}">🚫 차단</button></div></div>`).join("") : `<p class="empty">아직 글이 없어요</p>`;
+  bindBlocks();
+  document.querySelectorAll("[data-bh]").forEach(b=>b.onclick=async()=>{ try{ await api("admin/board/update",{id:Number(b.dataset.bh),hidden:b.dataset.v==="1"}); loadTown(); }catch(e){ toast(e.message); } });
+  document.querySelectorAll("[data-bdel]").forEach(b=>b.onclick=async()=>{ if(!confirm("삭제할까요?")) return; try{ await api("admin/board/update",{id:Number(b.dataset.bdel),delete:true}); loadTown(); }catch(e){ toast(e.message); } });
+}
 const md = (d)=>`${Number(d.slice(5,7))}월 ${Number(d.slice(8,10))}일`;
 async function loadPoll(){
   const d = await api("admin/poll");
@@ -185,7 +221,7 @@ function bindBlocks(){
     const kind=b.dataset.blk;
     if(!confirm("이 글을 쓴 사람을 차단할까요?\n(기기는 계속, 같은 인터넷은 7일 동안 하트·글쓰기가 막혀요)\n\n글은 그대로 남으니 필요하면 따로 삭제해 주세요.")) return;
     try{
-      await api("admin/block", kind==="idea"||kind==="scene" ? {kind,id:Number(b.dataset.id)} : {kind,key:b.dataset.key,label:b.dataset.label});
+      await api("admin/block", kind==="idea"||kind==="scene"||kind==="post" ? {kind,id:Number(b.dataset.id)} : {kind,key:b.dataset.key,label:b.dataset.label});
       toast("차단했어요"); loadBlocks();
     }catch(e){ toast(e.message); }
   });
@@ -219,9 +255,9 @@ async function loadStats(){
   $("#st-day").textContent = d.today;
   const diff=(a,b)=>{ if(b===undefined) return ""; const x=a-b; return x? `<small style="color:${x>0?"#2f9e6e":"#d4546f"}">${x>0?"▲":"▼"}${Math.abs(x)}</small>` : `<small>–</small>`; };
   const kpi=(label,v,pv)=>`<div class="kpi"><span>${label}</span><b>${v}</b>${diff(v,pv)}</div>`;
-  const posts=(x)=>x.newPair+x.newSituation+x.newIdea+x.newScene;
+  const posts=(x)=>x.newPair+x.newSituation+x.newIdea+x.newScene+(x.newPost||0);
   $("#kpis").innerHTML = kpi("방문자",t.visitors,y?.visitors)+kpi("페이지 열람",t.views,y?.views)+kpi("하트",t.hearts,y?.hearts)+kpi("새 글",posts(t),y&&posts(y))
-    + `<p class="sub" style="grid-column:1/-1;margin:2px 0 0">새 글 = 궁합 ${t.newPair} · 상황 ${t.newSituation} · 아이디어 ${t.newIdea} · 장면 제보 ${t.newScene} &nbsp;|&nbsp; 하트 = 온 세상 ${t.mbti} · 궁합 ${t.pair} · 상황 ${t.situation} · 아이디어 ${t.idea}</p>`;
+    + `<p class="sub" style="grid-column:1/-1;margin:2px 0 0">새 글 = 궁합 ${t.newPair} · 상황 ${t.newSituation} · 아이디어 ${t.newIdea} · 장면 제보 ${t.newScene} · 게시판 ${t.newPost||0} &nbsp;|&nbsp; 하트 = 온 세상 ${t.mbti} · 궁합 ${t.pair} · 상황 ${t.situation} · 아이디어 ${t.idea} · 응원 ${t.cheer||0} &nbsp;|&nbsp; 새 주민 ${t.newResident||0}</p>`;
   const max = Math.max(1, ...d.days.map(x=>x.visitors));
   $("#st-table").innerHTML = `<tr><th>날짜</th><th>방문자</th><th></th><th>열람</th><th>하트</th><th>새 글</th></tr>` +
     [...d.days].reverse().map(x=>`<tr${x.day===d.today?' class="now"':""}><td>${x.day.slice(5).replace("-","/")}</td><td><b>${x.visitors}</b></td>

@@ -1,4 +1,14 @@
-# 웅이프 만약에 신청소
+# 웅이프 만약에 신청소 (주민센터)
+
+인스타 프로필 링크에 거는 페이지. 하단 탭 4개: **투표**(MBTI·궁합·상황) · **우리 유형**(주민 등록·하루 1번 응원·주민 현황) · **한마디**(유형별 한마디 게시판) · **내 정보**(내가 하트 누른 것·내가 쓴 한마디).
+디자인: Claude Design '웅이프 팔로워 커뮤니티 앱' A안(웅이프 영상 룩).
+
+- 하트(투표·응원·공감)는 로그인 없이 기기 기준
+- 주민 등록·한마디 쓰기: `KAKAO_REST_KEY`가 없으면 기기 기준, 있으면 카카오 로그인 필요 (로그인 전 기기로 등록한 건 로그인할 때 계정으로 옮겨짐)
+- 카카오 설정: Kakao Developers 앱 → REST API 키를 Pages Secret `KAKAO_REST_KEY`로, (선택) Client Secret은 `KAKAO_CLIENT_SECRET`. Redirect URI = `https://woongif.pages.dev/api/auth/kakao/callback`
+- 바로가기: `/#pair` `/#sit` `/#town` `/#board` `/#me`
+
+---
 
 인스타 프로필 링크에 거는 페이지.
 
