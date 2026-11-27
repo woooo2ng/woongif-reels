@@ -744,7 +744,7 @@ S[4]=()=>{
   const SN=snowfall(rf,260,r,{w:12,h:10,d:10});
   const rbox=giftBox(0xd8343c,GOLD,1.1);rf.add(rbox);
   const rsa=makeSanta();rf.add(rsa);
-  const rb=bubT(rsa,'…',{y:2.6,size:0.0026});
+  const rb=bubT(rsa,'…',{y:2.6,size:0.0036});
   // 문 밖(분할 화면 위)
   const ou=new THREE.Group();ou.position.set(-100,0,0);scene.add(ou);const ho=makeXHouse(r,{w:4.0,h:2.6});ou.add(ho);snowGround(ou);const SN2=snowfall(ou,200,r,{w:10,h:8,d:8,z:3});
   const osl=makeSleigh();osl.position.set(-2.6,0,3.2);osl.rotation.y=0.3;ou.add(osl);
@@ -776,7 +776,7 @@ S[4]=()=>{
     else{const k=ease((t-SP[1]-0.4)/0.3);const x0=ch.x,y0=ch.y+0.8,tx=-0.78;rsa.position.set(x0+(tx-x0)*k,y0+(slopeY(tx)-y0)*k+Math.sin(k*Math.PI)*0.3,ch.z+0.2*k);rsa.rotation.y=0.5;
       if(t>SG){const q=Math.sin(clamp01((t-SG)/0.6)*Math.PI);rsa.userData.hip.position.y=0.8-0.06*q;rsa.userData.head.rotation.x=0.25*q}}
     showB(rb,t,SG-0.05,DN);
-    chipPop(ck0,t,ST+0.3);if(t>DN)ck0.style.opacity=0;
+    chipPop(ck0,t,ST+0.3);if(t>SP[1]+0.3)ck0.style.opacity=0;
     // 거실
     resetP(kid);sitPose(kid);const ku=kid.userData;ku.legs.forEach(l=>l.rotation.x=-1.35);ku.arms.forEach(a=>a.rotation.x=-1.15);kid.rotation.y=Math.PI;mood(kid,'flat');eyesK(kid,0.8);
     const lookS=t>EY&&t<K2.t0;ku.head.rotation.y=lookS?ease((t-EY)/0.25)*0.9:0;
