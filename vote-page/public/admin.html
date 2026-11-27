@@ -86,10 +86,12 @@ table.st tr.now td{background:#fffbe6}
     <h2>주민 현황</h2>
     <p class="sub">신청소 '우리 유형' 탭에서 내 MBTI를 등록한 사람 수와 응원(하루 1번) 수예요. 다음 편 순서 정할 때 참고하세요.</p>
     <div class="card" style="overflow-x:auto"><table class="st" id="town-tbl"></table></div>
-    <h2>유형별 한마디</h2>
+    <h2>유형별 게시판 (한마디·질문·특징)</h2>
     <p class="sub">신고 3번이면 자동으로 숨겨져요. 숨긴 글·신고 많은 글이 위에 와요. "다시 보이기"를 누르면 신고 기록도 지워져요.</p>
     <div class="row" id="bdf" style="margin:0 0 10px"></div>
     <div id="bposts"></div>
+    <h2>질문 답글</h2>
+    <div id="breplies"></div>
   </section>
 
   <section id="s-scenes" hidden>
@@ -166,13 +168,25 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
 });
 
 async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll(), loadTown()]); }
-let bposts = [], bdFilter = "";
+let bposts = [], breplies = [], bdFilter = "";
+function renderReplies(){
+  const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+  $("#breplies").innerHTML = breplies.length ? breplies.map(x=>`<div class="card" style="${x.hidden?"opacity:.55":""}">
+    <div class="sub">질문(${x.type||"?"}): ${esc((x.post_text||"").slice(0,40))}</div>
+    <div class="txt">↳ ${esc(x.text)}</div>
+    <div class="sub">${esc(x.nickname||"")} (${x.writer_type||"?"}) · ${when(x.created_at)}${x.reports?` · <b style="color:#d4546f">신고 ${x.reports}</b>`:""}${x.hidden?" · 숨김":""}</div>
+    <div class="row"><button data-rh="${x.id}" data-v="${x.hidden?0:1}" class="${x.hidden?"ok":""}">${x.hidden?"다시 보이기":"숨기기"}</button>
+    <button class="no" data-rdel="${x.id}">삭제</button><button class="blk" data-blk="reply" data-id="${x.id}">🚫 차단</button></div></div>`).join("") : `<p class="empty">아직 답글이 없어요</p>`;
+  bindBlocks();
+  document.querySelectorAll("[data-rh]").forEach(b=>b.onclick=async()=>{ try{ await api("admin/reply/update",{id:Number(b.dataset.rh),hidden:b.dataset.v==="1"}); loadTown(); }catch(e){ toast(e.message); } });
+  document.querySelectorAll("[data-rdel]").forEach(b=>b.onclick=async()=>{ if(!confirm("답글을 삭제할까요?")) return; try{ await api("admin/reply/update",{id:Number(b.dataset.rdel),delete:true}); loadTown(); }catch(e){ toast(e.message); } });
+}
 async function loadTown(){
   const [t, b] = await Promise.all([api("town"), api("admin/board")]);
   const tot = Math.max(1, t.types.reduce((a,x)=>a+x.residents,0));
   $("#town-tbl").innerHTML = "<tr><th>순위</th><th>MBTI</th><th>주민</th><th>비율</th><th>응원</th></tr>" +
     [...t.types].sort((a,b)=>b.residents-a.residents).map((x,i)=>`<tr${i<3&&x.residents?' class="now"':""}><td>${i+1}</td><td><b>${x.type}</b></td><td>${x.residents}</td><td>${Math.round(x.residents/tot*100)}%</td><td>❤️ ${x.cheers}</td></tr>`).join("");
-  bposts = b.posts; renderPosts();
+  bposts = b.posts; breplies = b.replies||[]; renderPosts(); renderReplies();
 }
 function renderPosts(){
   const flagged = bposts.filter(x=>x.hidden||x.reports).length;
@@ -183,7 +197,7 @@ function renderPosts(){
   const list = bdFilter ? bposts.filter(x=>x.type===bdFilter) : bposts;
   const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
   $("#bposts").innerHTML = list.length ? list.map(x=>`<div class="card" style="${x.hidden?"opacity:.55":""}">
-    <div class="txt"><span style="background:#ece5fb;border-radius:6px;padding:1px 6px;margin-right:6px">${x.type}에게</span>${esc(x.text)}</div>
+    <div class="txt"><span style="background:#ece5fb;border-radius:6px;padding:1px 6px;margin-right:6px">${x.type}${x.cat==="ask"?" · 질문":x.cat==="trait"?" · 특징":"에게"}</span>${esc(x.text)}</div>
     <div class="sub">${esc(x.nickname||"")} (${x.writer_type||"?"}) · ❤️ ${x.hearts} · ${when(x.created_at)}${x.reports?` · <b style="color:#d4546f">신고 ${x.reports}</b>`:""}${x.hidden?" · 숨김":""}</div>
     <div class="row"><button data-bh="${x.id}" data-v="${x.hidden?0:1}" class="${x.hidden?"ok":""}">${x.hidden?"다시 보이기":"숨기기"}</button>
     <button class="no" data-bdel="${x.id}">삭제</button><button class="blk" data-blk="post" data-id="${x.id}">🚫 차단</button></div></div>`).join("") : `<p class="empty">아직 글이 없어요</p>`;
@@ -221,7 +235,7 @@ function bindBlocks(){
     const kind=b.dataset.blk;
     if(!confirm("이 글을 쓴 사람을 차단할까요?\n(기기는 계속, 같은 인터넷은 7일 동안 하트·글쓰기가 막혀요)\n\n글은 그대로 남으니 필요하면 따로 삭제해 주세요.")) return;
     try{
-      await api("admin/block", kind==="idea"||kind==="scene"||kind==="post" ? {kind,id:Number(b.dataset.id)} : {kind,key:b.dataset.key,label:b.dataset.label});
+      await api("admin/block", kind==="idea"||kind==="scene"||kind==="post"||kind==="reply" ? {kind,id:Number(b.dataset.id)} : {kind,key:b.dataset.key,label:b.dataset.label});
       toast("차단했어요"); loadBlocks();
     }catch(e){ toast(e.message); }
   });

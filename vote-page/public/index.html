@@ -207,6 +207,21 @@ textarea.inp{height:76px;padding:10px 12px 18px;line-height:1.4;resize:none}
 .post .ac{border:0;background:none;padding:4px;font-size:12px;font-weight:600;color:var(--mute)}
 .post .ac.del{color:var(--red)}
 .posts{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.post .q{color:var(--red);font-weight:900}
+.post .rb{display:flex;align-items:center;height:30px;padding:0 10px;border-radius:15px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:12px;font-weight:800}
+.post .rb.on{border-color:var(--ink);background:var(--yellow)}
+.replies{margin-top:12px;border-top:1.5px dashed rgba(26,26,26,.2);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.reply{background:var(--bg);border-radius:12px;padding:10px 12px}
+.reply.self{background:#fff3b8;outline:2px solid var(--ink)}
+.reply .rh{display:flex;align-items:center;gap:6px;font-size:12px}
+.reply .rh .nk{font-weight:700;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.reply .rh .ft{font-size:10px;padding:2px 6px}
+.reply .rh .tm{margin-left:auto;flex:none}
+.reply .rh .ac{flex:none}
+.reply .rt{margin-top:4px;font-size:14px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+.rin{display:flex;gap:6px;margin-top:2px}
+.rin .inp{height:42px;font-size:15px;flex:1;min-width:0}
+.rin .go{width:60px;border-radius:12px;border:2px solid var(--ink);background:var(--yellow);font-size:13px;font-weight:900}
 .bsort{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 8px}
 .bsort span{font-size:12px;font-weight:600;color:var(--sub)}
 .bsort div{display:flex;gap:12px}
@@ -294,7 +309,7 @@ footer{text-align:center;color:var(--mute);font-size:12px;margin-top:32px;line-h
 </div>
 <div class="composer" id="composer" hidden></div>
 <nav class="nav" id="nav">
-  <button data-tab="vote">투표</button><button data-tab="town">우리 유형</button><button data-tab="board">한마디</button><button data-tab="me">내 정보</button>
+  <button data-tab="vote">투표</button><button data-tab="town">우리 유형</button><button data-tab="board">게시판</button><button data-tab="me">내 정보</button>
 </nav>
 <div class="dim" id="dim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div id="menuWrap"></div>
@@ -669,7 +684,7 @@ async function renderTown(){
         <div class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">${total ? top5.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px"><span style="width:14px;font-size:13px;font-weight:900;color:var(--sub)">${i+1}</span><span style="width:40px;font-size:13px;font-weight:800">${t.type}</span>
           <div style="flex:1;height:20px;border-radius:10px;background:var(--line);overflow:hidden"><div style="height:100%;width:${(t.residents/m5*100).toFixed(1)}%;background:${gc(t.type).c};border-right:2px solid var(--ink);border-radius:10px"></div></div>
           <span style="width:46px;text-align:right;font-size:12px;font-weight:700;color:#3b4650">${fmt(t.residents)}</span></div>`).join("") : `<div class="empty" style="padding:8px">아직 주민이 없어요. 첫 주민이 되어 주세요!</div>`}</div></div>
-      <div class="pad" style="padding-top:28px"><div class="h2" style="margin-bottom:12px"><b style="font-size:18px">방금 올라온 한마디</b><button id="toBoard" style="border:0;background:none;font-size:13px;font-weight:600;color:var(--sub)">한마디 ›</button></div>
+      <div class="pad" style="padding-top:28px"><div class="h2" style="margin-bottom:12px"><b style="font-size:18px">방금 올라온 글</b><button id="toBoard" style="border:0;background:none;font-size:13px;font-weight:600;color:var(--sub)">게시판 ›</button></div>
         <div id="recent" style="display:flex;flex-direction:column;gap:10px"></div></div>`;
     $("#join").onclick = startJoin;
     $("#toBoard").onclick = ()=>setTab("board");
@@ -691,7 +706,7 @@ async function renderTown(){
       <div class="h2" style="align-items:center;margin-bottom:12px"><b style="font-size:18px">만약에 세상 주민 현황</b>
         <div class="mini-seg"><button data-s="res" class="${S.townSort==="res"?"on":""}">주민 수</button><button data-s="cheer" class="${S.townSort!=="res"?"on":""}">응원 수</button></div></div>
       <div class="card bars">${rank.map((t,i)=>barRow(t,i)).join("")}</div></div>
-    <div class="pad" style="padding-bottom:8px"><button class="cta" id="toBoard"><div><b>다른 유형에게 한마디</b><small>100자로 마음 전하기</small></div><span>›</span></button></div>`;
+    <div class="pad" style="padding-bottom:8px"><button class="cta" id="toBoard"><div><b>유형별 게시판</b><small>한마디 · 질문 · 특징 남기기</small></div><span>›</span></button></div>`;
   bindBrand();
   $("#chgType").onclick = ()=>openSetup({changeOnly:true});
   $("#cheer").onclick = cheer;
@@ -712,14 +727,38 @@ async function cheer(){
   finally{ cheerBusy=false; }
 }
 
-// ================= 한마디 =================
+// ================= 게시판: 한마디 · 질문 · 특징 =================
+const CATS = {
+  msg:   {tab:"한마디", title:(t)=>`${t}에게`, sub:"한마디", tag:(w,t)=>`${w}${josa(w,"이","가")} ${t}에게`, ph:(t)=>`${t}에게 한마디 (100자)`,
+          empty:(t)=>[`아직 ${t}에게 남긴 한마디가 없어요`,"첫 한마디의 주인공이 되어 보세요.<br>다정하게 쓰면 더 잘 전해져요."]},
+  ask:   {tab:"질문", title:(t)=>`${t}에게 질문`, sub:"답글로 알려 줘요", tag:(w,t)=>`${w}의 질문`, ph:(t)=>`${t}에게 궁금한 거 (예: ${t}를 좋아하는데 먼저 연락해도 될까요?)`,
+          empty:(t)=>[`아직 ${t}에게 온 질문이 없어요`,`${t}에게 궁금한 걸 물어보세요.<br>다른 주민들이 답글로 알려 줘요.`]},
+  trait: {tab:"특징", title:(t)=>`${t} 특징`, sub:"공감되면 하트", tag:(w,t)=>`${w}가 본 ${t}`, ph:(t)=>`${t} 특징 (예: 약속 취소되면 속으로 기뻐함)`,
+          empty:(t)=>[`아직 ${t} 특징이 없어요`,`'${t}는 이런 게 있다' 싶은 걸 적어 주세요.<br>공감 많은 특징은 릴스에 나올 수도 있어요.`]},
+};
+S.board.cat = "msg"; S.board.open = new Set(); const replyCache = {}; const replyDraft = {};
 function postHTML(p, o={}){
-  const c = gc(p.writer||"INFP");
-  return `<div class="post" data-id="${p.id}"><div class="hd2"><span class="nk">${esc(p.nick)}</span>
-    <span class="ft" style="background:${c.c};color:${c.ink}">${p.writer}${josa(p.writer,"이","가")} ${p.to}에게</span></div>
-    <p>${esc(p.text)}</p>
-    <div class="bt"><div class="l">${o.readonly ? `<span class="lk" style="border:0;padding:0">${HEART}${fmt(p.hearts)}</span>` : `<button class="lk${p.liked?" on":""}" data-like="${p.id}" aria-label="공감">${HEART}${fmt(p.hearts)}</button>`}<span class="tm">${ago(p.at)}</span></div>
-    ${o.readonly ? "" : p.mine ? `<button class="ac del" data-del="${p.id}">지우기</button>` : `<button class="ac" data-rep="${p.id}">신고</button>`}</div></div>`;
+  const c = gc(p.writer||"INFP"), C = CATS[p.cat||"msg"];
+  const replyBtn = p.cat==="ask" && !o.readonly ? `<button class="rb${S.board.open.has(p.id)?" on":""}" data-rb="${p.id}">💬 답글 ${fmt(p.replies||0)}</button>` : (p.cat==="ask" && p.replies ? `<span class="tm">💬 ${fmt(p.replies)}</span>` : "");
+  return `<div class="post${p.cat==="ask"?" ask":""}" data-id="${p.id}"><div class="hd2"><span class="nk">${esc(p.nick)}</span>
+    <span class="ft" style="background:${c.c};color:${c.ink}">${esc(C.tag(p.writer, p.to))}</span></div>
+    <p>${p.cat==="ask"?'<b class="q">Q.</b> ':""}${esc(p.text)}</p>
+    <div class="bt"><div class="l">${o.readonly ? `<span class="lk" style="border:0;padding:0">${HEART}${fmt(p.hearts)}</span>` : `<button class="lk${p.liked?" on":""}" data-like="${p.id}" aria-label="공감">${HEART}${fmt(p.hearts)}</button>`}${replyBtn}<span class="tm">${ago(p.at)}</span></div>
+    ${o.readonly ? "" : p.mine ? `<button class="ac del" data-del="${p.id}">지우기</button>` : `<button class="ac" data-rep="${p.id}">신고</button>`}</div>
+    ${!o.readonly && p.cat==="ask" && S.board.open.has(p.id) ? `<div class="replies" id="rp-${p.id}">${repliesHTML(p)}</div>` : ""}</div>`;
+}
+function repliesHTML(p){
+  const list = replyCache[p.id];
+  const items = !list ? `<div class="muted" style="padding:6px 0">불러오는 중…</div>`
+    : list.length ? list.map(r=>{ const c=gc(r.writer||"INFP"), self = r.writer===p.to;
+      return `<div class="reply${self?" self":""}"><div class="rh"><span class="nk">${esc(r.nick)}</span><span class="ft" style="background:${c.c};color:${c.ink}">${self?`${r.writer} 본인 답변`:r.writer}</span><span class="tm">${ago(r.at)}</span>
+        ${r.mine?`<button class="ac del" data-rdel="${r.id}" data-p="${p.id}">지우기</button>`:`<button class="ac" data-rrep="${r.id}" data-p="${p.id}">신고</button>`}</div><div class="rt">${esc(r.text)}</div></div>`; }).join("")
+    : `<div class="muted" style="padding:6px 0">첫 답글을 남겨 주세요${p.to?` · ${p.to} 주민의 답변이면 더 좋아요`:""}</div>`;
+  return `${items}<div class="rin"><input class="inp" id="ri-${p.id}" maxlength="100" placeholder="답글 달기 (100자)" value="${esc(replyDraft[p.id]||"")}"><button class="go" data-rgo="${p.id}">답글</button></div>`;
+}
+async function loadReplies(id){
+  try{ replyCache[id] = (await api(`board/${id}/replies?voter=${V}`)).replies; }catch(e){ replyCache[id] = []; toast(e.message); }
+  const p = S.board.data?.posts.find(x=>x.id===id); if(p){ p.replies = replyCache[id].length; } drawPosts();
 }
 async function renderBoard(){
   const B = S.board;
@@ -727,49 +766,81 @@ async function renderBoard(){
   if(!B.type){
     B.type = myType() || [...(S.town?.types||[])].sort((a,b)=>b.residents-a.residents)[0]?.type || "INFP";
   }
+  const C = CATS[B.cat];
   const v = $("#view");
   v.innerHTML = `<header class="hd" style="padding-left:0;padding-right:0;padding-bottom:16px">
     <div style="padding:0 20px">${brandHTML()}</div>
-    <div style="padding:8px 20px 0;display:flex;align-items:baseline;gap:8px"><span class="out" style="font-size:32px">${B.type}에게</span><span style="font-size:13px;font-weight:700;color:#3b4650">한마디</span></div>
-    <div class="chips hs" id="bChips" style="padding-top:12px">${TYPES.map(t=>`<button class="chip${t===B.type?" on":""}" data-t="${t}" style="${t===B.type?`background:${gc(t).c}`:""}">${t}${B.data?.counts?.[t]?`<span style="color:var(--sub);font-weight:700;margin-left:4px">${B.data.counts[t]}</span>`:""}</button>`).join("")}</div></header>
+    <div style="padding:8px 20px 0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span class="out" style="font-size:32px">${esc(C.title(B.type))}</span><span style="font-size:13px;font-weight:700;color:#3b4650">${C.sub}</span></div>
+    <div class="chips hs" id="bChips" style="padding-top:12px">${TYPES.map(t=>`<button class="chip${t===B.type?" on":""}" data-t="${t}" style="${t===B.type?`background:${gc(t).c}`:""}">${t}${B.data?.counts?.[t]?`<span style="color:var(--sub);font-weight:700;margin-left:4px">${B.data.counts[t]}</span>`:""}</button>`).join("")}</div>
+    <div class="seg" id="bCat" style="margin:12px 20px 0">${Object.entries(CATS).map(([k,c])=>`<button data-c="${k}" class="${B.cat===k?"on":""}">${c.tab}${B.data?.catCounts?.[k]?` ${B.data.catCounts[k]}`:""}</button>`).join("")}</div></header>
     <div class="bsort"><span id="bN"></span><div><button data-o="top" class="${B.sort==="top"?"on":""}">공감순</button><button data-o="new" class="${B.sort==="new"?"on":""}">최신순</button></div></div>
     <div id="bList"><div class="posts"><div class="skel"></div></div></div>`;
   bindBrand();
   const cur = $(`#bChips [data-t="${B.type}"]`); if(cur) cur.scrollIntoView({inline:"center", block:"nearest"});
-  $$("#bChips button").forEach(b=>b.onclick=()=>{ B.type=b.dataset.t; B.data=null; renderBoard(); });
+  $$("#bChips button").forEach(b=>b.onclick=()=>{ B.type=b.dataset.t; B.data=null; B.open.clear(); renderBoard(); });
+  $$("#bCat button").forEach(b=>b.onclick=()=>{ if(B.cat===b.dataset.c) return; B.cat=b.dataset.c; B.data=null; B.open.clear(); renderBoard(); });
   $$(".bsort button").forEach(b=>b.onclick=()=>{ B.sort=b.dataset.o; renderBoard(); });
   drawComposer();
   try{
-    const d = await api(`board?type=${B.type}&sort=${B.sort}&voter=${V}`);
-    if(S.tab!=="board" || d.type!==B.type) return;
-    const hadCounts = !!B.data?.counts; B.data = d;
-    if(!hadCounts){ $$("#bChips button").forEach(b=>{ const n=d.counts[b.dataset.t]; if(n) b.innerHTML = `${b.dataset.t}<span style="color:var(--sub);font-weight:700;margin-left:4px">${n}</span>`; }); }
+    const d = await api(`board?type=${B.type}&cat=${B.cat}&sort=${B.sort}&voter=${V}`);
+    if(S.tab!=="board" || d.type!==B.type || d.cat!==B.cat) return;
+    const had = !!B.data?.counts; B.data = d;
+    if(!had){
+      $$("#bChips button").forEach(b=>{ const n=d.counts[b.dataset.t]; b.innerHTML = `${b.dataset.t}${n?`<span style="color:var(--sub);font-weight:700;margin-left:4px">${n}</span>`:""}`; });
+      $$("#bCat button").forEach(b=>{ const n=d.catCounts[b.dataset.c]; b.textContent = CATS[b.dataset.c].tab + (n?` ${n}`:""); });
+    }
     drawPosts();
   }catch(e){ $("#bList").innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
 }
 function drawPosts(){
-  const d = S.board.data;
-  $("#bN").textContent = `한마디 ${d.posts.length}개`;
+  const d = S.board.data, C = CATS[S.board.cat];
+  if(!d) return;
+  $("#bN").textContent = `${C.tab} ${d.posts.length}개`;
+  const [e1,e2] = C.empty(d.type);
   $("#bList").innerHTML = d.posts.length ? `<div class="posts">${d.posts.map(p=>postHTML(p)).join("")}</div>`
-    : `<div class="bempty"><b>아직 ${d.type}에게 남긴 한마디가 없어요</b><small>첫 한마디의 주인공이 되어 보세요.<br>다정하게 쓰면 더 잘 전해져요.</small></div>`;
+    : `<div class="bempty"><b>${e1}</b><small>${e2}</small></div>`;
   $$("#bList [data-like]").forEach(b=>b.onclick=()=>postAct(Number(b.dataset.like),"heart"));
   $$("#bList [data-rep]").forEach(b=>b.onclick=()=>{ if(confirm("이 글을 신고할까요?\n신고가 3번 쌓이면 숨겨져요.")) postAct(Number(b.dataset.rep),"report"); });
-  $$("#bList [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 한마디를 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
+  $$("#bList [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 글을 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
+  $$("#bList [data-rb]").forEach(b=>b.onclick=()=>{ const id=Number(b.dataset.rb);
+    if(S.board.open.has(id)) S.board.open.delete(id); else { S.board.open.add(id); if(!replyCache[id]) loadReplies(id); }
+    drawPosts(); });
+  $$("#bList .rin input").forEach(i=>{ const id=Number(i.id.slice(3));
+    i.oninput=(e)=>{ replyDraft[id]=e.target.value; };
+    i.onfocus=()=>{ if(!S.town?.me){ i.blur(); startJoin(); } };
+    i.onkeydown=(e)=>{ if(e.key==="Enter"&&!e.isComposing){ e.preventDefault(); sendReply(id); } }; });
+  $$("#bList [data-rgo]").forEach(b=>b.onclick=()=>sendReply(Number(b.dataset.rgo)));
+  $$("#bList [data-rdel]").forEach(b=>b.onclick=()=>{ if(confirm("내 답글을 지울까요?")) replyAct(Number(b.dataset.rdel), Number(b.dataset.p), "delete"); });
+  $$("#bList [data-rrep]").forEach(b=>b.onclick=()=>{ if(confirm("이 답글을 신고할까요?\n신고가 3번 쌓이면 숨겨져요.")) replyAct(Number(b.dataset.rrep), Number(b.dataset.p), "report"); });
+}
+let replyBusy=false;
+async function sendReply(id){
+  if(!S.town?.me){ startJoin(); return; }
+  const text = (replyDraft[id]||"").trim();
+  if(text.length<2){ toast("답글을 적어 주세요"); return; }
+  if(replyBusy) return; replyBusy=true;
+  try{ await api(`board/${id}/replies`, {text}); replyDraft[id]=""; toast("답글을 달았어요!"); await loadReplies(id); const i=$(`#ri-${id}`); if(i) i.value=""; }
+  catch(e){ toast(e.message); if(e.status===401) startJoin(); }
+  finally{ replyBusy=false; }
+}
+async function replyAct(rid, pid, act){
+  try{ await api(`board/reply/${rid}/${act}`, {}); toast(act==="report"?"신고했어요. 고마워요":"지웠어요"); await loadReplies(pid); }
+  catch(e){ toast(e.message); }
 }
 let draft = "";
 function drawComposer(){
-  const t = S.board.type, c = $("#composer");
+  const t = S.board.type, c = $("#composer"), C = CATS[S.board.cat];
   c.innerHTML = `<div class="w">비하·욕설은 신고 3번이면 숨겨져요 · 내 닉네임과 MBTI가 같이 보여요</div>
-    <div class="row"><div class="ta"><textarea id="bText" maxlength="100" placeholder="${t}에게 한마디 (100자)">${esc(draft)}</textarea><span class="cnt" id="bLen">${draft.length}/100</span></div>
-    <button class="go" id="bGo" ${draft.trim().length<4?"disabled":""}>남기기</button></div>`;
+    <div class="row"><div class="ta"><textarea id="bText" maxlength="100" placeholder="${esc(C.ph(t))}">${esc(draft)}</textarea><span class="cnt" id="bLen">${draft.length}/100</span></div>
+    <button class="go" id="bGo" ${draft.trim().length<4?"disabled":""}>${S.board.cat==="ask"?"질문하기":"남기기"}</button></div>`;
   $("#bText").oninput = (e)=>{ draft=e.target.value; $("#bLen").textContent=draft.length+"/100"; $("#bGo").disabled = draft.trim().length<4; };
   $("#bText").onfocus = ()=>{ if(!S.town?.me){ $("#bText").blur(); startJoin(); } };
   $("#bGo").onclick = async ()=>{
     if(!S.town?.me){ startJoin(); return; }
     $("#bGo").disabled = true;
     try{
-      await api("board", {type:S.board.type, text:draft.trim()});
-      draft=""; recent=null; S.me=null; toast("남겼어요! 고마워요");
+      await api("board", {type:S.board.type, cat:S.board.cat, text:draft.trim()});
+      draft=""; recent=null; S.me=null; toast(S.board.cat==="ask"?"질문을 올렸어요! 답글을 기다려 봐요":"남겼어요! 고마워요");
       S.board.sort="new"; S.board.data=null; renderBoard();
     }catch(e){ toast(e.message); $("#bGo").disabled=false; if(e.status===401) startJoin(); }
   };
@@ -803,7 +874,7 @@ async function renderMe(){
       <p class="muted" style="margin:6px 0 14px;font-size:13px">내 MBTI로 등록하면 우리 유형 응원과 한마디를 할 수 있어요</p>
       <button class="btn" id="join">${S.town?.kakao && !S.town?.loggedIn ? "로그인하고 주민 등록하기" : "내 유형 주민 등록하기"}</button></div>`}</header>
     <div class="pad" style="padding-top:24px"><div class="h2"><b>내가 하트 누른 것</b><span style="font-weight:400">하루 1번 · 매일 누적</span></div><div id="myLikes" style="margin-top:12px"><div class="skel"></div></div></div>
-    ${me ? `<div class="pad" style="padding-top:24px"><div class="h2"><b>내가 쓴 한마디</b><span id="myN"></span></div><div id="myPosts" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div></div>` : ""}
+    ${me ? `<div class="pad" style="padding-top:24px"><div class="h2"><b>내가 쓴 글</b><span id="myN"></span></div><div id="myPosts" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div></div>` : ""}
     ${S.town?.loggedIn ? `<div class="pad" style="padding-top:24px"><button class="logout" id="logout">로그아웃</button></div>` : ""}`;
   if(me){ $("#chgNick").onclick = editNick; $("#chgType").onclick = ()=>openSetup({changeOnly:true}); }
   else $("#join").onclick = startJoin;
@@ -820,9 +891,9 @@ async function renderMe(){
   const P = $("#myPosts");
   if(P){
     $("#myN").textContent = S.me.posts.length+"개";
-    P.innerHTML = S.me.posts.length ? S.me.posts.map(p=>`<div class="mypost"><div class="to">${p.to}에게</div><p>${esc(p.text)}</p>
+    P.innerHTML = S.me.posts.length ? S.me.posts.map(p=>`<div class="mypost"><div class="to">${p.cat==="ask"?`${p.to}에게 질문 · 답글 ${p.replies||0}`:p.cat==="trait"?`${p.to} 특징`:`${p.to}에게`}</div><p>${esc(p.text)}</p>
       <div class="ft"><span><b style="color:var(--red)">♥ ${fmt(p.hearts)}</b> · ${ago(p.at)}</span><button data-del="${p.id}">지우기</button></div></div>`).join("")
-      : `<div class="card"><p class="empty">아직 쓴 한마디가 없어요</p></div>`;
+      : `<div class="card"><p class="empty">아직 쓴 글이 없어요</p></div>`;
     $$("#myPosts [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 한마디를 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
   }
 }

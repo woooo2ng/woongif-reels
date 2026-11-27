@@ -23,7 +23,11 @@ const TOWN_IP_MAX = 30;        // 같은 인터넷에서 새로 등록할 수 �
 const DAILY_IP_POSTS = 10;     // 게시판 글: 같은 인터넷 하루 10개
 const POST_MAX = 100;          // 글 길이
 const REPORT_HIDE = 3;         // 신고 3번이면 자동 숨김
-// 한마디는 종류 구분 없이 하나 (cat = "msg")
+// 게시판 종류: msg = 한마디, ask = 질문(답글 가능), trait = 특징
+const BOARD_CATS = ["msg", "ask", "trait"];
+const catOf = (c) => (c === "ask" || c === "trait" ? c : "msg");
+const CAT_SQL = (c) => (c === "msg" ? "p.cat NOT IN ('ask','trait')" : "p.cat='" + c + "'");
+const DAILY_IP_REPLIES = 30;
 
 // 호감 MBTI 투표: 결과는 비밀, 참여 인원만 공개. 마감 뒤 관리자가 '공개'를 켜면 1~3위만 보여줌
 const POLL = { id: "fav-2026-11", end: "2026-11-30", reveal: "2026-12-01" };   // end = 이날(한국 시간) 밤 12시까지
@@ -172,6 +176,13 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS board_likes_voter ON board_likes(voter)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS users (uid TEXT PRIMARY KEY, nickname TEXT, created_at INTEGER, updated_at INTEGER)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS board_reports (post_id INTEGER NOT NULL, voter TEXT NOT NULL, ip TEXT, created_at INTEGER, PRIMARY KEY(post_id, voter))`),
+    // 질문 글의 답글
+    db.prepare(`CREATE TABLE IF NOT EXISTS board_replies (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, text TEXT NOT NULL, writer_type TEXT,
+      reports INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0, ip TEXT, voter TEXT, created_at INTEGER)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS board_replies_post ON board_replies(post_id, hidden, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS board_replies_ip ON board_replies(ip, created_at)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS reply_reports (reply_id INTEGER NOT NULL, voter TEXT NOT NULL, ip TEXT, created_at INTEGER, PRIMARY KEY(reply_id, voter))`),
   ]);
   // '오늘 공개'로 바꾼 날짜 (다음 날이면 자동으로 '나옴')
   for (const t of ["mbti_status", "combo_status"]) {
@@ -661,29 +672,34 @@ export async function onRequest({ request, env, params }) {
   }
 
   // ---------- 유형별 한마디 게시판 ----------
-  const postRow = (p, uid, liked) => ({ id: p.id, to: p.type, text: p.text, writer: p.writer_type, nick: p.nickname || defaultNick(p.writer_type, p.voter),
-    hearts: p.hearts, at: p.created_at, liked: !!liked, mine: !!uid && p.voter === uid });
+  const postRow = (p, uid, liked) => ({ id: p.id, to: p.type, cat: catOf(p.cat), text: p.text, writer: p.writer_type, nick: p.nickname || defaultNick(p.writer_type, p.voter),
+    hearts: p.hearts, replies: p.replies || 0, at: p.created_at, liked: !!liked, mine: !!uid && p.voter === uid });
+  const REPLY_CNT = "(SELECT COUNT(*) FROM board_replies r WHERE r.post_id=p.id AND r.hidden=0) replies";
   if (path === "board" && method === "GET") {
     const type = String(url.searchParams.get("type") || "").toUpperCase();
     if (!MBTI.includes(type)) return err("MBTI 유형이 이상해요");
+    const cat = catOf(url.searchParams.get("cat"));
     const sort = url.searchParams.get("sort") === "new" ? "p.created_at DESC" : "p.hearts DESC, p.created_at DESC";
     const voter = url.searchParams.get("voter") || "";
     const uid = await whoAmI(request, env, voter);
-    const [list, counts] = await Promise.all([
-      db.prepare(`SELECT p.id, p.type, p.text, p.writer_type, p.hearts, p.voter, p.created_at, u.nickname FROM board_posts p LEFT JOIN users u ON u.uid=p.voter
-        WHERE p.type=? AND p.hidden=0 ORDER BY ${sort} LIMIT 200`).bind(type).all(),
-      db.prepare("SELECT type, COUNT(*) n FROM board_posts WHERE hidden=0 GROUP BY type").all(),
+    const [list, counts, cats] = await Promise.all([
+      db.prepare(`SELECT p.id, p.type, p.cat, p.text, p.writer_type, p.hearts, p.voter, p.created_at, u.nickname, ${REPLY_CNT} FROM board_posts p LEFT JOIN users u ON u.uid=p.voter
+        WHERE p.type=? AND ${CAT_SQL(cat)} AND p.hidden=0 ORDER BY ${sort} LIMIT 200`).bind(type).all(),
+      db.prepare(`SELECT p.type, COUNT(*) n FROM board_posts p WHERE p.hidden=0 AND ${CAT_SQL(cat)} GROUP BY p.type`).all(),
+      db.prepare("SELECT cat, COUNT(*) n FROM board_posts WHERE hidden=0 AND type=? GROUP BY cat").bind(type).all(),
     ]);
+    const catCounts = { msg: 0, ask: 0, trait: 0 };
+    for (const r of cats.results) catCounts[catOf(r.cat)] += r.n;
     let liked = new Set();
     if (validVoter(voter) && list.results.length) {
       const ids = list.results.map((p) => p.id);
       const q = await db.prepare(`SELECT post_id FROM board_likes WHERE voter=? AND post_id IN (${ids.map(() => "?").join(",")})`).bind(voter, ...ids).all();
       liked = new Set(q.results.map((x) => x.post_id));
     }
-    return json({ type, counts: Object.fromEntries(counts.results.map((x) => [x.type, x.n])), posts: list.results.map((p) => postRow(p, uid, liked.has(p.id))) });
+    return json({ type, cat, catCounts, counts: Object.fromEntries(counts.results.map((x) => [x.type, x.n])), posts: list.results.map((p) => postRow(p, uid, liked.has(p.id))) });
   }
   if (path === "board/recent" && method === "GET") {
-    const r = await db.prepare(`SELECT p.id, p.type, p.text, p.writer_type, p.hearts, p.voter, p.created_at, u.nickname FROM board_posts p LEFT JOIN users u ON u.uid=p.voter
+    const r = await db.prepare(`SELECT p.id, p.type, p.cat, p.text, p.writer_type, p.hearts, p.voter, p.created_at, u.nickname, ${REPLY_CNT} FROM board_posts p LEFT JOIN users u ON u.uid=p.voter
       WHERE p.hidden=0 ORDER BY p.created_at DESC LIMIT 3`).all();
     return json({ posts: r.results.map((p) => postRow(p, null, false)) });
   }
@@ -702,12 +718,64 @@ export async function onRequest({ request, env, params }) {
     if (/https?:|www\.|\.com|\.kr/i.test(text)) return err("링크는 넣을 수 없어요");
     const ip = await ipHash(request, salt);
     const n = await db.prepare("SELECT COUNT(*) n FROM board_posts WHERE ip=? AND created_at>?").bind(ip, Date.now() - 24 * 3600e3).first();
-    if (n.n >= DAILY_IP_POSTS) return err("한마디는 하루에 10개까지 쓸 수 있어요");
+    if (n.n >= DAILY_IP_POSTS) return err("글은 하루에 10개까지 쓸 수 있어요");
     const dup = await db.prepare("SELECT 1 x FROM board_posts WHERE type=? AND text=?").bind(type, text).first();
     if (dup) return err("똑같은 글이 이미 있어요! 그 글에 공감을 눌러 주세요");
     const r = await db.prepare("INSERT INTO board_posts (type, cat, text, writer_type, ip, voter, created_at) VALUES (?,?,?,?,?,?,?)")
-      .bind(type, "msg", text, me.type, ip, uid, Date.now()).run();
+      .bind(type, catOf(body.cat), text, me.type, ip, uid, Date.now()).run();
     return json({ ok: true, id: r.meta.last_row_id });
+  }
+
+  // ---------- 질문 답글 ----------
+  const replyMatch = path.match(/^board\/(\d+)\/replies$/);
+  if (replyMatch && method === "GET") {
+    const id = Number(replyMatch[1]);
+    const voter = url.searchParams.get("voter") || "";
+    const uid = await whoAmI(request, env, voter);
+    const r = await db.prepare(`SELECT r.id, r.text, r.writer_type, r.voter, r.created_at, u.nickname FROM board_replies r LEFT JOIN users u ON u.uid=r.voter
+      WHERE r.post_id=? AND r.hidden=0 ORDER BY r.created_at ASC LIMIT 300`).bind(id).all();
+    return json({ replies: r.results.map((x) => ({ id: x.id, text: x.text, writer: x.writer_type, nick: x.nickname || defaultNick(x.writer_type, x.voter), at: x.created_at, mine: !!uid && x.voter === uid })) });
+  }
+  if (replyMatch && method === "POST") {
+    const id = Number(replyMatch[1]);
+    const post = await db.prepare("SELECT id, cat FROM board_posts WHERE id=? AND hidden=0").bind(id).first();
+    if (!post) return err("없는 글이에요", 404);
+    if (catOf(post.cat) !== "ask") return err("답글은 질문에만 달 수 있어요");
+    const uid = await whoAmI(request, env, body.voter);
+    if (!uid) return err(kakaoOn(env) ? "먼저 로그인해 주세요" : "다시 시도해 주세요", 401);
+    const me = await db.prepare("SELECT type FROM residents WHERE voter=?").bind(uid).first();
+    if (!me) return err("먼저 내 MBTI를 등록해 주세요");
+    const text = clean(body.text, POST_MAX);
+    if (text.length < 2) return err("답글을 적어 주세요");
+    const low = text.toLowerCase().replace(/\s/g, "");
+    if (BAD.some((w) => low.includes(w))) return err("조금만 순한 말로 부탁해요 🙏");
+    if (/https?:|www\.|\.com|\.kr/i.test(text)) return err("링크는 넣을 수 없어요");
+    const ip = await ipHash(request, salt);
+    const n = await db.prepare("SELECT COUNT(*) n FROM board_replies WHERE ip=? AND created_at>?").bind(ip, Date.now() - 24 * 3600e3).first();
+    if (n.n >= DAILY_IP_REPLIES) return err("답글은 하루에 30개까지 달 수 있어요");
+    const r = await db.prepare("INSERT INTO board_replies (post_id, text, writer_type, ip, voter, created_at) VALUES (?,?,?,?,?,?)")
+      .bind(id, text, me.type, ip, uid, Date.now()).run();
+    return json({ ok: true, id: r.meta.last_row_id });
+  }
+  const replyAct = path.match(/^board\/reply\/(\d+)\/(delete|report)$/);
+  if (replyAct && method === "POST") {
+    const rid = Number(replyAct[1]), act = replyAct[2];
+    if (!validVoter(body.voter)) return err("다시 시도해 주세요");
+    const rp = await db.prepare("SELECT id, voter FROM board_replies WHERE id=? AND hidden=0").bind(rid).first();
+    if (!rp) return err("없는 답글이에요", 404);
+    if (act === "delete") {
+      const uid = await whoAmI(request, env, body.voter);
+      if (!uid || rp.voter !== uid) return err("내가 쓴 답글만 지울 수 있어요", 403);
+      await db.batch([db.prepare("DELETE FROM reply_reports WHERE reply_id=?").bind(rid), db.prepare("DELETE FROM board_replies WHERE id=?").bind(rid)]);
+      return json({ ok: true });
+    }
+    const ip = await ipHash(request, salt);
+    const ins = await db.prepare("INSERT OR IGNORE INTO reply_reports (reply_id, voter, ip, created_at) VALUES (?,?,?,?)").bind(rid, body.voter, ip, Date.now()).run();
+    if (ins.meta.changes) {
+      const c = await db.prepare("SELECT COUNT(DISTINCT ip) n FROM reply_reports WHERE reply_id=?").bind(rid).first();
+      await db.prepare("UPDATE board_replies SET reports=?, hidden=CASE WHEN ?>=? THEN 1 ELSE hidden END WHERE id=?").bind(c.n, c.n, REPORT_HIDE, rid).run();
+    }
+    return json({ ok: true });
   }
 
   const postMatch = path.match(/^board\/(\d+)\/(heart|report|delete)$/);
@@ -722,6 +790,7 @@ export async function onRequest({ request, env, params }) {
       await db.batch([
         db.prepare("DELETE FROM board_likes WHERE post_id=?").bind(id),
         db.prepare("DELETE FROM board_reports WHERE post_id=?").bind(id),
+        db.prepare("DELETE FROM board_replies WHERE post_id=?").bind(id),
         db.prepare("DELETE FROM board_posts WHERE id=?").bind(id),
       ]);
       return json({ ok: true });
@@ -762,7 +831,7 @@ export async function onRequest({ request, env, params }) {
       db.prepare("SELECT type, status, link FROM mbti_status").all(),
       db.prepare("SELECT kind, key, status, link FROM combo_status").all(),
       db.prepare("SELECT id, text FROM situations").all(),
-      uid ? db.prepare("SELECT id, type, text, writer_type, hearts, voter, created_at FROM board_posts WHERE voter=? AND hidden=0 ORDER BY created_at DESC LIMIT 50").bind(uid).all() : { results: [] },
+      uid ? db.prepare(`SELECT p.id, p.type, p.cat, p.text, p.writer_type, p.hearts, p.voter, p.created_at, ${REPLY_CNT} FROM board_posts p WHERE p.voter=? AND p.hidden=0 ORDER BY p.created_at DESC LIMIT 50`).bind(uid).all() : { results: [] },
       db.prepare("SELECT kind, key, n FROM like_counts WHERE kind IN ('mbti','pair','situation') ORDER BY n DESC").all(),
     ]);
     const st = new Map();
@@ -812,6 +881,9 @@ export async function onRequest({ request, env, params }) {
       } else if (body.kind === "scene") {
         who = await db.prepare("SELECT voter, ip, type || ' · ' || text AS text FROM scenes WHERE id=?").bind(Number(body.id)).first();
         note = who?.text || "";
+      } else if (body.kind === "reply") {
+        who = await db.prepare("SELECT voter, ip, text FROM board_replies WHERE id=?").bind(Number(body.id)).first();
+        note = who?.text || "";
       } else if (body.kind === "post") {
         who = await db.prepare("SELECT voter, ip, type || ' · ' || text AS text FROM board_posts WHERE id=?").bind(Number(body.id)).first();
         note = who?.text || "";
@@ -851,7 +923,7 @@ export async function onRequest({ request, env, params }) {
       return json({ ok: true });
     }
     if (path === "admin/export" && method === "GET") {
-      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports"];
+      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports", "board_replies", "reply_reports"];
       const out = { exported_at: new Date().toISOString(), tables: {} };
       for (const t of tables) out.tables[t] = (await db.prepare(`SELECT * FROM ${t}`).all()).results;
       return new Response(JSON.stringify(out), {
@@ -1055,7 +1127,8 @@ export async function onRequest({ request, env, params }) {
     // ---- 주민·게시판 ----
     if (path === "admin/board" && method === "GET") {
       const r = await db.prepare("SELECT p.id, p.type, p.cat, p.text, p.writer_type, p.hearts, p.reports, p.hidden, p.created_at, u.nickname FROM board_posts p LEFT JOIN users u ON u.uid=p.voter ORDER BY p.hidden DESC, p.reports DESC, p.created_at DESC LIMIT 1000").all();
-      return json({ posts: r.results });
+      const rr = await db.prepare("SELECT r.id, r.post_id, r.text, r.writer_type, r.reports, r.hidden, r.created_at, u.nickname, p.type, p.text post_text FROM board_replies r LEFT JOIN users u ON u.uid=r.voter LEFT JOIN board_posts p ON p.id=r.post_id ORDER BY r.hidden DESC, r.reports DESC, r.created_at DESC LIMIT 1000").all();
+      return json({ posts: r.results, replies: rr.results });
     }
     if (path === "admin/board/update" && method === "POST") {
       const id = Number(body.id);
@@ -1063,12 +1136,23 @@ export async function onRequest({ request, env, params }) {
         await db.batch([
           db.prepare("DELETE FROM board_likes WHERE post_id=?").bind(id),
           db.prepare("DELETE FROM board_reports WHERE post_id=?").bind(id),
+          db.prepare("DELETE FROM board_replies WHERE post_id=?").bind(id),
           db.prepare("DELETE FROM board_posts WHERE id=?").bind(id),
         ]);
       } else if (typeof body.hidden === "boolean") {
         // 다시 보이게 하면 신고 기록도 지움 (또 바로 숨지 않게)
         const ops = [db.prepare("UPDATE board_posts SET hidden=?, reports=CASE WHEN ? THEN reports ELSE 0 END WHERE id=?").bind(body.hidden ? 1 : 0, body.hidden ? 1 : 0, id)];
         if (!body.hidden) ops.push(db.prepare("DELETE FROM board_reports WHERE post_id=?").bind(id));
+        await db.batch(ops);
+      } else return err("바꿀 게 없어요");
+      return json({ ok: true });
+    }
+    if (path === "admin/reply/update" && method === "POST") {
+      const id = Number(body.id);
+      if (body.delete) await db.batch([db.prepare("DELETE FROM reply_reports WHERE reply_id=?").bind(id), db.prepare("DELETE FROM board_replies WHERE id=?").bind(id)]);
+      else if (typeof body.hidden === "boolean") {
+        const ops = [db.prepare("UPDATE board_replies SET hidden=?, reports=CASE WHEN ? THEN reports ELSE 0 END WHERE id=?").bind(body.hidden ? 1 : 0, body.hidden ? 1 : 0, id)];
+        if (!body.hidden) ops.push(db.prepare("DELETE FROM reply_reports WHERE reply_id=?").bind(id));
         await db.batch(ops);
       } else return err("바꿀 게 없어요");
       return json({ ok: true });
