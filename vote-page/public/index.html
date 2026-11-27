@@ -276,7 +276,8 @@ textarea.inp{height:76px;padding:10px 12px 18px;line-height:1.4;resize:none}
 .mdim{position:fixed;inset:0;z-index:30;background:rgba(18,32,44,.25)}
 
 /* 주민 등록 화면 */
-.setup{position:fixed;inset:0;z-index:25;background:var(--bg);overflow-y:auto;padding-bottom:120px}
+.setup{position:relative;z-index:25;background:var(--bg);min-height:100vh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+body.in-setup .app,body.in-setup .nav,body.in-setup .composer{display:none !important}
 .setup .in{max-width:480px;margin:0 auto}
 .setup .foot{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;padding:14px 20px calc(20px + env(safe-area-inset-bottom));background:var(--bg);border-top:1.5px solid rgba(26,26,26,.1)}
 .back{border:0;background:none;padding:0;font-size:14px;font-weight:700}
@@ -859,7 +860,7 @@ function openSetup({changeOnly}){
         ${["NT","NF","SJ","SP"].map(k=>`<div class="glabel">${G[k].name} ${k}</div><div class="tgrid">${TYPES.filter(t=>grp(t)===k).map(t=>`<button data-t="${t}" class="${t===st.type?"on":""}" style="${t===st.type?`background:${G[k].c};color:${G[k].ink}`:""}">${t}</button>`).join("")}</div>`).join("")}
       </div></div>
       <div class="foot"><button class="btn shadow" id="suGo">${st.type} 주민으로 ${changeOnly?"바꾸기":"등록하기"}</button></div>`;
-    $("#suBack").onclick = ()=>{ el.hidden=true; document.body.style.overflow=""; };
+    $("#suBack").onclick = ()=>closeSetup();
     $$("#setup .tgrid button").forEach(b=>b.onclick=()=>{
       const old = st.type; st.type = b.dataset.t;
       if(!st.nickTouched) st.nick = st.nick.replace(old, st.type);
@@ -874,15 +875,16 @@ function openSetup({changeOnly}){
         const body = {type: st.type}; if(!changeOnly) body.nick = st.nick.trim();
         const res = await api("town/join", body);
         toast(changeOnly ? (res.changed?`${st.type}(으)로 바꿨어요`:"그대로예요") : `${st.type} 주민이 됐어요! 응원도 눌러 주세요`);
-        el.hidden = true; document.body.style.overflow="";
+        closeSetup();
         S.town=null; S.me=null; recent=null; S.board.type = S.board.type || st.type;
         await loadTown(); if(!changeOnly && S.tab!=="board") S.tab="town";
         setTab(S.tab);
-      }catch(e){ toast(e.message); $("#suGo").disabled=false; if(e.status===401) { el.hidden=true; document.body.style.overflow=""; S.town=null; await loadTown(); startJoin(); } }
+      }catch(e){ toast(e.message); $("#suGo").disabled=false; if(e.status===401) { closeSetup(); S.town=null; await loadTown(); startJoin(); } }
     };
   };
-  draw(); el.hidden=false; el.scrollTop=0; document.body.style.overflow="hidden";
+  draw(); el.hidden=false; document.body.classList.add("in-setup"); window.scrollTo(0,0);
 }
+function closeSetup(){ $("#setup").hidden=true; document.body.classList.remove("in-setup"); window.scrollTo(0,0); }
 function editNick(){
   const me = S.town.me;
   openSheet(`<h2 style="margin-top:18px">닉네임 바꾸기</h2><p class="d">게시판에 이 이름으로 보여요 (2~16자)</p>
