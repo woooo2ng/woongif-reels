@@ -498,6 +498,7 @@ function drawPair(){
   let rest = all.slice(1);
   const mt = myType();
   if(S.cf==="mine") rest = mt ? rest.filter(x=>x.a===mt||x.b===mt) : [];
+  else if(S.cf.startsWith("t:")){ const ft=S.cf.slice(2); rest = rest.filter(x=>x.a===ft||x.b===ft); }
   else if(S.cf==="new") rest = [...rest].sort((a,b)=>(b.created||0)-(a.created||0));
   else if(S.cf==="기타") rest = rest.filter(x=>!BASE_RELS.includes(x.rel));
   else if(S.cf!=="all") rest = rest.filter(x=>x.rel===S.cf);
@@ -506,7 +507,8 @@ function drawPair(){
   const dupKey = ok ? pairKeyOf(f.a, f.b, rel) : null;
   const dup = dupKey && [...all, ...P.done].find(x=>x.key===dupKey);
   const dupRank = dup ? all.findIndex(x=>x.key===dup.key)+1 : 0;
-  const filters = [["mine","내 MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
+  const pick = S.cf.startsWith("t:") ? S.cf.slice(2) : null;
+  const filters = [...(mt?[["mine",mt+" 들어간 것"]]:[]),["pick", pick ? pick+" 들어간 것 ✕" : "MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
   const relLabel = (x)=> esc(x.rel);
   $("#vbody").innerHTML = `<div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
     ${top ? `<div class="card big" style="margin-top:12px">
@@ -515,7 +517,7 @@ function drawPair(){
       <div class="subt" style="font-size:17px;margin-top:12px">${esc(pairTitle(top.a,top.b,top.rel))}</div>
       <div style="margin-top:14px"><button class="hbig${liked(top.key)?" on":""}" data-h="${esc(top.key)}" id="ptop">${HEART}${liked(top.key)?"오늘 하트 보냄 · 다시 누르면 취소":"하트 보내기"}<span class="n">${fmt(top.votes)}</span></button></div></div>`
       : `<div class="card" style="margin-top:12px"><p class="empty">아직 신청이 없어요. 아래에서 첫 궁합을 신청해 주세요!</p></div>`}</div>
-    ${all.length>1 ? `<div class="chips hs">${filters.map(([k,l])=>`<button class="chip${S.cf===k?" on":""}" data-f="${k}">${k==="mine"&&mt?mt+" 들어간 것":l}</button>`).join("")}</div>
+    ${all.length>1 ? `<div class="chips hs">${filters.map(([k,l])=>`<button class="chip${S.cf===k||(k==="pick"&&pick)?" on":""}" data-f="${k}">${l}</button>`).join("")}</div>
     <div class="card list">${shown.map((x,i)=>`<div class="li"><span class="n">${S.cf==="all"?i+2:"·"}</span>
       <div class="bd"><div class="tt">${esc(pairTitle(x.a,x.b,x.rel))}</div><div class="mt"><span class="mini">${relLabel(x)}</span>${x.author?esc(x.author):""}${x.status!=="open"?` <span class="mini" style="background:var(--yellow);color:var(--ink)">${x.status==="today"?"오늘 공개":"제작 중"}</span>`:""}</div></div>
       ${smallHeart(x.key, x.votes, liked(x.key))}</div>`).join("") || `<div class="empty">${S.cf==="mine"&&!mt?"우리 유형 탭에서 내 MBTI를 등록하면 찾을 수 있어요":"조건에 맞는 궁합이 아직 없어요"}</div>`}
@@ -544,7 +546,10 @@ function drawPair(){
       <div class="cap">${esc(x.rel==="커플"?`${x.a}(남자) × ${x.b}(여자) 커플`:`${x.a} × ${x.b} ${x.rel}`)}</div></a>`).join("")}</div>` : ""}`;
   const findItem = (k)=>[...all, ...P.done].find(x=>x.key===k);
   $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likePair(x.a,x.b,x.rel, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
-  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{ S.cf=b.dataset.f; S.cMore=false; drawPair(); });
+  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{
+    const f0=b.dataset.f;
+    if(f0==="pick"){ if(pick){ S.cf="all"; S.cMore=false; drawPair(); } else typePick("이 유형이 들어간 궁합만", (t)=>{ S.cf="t:"+t; S.cMore=false; drawPair(); }); return; }
+    S.cf=f0; S.cMore=false; drawPair(); });
   const pm=$("#pMore"); if(pm) pm.onclick=()=>{ S.cMore=!S.cMore; drawPair(); };
   $$("#vbody [data-r]").forEach(b=>b.onclick=()=>{ f.rel=b.dataset.r; drawPair(); if(f.rel==="기타") $("#pCustom").focus(); });
   const pc=$("#pCustom"); if(pc) pc.oninput=(e)=>{ f.custom=e.target.value; const pos=e.target.selectionStart; drawPair(); const n=$("#pCustom"); n.focus(); n.setSelectionRange(pos,pos); };
@@ -579,7 +584,9 @@ function drawSit(){
   const T = S.sit, liked = (k)=>T.todayLikes.includes(k);
   const all = [...T.making, ...T.ranking], top = all[0];
   let rest = all.slice(1); const mt = myType();
+  const spick = S.sf.startsWith("t:") ? S.sf.slice(2) : null;
   if(S.sf==="mine") rest = mt ? rest.filter(x=>x.type===mt) : [];
+  else if(S.sf.startsWith("t:")){ const ft=S.sf.slice(2); rest = rest.filter(x=>x.type===ft); }
   else if(S.sf==="new") rest = [...rest].sort((a,b)=>(b.created||0)-(a.created||0));
   const f = S.sform, text = f.text.trim().replace(/^온\s*세상이\s*\S+?인데\s*/,"").replace(/[?？]+$/,"");
   const dup = text && [...all, ...T.done].find(x=>x.type===f.type && x.text===text);
@@ -590,7 +597,7 @@ function drawSit(){
       <div style="margin-top:14px;font-size:22px;font-weight:900;line-height:1.35;word-break:keep-all">${esc(sitTitle(top.type, top.text))}</div>
       <div style="margin-top:14px"><button class="hbig${liked(top.key)?" on":""}" data-h="${esc(top.key)}" id="stop">${HEART}${liked(top.key)?"오늘 하트 보냄 · 다시 누르면 취소":"하트 보내기"}<span class="n">${fmt(top.votes)}</span></button></div></div>`
       : `<div class="card" style="margin-top:12px"><p class="empty">아직 신청이 없어요. 아래에서 첫 상황을 적어 주세요!</p></div>`}</div>
-    ${all.length>1 ? `<div class="chips hs">${[["all","전체"],["mine",mt?mt+" 상황만":"내 MBTI로 찾기"],["new","최신순"]].map(([k,l])=>`<button class="chip${S.sf===k?" on":""}" data-f="${k}">${l}</button>`).join("")}</div>
+    ${all.length>1 ? `<div class="chips hs">${[...(mt?[["mine",mt+" 상황만"]]:[]),["pick", spick ? spick+" 상황만 ✕" : "MBTI로 찾기"],["all","전체"],["new","최신순"]].map(([k,l])=>`<button class="chip${S.sf===k||(k==="pick"&&spick)?" on":""}" data-f="${k}">${l}</button>`).join("")}</div>
     <div class="card list">${rest.map((x,i)=>`<div class="li"><span class="n">${S.sf==="all"?i+2:"·"}</span>
       <div class="bd"><span class="mini" style="background:${gc(x.type).c};color:${gc(x.type).ink}">${x.type}</span><div class="tt" style="margin-top:4px">${esc(sitTitle(x.type,x.text))}</div></div>
       ${smallHeart(x.key, x.votes, liked(x.key))}</div>`).join("") || `<div class="empty">${S.sf==="mine"&&!mt?"우리 유형 탭에서 내 MBTI를 등록하면 찾을 수 있어요":"아직 내 유형 상황이 없어요. 첫 신청을 해 보세요"}</div>`}</div>` : ""}
@@ -608,7 +615,10 @@ function drawSit(){
     ${T.done.length ? `<div class="sec">이미 나온 상황편</div><div class="dchips">${T.done.map(x=>`<a class="dchip" href="${esc(x.link||REELS)}" target="_blank" rel="noopener"><i></i>${esc(x.type)}인데 ${esc(x.text)}</a>`).join("")}</div>` : ""}`;
   const findItem = (k)=>[...all, ...T.done].find(x=>x.key===k);
   $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likeSit(x, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
-  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{ S.sf=b.dataset.f; drawSit(); });
+  $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{
+    const f0=b.dataset.f;
+    if(f0==="pick"){ if(spick){ S.sf="all"; drawSit(); } else typePick("이 유형 상황만", (t)=>{ S.sf="t:"+t; drawSit(); }); return; }
+    S.sf=f0; drawSit(); });
   $("#sType").onchange=(e)=>{ f.type=e.target.value; drawSit(); };
   $("#sText").oninput=(e)=>{ f.text=e.target.value; const pos=e.target.selectionStart; drawSit(); const n=$("#sText"); n.focus(); n.setSelectionRange(pos,pos); };
   const sa=$("#sAuthor"); if(sa) fillInsta("#sAuthor");
@@ -824,6 +834,13 @@ async function logout(){
 // ================= 로그인 · 주민 등록 =================
 function openSheet(html){ $("#sheet").innerHTML = `<div class="grab"></div>`+html; $("#dim").classList.add("show"); }
 function closeSheet(){ $("#dim").classList.remove("show"); }
+function typePick(title, cb){
+  openSheet(`<h2 style="margin-top:14px;font-size:20px">${esc(title)}</h2>
+    ${["NT","NF","SJ","SP"].map(k=>`<div class="glabel">${G[k].name} ${k}</div><div class="tgrid">${TYPES.filter(t=>grp(t)===k).map(t=>`<button data-tp="${t}" style="background:${G[k].c}">${t}</button>`).join("")}</div>`).join("")}
+    <button class="later" id="tpClose" style="margin-top:14px">닫기</button>`);
+  $$("#sheet [data-tp]").forEach(b=>b.onclick=()=>{ closeSheet(); cb(b.dataset.tp); });
+  $("#tpClose").onclick = closeSheet;
+}
 $("#dim").onclick = (e)=>{ if(e.target.id==="dim") closeSheet(); };
 function startJoin(){
   if(!S.town){ loadTown().then(startJoin); return; }
