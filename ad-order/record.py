@@ -4,6 +4,7 @@ from playwright.async_api import async_playwright
 B="http://localhost:8788"
 CSS="""
 html{zoom:2}
+.bar .px{display:none !important}
 #stage{position:sticky;top:0;z-index:5}
 .tapfx{position:fixed;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,216,77,.55);border:3px solid rgba(26,26,26,.7);pointer-events:none;z-index:99;animation:tp .5s ease-out forwards}
 @keyframes tp{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.4);opacity:0}}
@@ -74,17 +75,13 @@ async def main():
         await tap('[data-t="ISFP"]', 250)
         await typ('#nmI', '웅이', 120)
         mark("dress")
-        await tap('.tabs [data-slot="a"]', 350)
         await scroll_to('[data-hair]')
-        await tap('[data-hair="long"]', 700)
+        await tap('[data-hair="dandy"]', 800)
         await scroll_to('[data-tg="gl"]')
-        await tap('[data-tg="gl"]', 700)
-        await pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})"); await pg.wait_for_timeout(400)
-        await tap('.tabs [data-slot="b"]', 350)
-        await scroll_to('[data-hair]')
-        await tap('[data-hair="dandy"]', 700)
+        await tap('[data-tg="gl"]', 800)
         await scroll_to('[data-top]')
-        await tap('[data-top="hood"]', 900)
+        await tap('[data-top="hood"]', 1000)
+        await pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})"); await pg.wait_for_timeout(700)
         mark("story")
         await tap('#nx', 700)
         await typ('#stI', '처음 만난 날 비가 와서 우산 하나를 같이 썼어요', 75)

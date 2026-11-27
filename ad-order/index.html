@@ -83,8 +83,8 @@ function makeBuilding(r,w,h,d){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[sideD,sideD,top,top,side,side]);m.position.y=h/2;return m;
 }
 // ---------- 등장인물: 주문서에서 꾸민 그대로 (선우 INTJ 여 · 웅이 ISFP 남) ----------
-const SUNWOO={g:'여',hair:'long',hc:0,skin:0,cl:0,gl:true,top:'tee',bottom:'skirt',bc:4,hat:'none',scarf:false};
-const WOONG={g:'남',hair:'dandy',hc:0,skin:0,cl:3,gl:false,top:'hood',bottom:'pants',bc:0,hat:'none',scarf:false};
+const SUNWOO={g:'여',hair:'tied',hc:0,skin:0,cl:0,gl:false,top:'tee',bottom:'skirt',bc:4,hat:'none',scarf:false};
+const WOONG={g:'남',hair:'dandy',hc:0,skin:0,cl:3,gl:true,top:'hood',bottom:'pants',bc:0,hat:'none',scarf:false};
 function umbrella(col=0xff8fb3){
   const g=new THREE.Group();
   const can=new THREE.Mesh(new THREE.ConeGeometry(0.95,0.42,10,1,true),new THREE.MeshLambertMaterial({color:col,flatShading:true,side:THREE.DoubleSide}));can.position.y=0.21;g.add(can);
@@ -93,6 +93,9 @@ function umbrella(col=0xff8fb3){
   const hd=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.02,6,10,Math.PI),lamb(0x6a4a3a));hd.position.y=-0.83;hd.rotation.z=Math.PI;g.add(hd);
   return g;
 }
+function gripUmbrella(col){const o=new THREE.Group();const u=umbrella(col);u.position.y=0.74;o.add(u);return o}
+const _v=new THREE.Vector3();
+function holdAt(p,um){p.updateMatrixWorld(true);const hand=p.userData.arms[0].children[1];hand.getWorldPosition(_v);um.position.copy(_v)}
 function alley(scene,r,o={}){
   const g=new THREE.Mesh(new THREE.PlaneGeometry(120,120),lamb(o.ground??0x8e98a8));g.rotation.x=-Math.PI/2;g.position.y=-0.01;scene.add(g);
   for(const s of[-1,1]){let z=6;while(z>-60){const w=3+r()*2.5,h=5+r()*9,d=4;const b=makeBuilding(r,d,h,w);b.position.set(s*(3.6+d/2),b.position.y,z-w/2);scene.add(b);z-=w+0.3}}
@@ -131,14 +134,14 @@ S[0]=()=>{
   const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xb4c2d8,12,45);LIGHT(scene);
   const r=rng(11);alley(scene,r);
   const A=person(SUNWOO),B=person(WOONG);A.position.set(-0.32,0,0);B.position.set(0.36,0,0);A.rotation.y=0.25;B.rotation.y=-0.25;scene.add(A,B);
-  const um=umbrella();um.position.set(0.05,2.35,0.05);um.rotation.z=0.16;scene.add(um);
-  B.userData.arms[0].rotation.x=-2.5;B.userData.arms[0].rotation.z=-0.35;
+  const um=gripUmbrella(0xff8fb3);um.rotation.z=0.14;scene.add(um);
+  B.userData.arms[0].rotation.x=-2.3;B.userData.arms[0].rotation.z=-0.45;
   const rn=rain(scene,520,r,[12,12]);
   const cam=new THREE.PerspectiveCamera(42,W/H,0.1,200);
   ui.innerHTML='<div class="tag">맞춤 궁합 영상 주문</div><div class="title1 out">웅이프한테</div><div class="title2 out">우리 커플 영상<br>주문하면?</div>';
   const tag=ui.querySelector('.tag'),t1=ui.querySelector('.title1'),t2=ui.querySelector('.title2');
   return t=>{
-    rn(t);
+    rn(t);holdAt(B,um);
     A.userData.head.rotation.y=Math.sin(t*1.2)*0.1+0.2;B.userData.head.rotation.y=-0.15+Math.sin(t*1.1)*0.08;
     const z=8.1-t*0.15;cam.position.set(0.15,1.9,z);cam.lookAt(0,1.94,0);
     tag.style.transform=`translateX(-50%) scale(${pop(t/0.3)})`;
@@ -174,7 +177,7 @@ S[4]=()=>{
   const r=rng(23);alley(scene,r);
   const A=person(SUNWOO),B=person(WOONG);A.position.set(-0.45,0,0);A.rotation.y=0.15;scene.add(A);
   B.position.set(3.2,0,0.3);B.rotation.y=-Math.PI/2;scene.add(B);
-  const um=umbrella(0x8cc9a0);scene.add(um);um.visible=false;
+  const um=gripUmbrella(0x8cc9a0);scene.add(um);um.visible=false;
   const rn=rain(scene,560,r,[12,12]);
   const qb=makeBubble('비 온다…',{bg:'#ffffff',fs:68,size:0.0036});qb.position.set(0,2.75,0);A.add(qb);
   const hb=makeBubble('♥',{bg:'#ffd1e3',fg:'#e2264d',fs:90,size:0.0045});hb.position.set(-0.05,3.0,0.1);scene.add(hb);
@@ -195,8 +198,8 @@ S[4]=()=>{
     ua.head.rotation.y=t>WALK[1]?ease((t-WALK[1])/0.3)*0.5:0;
     // 우산 펼치기 → 선우 쪽으로 기울임
     um.visible=t>OPEN;const o=pop((t-OPEN)/0.35);um.scale.set(o,o,o);
-    ub.arms[0].rotation.x=-2.5*ease((t-OPEN+0.15)/0.3);ub.arms[0].rotation.z=-0.35*ease((t-OPEN+0.15)/0.3);
-    const tilt=ease((t-OPEN-0.4)/0.6);um.position.set(B.position.x-0.32-tilt*0.15,2.35,0.15);um.rotation.z=0.12+tilt*0.22;
+    const lift=ease((t-OPEN+0.15)/0.3);ub.arms[0].rotation.x=-2.3*lift;ub.arms[0].rotation.z=-0.45*lift;
+    const tilt=ease((t-OPEN-0.4)/0.6);holdAt(B,um);um.rotation.z=0.04+tilt*0.12;
     // 웅이 어깨에만 떨어지는 빗방울
     drops.forEach((d,i)=>{const lt=((t*1.6+i/6)%1);d.visible=t>OPEN+0.6;d.position.set(B.position.x+0.25+(i%2)*0.06,2.2-lt*0.9,0.2+(i%3)*0.05)});
     scaleBubble(hb,pop((t-HEART)/0.3));hb.position.y=3.0+Math.sin(t*4)*0.04;
