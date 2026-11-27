@@ -56,3 +56,11 @@ npx wrangler pages dev
 - 좋아요: 같은 글은 기기 ID당 하루 1번 + 같은 글은 같은 IP에서 하루 3번까지(시크릿 창·기록 삭제 중복 방지) + 같은 IP는 종류별 하루 150개까지
 - 아이디어: 같은 IP 하루 5개, 40자, 링크·욕설 차단, 중복 문장 차단, 관리자 승인 후 공개
 - IP는 해시로만 저장
+
+
+## 맞춤 궁합 영상 주문 (/order)
+- 주문 페이지 `public/order.html`, 정책 페이지 `terms.html`·`refund.html`·`privacy.html`, 관리 페이지 '🎬 주문' 탭.
+- 가격은 `functions/api/[[path]].js`의 `PRODUCTS`에서만 바꿔요. 오픈 할인은 `sale: 9900`처럼 넣으면 화면에 '오픈 기념' 뱃지와 할인가가 떠요.
+- 결제: 토스페이먼츠 결제위젯. Cloudflare 환경 변수 `TOSS_CLIENT_KEY`(결제위젯 연동 키 test_gck…/live_gck…)와 `TOSS_SECRET_KEY`(시크릿 키, **Secret**으로) 둘 다 넣으면 그 키로, 없으면 토스 문서용 테스트 키로 돌아가요(돈 안 나감).
+- 흐름: 주문서 → `order/create`(결제 전 pending) → 토스 결제창 → `/order?pay=success` → `order/confirm`(서버에서 금액 확인 후 승인) → 접수.
+- 상태: 접수(paid) → 대본 확인(script, 스페셜만) → 제작 중(making) → 완성(done, 다운로드 링크). 접수 상태에서만 구매자가 직접 취소(자동 환불).

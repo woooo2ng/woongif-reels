@@ -54,6 +54,7 @@ table.st tr.now td{background:#fffbe6}
   <h1>신청소 관리 <a href="/" style="font-size:13px">페이지 보기 →</a></h1>
   <div class="tabs">
     <button data-t="stats" aria-selected="true">📊 통계</button>
+    <button data-t="orders">🎬 주문<span id="odn"></span></button>
     <button data-t="pending">대기 중<span id="pc"></span></button>
     <button data-t="live">공개</button>
     <button data-t="mbti">MBTI</button>
@@ -62,6 +63,13 @@ table.st tr.now td{background:#fffbe6}
     <button data-t="town">🏘️ 우리 유형<span id="bdn"></span></button>
     <button data-t="safe">🛡️ 차단·백업</button>
   </div>
+
+  <section id="s-orders" hidden>
+    <h2>맞춤 궁합 영상 주문 <span id="otest"></span></h2>
+    <p class="sub">상태를 바꾸면 구매자 '내 주문'에 바로 보여요. 완성 링크를 넣고 '완성'으로 바꾸면 다운로드 버튼이 생겨요. 이메일은 직접 보내 주세요.</p>
+    <div class="row" id="ofl"></div>
+    <div id="orders"></div>
+  </section>
 
   <section id="s-safe" hidden>
     <h2>백업</h2>
@@ -167,7 +175,7 @@ document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   ["stats","pending","live","mbti","combo","scenes","town","poll","safe"].forEach(t=>$("#s-"+t).hidden=t!==b.dataset.t);
 });
 
-async function load(){ await Promise.all([loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll(), loadTown()]); }
+async function load(){ await Promise.all([loadOrders(), loadStats(), loadIdeas(), loadMbti(), loadCombo(), loadScenes(), loadBlocks(), loadPoll(), loadTown()]); }
 let bposts = [], breplies = [], bdFilter = "";
 function renderReplies(){
   const when=(t)=>new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
@@ -180,6 +188,45 @@ function renderReplies(){
   bindBlocks();
   document.querySelectorAll("[data-rh]").forEach(b=>b.onclick=async()=>{ try{ await api("admin/reply/update",{id:Number(b.dataset.rh),hidden:b.dataset.v==="1"}); loadTown(); }catch(e){ toast(e.message); } });
   document.querySelectorAll("[data-rdel]").forEach(b=>b.onclick=async()=>{ if(!confirm("답글을 삭제할까요?")) return; try{ await api("admin/reply/update",{id:Number(b.dataset.rdel),delete:true}); loadTown(); }catch(e){ toast(e.message); } });
+}
+
+// ---------- 맞춤 영상 주문 ----------
+let orders = [], oFilter = "open";
+const OST = {pending:"결제 전", paid:"접수", script:"대본 확인", making:"제작 중", done:"완성", canceled:"취소됨"};
+const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","하늘","라벤더","복숭아","연두","회색"], hair:{short:"짧은 머리",long:"긴 머리",tied:"묶은 머리"}};
+const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} 옷${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
+async function loadOrders(){
+  const d = await api("admin/orders"); orders = d.orders;
+  $("#otest").innerHTML = d.test ? `<span class="badge" style="background:#ffd84d;color:#1a1a1a">테스트 결제 모드</span>` : "";
+  renderOrders();
+}
+function renderOrders(){
+  const open = orders.filter(o=>["paid","script","making"].includes(o.status));
+  $("#odn").innerHTML = open.length ? `<span class="badge">${open.length}</span>` : "";
+  const F = [["open","진행 중 ("+open.length+")"],["done","완성"],["canceled","취소"],["all","전체"]];
+  $("#ofl").innerHTML = F.map(([k,l])=>`<button data-of="${k}" style="${oFilter===k?"background:#fff0a8":""}">${l}</button>`).join("");
+  document.querySelectorAll("[data-of]").forEach(b=>b.onclick=()=>{ oFilter=b.dataset.of; renderOrders(); });
+  const list = oFilter==="all" ? orders : oFilter==="open" ? open : orders.filter(o=>o.status===oFilter);
+  const when=(t)=>t?new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+  $("#orders").innerHTML = list.length ? list.map(o=>{
+    const steps = o.pkg==="special" ? ["paid","script","making","done"] : ["paid","making","done"];
+    return `<div class="card" data-oid="${esc(o.id)}">
+    <div class="txt"><b>${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}</b></div>
+    <div class="sub">${esc(o.id)} · ${esc(o.product)} · ${Number(o.amount).toLocaleString()}원 · ${esc(o.method||"")} · 결제 ${when(o.paidAt)} · <b>${o.due?md(o.due)+"까지":""}</b></div>
+    <div class="sub">상태 <b>${OST[o.status]}</b> · ✉️ ${esc(o.email)}${o.kakao?` · 카톡 ${esc(o.kakao)}`:""} · 릴스 공개 ${o.reels?"<b>동의</b>":"안 함"}</div>
+    <div class="sub">A ${esc(o.nameA)}: ${chs(o.chars.a)}<br>B ${esc(o.nameB)}: ${chs(o.chars.b)}</div>
+    ${o.story?`<div class="txt" style="white-space:pre-wrap;background:#fff8dc;border-radius:8px;padding:8px;margin-top:6px">${esc(o.story)}</div>`:""}
+    ${o.status==="canceled"?`<div class="sub">취소: ${esc(o.cancelReason||"")}</div>`:`
+    <div class="row" style="margin-top:8px">${steps.map(k=>`<button data-ost="${k}" style="${o.status===k?"background:#fff0a8;font-weight:800":""}">${OST[k]}</button>`).join("")}</div>
+    ${o.pkg==="special"?`<input data-oscript placeholder="대본 미리보기 링크 (구글 문서 등)" value="${esc(o.script||"")}" style="width:100%;margin-top:6px">`:""}
+    <input data-olink placeholder="완성 영상 다운로드 링크" value="${esc(o.link||"")}" style="width:100%;margin-top:6px">
+    <textarea data-onote placeholder="메모 (나만 보임)" style="width:100%;margin-top:6px;min-height:40px">${esc(o.note||"")}</textarea>
+    <div class="row" style="margin-top:6px"><button class="pri" data-osave>저장</button><button class="no" data-orefund>환불</button></div>`}</div>`; }).join("") : `<p class="empty">주문이 없어요</p>`;
+  const card = (b)=>b.closest("[data-oid]");
+  const val = (c,sel)=>{ const e=c.querySelector(sel); return e?e.value:undefined; };
+  document.querySelectorAll("[data-ost]").forEach(b=>b.onclick=async()=>{ const c=card(b); try{ await api("admin/order/update",{id:c.dataset.oid,status:b.dataset.ost}); toast(OST[b.dataset.ost]+"(으)로 바꿨어요"); loadOrders(); }catch(e){ toast(e.message); } });
+  document.querySelectorAll("[data-osave]").forEach(b=>b.onclick=async()=>{ const c=card(b); try{ await api("admin/order/update",{id:c.dataset.oid,link:val(c,"[data-olink]"),script:val(c,"[data-oscript]"),note:val(c,"[data-onote]")}); toast("저장했어요"); loadOrders(); }catch(e){ toast(e.message); } });
+  document.querySelectorAll("[data-orefund]").forEach(b=>b.onclick=async()=>{ const c=card(b); const r=prompt("환불할까요? 전액 환불돼요. 사유를 적어 주세요","판매자 환불"); if(r===null) return; try{ await api("admin/order/update",{id:c.dataset.oid,refund:true,reason:r}); toast("환불했어요"); loadOrders(); }catch(e){ toast(e.message); } });
 }
 async function loadTown(){
   const [t, b] = await Promise.all([api("town"), api("admin/board")]);

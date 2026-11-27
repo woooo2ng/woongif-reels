@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>맞춤 궁합 영상 주문 · @woong.if</title>
+<meta name="description" content="두 사람 MBTI랑 이름만 알려 주세요. 둘만을 위한 50초 3D 궁합 숏폼을 웅이프 스타일로 만들어 드려요.">
+<meta property="og:title" content="우리 둘 궁합을 웅이프 영상으로">
+<meta property="og:description" content="커플·부부·가족·친구 맞춤 50초 3D 궁합 숏폼 · 14,900원부터">
+<meta property="og:image" content="/og.png">
+<meta name="theme-color" content="#bfe0f4">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--ink:#1a1a1a;--sky:#bfe0f4;--bg:#f4f9fc;--yellow:#ffd84d;--red:#ff3b5c;--sub:#55606a;--sub2:#3b4650;--line:#eef3f6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#dfeef7;color:var(--ink);font-family:Pretendard,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:calc(110px + env(safe-area-inset-bottom));box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.hero{background:var(--sky);padding:6px 20px 26px;border-bottom:2px solid var(--ink);border-radius:0 0 32px 32px}
+.top{display:flex;align-items:center;justify-content:space-between;height:52px}
+.brand{display:flex;align-items:baseline;gap:6px;text-decoration:none}.brand b{font-size:18px;font-weight:900}.brand span{font-size:12px;font-weight:600;color:var(--sub2)}
+.pillbtn{height:30px;padding:0 12px;border-radius:15px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;font-size:12px;font-weight:800;text-decoration:none}
+.tag{display:inline-block;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800;transform:rotate(-2deg)}
+.outline{margin:0;font-weight:900;line-height:1.2;color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;word-break:keep-all}
+.video{position:relative;width:200px;height:356px;border-radius:22px;border:2px solid var(--ink);background:repeating-linear-gradient(135deg,#dcedf8 0 6px,#bfe0f4 6px 12px);overflow:hidden;box-shadow:0 4px 0 var(--ink);margin:14px auto 0}
+.video video{width:100%;height:100%;object-fit:cover;display:block}
+.video .lb{position:absolute;bottom:12px;left:0;right:0;text-align:center;font:600 12px Pretendard;color:var(--sub2)}
+.video .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:#fff;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.video .play i{width:0;height:0;border-left:18px solid var(--ink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:4px}
+.lead{margin:12px 0 0;text-align:center;font-size:14px;line-height:1.55;font-weight:600;color:var(--sub2)}
+.sec{padding:26px 20px 0}.sec h2{margin:0;font-size:17px;font-weight:900}
+.steps3{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.steps3 li{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:12px 10px 14px}
+.steps3 .n{display:flex;width:26px;height:26px;border-radius:13px;border:2px solid var(--ink);align-items:center;justify-content:center;font-size:13px;font-weight:900}
+.steps3 b{display:block;margin-top:10px;font-size:15px}.steps3 small{display:block;margin-top:4px;font-size:12px;line-height:1.45;color:var(--sub)}
+.prods{margin-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+.prod{display:flex;flex-direction:column;text-align:left;padding:14px 12px 6px;border-radius:20px;border:2px solid var(--ink);background:#fff;color:var(--ink);transition:background .15s}
+.prod.on{background:#fff6cc;box-shadow:0 4px 0 var(--ink)}
+.prod .bd{min-height:26px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.rec{display:inline-block;background:var(--red);border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800;color:#fff;transform:rotate(-2deg)}
+.salebd{display:inline-block;background:#fff;border:2px dashed #d4163b;border-radius:8px;padding:2px 7px;font-size:11px;font-weight:900;color:#d4163b}
+.radio{width:18px;height:18px;border-radius:9px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.radio i{width:8px;height:8px;border-radius:4px;background:#fff}.prod.on .radio i{background:var(--ink)}
+.prod .nm{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:16px;font-weight:900}
+.prod .sb{margin-top:2px;font-size:12px;font-weight:800;color:var(--sub2)}
+.prod .pr{margin-top:8px;font-size:24px;font-weight:900;letter-spacing:-.5px}
+.prod .was{font-size:13px;font-weight:700;color:var(--sub);text-decoration:line-through;margin-top:6px}
+.prod ul{list-style:none;margin:10px 0 0;padding:0;width:100%}
+.prod li{min-height:44px;display:flex;gap:6px;align-items:center;border-top:1.5px solid rgba(26,26,26,.12);font-size:12px;line-height:1.35;font-weight:700}
+.prod li.no{color:#66717a;font-weight:600}
+.note{margin:10px 2px 0;display:flex;gap:6px;align-items:center;font-size:12px;font-weight:700;color:var(--sub2)}
+.faq{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:20px;overflow:hidden}
+.faq>div{border-bottom:1.5px solid var(--line)}.faq>div:last-child{border-bottom:none}
+.faq button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border:none;background:#fff;text-align:left;font-size:14px;font-weight:800}
+.faq button span:last-child{flex:none;width:24px;height:24px;border-radius:12px;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900}
+.faq p{margin:0;padding:0 16px 16px;font-size:13px;line-height:1.6;color:var(--sub2)}
+/* 주문서 헤더 */
+.fhead{background:var(--sky);padding:6px 20px 20px;border-bottom:2px solid var(--ink)}
+.fbar{display:flex;align-items:center;justify-content:space-between;height:52px}
+.back{width:36px;height:36px;border-radius:18px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;padding:0}
+.fbar .t{font-size:16px;font-weight:800}.fbar .p{width:36px;text-align:right;font-size:13px;font-weight:900}
+.prog{display:flex;gap:4px;margin-top:8px}.prog i{flex:1;height:10px;border-radius:5px;border:2px solid var(--ink);background:#fff}.prog i.on{background:var(--ink)}
+.fhead .tag{margin-top:16px}
+.fhead h1{font-size:28px;margin-top:8px}
+.body{padding:22px 20px 0}
+.rels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rel{height:88px;border-radius:20px;border:2px solid rgba(26,26,26,.25);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.rel b{font-size:18px;font-weight:900}.rel small{font-size:12px;font-weight:700;color:var(--sub)}
+.rel.on{background:var(--yellow);border-color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+.preview{margin-top:14px;border:2px dashed rgba(26,26,26,.35);border-radius:18px;padding:14px 16px;background:#fff}
+.preview small{font-size:12px;font-weight:700;color:var(--sub)}.preview div{margin-top:4px;font-size:16px;font-weight:900}
+.hint{margin:10px 2px 0;font-size:12px;line-height:1.55;color:var(--sub)}
+.stage{position:relative;height:296px;border-radius:24px;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);overflow:hidden;background:linear-gradient(#eaf5fc 0 72%,#d6ecd9 72% 100%);display:flex;justify-content:space-around;align-items:flex-end;padding:0 8px 6px}
+.fig{border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:center}
+.fig .cur{height:24px;display:flex;align-items:center}
+.fig .cur span{font-size:11px;font-weight:900;padding:2px 8px;border-radius:8px;border:2px solid var(--ink);background:var(--yellow)}
+.fig .lab{margin-top:2px;height:28px;padding:0 10px;border-radius:14px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:900;white-space:nowrap}
+.fig.on .lab{background:var(--yellow)}
+.fig .lab em{font-style:normal;font-size:11px;padding:0 5px;border-radius:5px;background:var(--ink);color:#fff}
+.tabs{display:flex;margin-top:14px;padding:3px;border-radius:16px;border:2px solid var(--ink);background:#fff}
+.tabs button{flex:1;min-width:0;height:44px;border:none;border-radius:12px;background:transparent;font-size:15px;font-weight:900;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+.tabs button.on{background:var(--yellow);color:var(--ink)}
+.card{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:22px;padding:4px 16px 18px}
+.fl{margin-top:18px}.fl .lh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:13px;font-weight:800}.fl .lh span{font-size:12px;font-weight:700;color:var(--sub)}
+.lbl{display:block;font-size:13px;font-weight:800;margin:0 0 8px}
+.inp{width:100%;height:50px;border-radius:14px;border:2px solid var(--ink);padding:0 14px;font-size:16px;background:#fff;outline:none}
+.inp:focus{box-shadow:0 0 0 3px rgba(255,216,77,.8)}
+.inp.bad{border-color:#d4163b}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tile{position:relative;height:46px;border-radius:14px;border:2px solid transparent;font-size:14px;font-weight:900;padding:0}
+.tile.m{border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.tile em{position:absolute;top:-7px;right:-5px;font-style:normal;font-size:10px;font-weight:900;padding:1px 5px;border-radius:7px;background:var(--ink);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{height:38px;padding:0 14px;border-radius:19px;border:2px solid rgba(26,26,26,.2);background:#fff;font-size:14px;font-weight:800}
+.chip.on{background:var(--yellow);border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.sws{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:38px;height:38px;border-radius:50%;border:none;padding:0;box-shadow:inset 0 0 0 1.5px rgba(26,26,26,.25)}
+.sw.on{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--ink)}
+.sw.sk{width:42px;height:42px}.sw.cl{width:32px;height:32px}
+.cnt{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:700;color:var(--sub)}
+.ta{background:#fff;border:2px solid var(--ink);border-radius:20px;padding:14px 14px 10px}
+.ta textarea{width:100%;border:none;outline:none;resize:none;font-size:15px;line-height:1.6;background:transparent}
+.sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sug span{height:32px;padding:0 12px;border-radius:16px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
+.ylist{list-style:none;margin:16px 0 0;padding:12px 14px;background:#fff6cc;border:2px solid var(--ink);border-radius:16px;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.5;font-weight:700}
+.ylist li,.wlist li{display:flex;gap:8px;align-items:flex-start}
+.skip{border:2px dashed rgba(26,26,26,.35);border-radius:22px;background:#fff;padding:20px 18px;text-align:center}
+.checks{margin-top:18px;background:#fff;border:2px solid var(--ink);border-radius:20px;padding:4px 16px}
+.ck{display:flex;align-items:center;gap:10px;padding:14px 0;border:none;background:none;width:100%;text-align:left;font-size:14px;font-weight:800}
+.ck+.ck{border-top:1.5px solid var(--line)}
+.box{width:22px;height:22px;border-radius:6px;border:2px solid var(--ink);background:#fff;flex:none;display:flex;align-items:center;justify-content:center}
+.ck.on .box{background:var(--ink)}.ck.on .box::after{content:"";width:10px;height:6px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.bdg{font-size:11px;font-weight:900;padding:1px 6px;border-radius:6px;background:var(--line);color:var(--sub2)}
+.bdg.req{background:var(--red);color:#fff}
+.ck a{text-underline-offset:3px}
+.sum{background:#fff;border:2px solid var(--ink);border-radius:22px;box-shadow:0 4px 0 var(--ink);padding:6px 18px 16px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1.5px solid var(--line);font-size:14px}
+.row span:first-child{flex:none;color:var(--sub);font-weight:700}.row span:last-child{font-weight:800;text-align:right;word-break:keep-all}
+.seg{display:flex;margin-top:8px;padding:3px;border-radius:14px;border:2px solid var(--ink);background:#fff}
+.seg button{flex:1;height:40px;border:none;border-radius:10px;background:transparent;color:var(--sub);font-size:14px;font-weight:900}
+.seg button.on{background:var(--yellow);color:var(--ink)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;padding-top:14px;border-top:2px solid var(--ink)}
+.total b{font-size:15px;font-weight:900}.total strong{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.wlist{list-style:none;margin:16px 0 0;padding:14px 16px;border-radius:18px;background:#fff;border:1.5px solid rgba(26,26,26,.2);display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:700;line-height:1.45}
+.widget{margin-top:8px;border-radius:18px;background:#fff;overflow:hidden;border:2px solid var(--ink)}
+.testbar{margin-top:14px;padding:10px 14px;border-radius:14px;background:#fff6cc;border:2px dashed #94690a;font-size:12px;font-weight:700;line-height:1.5;color:#6b4d07}
+.err{margin-top:12px;padding:12px 14px;border-radius:14px;background:#ffe8ec;border:2px solid #d4163b;color:#a3102e;font-size:13px;font-weight:800;line-height:1.5}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20}
+.bar>div{max-width:480px;margin:0 auto;background:#fff;border-top:2px solid var(--ink);padding:12px 20px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px}
+.bar .px{flex:none;display:flex;flex-direction:column}.bar .px small{font-size:11px;font-weight:800;color:var(--sub)}.bar .px b{font-size:17px;font-weight:900}
+.cta{flex:1;height:56px;border-radius:18px;border:2px solid var(--ink);background:var(--yellow);font-size:16px;font-weight:900;box-shadow:0 3px 0 var(--ink)}
+.cta.dark{background:var(--ink);color:#fff}
+.cta:disabled{background:#e8edf0;color:var(--sub);box-shadow:none;border-color:rgba(26,26,26,.3);cursor:default}
+.cta.ghost{background:#fff;box-shadow:none}
+.okhero{background:var(--sky);padding:6px 20px 28px;border-bottom:2px solid var(--ink);border-radius:0 0 32px 32px;text-align:center}
+.check{width:80px;height:80px;border-radius:40px;background:#c9f0dc;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);display:flex;align-items:center;justify-content:center;margin:44px auto 0}
+.due{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff6cc;border:2px solid var(--ink);font-size:13px;font-weight:800}.due b{font-size:18px;font-weight:900}
+.btnfull{display:flex;align-items:center;justify-content:center;width:100%;height:56px;border-radius:18px;border:2px solid var(--ink);background:var(--yellow);font-size:16px;font-weight:900;box-shadow:0 3px 0 var(--ink);text-decoration:none;margin-top:14px}
+.btnfull.w{background:#fff;box-shadow:none;margin-top:10px}
+footer.biz{margin-top:36px;padding:20px 20px 24px;border-top:1.5px solid #dde7ee;font-size:11px;line-height:1.75;color:#66717a}
+footer.biz nav{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}footer.biz nav a{color:var(--sub2);font-weight:800;text-decoration:none}
+.toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:14px;font-size:14px;font-weight:700;z-index:50;max-width:90vw}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid rgba(26,26,26,.2);border-top-color:var(--ink);border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="bar" id="bar"></div>
+<script>
+const $ = (q)=>document.querySelector(q);
+const esc = (s)=>String(s??"").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const won = (n)=>Number(n).toLocaleString("ko-KR")+"원";
+let voter = null;
+try { voter = localStorage.getItem("wf_voter"); if(!voter){ voter = crypto.randomUUID(); localStorage.setItem("wf_voter", voter); } } catch(e){ voter = crypto.randomUUID(); }
+async function api(path, body){
+  const r = await fetch("/api/"+path, body ? {method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...body,voter})} : {});
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.error || "잠시 후 다시 해 주세요");
+  return d;
+}
+const TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"];
+const G = {NT:"#ddd2ff",NF:"#c9f0dc",SJ:"#d3e6f7",SP:"#ffeab0"};
+const grp = (t)=> t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
+const HC=[["검정","#2b2622"],["갈색","#6b4a2f"],["밝은 갈색","#b07a45"],["금발","#e6c26a"],["핑크","#f2a7c3"]];
+const SK=[["밝은 톤","#fde3cf"],["중간 톤","#efc39c"],["어두운 톤","#b98058"]];
+const CL=[["분홍","#ffc8d6"],["노랑","#ffe58f"],["민트","#b8ecd2"],["하늘","#b9dcf5"],["라벤더","#d6cbff"],["복숭아","#ffcfaa"],["연두","#dcefa8"],["회색","#e2e6ea"]];
+const HS=[["short","짧은 머리"],["long","긴 머리"],["tied","묶은 머리"]];
+const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
+const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드 3~4장면을 넣고 제작 전에 대본을 먼저 보여 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","스페셜에 포함돼요. 제작 전 대본 미리보기에서 1회, 완성 후 자막·대사 작은 수정 1회를 요청할 수 있어요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["웅이프 릴스에도 올라가나요?","주문서에서 동의한 경우에만 올려요. 동의하지 않아도 가격과 품질은 똑같아요."]];
+const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="10" fill="#c9f0dc" stroke="#1a1a1a" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const NOPE = `<svg width="16" height="16" viewBox="0 0 24 24" role="img" aria-label="미포함" style="flex:none"><circle cx="12" cy="12" r="10" fill="#eef3f6" stroke="#b9c3ca" stroke-width="2"/><path d="M8 12h8" stroke="#66717a" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+const LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><rect x="5" y="10" width="14" height="10" rx="3" fill="#1a1a1a"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="#1a1a1a" stroke-width="2.4"/></svg>`;
+const BACK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const FEATS = ["50초+ 풀버전 · 장면 8~10개","MBTI·관계 맞춤 궁합 상황","두 사람 이름을 자막·말풍선에","사연 속 실제 에피소드 3~4장면","제작 전 대본 미리보기 + 1회 수정","완성 후 자막·대사 수정 1회"];
+const FOOTER = `<footer class="biz"><nav aria-label="정책"><a href="/terms">이용약관</a><a href="/refund">환불·배송 정책</a><a href="/privacy">개인정보처리방침</a></nav>
+<div>상호 도파민펫 · 대표자 현지웅</div><div>사업자등록번호 404-15-02863 · 통신판매업 신고 진행 중</div>
+<div>주소 부산광역시 연제구 고분로 270, 103동 1004호 (수영강푸르지오아파트)</div><div>전화 010-9950-6291 · 이메일 ddd12340@naver.com</div>
+<div style="margin-top:6px">© 웅이프(@woong.if). 결제는 토스페이먼츠가 처리해요.</div></footer>`;
+
+// ---------- 상태 ----------
+const blankChar = (g)=>({g, hair:g==="여"?"long":"short", hc:0, skin:0, cl:g==="여"?4:3, gl:false, feat:""});
+const init = ()=>({step:"home", pkg:"special", rel:"커플", a:"ENFP", b:"ISTJ", slot:"a", nameA:"", nameB:"", chars:{a:blankChar("여"), b:blankChar("남")}, story:"", email:"", kakao:"", reels:false, terms:false, faq:0});
+let S = init();
+try { const saved = JSON.parse(sessionStorage.getItem("wf_order")||"null"); if(saved) S = {...S, ...saved}; } catch(e){}
+const save = ()=>{ try{ sessionStorage.setItem("wf_order", JSON.stringify(S)); }catch(e){} };
+let CFG = {products:{basic:{price:14900,pay:14900,sale:null},special:{price:29900,pay:29900,sale:null}}, test:true, days:7};
+let DONE = null, PAYERR = null;
+const sp = ()=> S.pkg==="special";
+const flow = ()=> sp() ? ["s1","s2","s3","s4","s5"] : ["s1","s2","s4","s5"];
+const pay = ()=> CFG.products[S.pkg].pay;
+const josa = (w, a, b)=>{ const c=w.charCodeAt(w.length-1)-0xac00; return c>=0&&c<=11171&&c%28 ? a : b; };
+const nm = (k)=> (k==="a"?S.nameA:S.nameB).trim() || k.toUpperCase();
+const pairTitle = ()=> `${S.a} × ${S.b} ${S.rel}${josa(S.rel,"이라면?","라면?")}`;
+const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+HS.find(h=>h[0]===c.hair)[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" 옷"+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
+const emailOk = ()=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.email.trim());
+function dueLabel(day){ const d = new Date(day+"T00:00:00+09:00"); return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`; }
+function dueGuess(){ const t = new Date(Date.now()+9*3600e3+CFG.days*86400e3).toISOString().slice(0,10); return dueLabel(t); }
+function toast(m){ const t=document.createElement("div"); t.className="toast"; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),2400); }
+
+function shade(h,f){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const t=f<0?0:255,q=Math.abs(f);r=Math.round((t-r)*q+r);g=Math.round((t-g)*q+g);b=Math.round((t-b)*q+b);return"#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+function figSVG(c){
+  const hc=HC[c.hc][1], sk=SK[c.skin][1], cl=CL[c.cl][1], m=c.g==="남";
+  const hairD=shade(hc,-.25), skD=shade(sk,-.12), clD=shade(cl,-.12), clDD=shade(cl,-.24);
+  return `<svg width="120" height="210" viewBox="0 0 120 210" aria-hidden="true"><ellipse cx="60" cy="200" rx="34" ry="6" fill="rgba(26,26,26,.14)"/>
+  ${c.hair==="long"?`<polygon points="32,44 88,44 94,104 78,98 42,98 26,104" fill="${hairD}"/>`:""}
+  ${m?`<polygon points="43,138 59,138 58,194 45,194" fill="#55606a"/><polygon points="61,138 77,138 75,194 62,194" fill="#3b4650"/>`
+     :`<polygon points="47,158 56,158 55,194 48,194" fill="${skD}"/><polygon points="64,158 73,158 72,194 65,194" fill="${skD}"/><polygon points="38,124 60,124 60,162 30,162" fill="${clD}"/><polygon points="60,124 82,124 90,162 60,162" fill="${clDD}"/>`}
+  <polygon points="42,192 58,192 59,199 40,199" fill="#1a1a1a"/><polygon points="62,192 78,192 80,199 61,199" fill="#1a1a1a"/>
+  <polygon points="38,92 31,97 26,132 34,134 40,106" fill="${clD}"/><polygon points="82,92 89,97 94,132 86,134 80,106" fill="${clDD}"/>
+  <polygon points="27,132 35,133 34,141 26,140" fill="${sk}"/><polygon points="85,133 93,132 94,140 86,141" fill="${skD}"/>
+  <polygon points="38,92 60,90 60,140 35,140" fill="${cl}"/><polygon points="60,90 82,92 85,140 60,140" fill="${clD}"/>
+  <polygon points="54,80 66,80 66,94 54,94" fill="${skD}"/><polygon points="60,30 36,42 34,70 60,86" fill="${sk}"/><polygon points="60,30 84,42 86,70 60,86" fill="${skD}"/>
+  <circle cx="50" cy="61" r="2.8" fill="#1a1a1a"/><circle cx="70" cy="61" r="2.8" fill="#1a1a1a"/>
+  <ellipse cx="44" cy="69" rx="4" ry="2.4" fill="#ff9fb3" opacity=".7"/><ellipse cx="76" cy="69" rx="4" ry="2.4" fill="#ff9fb3" opacity=".7"/>
+  <path d="M56 71 Q60 75 64 71" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+  ${c.gl?`<rect x="42" y="55" width="15" height="12" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><rect x="63" y="55" width="15" height="12" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><path d="M57 60h6" stroke="#1a1a1a" stroke-width="2.2"/>`:""}
+  ${c.hair==="tied"?`<polygon points="60,10 70,15 70,26 60,31 50,26 50,15" fill="${hc}"/>`:""}
+  <polygon points="33,50 35,38 48,27 60,25 60,42 44,42 38,52" fill="${hc}"/><polygon points="60,25 72,27 85,38 87,50 82,52 76,42 60,42" fill="${hairD}"/></svg>`;
+}
+
+// ---------- 화면 ----------
+function go(step){ S.step = step; save(); render(); window.scrollTo(0,0); if(step==="home") history.replaceState(null,"","/order"); }
+function prev(){ const f=flow(), i=f.indexOf(S.step); go(i<=0 ? "home" : f[i-1]); }
+function next(){ const f=flow(), i=f.indexOf(S.step); go(i<0 ? f[0] : f[i+1]); }
+
+function fhead(tag, title){
+  const f=flow(), i=f.indexOf(S.step);
+  return `<div class="fhead"><div class="fbar"><button class="back" id="back" aria-label="뒤로">${BACK}</button><span class="t">궁합 영상 주문</span><span class="p">${i+1}/${f.length}</span></div>
+  <div class="prog">${f.map((_,j)=>`<i class="${j<=i?"on":""}"></i>`).join("")}</div>
+  <span class="tag">${tag}</span><h1 class="outline">${title}</h1></div>`;
+}
+function bar(html){ $("#bar").innerHTML = html ? `<div>${html}</div>` : ""; $("#app").style.paddingBottom = html ? "" : "24px"; }
+function pxBox(){ return `<div class="px"><small>${sp()?"스페셜 영상":"기본 영상"}</small><b>${won(pay())}</b></div>`; }
+
+function prodCard(k){
+  const p = CFG.products[k], on = S.pkg===k, inc = k==="special" ? [1,1,1,1,1,1] : [1,1,1,0,0,0];
+  return `<button type="button" class="prod${on?" on":""}" data-pkg="${k}" aria-pressed="${on}">
+    <span class="bd">${k==="special"?`<span class="rec">추천</span>`:""}${p.sale?`<span class="salebd">오픈 기념</span>`:""}</span>
+    <span class="nm"><span class="radio"><i></i></span>${k==="special"?"스페셜":"기본"}</span>
+    <span class="sb">${k==="special"?"우리 이야기편":"우리 조합 궁합편"}</span>
+    ${p.sale?`<span class="was">${won(p.price)}</span><span class="pr" style="margin-top:0">${won(p.sale)}</span>`:`<span class="pr">${won(p.price)}</span>`}
+    <ul>${FEATS.map((f,i)=>`<li class="${inc[i]?"":"no"}">${inc[i]?CHECK:NOPE}<span>${f}</span></li>`).join("")}</ul></button>`;
+}
+
+function renderHome(){
+  $("#app").innerHTML = `<div class="hero"><div class="top"><a class="brand" href="/"><b>웅이프</b><span>@woong.if</span></a><a class="pillbtn" href="/#me">내 주문</a></div>
+    <div style="margin-top:10px;text-align:center"><span class="tag">맞춤 궁합 영상</span></div>
+    <div class="video" role="img" aria-label="샘플 영상"><span class="play"><i></i></span><span class="lb">샘플 영상 준비 중</span></div>
+    <h1 class="outline" style="margin-top:20px;text-align:center;font-size:30px">우리 둘 궁합을<br>웅이프 영상으로</h1>
+    <p class="lead">두 사람 MBTI랑 이름만 알려 주세요.<br>둘만을 위한 50초 3D 궁합 숏폼을 만들어 드려요.</p></div>
+  <section class="sec"><h2>이렇게 진행돼요</h2><ol class="steps3">
+    <li><span class="n" style="background:#ffd84d">1</span><b>주문</b><small>MBTI·이름 쓰고<br>결제하기</small></li>
+    <li><span class="n" style="background:#c9f0dc">2</span><b>제작</b><small>두 사람만의<br>3D 영상 제작</small></li>
+    <li><span class="n" style="background:#ddd2ff">3</span><b>전달</b><small>${CFG.days}일 이내<br>다운로드 링크</small></li></ol></section>
+  <section class="sec" style="padding-top:28px"><h2>상품 고르기</h2>
+    <p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#3b4650;font-weight:600">둘 다 50초+ 풀버전, 웅이프 릴스와 같은 퀄리티예요.<br>차이는 얼마나 ‘우리 얘기’인지예요.</p>
+    <div class="prods">${prodCard("basic")}${prodCard("special")}</div>
+    <p class="note">${CHECK}두 상품 모두 결제 후 ${CFG.days}일 이내 링크로 전달 · 커플·부부·가족·친구 모두 가능</p></section>
+  <section class="sec" style="padding-top:28px"><h2>자주 묻는 질문</h2><div class="faq">${FAQ.map(([q,a],i)=>`<div><button type="button" data-faq="${i}" aria-expanded="${S.faq===i}"><span>${q}</span><span>${S.faq===i?"−":"+"}</span></button>${S.faq===i?`<p>${a}</p>`:""}</div>`).join("")}</div></section>
+  ${FOOTER}`;
+  bar(`<button class="cta" id="start">${sp()?"스페셜":"기본"}으로 주문하기 · ${won(pay())}</button>`);
+  document.querySelectorAll("[data-pkg]").forEach(b=>b.onclick=()=>{ S.pkg=b.dataset.pkg; save(); renderHome(); });
+  document.querySelectorAll("[data-faq]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.faq; S.faq = S.faq===i?-1:i; save(); renderHome(); });
+  $("#start").onclick = ()=> go("s1");
+}
+
+function renderS1(){
+  $("#app").innerHTML = fhead("관계 고르기", "두 사람은<br>어떤 사이예요?") + `<div class="body">
+    <div class="rels" role="group" aria-label="관계">${RELS.map(([r,s])=>`<button type="button" class="rel${S.rel===r?" on":""}" data-rel="${r}"><b>${r}</b><small>${s}</small></button>`).join("")}</div>
+    <div class="preview"><small>영상 제목 미리보기</small><div>${esc(pairTitle())}</div></div>
+    <p class="hint">가족은 엄마와 딸, 형제·자매처럼 누구든 괜찮아요. 부를 이름은 다음 단계에서 정해요.</p></div>${FOOTER}`;
+  bar(pxBox()+`<button class="cta" id="nx">다음</button>`);
+  document.querySelectorAll("[data-rel]").forEach(b=>b.onclick=()=>{ S.rel=b.dataset.rel; save(); render(); });
+}
+
+function renderS2(){
+  const k=S.slot, c=S.chars[k];
+  const chip = (on,label,attr)=>`<button type="button" class="chip${on?" on":""}" ${attr} aria-pressed="${on}">${label}</button>`;
+  const sws = (list,key,cls)=> list.map(([n,col],i)=>`<button type="button" class="sw ${cls}${c[key]===i?" on":""}" style="background:${col}" data-sw="${key}" data-i="${i}" aria-label="${n}" title="${n}" aria-pressed="${c[key]===i}"></button>`).join("");
+  $("#app").innerHTML = fhead("MBTI · 캐릭터 꾸미기", "두 사람을<br>꾸며 주세요") + `<div class="body" style="padding-top:18px">
+    <div class="stage" role="group" aria-label="캐릭터 미리보기">${["a","b"].map(x=>`<button type="button" class="fig${S.slot===x?" on":""}" data-slot="${x}" aria-label="${x.toUpperCase()} 캐릭터 꾸미기"><span class="cur">${S.slot===x?"<span>꾸미는 중</span>":""}</span>${figSVG(S.chars[x])}<span class="lab"><em>${x.toUpperCase()}</em>${esc(nm(x))} · ${S[x]}</span></button>`).join("")}</div>
+    <div class="tabs" role="tablist" aria-label="꾸밀 사람">${["a","b"].map(x=>`<button type="button" role="tab" class="${S.slot===x?"on":""}" data-slot="${x}" aria-selected="${S.slot===x}">${x.toUpperCase()} · ${esc(nm(x))} ${S[x]}</button>`).join("")}</div>
+    <div class="card">
+      <div class="fl"><label class="lbl" for="nmI">${k.toUpperCase()}를 부를 이름</label><input class="inp" id="nmI" maxlength="8" placeholder="예: 도토리" value="${esc(k==="a"?S.nameA:S.nameB)}"></div>
+      <div class="fl"><div class="lh">MBTI</div><div class="tiles" role="group" aria-label="MBTI 16유형">${TYPES.map(t=>{const A=S.a===t,B=S.b===t,m=A||B;return `<button type="button" class="tile${m?" m":""}" style="background:${G[grp(t)]}" data-t="${t}">${t}${m?`<em>${A&&B?"A·B":A?"A":"B"}</em>`:""}</button>`;}).join("")}</div></div>
+      <div class="fl"><div class="lh">성별</div><div class="chips">${chip(c.g==="여","여자",'data-g="여"')}${chip(c.g==="남","남자",'data-g="남"')}</div></div>
+      <div class="fl"><div class="lh">머리 스타일</div><div class="chips">${HS.map(([h,l])=>chip(c.hair===h,l,`data-hair="${h}"`)).join("")}</div></div>
+      <div class="fl"><div class="lh">머리 색<span>${HC[c.hc][0]}</span></div><div class="sws">${sws(HC,"hc","")}</div></div>
+      <div class="fl"><div class="lh">피부 톤<span>${SK[c.skin][0]}</span></div><div class="sws">${sws(SK,"skin","sk")}</div></div>
+      <div class="fl"><div class="lh">옷 색<span>${CL[c.cl][0]}</span></div><div class="sws">${sws(CL,"cl","cl")}</div></div>
+      <div class="fl"><div class="lh">안경</div><div class="chips">${chip(!c.gl,"안경 없음",'data-gl="0"')}${chip(c.gl,"안경 있음",'data-gl="1"')}</div></div>
+      ${sp()?`<div class="fl" style="padding-top:16px;border-top:1.5px dashed rgba(26,26,26,.2)"><label class="lbl" for="ftI">특징 한 줄 <span style="color:#55606a">(선택)</span></label><input class="inp" id="ftI" maxlength="30" placeholder="예: 항상 모자 씀, 키 차이 많이 남" value="${esc(c.feat)}"><div class="cnt"><span>스페셜은 이 특징도 캐릭터에 반영해요</span><span id="ftN">${c.feat.length} / 30</span></div></div>`:""}
+    </div>
+    <p class="hint">이름은 자막·말풍선에 나와요. 위 캐릭터를 눌러도 A·B가 바뀌어요.</p>
+    <div id="s2err"></div></div>${FOOTER}`;
+  bar(pxBox()+`<button class="cta" id="nx">${sp()?"다음 · 사연 쓰기":"다음 · 연락처로"}</button>`);
+  const re = ()=>{ save(); const y=window.scrollY; render(); window.scrollTo(0,y); };
+  document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{ S.slot=b.dataset.slot; re(); });
+  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ S[S.slot]=b.dataset.t; re(); });
+  document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ c.g=b.dataset.g; re(); });
+  document.querySelectorAll("[data-hair]").forEach(b=>b.onclick=()=>{ c.hair=b.dataset.hair; re(); });
+  document.querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>{ c[b.dataset.sw]=+b.dataset.i; re(); });
+  document.querySelectorAll("[data-gl]").forEach(b=>b.onclick=()=>{ c.gl=b.dataset.gl==="1"; re(); });
+  $("#nmI").oninput = (e)=>{ S[k==="a"?"nameA":"nameB"] = e.target.value.slice(0,8); save();
+    document.querySelectorAll(`.fig[data-slot="${k}"] .lab`).forEach(l=>l.innerHTML=`<em>${k.toUpperCase()}</em>${esc(nm(k))} · ${S[k]}`);
+    document.querySelectorAll(`.tabs [data-slot="${k}"]`).forEach(l=>l.textContent=`${k.toUpperCase()} · ${nm(k)} ${S[k]}`); };
+  if($("#ftI")) $("#ftI").oninput = (e)=>{ c.feat=e.target.value.slice(0,30); $("#ftN").textContent=c.feat.length+" / 30"; save(); };
+}
+
+function renderS3(){
+  $("#app").innerHTML = fhead("사연 쓰기", "우리만 아는<br>이야기가 있나요?") + `<div class="body">
+    <label class="lbl" for="stI">사연 · 에피소드 · 말버릇</label>
+    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="처음 만난 날, 자주 싸우는 이유, 서로 부르는 애칭…">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
+    <div style="margin-top:14px;font-size:13px;font-weight:800">이런 걸 적어 주면 좋아요</div>
+    <div class="sug"><span>처음 만난 날</span><span>서로 부르는 애칭</span><span>한 명의 말버릇</span><span>크게 싸웠던 일</span><span>둘만 웃는 장면</span></div>
+    <ul class="ylist"><li>${CHECK}이 중 3~4장면을 골라 영상에 넣어요</li><li>${CHECK}제작 전에 대본을 먼저 보여 드려요 (1회 수정)</li></ul>
+    <p class="hint">실명·전화번호 같은 개인정보는 빼고 써 주세요.</p></div>${FOOTER}`;
+  const ok = ()=> S.story.trim().length>=10;
+  bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
+  $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,500); $("#stN").textContent=S.story.length; save(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
+}
+
+function renderS4(){
+  $("#app").innerHTML = fhead("받을 곳", "완성 영상,<br>어디로 보내 드릴까요?") + `<div class="body">
+    <label class="lbl" for="emI">이메일 <span style="color:#d4163b">(필수)</span></label>
+    <input class="inp" id="emI" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="you@example.com" value="${esc(S.email)}">
+    <p class="hint" style="margin-top:6px">다운로드 링크와 진행 소식을 보내 드려요</p>
+    <label class="lbl" for="kkI" style="margin-top:16px">카카오톡 ID <span style="color:#55606a">(선택)</span></label>
+    <input class="inp" id="kkI" maxlength="30" placeholder="남기면 카톡으로도 알려 드려요" value="${esc(S.kakao)}">
+    <div class="checks">
+      <button type="button" class="ck${S.reels?" on":""}" id="ckR"><span class="box"></span><span class="bdg">선택</span><span>완성 영상을 웅이프 릴스에 올려도 돼요</span></button>
+      <button type="button" class="ck${S.terms?" on":""}" id="ckT"><span class="box"></span><span class="bdg req">필수</span><span><a href="/terms" target="_blank">이용약관</a> · <a href="/refund" target="_blank">환불정책</a> · <a href="/privacy" target="_blank">개인정보 수집·이용</a>에 동의해요</span></button>
+    </div>
+    <p class="hint">릴스 공개는 선택이에요. 동의하지 않아도 가격과 품질은 같아요.</p></div>${FOOTER}`;
+  const upd = ()=>{ const ok=emailOk()&&S.terms, b=$("#nx"); b.disabled=!ok; b.textContent = ok?"다음":(emailOk()?"필수 약관에 동의해 주세요":"이메일을 확인해 주세요"); $("#emI").classList.toggle("bad", !emailOk()&&S.email.length>3); };
+  bar(pxBox()+`<button class="cta" id="nx">다음</button>`);
+  $("#emI").oninput = (e)=>{ S.email=e.target.value.slice(0,80); save(); upd(); };
+  $("#kkI").oninput = (e)=>{ S.kakao=e.target.value.slice(0,30); save(); };
+  $("#ckR").onclick = ()=>{ S.reels=!S.reels; save(); $("#ckR").classList.toggle("on",S.reels); };
+  $("#ckT").onclick = (e)=>{ if(e.target.tagName==="A") return; S.terms=!S.terms; save(); $("#ckT").classList.toggle("on",S.terms); upd(); };
+  upd();
+}
+
+// ---------- 확인 + 결제 (토스페이먼츠 결제위젯) ----------
+let widgets = null, widgetReady = false;
+function loadToss(){
+  return new Promise((ok,no)=>{ if(window.TossPayments) return ok();
+    const s=document.createElement("script"); s.src="https://js.tosspayments.com/v2/standard"; s.onload=ok; s.onerror=()=>no(new Error("결제창을 불러오지 못했어요. 새로고침해 주세요")); document.head.appendChild(s); });
+}
+async function mountWidget(){
+  widgetReady = false;
+  try{
+    await loadToss();
+    if(!widgets) widgets = TossPayments(CFG.clientKey).widgets({customerKey: TossPayments.ANONYMOUS});
+    await widgets.setAmount({currency:"KRW", value: pay()});
+    await Promise.all([
+      widgets.renderPaymentMethods({selector:"#payment-method", variantKey:"DEFAULT"}),
+      widgets.renderAgreement({selector:"#agreement", variantKey:"AGREEMENT"}),
+    ]);
+    widgetReady = true; updPay();
+  }catch(e){ $("#payerr").innerHTML = `<div class="err">${esc(e.message||"결제창을 불러오지 못했어요")}</div>`; }
+}
+function updPay(){ const b=$("#nx"); if(!b) return; const ok = emailOk()&&S.terms&&widgetReady; b.disabled=!ok; b.innerHTML = !emailOk()||!S.terms ? "④에서 필수 동의가 필요해요" : widgetReady ? `${won(pay())} 결제하기` : `<span class="spin"></span> 결제창 불러오는 중`; }
+function renderS5(){
+  const nA=S.nameA.trim()||"A", nB=S.nameB.trim()||"B";
+  const row=(a,b)=>`<div class="row"><span>${a}</span><span>${b}</span></div>`;
+  $("#app").innerHTML = fhead("주문 확인", "이대로<br>주문할까요?") + `<div class="body">
+    <div class="sum">${row("관계",esc(S.rel))}${row("두 사람",`${esc(nA)} ${S.a} × ${esc(nB)} ${S.b}`)}${row("캐릭터 A",esc(csum("a")))}${row("캐릭터 B",esc(csum("b")))}
+      ${sp()?row("사연",`${S.story.trim().length}자 · 3~4장면 반영`):""}${row("받을 이메일",esc(S.email))}${row("카톡 ID",esc(S.kakao.trim()||"안 남김"))}${row("릴스 공개",S.reels?"올려도 돼요":"안 올려요")}
+      <div style="margin-top:14px;font-size:13px;font-weight:800">상품</div>
+      <div class="seg" role="group" aria-label="상품"><button type="button" class="${!sp()?"on":""}" data-pkg="basic">기본 · 우리 조합편</button><button type="button" class="${sp()?"on":""}" data-pkg="special">스페셜 · 우리 이야기편</button></div>
+      <div class="total"><b>결제 금액</b><strong>${won(pay())}</strong></div>
+      <div style="text-align:right;font-size:12px;color:#55606a;margin-top:2px">${sp()?"50초+ · 사연 3~4장면 · 대본 미리보기":"50초+ · 장면 8~10개 · 이름 자막"} · 부가세 포함</div></div>
+    <ul class="wlist"><li>${LOCK}결제는 토스페이먼츠가 안전하게 처리해요</li><li>${CHECK}결제 후 ${CFG.days}일 이내 · ${dueGuess()}까지 링크로 전달</li>
+      ${sp()?`<li>${CHECK}제작 전에 대본 미리보기를 이메일로 보내 드려요 (1회 수정)</li>`:""}<li>${CHECK}제작 시작 전(접수 상태)에는 전액 환불돼요</li></ul>
+    ${CFG.test?`<div class="testbar">지금은 <b>테스트 결제</b>예요. 결제해도 실제로 돈이 나가지 않아요.</div>`:""}
+    <div style="margin-top:22px;font-size:13px;font-weight:800">결제 수단</div>
+    <div class="widget"><div id="payment-method"></div><div id="agreement"></div></div>
+    <div id="payerr">${PAYERR?`<div class="err">${esc(PAYERR)}</div>`:""}</div></div>${FOOTER}`;
+  bar(pxBox()+`<button class="cta dark" id="nx" disabled>결제하기</button>`);
+  document.querySelectorAll(".seg [data-pkg]").forEach(b=>b.onclick=()=>{
+    if(S.pkg===b.dataset.pkg) return;
+    S.pkg=b.dataset.pkg; save();
+    if(sp() && S.story.trim().length<10){ toast("스페셜은 사연이 필요해요"); go("s3"); return; }
+    widgets=null; PAYERR=null; render(); });
+  $("#nx").onclick = payNow;
+  PAYERR = null;
+  mountWidget();
+}
+async function payNow(){
+  const b=$("#nx"); b.disabled=true; b.innerHTML=`<span class="spin"></span> 결제창 여는 중`;
+  try{
+    const o = await api("order/create", {pkg:S.pkg, rel:S.rel, a:S.a, b:S.b, nameA:S.nameA.trim()||"A", nameB:S.nameB.trim()||"B", chars:S.chars, story:S.story, email:S.email.trim(), kakao:S.kakao, reels:S.reels, terms:S.terms});
+    if(o.amount !== pay()){ await widgets.setAmount({currency:"KRW", value:o.amount}); }
+    await widgets.requestPayment({orderId:o.orderId, orderName:o.orderName, successUrl:location.origin+"/order?pay=success", failUrl:location.origin+"/order?pay=fail", customerEmail:o.email, customerName:(S.nameA.trim()||"주문자").slice(0,20)});
+  }catch(e){
+    if(e && e.code==="USER_CANCEL"){ updPay(); return; }
+    $("#payerr").innerHTML = `<div class="err">${esc(e.message||"결제를 시작하지 못했어요")}</div>`; updPay();
+  }
+}
+
+function renderDone(){
+  const o = DONE;
+  $("#app").innerHTML = `<div class="okhero"><div class="check"><svg width="40" height="40" viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div style="margin-top:16px"><span class="tag">결제 완료</span></div><h1 class="outline" style="margin-top:8px;font-size:30px">주문이 접수됐어요!</h1>
+    <p class="lead">${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}<br>두 사람만의 궁합 영상을 만들기 시작할게요.</p></div>
+  <div class="body"><div class="sum">
+    <div class="row"><span>주문번호</span><span style="font-family:ui-monospace,Menlo,monospace">${esc(o.id)}</span></div>
+    <div class="row"><span>상품</span><span>${esc(o.product)}</span></div>
+    <div class="row"><span>결제 금액</span><span>${won(o.amount)}</span></div>
+    <div class="row" style="border-bottom:none"><span>받을 이메일</span><span>${esc(o.email)}</span></div>
+    <div class="due"><span>예상 전달일</span><b>${dueLabel(o.due)}까지</b></div></div>
+    <p class="hint">${o.pkg==="special"?"스페셜은 제작 전에 대본 미리보기를 먼저 보내 드려요. ":""}제작이 시작되기 전까지는 내 주문에서 취소할 수 있어요. 궁금한 건 ddd12340@naver.com으로 보내 주세요.</p>
+    <a class="btnfull" href="/#me">내 주문에서 진행 상황 확인</a><a class="btnfull w" href="/#pair">궁합 투표 구경하러 가기</a></div>${FOOTER}`;
+  bar("");
+}
+function renderFail(msg){
+  $("#app").innerHTML = `<div class="okhero"><div class="check" style="background:#ffe8ec"><svg width="36" height="36" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg></div>
+    <h1 class="outline" style="margin-top:18px;font-size:28px">결제가 안 됐어요</h1><p class="lead">${esc(msg||"결제가 취소됐거나 실패했어요.")}<br>돈은 빠져나가지 않았어요.</p></div>
+    <div class="body"><button class="btnfull" id="retry">다시 결제하기</button><a class="btnfull w" href="/order">처음으로</a></div>${FOOTER}`;
+  bar("");
+  $("#retry").onclick = ()=>{ history.replaceState(null,"","/order"); go("s5"); };
+}
+
+function render(){
+  const st = S.step;
+  if(st==="s1") renderS1(); else if(st==="s2") renderS2(); else if(st==="s3") renderS3(); else if(st==="s4") renderS4(); else if(st==="s5") renderS5(); else renderHome();
+  const b=$("#back"); if(b) b.onclick=prev;
+  const n=$("#nx"); if(n && st!=="s5" && st!=="home") n.onclick=()=>{
+    if(st==="s2" && (!S.nameA.trim() || !S.nameB.trim())){ toast("A·B 두 사람 모두 부를 이름을 적어 주세요"); S.slot=S.nameA.trim()?"b":"a"; save(); render(); setTimeout(()=>{ const i=$("#nmI"); if(i){ i.scrollIntoView({block:"center"}); i.focus(); } },50); return; }
+    next(); };
+}
+
+window.addEventListener("popstate", ()=>{});
+(async function boot(){
+  const q = new URLSearchParams(location.search);
+  try{ CFG = await api("order/config"); }catch(e){}
+  if(q.get("pay")==="success"){
+    $("#app").innerHTML = `<div class="okhero"><h1 class="outline" style="margin-top:80px;font-size:26px">결제 확인 중…</h1><p class="lead"><span class="spin"></span></p></div>`;
+    try{
+      const d = await api("order/confirm", {paymentKey:q.get("paymentKey"), orderId:q.get("orderId"), amount:Number(q.get("amount"))});
+      DONE = d.order; history.replaceState(null,"","/order?done="+encodeURIComponent(d.order.id));
+      try{ sessionStorage.removeItem("wf_order"); }catch(e){}
+      S = init(); renderDone();
+    }catch(e){ renderFail(e.message); }
+    return;
+  }
+  if(q.get("pay")==="fail"){ renderFail(q.get("code")==="PAY_PROCESS_CANCELED" ? "결제를 취소했어요." : q.get("message")); return; }
+  if(q.get("done")){
+    try{ const d = await api("orders/mine?voter="+encodeURIComponent(voter)); const o=d.orders.find(x=>x.id===q.get("done")); if(o){ DONE=o; renderDone(); return; } }catch(e){}
+    history.replaceState(null,"","/order");
+  }
+  // 궁합 페이지에서 "우리 버전으로 주문하기"로 온 경우: /order?a=ISTP&b=ENFP&rel=커플
+  const a=q.get("a"), b=q.get("b"), rel=q.get("rel");
+  if(a&&TYPES.includes(a.toUpperCase())) S.a=a.toUpperCase();
+  if(b&&TYPES.includes(b.toUpperCase())) S.b=b.toUpperCase();
+  if(rel&&RELS.some(r=>r[0]===rel)) S.rel=rel;
+  if(q.get("pkg")&&CFG.products[q.get("pkg")]) S.pkg=q.get("pkg");
+  if(a||b||rel){ S.step="home"; history.replaceState(null,"","/order"); }
+  if(!["home","s1","s2","s3","s4","s5"].includes(S.step) || (S.step==="s3"&&!sp())) S.step="home";
+  save(); render();
+})();
+</script>
+</body>
+</html>

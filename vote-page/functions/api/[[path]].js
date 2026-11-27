@@ -29,6 +29,63 @@ const catOf = (c) => (c === "ask" || c === "trait" ? c : "msg");
 const CAT_SQL = (c) => (c === "msg" ? "p.cat NOT IN ('ask','trait')" : "p.cat='" + c + "'");
 const DAILY_IP_REPLIES = 30;
 
+// ---------- 맞춤 궁합 영상 주문 ----------
+// 가격은 서버에서만 정함 (화면에서 보낸 금액은 믿지 않음). sale: 오픈 할인가(없으면 null)
+const PRODUCTS = {
+  basic:   { name: "기본 · 우리 조합 궁합편",   price: 14900, sale: null },
+  special: { name: "스페셜 · 우리 이야기편", price: 29900, sale: null },
+};
+const priceOf = (pkg) => PRODUCTS[pkg].sale ?? PRODUCTS[pkg].price;
+const ORDER_RELS = ["커플", "부부", "가족", "친구"];
+const ORDER_STATUS = ["paid", "script", "making", "done", "canceled"];   // pending = 결제 전
+const DELIVERY_DAYS = 7;
+const DAILY_IP_ORDERS = 20;
+// 토스페이먼츠 키: Cloudflare 환경 변수(TOSS_CLIENT_KEY, TOSS_SECRET_KEY). 없으면 토스 문서용 테스트 키(실제 돈 안 나감)
+const TOSS_DOC_CK = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+const TOSS_DOC_SK = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
+const tossKeys = (env) => (env.TOSS_CLIENT_KEY && env.TOSS_SECRET_KEY
+  ? { ck: String(env.TOSS_CLIENT_KEY).trim(), sk: String(env.TOSS_SECRET_KEY).trim() }
+  : { ck: TOSS_DOC_CK, sk: TOSS_DOC_SK });
+async function toss(env, path, payload, idem) {
+  const headers = { Authorization: "Basic " + btoa(tossKeys(env).sk + ":"), "Content-Type": "application/json" };
+  if (idem) headers["Idempotency-Key"] = idem;
+  try {
+    const r = await fetch("https://api.tosspayments.com/v1/" + path, { method: "POST", headers, body: JSON.stringify(payload) });
+    const data = await r.json().catch(() => ({}));
+    return { ok: r.ok, data };
+  } catch (e) {
+    return { ok: false, data: { message: "결제사와 연결이 안 돼요. 잠시 후 다시 해 주세요" } };
+  }
+}
+function kstDayPlus(ms, days) {
+  return new Date(ms + 9 * 3600e3 + days * 86400e3).toISOString().slice(0, 10);
+}
+function newOrderId() {
+  const d = new Date(Date.now() + 9 * 3600e3).toISOString().slice(2, 10).replace(/-/g, "");
+  const r = [...crypto.getRandomValues(new Uint8Array(4))].map((b) => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("");
+  return `WF-${d}-${r}`;
+}
+const CHAR_RULE = { g: ["여", "남"], hair: ["short", "long", "tied"], hc: 5, skin: 3, cl: 8 };
+function cleanChar(c) {
+  c = c || {};
+  const n = (v, max) => { v = Math.floor(Number(v)); return v >= 0 && v < max ? v : 0; };
+  return {
+    g: CHAR_RULE.g.includes(c.g) ? c.g : "여",
+    hair: CHAR_RULE.hair.includes(c.hair) ? c.hair : "short",
+    hc: n(c.hc, CHAR_RULE.hc), skin: n(c.skin, CHAR_RULE.skin), cl: n(c.cl, CHAR_RULE.cl),
+    gl: !!c.gl, feat: clean(c.feat, 30),
+  };
+}
+function orderRow(o, full) {
+  const r = {
+    id: o.id, pkg: o.pkg, product: PRODUCTS[o.pkg]?.name || o.pkg, amount: o.amount, rel: o.rel, a: o.a_type, b: o.b_type,
+    nameA: o.name_a, nameB: o.name_b, status: o.status, due: o.due_day, link: o.status === "done" ? o.link : null,
+    script: o.script_link || null, at: o.created_at, paidAt: o.paid_at, email: o.email,
+  };
+  if (full) Object.assign(r, { chars: JSON.parse(o.chars || "{}"), story: o.story, kakao: o.kakao, reels: !!o.reels, method: o.method, note: o.note, link: o.link, cancelReason: o.cancel_reason, owner: o.owner });
+  return r;
+}
+
 // 호감 MBTI 투표: 결과는 비밀, 참여 인원만 공개. 마감 뒤 관리자가 '공개'를 켜면 1~3위만 보여줌
 const POLL = { id: "fav-2026-11", end: "2026-11-30", reveal: "2026-12-01" };   // end = 이날(한국 시간) 밤 12시까지
 const POLL_IP_MAX = 30;   // 같은 인터넷(IP)에서 이 투표에 참여할 수 있는 기기 수
@@ -183,6 +240,15 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS board_replies_post ON board_replies(post_id, hidden, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS board_replies_ip ON board_replies(ip, created_at)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS reply_reports (reply_id INTEGER NOT NULL, voter TEXT NOT NULL, ip TEXT, created_at INTEGER, PRIMARY KEY(reply_id, voter))`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS orders (
+      id TEXT PRIMARY KEY, pkg TEXT NOT NULL, amount INTEGER NOT NULL, rel TEXT, a_type TEXT, b_type TEXT, name_a TEXT, name_b TEXT,
+      chars TEXT, story TEXT, email TEXT, kakao TEXT, reels INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'pending', payment_key TEXT, method TEXT, owner TEXT, voter TEXT, ip TEXT,
+      created_at INTEGER, paid_at INTEGER, due_day TEXT, link TEXT, script_link TEXT, note TEXT, cancel_reason TEXT, canceled_at INTEGER)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS orders_owner ON orders(owner, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS orders_voter ON orders(voter, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS orders_status ON orders(status, created_at)`),
+    db.prepare(`CREATE INDEX IF NOT EXISTS orders_ip ON orders(ip, created_at)`),
   ]);
   // 닉네임 중복 막기용 비교 키 (소문자·띄어쓰기 제거)
   try { await db.prepare("ALTER TABLE users ADD COLUMN nick_key TEXT").run(); } catch (e) { /* 이미 있음 */ }
@@ -855,6 +921,76 @@ export async function onRequest({ request, env, params }) {
     return json({ ok: true });
   }
 
+  // ---------- 맞춤 궁합 영상 주문 ----------
+  if (path === "order/config" && method === "GET") {
+    const products = Object.fromEntries(Object.entries(PRODUCTS).map(([k, p]) => [k, { name: p.name, price: p.price, sale: p.sale, pay: priceOf(k) }]));
+    const ck = tossKeys(env).ck;
+    return json({ products, clientKey: ck, test: ck.startsWith("test_"), days: DELIVERY_DAYS });
+  }
+  if (path === "order/create" && method === "POST") {
+    const pkg = PRODUCTS[body.pkg] ? body.pkg : null;
+    if (!pkg) return err("상품을 골라 주세요");
+    if (!ORDER_RELS.includes(body.rel)) return err("관계를 골라 주세요");
+    if (!MBTI.includes(body.a) || !MBTI.includes(body.b)) return err("두 사람 MBTI를 골라 주세요");
+    const nameA = clean(body.nameA, 8), nameB = clean(body.nameB, 8);
+    if (!nameA || !nameB) return err("두 사람을 부를 이름을 적어 주세요");
+    const email = clean(body.email, 80);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err("이메일을 확인해 주세요");
+    if (!body.terms) return err("이용약관·환불정책에 동의해 주세요");
+    const story = pkg === "special" ? String(body.story ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, "").trim().slice(0, 500) : "";
+    if (pkg === "special" && story.length < 10) return err("사연을 10자 이상 적어 주세요");
+    const chars = { a: cleanChar(body.chars?.a), b: cleanChar(body.chars?.b) };
+    if (pkg !== "special") { chars.a.feat = ""; chars.b.feat = ""; }
+    const ip = await ipHash(request, salt);
+    const n = await db.prepare("SELECT COUNT(*) n FROM orders WHERE ip=? AND created_at>?").bind(ip, Date.now() - 86400e3).first();
+    if (n.n >= DAILY_IP_ORDERS) return err("오늘은 주문서를 너무 많이 만들었어요. 내일 다시 해 주세요", 429);
+    const voter = validVoter(body.voter) ? body.voter : null;
+    const owner = (await readSession(request, env)) || voter;
+    const id = newOrderId(), amount = priceOf(pkg);
+    await db.prepare(`INSERT INTO orders (id, pkg, amount, rel, a_type, b_type, name_a, name_b, chars, story, email, kakao, reels, status, owner, voter, ip, created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',?,?,?,?)`)
+      .bind(id, pkg, amount, body.rel, body.a, body.b, nameA, nameB, JSON.stringify(chars), story, email, clean(body.kakao, 30), body.reels ? 1 : 0, owner, voter, ip, Date.now()).run();
+    return json({ orderId: id, amount, orderName: `${body.a}×${body.b} 궁합 영상 (${PRODUCTS[pkg].name.split(" · ")[0]})`, email });
+  }
+  if (path === "order/confirm" && method === "POST") {
+    const o = await db.prepare("SELECT * FROM orders WHERE id=?").bind(String(body.orderId || "")).first();
+    if (!o) return err("주문을 찾을 수 없어요", 404);
+    if (o.status !== "pending") {
+      if (o.payment_key && o.payment_key === body.paymentKey) return json({ order: orderRow(o) });   // 새로고침 등으로 다시 온 경우
+      return err("이미 처리된 주문이에요", 409);
+    }
+    if (Number(body.amount) !== o.amount) return err("결제 금액이 주문과 달라요. 다시 주문해 주세요", 400);
+    const r = await toss(env, "payments/confirm", { paymentKey: String(body.paymentKey || ""), orderId: o.id, amount: o.amount }, "confirm-" + o.id);
+    if (!r.ok) return err(r.data.message || "결제 승인에 실패했어요", 400);
+    const now = Date.now(), due = kstDayPlus(now, DELIVERY_DAYS);
+    const method2 = r.data.easyPay?.provider ? `${r.data.method} · ${r.data.easyPay.provider}` : r.data.method || "";
+    await db.prepare("UPDATE orders SET status='paid', payment_key=?, method=?, paid_at=?, due_day=? WHERE id=? AND status='pending'")
+      .bind(r.data.paymentKey, method2, now, due, o.id).run();
+    return json({ order: orderRow({ ...o, status: "paid", payment_key: r.data.paymentKey, method: method2, paid_at: now, due_day: due }) });
+  }
+  if (path === "orders/mine" && method === "GET") {
+    const voter = url.searchParams.get("voter") || "";
+    const uid = await readSession(request, env);
+    const keys = [uid, validVoter(voter) ? voter : null].filter(Boolean);
+    if (!keys.length) return json({ orders: [] });
+    const q = keys.map(() => "?").join(",");
+    const r = await db.prepare(`SELECT * FROM orders WHERE status<>'pending' AND (owner IN (${q}) OR voter IN (${q})) ORDER BY created_at DESC LIMIT 50`).bind(...keys, ...keys).all();
+    return json({ orders: r.results.map((o) => orderRow(o)) });
+  }
+  if (path.startsWith("order/") && path.endsWith("/cancel") && method === "POST") {
+    const id = path.slice(6, -7);
+    const o = await db.prepare("SELECT * FROM orders WHERE id=?").bind(id).first();
+    if (!o) return err("주문을 찾을 수 없어요", 404);
+    const uid = await readSession(request, env);
+    const mine = (uid && o.owner === uid) || (validVoter(body.voter) && (o.voter === body.voter || o.owner === body.voter));
+    if (!mine) return err("내 주문만 취소할 수 있어요", 403);
+    if (o.status !== "paid") return err("제작이 시작돼서 바로 취소할 수 없어요. 메일로 문의해 주세요", 409);
+    const r = await toss(env, `payments/${encodeURIComponent(o.payment_key)}/cancel`, { cancelReason: "구매자 취소 (제작 시작 전)" }, "cancel-" + o.id);
+    if (!r.ok) return err(r.data.message || "취소에 실패했어요. 메일로 문의해 주세요", 400);
+    await db.prepare("UPDATE orders SET status='canceled', cancel_reason=?, canceled_at=? WHERE id=?").bind("구매자 취소", Date.now(), o.id).run();
+    return json({ ok: true });
+  }
+
   // ---------- 내 정보: 내가 하트 누른 것 + 내가 쓴 글 ----------
   if (path === "me" && method === "GET") {
     const voter = url.searchParams.get("voter") || "";
@@ -957,7 +1093,7 @@ export async function onRequest({ request, env, params }) {
       return json({ ok: true });
     }
     if (path === "admin/export" && method === "GET") {
-      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports", "board_replies", "reply_reports"];
+      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports", "board_replies", "reply_reports", "orders"];
       const out = { exported_at: new Date().toISOString(), tables: {} };
       for (const t of tables) out.tables[t] = (await db.prepare(`SELECT * FROM ${t}`).all()).results;
       return new Response(JSON.stringify(out), {
@@ -1189,6 +1325,28 @@ export async function onRequest({ request, env, params }) {
         if (!body.hidden) ops.push(db.prepare("DELETE FROM reply_reports WHERE reply_id=?").bind(id));
         await db.batch(ops);
       } else return err("바꿀 게 없어요");
+      return json({ ok: true });
+    }
+    // ---- 맞춤 영상 주문 ----
+    if (path === "admin/orders" && method === "GET") {
+      const all = url.searchParams.get("all") === "1";
+      const r = await db.prepare(`SELECT * FROM orders ${all ? "" : "WHERE status<>'pending'"} ORDER BY CASE status WHEN 'paid' THEN 0 WHEN 'script' THEN 1 WHEN 'making' THEN 2 ELSE 3 END, created_at DESC LIMIT 500`).all();
+      return json({ orders: r.results.map((o) => orderRow(o, true)), test: tossKeys(env).ck.startsWith("test_") });
+    }
+    if (path === "admin/order/update" && method === "POST") {
+      const o = await db.prepare("SELECT * FROM orders WHERE id=?").bind(String(body.id || "")).first();
+      if (!o) return err("주문을 찾을 수 없어요", 404);
+      if (body.refund) {
+        if (!o.payment_key || o.status === "canceled" || o.status === "pending") return err("환불할 결제가 없어요");
+        const r = await toss(env, `payments/${encodeURIComponent(o.payment_key)}/cancel`, { cancelReason: clean(body.reason, 100) || "판매자 환불" }, "cancel-" + o.id);
+        if (!r.ok) return err(r.data.message || "환불에 실패했어요");
+        await db.prepare("UPDATE orders SET status='canceled', cancel_reason=?, canceled_at=? WHERE id=?").bind(clean(body.reason, 100) || "판매자 환불", Date.now(), o.id).run();
+        return json({ ok: true });
+      }
+      const st = ORDER_STATUS.includes(body.status) && body.status !== "canceled" ? body.status : o.status;
+      await db.prepare("UPDATE orders SET status=?, link=?, script_link=?, note=? WHERE id=?")
+        .bind(st, body.link !== undefined ? clean(body.link, 300) || null : o.link, body.script !== undefined ? clean(body.script, 300) || null : o.script_link,
+          body.note !== undefined ? String(body.note).slice(0, 1000) : o.note, o.id).run();
       return json({ ok: true });
     }
     if (path === "admin/check") return json({ ok: true });

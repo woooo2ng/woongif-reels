@@ -300,12 +300,44 @@ body.in-setup .app,body.in-setup .nav,body.in-setup .composer{display:none !impo
 .toast{pointer-events:none;position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-20px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:12px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:50;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 footer{text-align:center;color:var(--mute);font-size:12px;margin-top:32px;line-height:1.8}
+footer.biz{text-align:left;margin-top:36px;padding:20px 20px 0;border-top:1.5px solid #dde7ee;font-size:11px;line-height:1.75;color:#66717a}
+footer.biz nav{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}footer.biz nav a{color:#3b4650;font-weight:800;text-decoration:none}
+.obanner{display:flex;gap:12px;align-items:stretch;margin-top:12px;padding:16px 14px 16px 16px;border-radius:22px;border:2px solid var(--ink);background:#fff6cc;box-shadow:0 4px 0 var(--ink);text-decoration:none;color:var(--ink)}
+.obanner .nw{display:inline-block;background:var(--red);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;font-size:11px;font-weight:900;color:#fff;transform:rotate(-2deg)}
+.obanner b{display:block;margin-top:8px;font-size:18px;font-weight:900;line-height:1.3;word-break:keep-all}
+.obanner small{display:block;margin-top:6px;font-size:12px;font-weight:700;color:#3b4650;line-height:1.5}
+.obanner .go{display:inline-flex;align-items:center;gap:6px;margin-top:10px;height:38px;padding:0 14px;border-radius:19px;background:var(--ink);color:#fff;font-size:13px;font-weight:900}
+.obanner .vid{flex:none;width:84px;border-radius:14px;border:2px solid var(--ink);background:repeating-linear-gradient(135deg,#dcedf8 0 6px,#bfe0f4 6px 12px);display:flex;align-items:center;justify-content:center}
+.obanner .vid i{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.obanner .vid i::after{content:"";border-left:11px solid var(--ink);border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+.thw{flex:none;width:140px;display:flex;flex-direction:column}
+.thw .ord{margin-top:6px;height:32px;border-radius:16px;border:2px solid var(--ink);background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;text-decoration:none;color:var(--ink)}
+.ocard{background:#fff;border:2px solid var(--ink);border-radius:20px;padding:14px 16px}
+.ocard+.ocard{margin-top:10px}
+.ocard .oh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ocard .oid{font:600 11px ui-monospace,Menlo,monospace;color:var(--mute)}
+.ocard .ot{margin-top:8px;font-size:15px;font-weight:900;word-break:keep-all}
+.ocard .os{margin-top:3px;font-size:12px;font-weight:700;color:#55606a}
+.otrack{display:flex;justify-content:space-between;margin:14px 6px 0;position:relative}
+.otrack::before{content:"";position:absolute;left:10px;right:10px;top:8px;height:3px;background:#e2e8ec}
+.otrack div{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#66717a;width:56px}
+.otrack i{width:18px;height:18px;border-radius:9px;border:2px solid var(--ink);background:#fff}
+.otrack .dn i{background:var(--ink)}.otrack .cu i{background:var(--yellow)}.otrack .cu{color:var(--ink);font-weight:900}
+.ocard .of{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1.5px solid var(--line);font-size:12px;font-weight:700;color:#55606a}
+.ocard .of button{border:none;background:none;padding:0;color:#d4163b;font-weight:900;text-decoration:underline;font-size:12px}
+.ocard .dl{display:flex;align-items:center;justify-content:center;margin-top:12px;height:44px;border-radius:14px;border:2px solid var(--ink);background:var(--yellow);font-weight:900;font-size:14px;text-decoration:none;color:var(--ink)}
+.ocard .scr{margin-top:12px;padding:10px 12px;border-radius:12px;background:#f1ecff;border:2px solid #5b45b8;font-size:13px;font-weight:800}
+.badge.o-paid{background:#fff}.badge.o-script{background:#ddd2ff}.badge.o-making{background:var(--yellow)}.badge.o-done{background:var(--ink);color:#fff}.badge.o-canceled{background:var(--line);color:#66717a;border-color:transparent}
 </style>
 </head>
 <body>
 <div class="app" id="app">
   <div id="view"></div>
   <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a><br>문의 <a href="mailto:ddd12340@naver.com">ddd12340@naver.com</a></footer>
+  <footer class="biz"><nav aria-label="정책"><a href="/order">맞춤 궁합 영상 주문</a><a href="/terms">이용약관</a><a href="/refund">환불·배송 정책</a><a href="/privacy">개인정보처리방침</a></nav>
+    <div>상호 도파민펫 · 대표자 현지웅</div><div>사업자등록번호 404-15-02863 · 통신판매업 신고 진행 중</div>
+    <div>주소 부산광역시 연제구 고분로 270, 103동 1004호 (수영강푸르지오아파트)</div><div>전화 010-9950-6291 · 이메일 ddd12340@naver.com</div>
+    <div style="margin-top:6px">결제는 토스페이먼츠가 처리해요.</div></footer>
 </div>
 <div class="composer" id="composer" hidden></div>
 <nav class="nav" id="nav">
@@ -525,7 +557,9 @@ function drawPair(){
   const pick = S.cf.startsWith("t:") ? S.cf.slice(2) : null;
   const filters = [...(mt?[["mine",mt+" 들어간 것"]]:[]),["pick", pick ? pick+" 들어간 것 ✕" : "MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
   const relLabel = (x)=> esc(x.rel);
-  $("#vbody").innerHTML = `<div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
+  $("#vbody").innerHTML = `<div class="pad" style="padding-bottom:0"><a class="obanner" href="/order${mt?`?a=${mt}`:""}"><div style="flex:1;min-width:0"><span class="nw">NEW · 주문 제작</span>
+      <b>우리 둘 궁합도<br>영상으로 받아 볼래?</b><small>커플·부부·가족·친구 · 14,900원부터<br>7일 이내 전달</small><span class="go">주문하러 가기 →</span></div><div class="vid"><i></i></div></a></div>
+    <div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
     ${top ? `<div class="card big" style="margin-top:12px">
       <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span><span class="r">${top.author?"신청 "+esc(top.author):""}</span></div>
       <div class="duo"><span style="background:${gc(top.a).c}">${top.a}</span><i>×</i><span style="background:${gc(top.b).c}">${top.b}</span></div>
@@ -556,9 +590,10 @@ function drawPair(){
       : `<input class="inp" id="pAuthor" maxlength="31" placeholder="인스타 아이디 (선택) · 영상에 나오면 알려 드려요" autocapitalize="off" autocorrect="off" style="margin-top:12px;font-size:14px">
         <button class="btn" id="pGo" style="margin-top:8px" ${ok?"":"disabled"}>신청하기</button>`}
     </div>
-    ${P.done.length ? `<div class="sec">이미 나온 궁합편</div><div class="thumbs hs">${P.done.map(x=>`<a class="th" href="${esc(x.link||REELS)}" target="_blank" rel="noopener">
+    ${P.done.length ? `<div class="sec">이미 나온 궁합편</div><div class="thumbs hs">${P.done.map(x=>`<div class="thw"><a class="th" href="${esc(x.link||REELS)}" target="_blank" rel="noopener">
       <div class="im"><img src="/thumbs/p_${x.a}_${x.b}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="play"></span></div>
-      <div class="cap">${esc(x.rel==="커플"?`${x.a}(남자) × ${x.b}(여자) 커플`:`${x.a} × ${x.b} ${x.rel}`)}</div></a>`).join("")}</div>` : ""}`;
+      <div class="cap">${esc(x.rel==="커플"?`${x.a}(남자) × ${x.b}(여자) 커플`:`${x.a} × ${x.b} ${x.rel}`)}</div></a>
+      <a class="ord" href="/order?a=${x.a}&b=${x.b}${["커플","부부","가족","친구"].includes(x.rel)?"&rel="+encodeURIComponent(x.rel):""}">우리 버전으로 주문</a></div>`).join("")}</div>` : ""}`;
   const findItem = (k)=>[...all, ...P.done].find(x=>x.key===k);
   $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likePair(x.a,x.b,x.rel, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
   $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{
@@ -873,12 +908,14 @@ async function renderMe(){
     : `<div class="card big" style="margin-top:8px"><b style="font-size:17px;font-weight:900">아직 주민이 아니에요</b>
       <p class="muted" style="margin:6px 0 14px;font-size:13px">내 MBTI로 등록하면 우리 유형 응원과 한마디를 할 수 있어요</p>
       <button class="btn" id="join">${S.town?.kakao && !S.town?.loggedIn ? "로그인하고 주민 등록하기" : "내 유형 주민 등록하기"}</button></div>`}</header>
+    <div class="pad" style="padding-top:24px" id="myOrdersWrap" hidden><div class="h2"><b>내 주문</b><a href="/order" style="font-size:12px;font-weight:800">새로 주문하기</a></div><div id="myOrders" style="margin-top:12px"></div></div>
     <div class="pad" style="padding-top:24px"><div class="h2"><b>내가 하트 누른 것</b><span style="font-weight:400">하루 1번 · 매일 누적</span></div><div id="myLikes" style="margin-top:12px"><div class="skel"></div></div></div>
     ${me ? `<div class="pad" style="padding-top:24px"><div class="h2"><b>내가 쓴 글</b><span id="myN"></span></div><div id="myPosts" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div></div>` : ""}
     ${S.town?.loggedIn ? `<div class="pad" style="padding-top:24px"><button class="logout" id="logout">로그아웃</button></div>` : ""}`;
   if(me){ $("#chgNick").onclick = editNick; $("#chgType").onclick = ()=>openSetup({changeOnly:true}); }
   else $("#join").onclick = startJoin;
   const lo=$("#logout"); if(lo) lo.onclick = logout;
+  loadOrders();
   try{ if(!S.me) S.me = await api("me?voter="+V); }catch(e){ $("#myLikes").innerHTML = `<p class="empty">${esc(e.message)}</p>`; return; }
   if(S.tab!=="me") return;
   const L = S.me.likes;
@@ -896,6 +933,31 @@ async function renderMe(){
       : `<div class="card"><p class="empty">아직 쓴 글이 없어요</p></div>`;
     $$("#myPosts [data-del]").forEach(b=>b.onclick=()=>{ if(confirm("내 한마디를 지울까요?")) postAct(Number(b.dataset.del),"delete"); });
   }
+}
+const OST = {paid:"접수", script:"대본 확인", making:"제작 중", done:"완성", canceled:"취소됨"};
+function dueLabel(day){ if(!day) return ""; const d=new Date(day+"T00:00:00+09:00"); return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`; }
+async function loadOrders(){
+  let d; try{ d = await api("orders/mine?voter="+V); }catch(e){ return; }
+  const w=$("#myOrdersWrap"), box=$("#myOrders"); if(!w||!box) return;
+  if(!d.orders.length){ w.hidden=true; return; }
+  w.hidden=false;
+  box.innerHTML = d.orders.map(o=>{
+    const steps = o.pkg==="special" ? ["paid","script","making","done"] : ["paid","making","done"];
+    const ci = steps.indexOf(o.status);
+    const track = o.status==="canceled" ? "" : `<div class="otrack">${steps.map((k,i)=>`<div class="${i<ci?"dn":i===ci?"cu":""}"><i></i>${OST[k]}</div>`).join("")}</div>`;
+    return `<div class="ocard"><div class="oh"><span class="badge o-${o.status}">${OST[o.status]||o.status}</span><span class="oid">${esc(o.id)}</span></div>
+      <div class="ot">${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}</div>
+      <div class="os">${esc(o.product)} · ${Number(o.amount).toLocaleString()}원${o.status!=="canceled"&&o.status!=="done"&&o.due?` · ${dueLabel(o.due)}까지`:""}</div>${track}
+      ${o.status==="script"&&o.script?`<div class="scr">대본 미리보기가 도착했어요 · <a href="${esc(o.script)}" target="_blank" rel="noopener">대본 보기</a><br><span style="font-weight:600;font-size:12px">수정할 곳은 메일로 답장해 주세요 (1회)</span></div>`:""}
+      ${o.status==="done"&&o.link?`<a class="dl" href="${esc(o.link)}" target="_blank" rel="noopener">완성 영상 받기</a>`:""}
+      ${o.status==="paid"?`<div class="of"><span>제작 시작 전까지 취소할 수 있어요</span><button data-ocancel="${esc(o.id)}">주문 취소</button></div>`:""}</div>`;
+  }).join("");
+  $$("#myOrders [data-ocancel]").forEach(b=>b.onclick=async()=>{
+    if(!confirm("주문을 취소하고 전액 환불받을까요?")) return;
+    b.disabled=true;
+    try{ await api("order/"+encodeURIComponent(b.dataset.ocancel)+"/cancel", {}); toast("주문을 취소했어요. 환불은 카드사에 따라 3~7일 걸려요"); loadOrders(); }
+    catch(e){ toast(e.message); b.disabled=false; }
+  });
 }
 async function logout(){
   try{ await api("auth/logout", {}); }catch{}
