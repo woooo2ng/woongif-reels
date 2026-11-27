@@ -307,7 +307,7 @@ function renderS2(){
     <div class="stage${C3D?" s3d":""}" id="stage" role="group" aria-label="캐릭터 미리보기">${["a","b"].map(x=>`<button type="button" class="fig${S.slot===x?" on":""}" data-slot="${x}" aria-label="${x.toUpperCase()} 캐릭터 꾸미기"><span class="cur">${S.slot===x?"<span>꾸미는 중</span>":""}</span>${C3D?`<span class="fsp"></span>`:figSVG(S.chars[x])}<span class="lab"><em>${x.toUpperCase()}</em>${esc(nm(x))} · ${S[x]}</span></button>`).join("")}</div>
     <div class="tabs" role="tablist" aria-label="꾸밀 사람">${["a","b"].map(x=>`<button type="button" role="tab" class="${S.slot===x?"on":""}" data-slot="${x}" aria-selected="${S.slot===x}">${x.toUpperCase()} · ${esc(nm(x))} ${S[x]}</button>`).join("")}</div>
     <div class="card">
-      <div class="fl"><label class="lbl" for="nmI">${k.toUpperCase()}를 부를 이름</label><input class="inp" id="nmI" maxlength="8" placeholder="예: 도토리" value="${esc(k==="a"?S.nameA:S.nameB)}"></div>
+      <div class="fl"><label class="lbl" for="nmI">${k.toUpperCase()}를 부를 이름</label><input class="inp" id="nmI" maxlength="8" placeholder="예: 민지" value="${esc(k==="a"?S.nameA:S.nameB)}"></div>
       <div class="fl"><div class="lh">MBTI</div><div class="tiles" role="group" aria-label="MBTI 16유형">${TYPES.map(t=>{const A=S.a===t,B=S.b===t,m=A||B;return `<button type="button" class="tile${m?" m":""}" style="background:${G[grp(t)]}" data-t="${t}">${t}${m?`<em>${A&&B?"A·B":A?"A":"B"}</em>`:""}</button>`;}).join("")}</div></div>
       <div class="fl"><div class="lh">성별</div><div class="chips">${chip(c.g==="여","여자",'data-g="여"')}${chip(c.g==="남","남자",'data-g="남"')}</div></div>
       <div class="fl"><div class="lh">머리 스타일</div><div class="chips">${hsOf(c.g).map(([h,l])=>chip(c.hair===h,l,`data-hair="${h}"`)).join("")}</div></div>
@@ -345,7 +345,7 @@ function renderS2(){
 function renderS3(){
   $("#app").innerHTML = fhead("사연 쓰기", "두 사람 이야기를<br>들려주세요") + `<div class="body">
     <label class="lbl" for="stI">영상에 넣고 싶은 우리 이야기</label>
-    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 도토리는 길치라 맨날 반대로 가고, 감자는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
+    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 민지는 길치라 맨날 반대로 가고, 준호는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
     <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
     <div class="sug">${["처음 만난 날","서로 부르는 별명","자주 하는 말버릇","둘만 아는 웃긴 순간","같이 자주 가는 곳","좋아하는 음식"].map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
