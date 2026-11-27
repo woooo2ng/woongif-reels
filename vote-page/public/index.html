@@ -334,7 +334,7 @@ footer.biz nav{display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}footer
 <div class="app" id="app">
   <div id="view"></div>
   <footer>릴스는 인스타그램 <a href="https://www.instagram.com/woong.if/" target="_blank" rel="noopener">@woong.if</a><br>문의 <a href="mailto:ddd12340@naver.com">ddd12340@naver.com</a></footer>
-  <footer class="biz"><nav aria-label="정책"><a href="/order">맞춤 궁합 영상 주문</a><a href="/terms">이용약관</a><a href="/refund">환불·배송 정책</a><a href="/privacy">개인정보처리방침</a></nav>
+  <footer class="biz"><nav aria-label="정책"><a href="/terms">이용약관</a><a href="/refund">환불·배송 정책</a><a href="/privacy">개인정보처리방침</a></nav>
     <div>상호 도파민펫 · 대표자 현지웅</div><div>사업자등록번호 404-15-02863 · 통신판매업 신고 진행 중</div>
     <div>주소 부산광역시 연제구 고분로 270, 103동 1004호 (수영강푸르지오아파트)</div><div>전화 010-9950-6291 · 이메일 ddd12340@naver.com</div>
     <div style="margin-top:6px">결제는 토스페이먼츠가 처리해요.</div></footer>
@@ -385,6 +385,7 @@ const popEl = (sel) => { const el=$(sel); if(el){ el.classList.add("pop"); setTi
 // ---------- 상태 ----------
 const S = { tab:"vote", vtab:"mbti", town:null, mbti:null, pair:null, sit:null, board:{type:null, sort:"top", data:null}, me:null, picked:[],
   cf:"all", sf:"all", cMore:false, form:{rel:"커플", a:"ISFJ", b:"ENTP", custom:""}, sform:{type:"INFP", text:""}, sc:{type:"INFP", text:""}, townSort:"res" };
+const ORDER_OPEN = false;   // 맞춤 영상 주문 입구(배너·우리 버전 주문·푸터 링크). 다 다듬으면 true로
 const myType = () => S.town?.me?.type || null;
 
 // ---------- 헤더 조각 ----------
@@ -557,8 +558,8 @@ function drawPair(){
   const pick = S.cf.startsWith("t:") ? S.cf.slice(2) : null;
   const filters = [...(mt?[["mine",mt+" 들어간 것"]]:[]),["pick", pick ? pick+" 들어간 것 ✕" : "MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
   const relLabel = (x)=> esc(x.rel);
-  $("#vbody").innerHTML = `<div class="pad" style="padding-bottom:0"><a class="obanner" href="/order${mt?`?a=${mt}`:""}"><div style="flex:1;min-width:0"><span class="nw">NEW · 주문 제작</span>
-      <b>우리 둘 궁합도<br>영상으로 받아 볼래?</b><small>커플·부부·가족·친구 · 14,900원부터<br>7일 이내 전달</small><span class="go">주문하러 가기 →</span></div><div class="vid"><i></i></div></a></div>
+  $("#vbody").innerHTML = `${ORDER_OPEN?`<div class="pad" style="padding-bottom:0"><a class="obanner" href="/order${mt?`?a=${mt}`:""}"><div style="flex:1;min-width:0"><span class="nw">NEW · 주문 제작</span>
+      <b>우리 둘 궁합도<br>영상으로 받아 볼래?</b><small>커플·부부·가족·친구 · 14,900원부터<br>7일 이내 전달</small><span class="go">주문하러 가기 →</span></div><div class="vid"><i></i></div></a></div>`:""}
     <div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
     ${top ? `<div class="card big" style="margin-top:12px">
       <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span><span class="r">${top.author?"신청 "+esc(top.author):""}</span></div>
@@ -593,7 +594,7 @@ function drawPair(){
     ${P.done.length ? `<div class="sec">이미 나온 궁합편</div><div class="thumbs hs">${P.done.map(x=>`<div class="thw"><a class="th" href="${esc(x.link||REELS)}" target="_blank" rel="noopener">
       <div class="im"><img src="/thumbs/p_${x.a}_${x.b}.jpg" alt="" loading="lazy" onerror="this.remove()"><span class="play"></span></div>
       <div class="cap">${esc(x.rel==="커플"?`${x.a}(남자) × ${x.b}(여자) 커플`:`${x.a} × ${x.b} ${x.rel}`)}</div></a>
-      <a class="ord" href="/order?a=${x.a}&b=${x.b}${["커플","부부","가족","친구"].includes(x.rel)?"&rel="+encodeURIComponent(x.rel):""}">우리 버전으로 주문</a></div>`).join("")}</div>` : ""}`;
+      ${ORDER_OPEN?`<a class="ord" href="/order?a=${x.a}&b=${x.b}${["커플","부부","가족","친구"].includes(x.rel)?"&rel="+encodeURIComponent(x.rel):""}">우리 버전으로 주문</a>`:""}</div>`).join("")}</div>` : ""}`;
   const findItem = (k)=>[...all, ...P.done].find(x=>x.key===k);
   $$("#vbody [data-h]").forEach(b=>b.onclick=()=>{ const x=findItem(b.dataset.h); likePair(x.a,x.b,x.rel, b.id?"#"+b.id:`.hsm[data-h="${CSS.escape(x.key)}"]`); });
   $$("#vbody [data-f]").forEach(b=>b.onclick=()=>{
