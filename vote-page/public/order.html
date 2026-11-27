@@ -75,6 +75,9 @@ a{color:inherit}
 .hint{margin:10px 2px 0;font-size:12px;line-height:1.55;color:var(--sub)}
 .stage{position:relative;height:296px;border-radius:24px;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);overflow:hidden;background:linear-gradient(#eaf5fc 0 72%,#d6ecd9 72% 100%);display:flex;justify-content:space-around;align-items:flex-end;padding:0 8px 6px}
 .fig{border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:center}
+.stage.s3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage.s3d .fig{position:relative;z-index:1;flex:1;height:100%;justify-content:space-between;padding-top:8px}
+.stage.s3d .fsp{flex:1}
 .fig .cur{height:24px;display:flex;align-items:center}
 .fig .cur span{font-size:11px;font-weight:900;padding:2px 8px;border-radius:8px;border:2px solid var(--ink);background:var(--yellow)}
 .fig .lab{margin-top:2px;height:28px;padding:0 10px;border-radius:14px;border:2px solid var(--ink);background:#fff;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:900;white-space:nowrap}
@@ -164,9 +167,9 @@ async function api(path, body){
 const TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"];
 const G = {NT:"#ddd2ff",NF:"#c9f0dc",SJ:"#d3e6f7",SP:"#ffeab0"};
 const grp = (t)=> t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
-const HC=[["검정","#2b2622"],["갈색","#6b4a2f"],["밝은 갈색","#b07a45"],["금발","#e6c26a"],["핑크","#f2a7c3"]];
-const SK=[["밝은 톤","#fde3cf"],["중간 톤","#efc39c"],["어두운 톤","#b98058"]];
-const CL=[["분홍","#ffc8d6"],["노랑","#ffe58f"],["민트","#b8ecd2"],["하늘","#b9dcf5"],["라벤더","#d6cbff"],["복숭아","#ffcfaa"],["연두","#dcefa8"],["회색","#e2e6ea"]];
+const HC=[["검정","#2a2220"],["갈색","#4a3426"],["밝은 갈색","#8a5a36"],["금발","#d9b264"],["핑크","#e7a0b8"]];
+const SK=[["밝은 톤","#f3cfae"],["중간 톤","#ebb995"],["어두운 톤","#c98f68"]];
+const CL=[["분홍","#ff9ec4"],["노랑","#ffc94d"],["민트","#8cc9a0"],["파랑","#6c8ebf"],["보라","#a58cd0"],["주황","#e39a6b"],["연두","#90b86c"],["회색","#b8bec6"]];
 const HS=[["short","짧은 머리"],["long","긴 머리"],["tied","묶은 머리"]];
 const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
 const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드 3~4장면을 넣고 제작 전에 대본을 먼저 보여 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","스페셜에 포함돼요. 제작 전 대본 미리보기에서 1회, 완성 후 자막·대사 작은 수정 1회를 요청할 수 있어요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
@@ -219,6 +222,18 @@ function figSVG(c){
   ${c.gl?`<rect x="42" y="55" width="15" height="12" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><rect x="63" y="55" width="15" height="12" rx="3" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><path d="M57 60h6" stroke="#1a1a1a" stroke-width="2.2"/>`:""}
   ${c.hair==="tied"?`<polygon points="60,10 70,15 70,26 60,31 50,26 50,15" fill="${hc}"/>`:""}
   <polygon points="33,50 35,38 48,27 60,25 60,42 44,42 38,52" fill="${hc}"/><polygon points="60,25 72,27 85,38 87,50 82,52 76,42 60,42" fill="${hairD}"/></svg>`;
+}
+
+// ---------- 3D 캐릭터 (릴스와 같은 모델) ----------
+let C3D = null;
+async function load3D(){
+  try{
+    const m = await import("/char3d.js");
+    const canvas = document.createElement("canvas");
+    const view = m.mount(canvas);
+    C3D = {canvas, view};
+    if(S.step==="s2"){ const y=window.scrollY; render(); window.scrollTo(0,y); }
+  }catch(e){ console.warn("3D 미리보기를 못 띄웠어요", e); }
 }
 
 // ---------- 화면 ----------
@@ -281,7 +296,7 @@ function renderS2(){
   const chip = (on,label,attr)=>`<button type="button" class="chip${on?" on":""}" ${attr} aria-pressed="${on}">${label}</button>`;
   const sws = (list,key,cls)=> list.map(([n,col],i)=>`<button type="button" class="sw ${cls}${c[key]===i?" on":""}" style="background:${col}" data-sw="${key}" data-i="${i}" aria-label="${n}" title="${n}" aria-pressed="${c[key]===i}"></button>`).join("");
   $("#app").innerHTML = fhead("MBTI · 캐릭터 꾸미기", "두 사람을<br>꾸며 주세요") + `<div class="body" style="padding-top:18px">
-    <div class="stage" role="group" aria-label="캐릭터 미리보기">${["a","b"].map(x=>`<button type="button" class="fig${S.slot===x?" on":""}" data-slot="${x}" aria-label="${x.toUpperCase()} 캐릭터 꾸미기"><span class="cur">${S.slot===x?"<span>꾸미는 중</span>":""}</span>${figSVG(S.chars[x])}<span class="lab"><em>${x.toUpperCase()}</em>${esc(nm(x))} · ${S[x]}</span></button>`).join("")}</div>
+    <div class="stage${C3D?" s3d":""}" id="stage" role="group" aria-label="캐릭터 미리보기">${["a","b"].map(x=>`<button type="button" class="fig${S.slot===x?" on":""}" data-slot="${x}" aria-label="${x.toUpperCase()} 캐릭터 꾸미기"><span class="cur">${S.slot===x?"<span>꾸미는 중</span>":""}</span>${C3D?`<span class="fsp"></span>`:figSVG(S.chars[x])}<span class="lab"><em>${x.toUpperCase()}</em>${esc(nm(x))} · ${S[x]}</span></button>`).join("")}</div>
     <div class="tabs" role="tablist" aria-label="꾸밀 사람">${["a","b"].map(x=>`<button type="button" role="tab" class="${S.slot===x?"on":""}" data-slot="${x}" aria-selected="${S.slot===x}">${x.toUpperCase()} · ${esc(nm(x))} ${S[x]}</button>`).join("")}</div>
     <div class="card">
       <div class="fl"><label class="lbl" for="nmI">${k.toUpperCase()}를 부를 이름</label><input class="inp" id="nmI" maxlength="8" placeholder="예: 도토리" value="${esc(k==="a"?S.nameA:S.nameB)}"></div>
@@ -297,6 +312,7 @@ function renderS2(){
     <p class="hint">이름은 자막·말풍선에 나와요. 위 캐릭터를 눌러도 A·B가 바뀌어요.</p>
     <div id="s2err"></div></div>${FOOTER}`;
   bar(pxBox()+`<button class="cta" id="nx">${sp()?"다음 · 사연 쓰기":"다음 · 연락처로"}</button>`);
+  if(C3D){ $("#stage").prepend(C3D.canvas); C3D.view.set(S.chars.a, S.chars.b, S.slot); }
   const re = ()=>{ save(); const y=window.scrollY; render(); window.scrollTo(0,y); };
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{ S.slot=b.dataset.slot; re(); });
   document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ S[S.slot]=b.dataset.t; re(); });
@@ -460,6 +476,7 @@ window.addEventListener("popstate", ()=>{});
   if(a||b||rel){ S.step="home"; history.replaceState(null,"","/order"); }
   if(!["home","s1","s2","s3","s4","s5"].includes(S.step) || (S.step==="s3"&&!sp())) S.step="home";
   save(); render();
+  load3D();
 })();
 </script>
 </body>

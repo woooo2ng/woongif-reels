@@ -193,7 +193,7 @@ function renderReplies(){
 // ---------- 맞춤 영상 주문 ----------
 let orders = [], oFilter = "open";
 const OST = {pending:"결제 전", paid:"접수", script:"대본 확인", making:"제작 중", done:"완성", canceled:"취소됨"};
-const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","하늘","라벤더","복숭아","연두","회색"], hair:{short:"짧은 머리",long:"긴 머리",tied:"묶은 머리"}};
+const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","파랑","보라","주황","연두","회색"], hair:{short:"짧은 머리",long:"긴 머리",tied:"묶은 머리"}};
 const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} 옷${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
 async function loadOrders(){
   const d = await api("admin/orders"); orders = d.orders;
