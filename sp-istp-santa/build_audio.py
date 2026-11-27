@@ -119,6 +119,40 @@ def bird(vol=0.04):
         i = int(k * 0.12 * SR); out[i:i+n] += x
     return out
 
+# 타이틀용 징글벨 풀 편곡(1857, 퍼블릭 도메인): 종 멜로디 + 피아노 화음 + 베이스 + 썰매 방울 + 팀파니
+JB = [('E5',1),('E5',1),('E5',2),('E5',1),('E5',1),('E5',2),('E5',1),('G5',1),('C5',1.5),('D5',0.5),('E5',4),
+      ('F5',1),('F5',1),('F5',1.5),('F5',0.5),('F5',1),('E5',1),('E5',1),('E5',0.5),('E5',0.5),('E5',1),('D5',1),('D5',1),('E5',1),('D5',2),('G5',2),
+      ('E5',1),('E5',1),('E5',2),('E5',1),('E5',1),('E5',2),('E5',1),('G5',1),('C5',1.5),('D5',0.5),('E5',4),
+      ('F5',1),('F5',1),('F5',1.5),('F5',0.5),('F5',1),('E5',1),('E5',1),('E5',0.5),('E5',0.5),('G5',1),('G5',1),('F5',1),('D5',1),('C5',4)]
+JCH = ['C','C','C','C','F','C','D','G','C','C','C','C','F','C','G','C']
+CHN = {'C':[131,262,330,392],'F':[175,349,440,523],'G':[98,247,294,392],'D':[147,294,370,440]}
+def piano(f, d, vol):
+    n = int(d * SR); t = np.arange(n) / SR
+    return (np.sin(2*np.pi*f*t) + 0.4*np.sin(2*np.pi*f*2*t) + 0.15*np.sin(2*np.pi*f*3*t)) * env(n, 0.003, 0.35) * vol
+def jingle_full(d, vol=0.07, bpm=152):
+    n = int(d * SR); out = np.zeros(n); beat = 60 / bpm
+    t = 0.0
+    for nt, b in JB:
+        i = int(t * SR)
+        if i >= n: break
+        m = bell(N[nt], 0.9, vol); m2 = piano(N[nt], beat * b * 0.95, vol * 0.55); m[:len(m2)] += m2[:len(m)] if len(m2) <= len(m) else m2[:len(m)]
+        out[i:i+len(m)] += m[:max(0, n-i)]; t += beat * b
+    for bar, ch in enumerate(JCH):
+        for k in range(4):
+            tt = (bar * 4 + k) * beat; i = int(tt * SR)
+            if i >= n: break
+            f = CHN[ch]
+            if k % 2 == 0:
+                x = tone(f[0] if k == 0 else f[0] * 1.5, beat * 0.9, 0.25, vol * 0.75, (0.5, 0.2))
+            else:
+                x = sum(piano(ff, beat * 0.6, vol * 0.22) for ff in f[1:])
+            out[i:i+len(x)] += x[:max(0, n-i)]
+        i = int(bar * 4 * beat * SR)
+        if bar % 2 == 0 and i < n:
+            k_ = np.sin(2*np.pi*70*np.arange(int(0.4*SR))/SR) * env(int(0.4*SR), 0.002, 0.12) * vol * 1.6; out[i:i+len(k_)] += k_[:max(0, n-i)]
+    sb = sleighbells(d, vol * 0.55, 2 / beat); out += sb[:n]
+    return out
+
 # ---------- 음성 ----------
 TN = 1.15  # 내레이션 배속
 R = {'n': 'raw/nar.mp3', 's': 'raw/santa.mp3', 'e': 'raw/elf.mp3', 'k': 'raw/kid.mp3', 'm': 'raw/mom.mp3'}
@@ -154,15 +188,23 @@ WHO = {k: k[0] for k in TXT}
 P = []; X = []; D = []; M = {}
 def place(si, key, t): P.append((si, key, t)); return t + dur[key]
 
-# 0 타이틀: 북극 출정 → 이륙 → 산타 얼굴 클로즈업
-X += [(0, epic(5.0, 0.055), 0.0), (0, wind(11, 0.02), 0.0)]
-e = place(0, 'n1', 0.25)
+# 0 타이틀: 징글벨 인트로 → 북극 출정 → 이륙 → '문제는' 클로즈업에서 음악 뚝
+X += [(0, wind(12, 0.02), 0.0)]
+e = place(0, 'n1', 1.55)
 t2 = e + 0.3
 M['lift'] = t2 + wt('n2', 6.3)
 X += [(0, sleighbells(4.0, 0.06, 9), M['lift'] - 0.3), (0, swoosh(0.12, 1.0, 400, 2000), M['lift'] + 0.4)]
 M['close'] = t2 + wt('n2', 8.25)
-X += [(0, scratchrec(0.1), M['close'] - 0.1)]
+X += [(0, scratchrec(0.16), M['close'] - 0.12)]
 e = place(0, 'n2', t2)
+# 음악: 처음엔 크게, 내레이션 동안 낮춤, 클로즈업 직전 레코드 긁히며 뚝
+jd = M['close'] - 0.05
+jb = jingle_full(jd + 0.1, 0.11)
+g = np.ones(len(jb)); tt = np.arange(len(jb)) / SR
+for (a, b) in [(1.55, M['close'])]:
+    g = np.minimum(g, np.clip(1 - 0.6 * np.clip((tt - (a - 0.25)) / 0.25, 0, 1), 0.4, 1))
+f_ = int(0.06 * SR); cut = int(jd * SR); jb = jb[:cut] * g[:cut]; jb[-f_:] *= np.linspace(1, 0, f_)
+X += [(0, jb, 0.0)]
 D.append(e + 0.6)
 
 # 1 단톡 '크리스마스 뭐 해요?'
