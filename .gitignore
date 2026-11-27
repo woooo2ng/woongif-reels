@@ -8,3 +8,5 @@ __pycache__/
 out/
 shots/
 war-*/out/
+en-war-istp/lines/
+en-war-istp/raw/
