@@ -629,7 +629,7 @@ S[2]=()=>{
   const card=document.createElement('div');card.className='wcard';card.innerHTML='<h3>산타에게 온 소원 (20억)</h3>';ui.appendChild(card);
   const WS=[['그냥 기프티콘 주세요','#e2335a','민준 (8살)'],['배민 상품권도 돼요','#2ac1bc','서연 (10살)'],['골라 주시는 것보다 제가 고르는 게…','#3f9e5c','도윤 (9살)']];
   const wr=WS.map(w=>{const d=document.createElement('div');d.className='wrow';d.innerHTML=`<div class="ic" style="background:${w[1]}">✉</div><div><span class="nm">${w[2]}</span>${w[0]}</div>`;card.appendChild(d);d.style.opacity=0;return d});
-  const ck=chip('소원 <b>20억 건</b> · 기프티콘 <b>98%</b>',1120);
+  const ck=chip('소원 <b>20억 건</b> · 기프티콘 <b>98%</b>',890);
   const ck2=chip('상자 속: 바코드 <b>1장</b>');
   const TAB=MK('g_tab'),WW=MK('g_w'),GC=MK('g_chip'),PR=MK('g_print'),BX=MK('g_box'),C2=MK('g_chip2');
   const L1=ln(2,'s1'),E1=ln(2,'e1'),S2=ln(2,'s2'),N4=ln(2,'n4');

@@ -223,9 +223,9 @@ D.append(e + 0.6)
 # 2 소원은 기프티콘 → 바코드 한 장 → 큰 상자
 X += [(2, musicbox(14, 0.03), 0.0)]
 M['g_tab'] = 0.6; X += [(2, swoosh(0.08), M['g_tab'])]
-M['g_w'] = [1.0, 1.5, 2.0]; X += [(2, msg(0.08), x) for x in M['g_w']]
-M['g_chip'] = 2.45; X += [(2, ping(0.06), M['g_chip'])]
-e = place(2, 's1', 2.9)
+M['g_w'] = [1.0, 1.7, 2.4]; X += [(2, msg(0.08), x) for x in M['g_w']]
+M['g_chip'] = 3.0; X += [(2, ping(0.06), M['g_chip'])]
+e = place(2, 's1', 4.5)
 e = place(2, 'e1', e + 0.3)
 e = place(2, 's2', e + 0.35)
 M['g_print'] = e + 0.25; X += [(2, printer(1.1, 0.08), M['g_print'])]
