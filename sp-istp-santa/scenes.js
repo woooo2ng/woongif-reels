@@ -385,8 +385,8 @@ S[5]=()=>{
     else{kid.position.set(0.8,0,2.15);kid.rotation.y=Math.PI;sitPose(kid);ku.legs.forEach(l=>l.rotation.x=-1.35);ku.arms.forEach(a=>a.rotation.x=-1.15);
       con.visible=true;con.position.set(0.8,0.78,1.95);con.rotation.set(0.9,0,0);big.visible=false;
       const din=t>DIN&&t<DINE;bowl.visible=din;spoon.visible=din;
-      if(din){con.position.set(0.68,0.95,1.9);con.rotation.set(0.9,0,0.25);ku.arms[0].rotation.x=-1.3;ku.arms[0].rotation.z=0.25;
-        const ph=Math.max(0,Math.sin((t-DIN)*4.5));ku.arms[1].rotation.x=-1.0-ph*1.2;ku.arms[1].rotation.z=-0.2;bowl.position.set(1.05,0.86,1.8)}
+      if(din){con.position.set(1.0,0.74,1.92);con.rotation.set(0.9,0,-0.15);ku.arms[0].rotation.x=-1.05;
+        const ph=Math.max(0,Math.sin((t-DIN)*4.5));ku.arms[1].rotation.x=-0.7-ph*1.05;ku.arms[1].rotation.z=0.15*(1-ph);bowl.position.set(0.3,0.74,2.05);bowl.scale.setScalar(1.5)}
       ku.head.rotation.x=0.08}
     phone.visible=!tlk&&t>SC-0.5;
     const lid=big.userData.lid;const lk=ease((t-OP)/0.35);lid.position.set(-0.3*lk,0.5+lk*0.9-Math.max(0,lk-0.6)*1.6,0.4*lk);lid.rotation.set(lk*1.0,0,-lk*0.8);
@@ -423,7 +423,7 @@ S[6]=()=>{
   const dim=document.createElement('div');dim.className='fl';dim.style.background='rgba(18,22,48,1)';ui.appendChild(dim);
   const e0=document.createElement('div');e0.className='end0';e0.textContent='크리스마스 특별편';ui.appendChild(e0);
   const e1=document.createElement('div');e1.className='end1 out';e1.textContent='다음 편은?';ui.appendChild(e1);
-  const e2=document.createElement('div');e2.className='end2 out';e2.textContent='신청소에서 골라 주세요';ui.appendChild(e2);
+  const e2=document.createElement('div');e2.className='end2 out';e2.textContent='팔로우하고 기다려 주세요';ui.appendChild(e2);
   const SIT=MK('sit'),NO=MK('noti'),RA=MK('r3'),RB=MK('r2'),R1=MK('r1'),ND=MK('nod'),CD=MK('card');
   const cam=new THREE.PerspectiveCamera(46,W/H,0.1,200);
   return t=>{updRoom(R,t);SN.upd(t,0.4);
