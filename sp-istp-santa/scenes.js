@@ -101,12 +101,12 @@ S[1]=()=>{
     // 산타
     resetP(sa);const u=sa.userData;eyesK(sa,0.7);
     const STAND=WK-1.4;
-    if(t<STAND){sa.position.set(-0.4,0,-0.45);sa.rotation.y=0.15;sitPose(sa);u.legs.forEach(l=>l.rotation.x=-1.35);
+    if(t<STAND){sa.position.set(-0.4,0,-0.88);sa.rotation.y=0.15;sitPose(sa);u.hip.position.y=0.7;u.legs.forEach(l=>l.rotation.x=-1.35);
       u.arms[1].rotation.x=-1.25;u.arms[0].rotation.x=-0.3;u.head.rotation.x=t<DN?0.35:0.1;phone3.visible=t<DN+0.6;
       if(t>DN+0.5){u.arms[1].rotation.x=-0.3;}
-      if(t>DN+1.2&&t<STAND){const s=Math.sin((t-DN-1.2)*2);u.hip.position.y=0.56-0.02*Math.max(0,s);u.head.rotation.x=0.18}}
-    else{const d=t-STAND;const k=ease(d/0.5);sa.position.set(-0.4+Math.max(0,d-0.9)*1.6,0,-0.45+Math.max(0,d-0.9)*0.4);
-      if(d<0.5){sitPose(sa);u.hip.position.y=0.56+0.24*k;u.legs.forEach(l=>l.rotation.x=-1.35*(1-k))}
+      if(t>DN+1.2&&t<STAND){const s=Math.sin((t-DN-1.2)*2);u.hip.position.y=0.7-0.02*Math.max(0,s);u.head.rotation.x=0.18}}
+    else{const d=t-STAND;const k=ease(d/0.5);const zf=-0.88+0.95*k;sa.position.set(-0.4+Math.max(0,d-0.9)*1.6,0,zf+Math.max(0,d-0.9)*0.4);
+      if(d<0.5){sitPose(sa);u.hip.position.y=0.7+0.1*k;u.legs.forEach(l=>l.rotation.x=-1.35*(1-k))}
       else if(d<0.9){sa.rotation.y=0.15-ease((d-0.5)/0.4)*1.0;}
       else{sa.rotation.y=Math.PI/2-0.3;walkPose(sa,(d-0.9)*8,0.45)}
       sack.position.set(sa.position.x-0.05,d>0.6?1.95:0.95,sa.position.z-0.35);tie.position.set(sack.position.x,sack.position.y+0.55,sack.position.z);
