@@ -173,6 +173,11 @@ const CL=[["분홍","#ff9ec4"],["노랑","#ffc94d"],["민트","#8cc9a0"],["파�
 const TOPS=[["tee","티셔츠"],["hood","후드티"],["shirt","셔츠·넥타이"]];
 const BOTS=[["skirt","치마"],["pants","바지"],["shorts","반바지"]];
 const BC=[["남색","#2c3040"],["검정","#1f1f24"],["베이지","#d9c3a0"],["청","#5b7fb8"],["노랑","#fff0a8"],["분홍","#ffd1e3"]];
+const SUGS={
+  "커플":["처음 만난 날","처음 반한 순간","고백한 날","고백한 말","첫 데이트","첫 손잡은 날","서로 부르는 애칭","자주 하는 말버릇","연락 스타일","데이트 단골 코스","기념일에 한 일","받은 선물 중 최고","같이 간 여행","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","요즘 빠진 것"],
+  "부부":["처음 만난 날","처음 반한 순간","프러포즈한 날","결혼식 날","신혼 때 에피소드","서로 부르는 호칭","자주 하는 말버릇","집안일 나누는 법","주말에 같이 하는 일","같이 간 여행","기념일에 한 일","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식"],
+  "가족":["서로 부르는 호칭","자주 하는 말","단골 잔소리","서로 닮은 점","정반대인 점","가족 여행","명절 풍경","집에서 자주 하는 일","같이 보는 TV","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간"],
+  "친구":["처음 친해진 계기","서로 부르는 별명","자주 하는 말버릇","단골 아지트","같이 간 여행","잊지 못할 흑역사","단톡방 분위기","서로 닮은 점","정반대인 점","둘만 아는 웃긴 순간","좋아하는 음식","고마웠던 순간"]};
 const HATS=[["none","없음"],["cap","캡모자"],["beanie","비니"]];
 const HSF=[["tied","만두머리"],["long","긴 생머리"],["short","단발"]];
 const HSM=[["short","옆가르마"],["spiky","삐죽머리"],["basic","짧은 머리"],["dandy","덮은 머리"],["long","장발"],["tied","포마드"]];
@@ -347,7 +352,7 @@ function renderS3(){
     <label class="lbl" for="stI">영상에 넣고 싶은 우리 이야기</label>
     <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 민지는 길치라 맨날 반대로 가고, 웅이는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
     <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
-    <div class="sug">${["처음 만난 날","서로 부르는 별명","자주 하는 말버릇","둘만 아는 웃긴 순간","같이 자주 가는 곳","좋아하는 음식"].map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
+    <div class="sug">${(SUGS[S.rel]||SUGS["커플"]).map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
     <p class="hint">자세히 쓸수록 두 사람다운 장면이 나와요. 문장이 서툴러도 괜찮으니 생각나는 대로 많이 적어 주세요.</p></div>${FOOTER}`;
   const ok = ()=> S.story.trim().length>=10;
