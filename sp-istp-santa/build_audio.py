@@ -283,7 +283,7 @@ M['scan'] = e + 0.45; X += [(5, beep(0.12), M['scan']), (5, sparkle(0.06), M['sc
 M['tl'] = M['scan'] + 0.9
 t7 = M['tl'] + 0.1
 M['dinner'] = t7 + 1.7; M['dinner_e'] = M['dinner'] + 1.6
-X += [(5, tone(2600, 0.08, 0.03, 0.06), M['dinner'] + 0.35 + k * 0.7) for k in range(2)]  # 숟가락 '팅'
+X += [(5, steps(4, 0.3, 0.07), M['dinner'] - 0.9), (5, thud(0.12), M['dinner']), (5, click(0.08), M['dinner']), (5, steps(3, 0.3, 0.06), M['dinner'] + 0.4)]  # 엄마 발소리·그릇 '톡'
 e = place(5, 'n7', t7)
 D.append(e + 0.8)
 

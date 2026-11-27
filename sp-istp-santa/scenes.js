@@ -359,12 +359,18 @@ S[5]=()=>{
   const big=giftBox(0xd8343c,GOLD,1.2);big.position.set(1.2,0,0.55);scene.add(big);
   const paper=paperMesh(0.36);scene.add(paper);
   const phone=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.22,0.02),lamb(0x1d1d22));kid.userData.arms[0].add(phone);phone.position.set(0,-0.66,0.08);
-  const con=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.2,0.06),lamb(0xd8343c));scene.add(con);
-  const cs=new THREE.Mesh(new THREE.PlaneGeometry(0.22,0.14),basic(0x7fe0ff));con.add(cs);cs.position.z=-0.031;cs.rotation.y=Math.PI;
-  // 저녁: 한 손엔 게임기, 한 손엔 숟가락
-  const bowl=new THREE.Group();scene.add(bowl);const bw=new THREE.Mesh(new THREE.SphereGeometry(0.16,20,12,0,Math.PI*2,Math.PI/2,Math.PI/2),new THREE.MeshLambertMaterial({color:0xf2f2f2,side:THREE.DoubleSide}));bowl.add(bw);
-  const rice=new THREE.Mesh(new THREE.SphereGeometry(0.15,16,10),smooth(0xfffbf0));rice.scale.y=0.35;rice.position.y=-0.01;bowl.add(rice);
-  const spoon=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.03,0.28),lamb(0xd8d8e0));kid.userData.arms[1].add(spoon);spoon.position.set(0,-0.66,0.12);
+  // 타임랩스용: 게임기는 아이 손(골반 그룹)에 붙임
+  const con=new THREE.Group();kid.userData.hip.add(con);con.position.set(0,0.3,0.5);con.rotation.x=-0.7;
+  const cb=new THREE.Mesh(new THREE.BoxGeometry(0.46,0.22,0.07),lamb(0xd8343c));con.add(cb);
+  const cs=new THREE.Mesh(new THREE.PlaneGeometry(0.24,0.15),basic(0x7fe0ff));cs.position.z=0.036;con.add(cs);
+  // 옆 탁자 + 엄마가 두고 가는 밥(식을 때까지 그대로)
+  const tbl=new THREE.Group();tbl.position.set(2.8,0,2.3);scene.add(tbl);
+  const tt=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.06,0.6),lamb(0x8a6a4a));tt.position.y=0.6;tbl.add(tt);
+  for(const [x,z] of[[-0.3,-0.25],[0.3,-0.25],[-0.3,0.25],[0.3,0.25]]){const lg=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.6,0.05),lamb(0x6a4a2e));lg.position.set(x,0.3,z);tbl.add(lg)}
+  const bowl=new THREE.Group();scene.add(bowl);const bw=new THREE.Mesh(new THREE.SphereGeometry(0.16,24,14,0,Math.PI*2,Math.PI/2,Math.PI/2),new THREE.MeshLambertMaterial({color:0xf2f2f2,side:THREE.DoubleSide}));bowl.add(bw);
+  const rice=new THREE.Mesh(new THREE.SphereGeometry(0.15,16,10),smooth(0xfffbf0));rice.scale.y=0.35;rice.position.y=-0.01;bowl.add(rice);bowl.scale.setScalar(1.3);
+  const steam=[];for(let i=0;i<5;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.6}));scene.add(m);steam.push(m)}
+  const momTray=new THREE.Vector3();
   const ob=bubT(kid,'…오.',{y:2.3,size:0.0026});
   const pc=document.createElement('div');pc.className='pcard';pc.innerHTML='<div class="ok">✔</div><div class="big">게임 충전 완료</div><div class="sm">기프티콘 사용 · 1초</div>';pc.style.opacity=0;ui.appendChild(pc);
   const OP=MK('open'),PA=MK('paper'),SC=MK('scan'),TL=MK('tl'),DIN=MK('dinner'),DINE=MK('dinner_e');
@@ -375,19 +381,24 @@ S[5]=()=>{
   return t=>{updRoom(R,t);
     resetP(kid);const ku=kid.userData;mood(kid,'flat');eyesK(kid,0.8);
     resetP(mom);mood(mom,'flat');mom.userData.arms[1].rotation.x=-1.3;
-    const tlk=t>TL;mom.visible=!tlk;
+    const tlk=t>TL;mom.visible=!tlk;mug.visible=!tlk;
     if(!tlk){kid.position.set(1.2,0,-0.25);kid.rotation.y=0;
       if(t>OP-0.1&&t<PA){ku.hip.rotation.x=0.35;ku.arms.forEach(a=>a.rotation.x=-1.6)}
       if(t>=PA){ku.arms[1].rotation.x=-1.9;ku.arms[1].rotation.z=0.25}
       if(t>M1.t0-0.1&&t<K4.t1+0.2)ku.head.rotation.y=-0.5;
       if(t>SC-0.5){ku.arms[0].rotation.x=-1.75;ku.arms[0].rotation.z=-0.35}
-      con.visible=false;bowl.visible=false;spoon.visible=false}
-    else{kid.position.set(0.8,0,2.15);kid.rotation.y=Math.PI;sitPose(kid);ku.legs.forEach(l=>l.rotation.x=-1.35);ku.arms.forEach(a=>a.rotation.x=-1.15);
-      con.visible=true;con.position.set(0.8,0.78,1.95);con.rotation.set(0.9,0,0);big.visible=false;
-      const din=t>DIN&&t<DINE;bowl.visible=din;spoon.visible=din;
-      if(din){con.position.set(1.0,0.74,1.92);con.rotation.set(0.9,0,-0.15);ku.arms[0].rotation.x=-1.05;
-        const ph=Math.max(0,Math.sin((t-DIN)*4.5));ku.arms[1].rotation.x=-0.7-ph*1.05;ku.arms[1].rotation.z=0.15*(1-ph);bowl.position.set(0.3,0.74,2.05);bowl.scale.setScalar(1.5)}
-      ku.head.rotation.x=0.08}
+      con.visible=false;bowl.visible=false;steam.forEach(m=>m.visible=false)}
+    else{kid.position.set(0.85,0.29,2.4);kid.rotation.y=Math.PI;sitPose(kid);ku.hip.rotation.x=-0.12;ku.legs.forEach(l=>l.rotation.x=-1.4);ku.arms.forEach(a=>a.rotation.x=-1.0);ku.arms[0].rotation.z=0.25;ku.arms[1].rotation.z=-0.25;
+      con.visible=true;big.visible=false;ku.head.rotation.x=0.12;eyesK(kid,0.75);
+      // 엄마: 밥 들고 와서 탁자에 두고 감 (아이는 그대로)
+      const MI=DIN-0.9,MO=DIN+0.35,ME=DIN+1.3;mom.visible=t>MI&&t<ME;
+      if(mom.visible){const a=new THREE.Vector3(4.4,0,2.0),b=new THREE.Vector3(3.4,0,2.25);let k,face;
+        if(t<DIN){k=ease((t-MI)/(DIN-MI));face=-Math.PI/2}else if(t<MO){k=1;face=-Math.PI/2}else{k=1-ease((t-MO)/(ME-MO));face=Math.PI/2}
+        mom.position.lerpVectors(a,b,k);mom.rotation.y=face;if(t<DIN||t>MO)walkPose(mom,t*7,0.4);
+        mom.userData.arms[1].rotation.x=t<DIN+0.1?-1.2:-0.2;mom.userData.arms[0].rotation.x=t<DIN+0.1?-1.2:-0.2;mug.visible=false;mood(mom,'flat')}
+      bowl.visible=t>DIN-0.9;
+      if(t<DIN&&mom.visible){bowl.position.set(mom.position.x-0.45,1.02,mom.position.z)}else if(t>=DIN){bowl.position.set(2.8,0.84,2.3)}
+      steam.forEach((m,i)=>{const life=t-DIN;const fade=1-clamp01(life/2.6);m.visible=bowl.visible&&fade>0.02;const ph=((t*0.8+i*0.2)%1);m.position.set(bowl.position.x+Math.sin(i*2.3+t*2)*0.05,bowl.position.y+0.12+ph*0.45,bowl.position.z);m.material.opacity=0.55*fade*(1-ph);m.scale.setScalar(0.7+ph*1.2)})}
     phone.visible=!tlk&&t>SC-0.5;
     const lid=big.userData.lid;const lk=ease((t-OP)/0.35);lid.position.set(-0.3*lk,0.5+lk*0.9-Math.max(0,lk-0.6)*1.6,0.4*lk);lid.rotation.set(lk*1.0,0,-lk*0.8);
     if(t<PA||tlk){paper.visible=false}else{paper.visible=true;const hp=new THREE.Vector3();ku.arms[1].localToWorld(hp.set(0,-0.62,0.1));const k=ease((t-PA)/0.35);paper.position.set(hp.x-0.05,hp.y+0.12,hp.z+0.08);paper.rotation.set(0,0,0);paper.scale.setScalar(0.5+0.5*k)}
@@ -397,8 +408,8 @@ S[5]=()=>{
       w2m.color.set(mixc('#0e1636','#bfe4ff',kk));LG.forEach(l=>l.o.intensity=l.i*(0.45+0.55*kk));bgEl.style.background=`linear-gradient(${mixc('#2a2030','#f5e6d0',kk)},${mixc('#2a2030','#f5e6d0',kk)})`;
       const hrs=Math.min(14,Math.floor(clamp01(d)*14.99));chipSet(ck,`게임기 내려놓은 횟수 <b>0번</b> · ${hrs}시간째`);chipPop(ck,t,TL+0.1);ck0.style.opacity=0}
     else{bgEl.style.background='linear-gradient(#f5e6d0,#f5e6d0)';chipPop(ck0,t,0.1)}
-    if(tlk){cam.position.set(0.55,1.75,-0.9);cam.lookAt(0.75,0.85,2.4)}
-    else if(t<PA){cam.position.set(1.0,2.8,4.0);cam.lookAt(1.1,1.0,0.0)}
+    if(tlk){if(cam.fov!==62){cam.fov=62;cam.updateProjectionMatrix()}cam.position.set(1.75,2.3,-1.9);cam.lookAt(1.75,1.4,2.7)}
+    else if(t<PA){if(cam.fov!==46){cam.fov=46;cam.updateProjectionMatrix()}cam.position.set(1.0,2.8,4.0);cam.lookAt(1.1,1.0,0.0)}
     else if(t<M1.t0-0.1){cam.position.set(1.1,1.75,2.2);cam.lookAt(1.2,1.4,-0.25)}
     else if(t<SC-0.5){cam.position.set(0.6,2.7,4.0);cam.lookAt(0.6,1.45,0.0)}
     else{cam.position.set(1.1,1.75,2.2);cam.lookAt(1.2,1.4,-0.25)}
