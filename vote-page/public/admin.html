@@ -67,6 +67,7 @@ table.st tr.now td{background:#fffbe6}
   <section id="s-orders" hidden>
     <h2>맞춤 궁합 영상 주문 <span id="otest"></span></h2>
     <p class="sub">상태를 바꾸면 구매자 '내 주문'에 바로 보여요. 완성 링크를 넣고 '완성'으로 바꾸면 다운로드 버튼이 생겨요. 이메일은 직접 보내 주세요.</p>
+    <div id="ostats"></div>
     <div class="row"><button id="mailtest">✉️ 주문 알림 메일 테스트</button></div>
     <div class="row" id="ofl"></div>
     <div id="orders"></div>
@@ -200,7 +201,18 @@ const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝
 const TOPN={tee:"티셔츠",hood:"후드티",shirt:"셔츠·넥타이"}, BOTN={skirt:"치마",pants:"바지",shorts:"반바지"}, BCN=["남색","검정","베이지","청","노랑","분홍"], HATN={none:"",cap:"캡모자",beanie:"비니"};
 const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} ${TOPN[c.top]||"옷"}${c.bottom?` · ${BCN[c.bc]||""} ${BOTN[c.bottom]}`:""}${c.hat&&c.hat!=="none"?" · "+HATN[c.hat]:""}${c.scarf?" · 목도리":""}${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
 document.addEventListener("click", async (e)=>{ if(e.target.id!=="mailtest") return; try{ await api("admin/notify-test",{}); toast("보냈어요! 메일함(스팸함도) 확인해 보세요"); }catch(err){ toast(err.message); } });
+async function loadOrderStats(){
+  const d = await api("admin/order-stats"); const T=d.total, won=(n)=>Number(n||0).toLocaleString()+"원";
+  const pct=(a,b)=>b?Math.round(a/b*100)+"%":"-";
+  const today=d.days[d.days.length-1];
+  $("#ostats").innerHTML = `<div class="card"><b>주문 페이지 방문 (사람 수, 하루 1번씩)</b>
+    <div class="sub" style="margin-top:6px">오늘: 방문 <b>${today.view}</b> → 주문 시작 <b>${today.start}</b> → 결제 화면 <b>${today.confirm}</b> → 결제 버튼 <b>${today.pay}</b> → 결제 완료 <b>${today.paid}</b> (${won(today.won)})</div>
+    <div class="sub">전체: 방문 <b>${T.view||0}</b>명 · 주문 시작 ${T.start||0} (${pct(T.start||0,T.view||0)}) · 결제 화면 ${T.confirm||0} · 결제 버튼 ${T.pay||0} · 결제 완료 <b>${T.paid}</b>건 · 매출 <b>${won(T.won)}</b></div>
+    <table style="width:100%;margin-top:8px;font-size:12px;border-collapse:collapse"><tr style="text-align:right"><th style="text-align:left">날짜</th><th>방문</th><th>시작</th><th>결제화면</th><th>결제버튼</th><th>완료</th><th>매출</th></tr>
+    ${[...d.days].reverse().map(r=>`<tr style="text-align:right;border-top:1px solid #eee"><td style="text-align:left">${md(r.day)}</td><td><b>${r.view}</b></td><td>${r.start}</td><td>${r.confirm}</td><td>${r.pay}</td><td>${r.paid}</td><td>${r.won?won(r.won):""}</td></tr>`).join("")}</table></div>`;
+}
 async function loadOrders(){
+  loadOrderStats().catch(()=>{});
   const d = await api("admin/orders?all=1"); orders = d.orders;
   $("#otest").innerHTML = d.test ? `<span class="badge" style="background:#ffd84d;color:#1a1a1a">테스트 결제 모드</span>` : "";
   renderOrders();

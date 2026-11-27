@@ -290,6 +290,7 @@ async function setup(db) {
       status TEXT NOT NULL DEFAULT 'pending', payment_key TEXT, method TEXT, owner TEXT, voter TEXT, ip TEXT,
       created_at INTEGER, paid_at INTEGER, due_day TEXT, link TEXT, script_link TEXT, note TEXT, cancel_reason TEXT, canceled_at INTEGER)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_owner ON orders(owner, created_at)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS order_views (day TEXT NOT NULL, voter TEXT NOT NULL, step TEXT NOT NULL, created_at INTEGER, PRIMARY KEY(day, voter, step))`),
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_voter ON orders(voter, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_status ON orders(status, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_ip ON orders(ip, created_at)`),
@@ -967,6 +968,12 @@ export async function onRequest({ request, env, params, waitUntil }) {
   }
 
   // ---------- 맞춤 궁합 영상 주문 ----------
+  // 주문 페이지 방문·단계 기록 (기기당 하루 1번씩): view=첫 화면, start=주문서 시작, confirm=확인·결제 화면, pay=결제 버튼
+  if (path === "order/visit" && method === "POST") {
+    const step = ["view", "start", "confirm", "pay"].includes(body.step) ? body.step : null;
+    if (step && validVoter(body.voter)) await db.prepare("INSERT OR IGNORE INTO order_views (day, voter, step, created_at) VALUES (?,?,?,?)").bind(kstDay(), body.voter, step, Date.now()).run();
+    return json({ ok: true });
+  }
   if (path === "order/config" && method === "GET") {
     const left = await saleLeft(db);
     const products = Object.fromEntries(Object.entries(PRODUCTS).map(([k, p]) => [k, { name: p.name, price: p.price, sale: left > 0 ? p.sale : null, pay: priceOf(k, left) }]));
@@ -1145,7 +1152,7 @@ export async function onRequest({ request, env, params, waitUntil }) {
       return json({ ok: true });
     }
     if (path === "admin/export" && method === "GET") {
-      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports", "board_replies", "reply_reports", "orders"];
+      const tables = ["likes", "like_counts", "mbti_status", "combo_status", "situations", "ideas", "idea_likes", "scenes", "visits", "daily_views", "blocks", "poll_votes", "settings", "residents", "users", "board_posts", "board_likes", "board_reports", "board_replies", "reply_reports", "orders", "order_views"];
       const out = { exported_at: new Date().toISOString(), tables: {} };
       for (const t of tables) out.tables[t] = (await db.prepare(`SELECT * FROM ${t}`).all()).results;
       return new Response(JSON.stringify(out), {
@@ -1380,6 +1387,22 @@ export async function onRequest({ request, env, params, waitUntil }) {
       return json({ ok: true });
     }
     // ---- 맞춤 영상 주문 ----
+    if (path === "admin/order-stats" && method === "GET") {
+      const since = new Date(Date.now() + 9 * 3600e3 - 13 * 86400e3).toISOString().slice(0, 10);
+      const sinceMs = Date.parse(since + "T00:00:00+09:00");
+      const [v, o, tot, ot] = await Promise.all([
+        db.prepare("SELECT day, step, COUNT(*) n FROM order_views WHERE day>=? GROUP BY day, step").bind(since).all(),
+        db.prepare("SELECT date((paid_at/1000)+32400,'unixepoch') day, COUNT(*) n, SUM(amount) won FROM orders WHERE paid_at>=? AND status<>'canceled' GROUP BY day").bind(sinceMs).all(),
+        db.prepare("SELECT step, COUNT(DISTINCT voter) n FROM order_views GROUP BY step").all(),
+        db.prepare("SELECT COUNT(*) n, COALESCE(SUM(amount),0) won FROM orders WHERE paid_at IS NOT NULL AND status<>'canceled'").first(),
+      ]);
+      const days = []; for (let i = 13; i >= 0; i--) days.push(new Date(Date.now() + 9 * 3600e3 - i * 86400e3).toISOString().slice(0, 10));
+      const by = Object.fromEntries(days.map((d) => [d, { day: d, view: 0, start: 0, confirm: 0, pay: 0, paid: 0, won: 0 }]));
+      v.results.forEach((r) => { if (by[r.day]) by[r.day][r.step] = r.n; });
+      o.results.forEach((r) => { if (by[r.day]) { by[r.day].paid = r.n; by[r.day].won = r.won; } });
+      const total = Object.fromEntries(tot.results.map((r) => [r.step, r.n])); total.paid = ot.n; total.won = ot.won;
+      return json({ days: days.map((d) => by[d]), total });
+    }
     if (path === "admin/orders" && method === "GET") {
       const all = url.searchParams.get("all") === "1";
       const r = await db.prepare(`SELECT * FROM orders ${all ? "" : "WHERE status<>'pending'"} ORDER BY CASE status WHEN 'paid' THEN 0 WHEN 'script' THEN 1 WHEN 'making' THEN 2 ELSE 3 END, created_at DESC LIMIT 500`).all();

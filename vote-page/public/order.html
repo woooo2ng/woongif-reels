@@ -261,7 +261,9 @@ async function load3D(){
 }
 
 // ---------- 화면 ----------
-function go(step){ S.step = step; save(); render(); window.scrollTo(0,0); if(step==="home") history.replaceState(null,"","/order"); }
+const visited={};
+function track(step){ if(visited[step]) return; visited[step]=1; fetch("/api/order/visit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({step,voter})}).catch(()=>{}); }
+function go(step){ if(step==="s1") track("start"); if(step==="s5") track("confirm"); S.step = step; save(); render(); window.scrollTo(0,0); if(step==="home") history.replaceState(null,"","/order"); }
 function prev(){ const f=flow(), i=f.indexOf(S.step); go(i<=0 ? "home" : f[i-1]); }
 function next(){ const f=flow(), i=f.indexOf(S.step); go(i<0 ? f[0] : f[i+1]); }
 
@@ -445,6 +447,7 @@ function renderS5(){
   mountWidget();
 }
 async function payNow(){
+  track("pay");
   const b=$("#nx"); b.disabled=true; b.innerHTML=`<span class="spin"></span> 결제창 여는 중`;
   try{
     const o = await api("order/create", {pkg:S.pkg, rel:S.rel, a:S.a, b:S.b, nameA:S.nameA.trim()||"A", nameB:S.nameB.trim()||"B", chars:S.chars, story:S.story, email:S.email.trim(), insta:S.insta, terms:S.terms});
@@ -515,7 +518,7 @@ window.addEventListener("popstate", ()=>{});
   if(q.get("pkg")&&CFG.products[q.get("pkg")]) S.pkg=q.get("pkg");
   if(a||b||rel){ S.step="home"; history.replaceState(null,"","/order"); }
   if(!["home","s1","s2","s3","s4","s5"].includes(S.step) || (S.step==="s3"&&!sp())) S.step="home";
-  save(); render();
+  save(); render(); track("view"); if(S.step!=="home") track("start");
   load3D();
 })();
 </script>
