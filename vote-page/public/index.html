@@ -931,9 +931,10 @@ function startJoin(){
 }
 const ADJ = ["눕고싶은","산책하는","새벽감성","야식먹는","계획없는","노래하는","고민많은","햇살같은","출근싫은","멍때리는"];
 const rollNick = (t)=>`${ADJ[Math.floor(Math.random()*ADJ.length)]} ${t} ${10+Math.floor(Math.random()*90)}`;
+async function suggestNick(t){ try{ return (await api("town/nick/suggest?type="+t)).nick; }catch{ return rollNick(t); } }
 function openSetup({changeOnly}){
   const st = { type: S.town?.me?.type || "INFP", nick: S.town?.me?.nick || null, nickTouched: !!S.town?.me };
-  if(!st.nick) st.nick = rollNick(st.type);
+  if(!st.nick){ st.nick = rollNick(st.type); suggestNick(st.type).then(n=>{ if(!st.nickTouched){ st.nick=n; const i=$("#suNick"); if(i) i.value=n; } }); }
   const el = $("#setup");
   const draw = ()=>{
     el.innerHTML = `<div class="in"><header class="hd" style="padding-top:calc(12px + env(safe-area-inset-top))">
@@ -951,12 +952,12 @@ function openSetup({changeOnly}){
     $("#suBack").onclick = ()=>closeSetup();
     $$("#setup .tgrid button").forEach(b=>b.onclick=()=>{
       const old = st.type; st.type = b.dataset.t;
-      if(!st.nickTouched) st.nick = st.nick.replace(old, st.type);
-      const n=$("#suNick"); if(n) st.nick = n.value.replace(old, st.nickTouched?old:st.type);
+      const n=$("#suNick"); if(n) st.nick = n.value;
+      if(!st.nickTouched && !changeOnly){ st.nick = st.nick.replace(old, st.type); suggestNick(st.type).then(x=>{ if(!st.nickTouched){ st.nick=x; const i=$("#suNick"); if(i) i.value=x; } }); }
       draw();
     });
     const n=$("#suNick"); if(n) n.oninput=(e)=>{ st.nick=e.target.value; st.nickTouched=true; };
-    const r=$("#suRoll"); if(r) r.onclick=()=>{ st.nick = rollNick(st.type); st.nickTouched=false; draw(); };
+    const r=$("#suRoll"); if(r) r.onclick=async()=>{ st.nick = await suggestNick(st.type); st.nickTouched=false; const i=$("#suNick"); if(i) i.value=st.nick; };
     $("#suGo").onclick = async ()=>{
       $("#suGo").disabled = true;
       try{
@@ -978,7 +979,7 @@ function editNick(){
   openSheet(`<h2 style="margin-top:18px">닉네임 바꾸기</h2><p class="d">게시판에 이 이름으로 보여요 (2~16자)</p>
     <input class="inp" id="nkIn" maxlength="16" value="${esc(me.nick)}" style="margin-top:18px;height:52px;font-weight:700">
     <div class="row" style="margin-top:10px"><button class="btn sm" id="nkRoll" style="background:#fff">다시 뽑기</button><button class="btn sm" id="nkGo">저장</button></div>`);
-  $("#nkRoll").onclick=()=>{ $("#nkIn").value = rollNick(me.type); };
+  $("#nkRoll").onclick=async()=>{ $("#nkIn").value = await suggestNick(me.type); };
   $("#nkGo").onclick=async()=>{
     try{ await api("town/nick", {nick: $("#nkIn").value.trim()}); toast("닉네임을 바꿨어요"); closeSheet(); S.town=null; S.me=null; recent=null; await loadTown(); render(); }
     catch(e){ toast(e.message); }

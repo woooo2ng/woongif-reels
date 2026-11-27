@@ -184,6 +184,12 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS board_replies_ip ON board_replies(ip, created_at)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS reply_reports (reply_id INTEGER NOT NULL, voter TEXT NOT NULL, ip TEXT, created_at INTEGER, PRIMARY KEY(reply_id, voter))`),
   ]);
+  // 닉네임 중복 막기용 비교 키 (소문자·띄어쓰기 제거)
+  try { await db.prepare("ALTER TABLE users ADD COLUMN nick_key TEXT").run(); } catch (e) { /* 이미 있음 */ }
+  await db.batch([
+    db.prepare("UPDATE users SET nick_key=lower(replace(nickname,' ','')) WHERE nick_key IS NULL AND nickname IS NOT NULL"),
+    db.prepare("CREATE INDEX IF NOT EXISTS users_nick_key ON users(nick_key)"),
+  ]);
   // '오늘 공개'로 바꾼 날짜 (다음 날이면 자동으로 '나옴')
   for (const t of ["mbti_status", "combo_status"]) {
     try { await db.prepare(`ALTER TABLE ${t} ADD COLUMN status_day TEXT`).run(); } catch (e) { /* 이미 있음 */ }
@@ -277,6 +283,18 @@ const NICK_ADJ = ["눕고싶은", "산책하는", "새벽감성", "야식먹는"
 function defaultNick(type, seed) {
   let h = 0; for (const ch of String(seed || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   return `${NICK_ADJ[h % NICK_ADJ.length]} ${type || ""} ${10 + (h % 90)}`.replace(/\s+/g, " ");
+}
+const nickKey = (n) => String(n || "").toLowerCase().replace(/\s+/g, "");
+async function nickTaken(db, nick, uid) {
+  const r = await db.prepare("SELECT 1 x FROM users WHERE nick_key=? AND uid<>? LIMIT 1").bind(nickKey(nick), uid || "").first();
+  return !!r;
+}
+async function suggestNick(db, type) {
+  for (let i = 0; i < 30; i++) {
+    const n = `${NICK_ADJ[Math.floor(Math.random() * NICK_ADJ.length)]} ${type} ${10 + Math.floor(Math.random() * (i < 15 ? 90 : 990))}`;
+    if (!(await nickTaken(db, n, ""))) return n;
+  }
+  return `${NICK_ADJ[0]} ${type} ${Date.now() % 100000}`;
 }
 function cleanNick(v) {
   const n = clean(v, 16);
@@ -589,7 +607,8 @@ export async function onRequest({ request, env, params }) {
           await db.batch([
             db.prepare("UPDATE residents SET voter=? WHERE voter=?").bind(uid, dev),
             db.prepare("UPDATE board_posts SET voter=? WHERE voter=?").bind(uid, dev),
-            db.prepare("UPDATE users SET nickname=COALESCE(users.nickname,(SELECT nickname FROM users WHERE uid=?)) WHERE uid=?").bind(dev, uid),
+            db.prepare("UPDATE users SET nickname=COALESCE(users.nickname,(SELECT nickname FROM users WHERE uid=?)), nick_key=COALESCE(users.nick_key,(SELECT nick_key FROM users WHERE uid=?)) WHERE uid=?").bind(dev, dev, uid),
+            db.prepare("UPDATE users SET nickname=NULL, nick_key=NULL WHERE uid=?").bind(dev),
           ]);
         }
       }
@@ -632,7 +651,10 @@ export async function onRequest({ request, env, params }) {
     const uid = await whoAmI(request, env, body.voter);
     if (!uid) return err(kakaoOn(env) ? "먼저 로그인해 주세요" : "다시 시도해 주세요", 401);
     let nick = null;
-    if (body.nick !== undefined) { nick = cleanNick(body.nick); if (typeof nick === "object") return err(nick.error); }
+    if (body.nick !== undefined) {
+      nick = cleanNick(body.nick); if (typeof nick === "object") return err(nick.error);
+      if (await nickTaken(db, nick, uid)) return err("이미 있는 닉네임이에요. 다른 이름으로 해 주세요", 409);
+    }
     const ip = await ipHash(request, salt);
     const had = await db.prepare("SELECT type FROM residents WHERE voter=?").bind(uid).first();
     if (!had) {
@@ -642,8 +664,8 @@ export async function onRequest({ request, env, params }) {
     const now = Date.now();
     const ops = [db.prepare(`INSERT INTO residents (voter, type, ip, created_at, updated_at) VALUES (?,?,?,?,?)
       ON CONFLICT(voter) DO UPDATE SET type=excluded.type, updated_at=excluded.updated_at`).bind(uid, type, ip, now, now)];
-    if (nick) ops.push(db.prepare(`INSERT INTO users (uid, nickname, created_at, updated_at) VALUES (?,?,?,?)
-      ON CONFLICT(uid) DO UPDATE SET nickname=excluded.nickname, updated_at=excluded.updated_at`).bind(uid, nick, now, now));
+    if (nick) ops.push(db.prepare(`INSERT INTO users (uid, nickname, nick_key, created_at, updated_at) VALUES (?,?,?,?,?)
+      ON CONFLICT(uid) DO UPDATE SET nickname=excluded.nickname, nick_key=excluded.nick_key, updated_at=excluded.updated_at`).bind(uid, nick, nickKey(nick), now, now));
     await db.batch(ops);
     return json({ ok: true, me: type, changed: !!had && had.type !== type });
   }
@@ -653,10 +675,22 @@ export async function onRequest({ request, env, params }) {
     if (!uid) return err("먼저 로그인해 주세요", 401);
     const nick = cleanNick(body.nick);
     if (typeof nick === "object") return err(nick.error);
+    if (await nickTaken(db, nick, uid)) return err("이미 있는 닉네임이에요. 다른 이름으로 해 주세요", 409);
     const now = Date.now();
-    await db.prepare(`INSERT INTO users (uid, nickname, created_at, updated_at) VALUES (?,?,?,?)
-      ON CONFLICT(uid) DO UPDATE SET nickname=excluded.nickname, updated_at=excluded.updated_at`).bind(uid, nick, now, now).run();
+    await db.prepare(`INSERT INTO users (uid, nickname, nick_key, created_at, updated_at) VALUES (?,?,?,?,?)
+      ON CONFLICT(uid) DO UPDATE SET nickname=excluded.nickname, nick_key=excluded.nick_key, updated_at=excluded.updated_at`).bind(uid, nick, nickKey(nick), now, now).run();
     return json({ ok: true, nick });
+  }
+  // 안 겹치는 닉네임 추천 / 사용 가능 확인
+  if (path === "town/nick/suggest" && method === "GET") {
+    const type = String(url.searchParams.get("type") || "").toUpperCase();
+    return json({ nick: await suggestNick(db, MBTI.includes(type) ? type : "") });
+  }
+  if (path === "town/nick/check" && method === "GET") {
+    const nick = cleanNick(url.searchParams.get("nick"));
+    if (typeof nick === "object") return json({ ok: false, error: nick.error });
+    const uid = await whoAmI(request, env, url.searchParams.get("voter") || "");
+    return json({ ok: !(await nickTaken(db, nick, uid)), error: "이미 있는 닉네임이에요" });
   }
 
   // 응원 = 하트라서 로그인 없이 기기 기준 (단, 내 유형은 등록돼 있어야 함)
