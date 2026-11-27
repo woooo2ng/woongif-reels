@@ -558,7 +558,7 @@ function drawPair(){
   const filters = [...(mt?[["mine",mt+" 들어간 것"]]:[]),["pick", pick ? pick+" 들어간 것 ✕" : "MBTI로 찾기"],["all","전체"],["커플","커플"],["친구","친구"],["직장 동료","직장 동료"],["기타","기타"],["new","최신순"]];
   const relLabel = (x)=> esc(x.rel);
   $("#vbody").innerHTML = `${ORDER_OPEN?`<div class="pad" style="padding-bottom:0"><a class="obanner" href="/order${mt?`?a=${mt}`:""}"><div style="flex:1;min-width:0"><span class="nw">NEW · 주문 제작</span>
-      <b>우리 둘 궁합도<br>영상으로 받아 볼래?</b><small>커플·부부·가족·친구 · 14,900원부터<br>7일 이내 전달</small><span class="go">주문하러 가기 →</span></div><div class="vid"><i></i></div></a></div>`:""}
+      <b>우리 둘 궁합도<br>영상으로 받아 볼래?</b><small>커플·부부·가족·친구</small><span class="go">주문하러 가기 →</span></div><div class="vid"><i></i></div></a></div>`:""}
     <div class="pad"><b style="font-size:17px;font-weight:900">이 두 유형이 만난다면?</b>
     ${top ? `<div class="card big" style="margin-top:12px">
       <div class="toprow"><span class="tag">${top.status==="making"?"제작 중":top.status==="today"?"오늘 공개":"지금 1위"}</span><span class="r">${top.author?"신청 "+esc(top.author):""}</span></div>
