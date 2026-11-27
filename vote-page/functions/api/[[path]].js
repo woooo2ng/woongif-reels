@@ -85,7 +85,7 @@ function orderRow(o, full) {
     nameA: o.name_a, nameB: o.name_b, status: o.status, due: o.due_day, link: o.status === "done" ? o.link : null,
     script: o.script_link || null, at: o.created_at, paidAt: o.paid_at, email: o.email,
   };
-  if (full) Object.assign(r, { chars: JSON.parse(o.chars || "{}"), story: o.story, kakao: o.kakao, reels: !!o.reels, method: o.method, note: o.note, link: o.link, cancelReason: o.cancel_reason, owner: o.owner });
+  if (full) Object.assign(r, { chars: JSON.parse(o.chars || "{}"), story: o.story, kakao: o.kakao, insta: o.insta, reels: !!o.reels, method: o.method, note: o.note, link: o.link, cancelReason: o.cancel_reason, owner: o.owner });
   return r;
 }
 
@@ -253,6 +253,7 @@ async function setup(db) {
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_status ON orders(status, created_at)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS orders_ip ON orders(ip, created_at)`),
   ]);
+  try { await db.prepare("ALTER TABLE orders ADD COLUMN insta TEXT").run(); } catch (e) { /* 이미 있음 */ }
   // 닉네임 중복 막기용 비교 키 (소문자·띄어쓰기 제거)
   try { await db.prepare("ALTER TABLE users ADD COLUMN nick_key TEXT").run(); } catch (e) { /* 이미 있음 */ }
   await db.batch([
@@ -939,6 +940,8 @@ export async function onRequest({ request, env, params }) {
     if (!nameA || !nameB) return err("두 사람을 부를 이름을 적어 주세요");
     const email = clean(body.email, 80);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err("이메일을 확인해 주세요");
+    const insta = cleanInsta(body.insta);
+    if (!insta) return err("인스타그램 아이디를 확인해 주세요");
     if (!body.terms) return err("이용약관·환불정책에 동의해 주세요");
     const story = pkg === "special" ? String(body.story ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, "").trim().slice(0, 500) : "";
     if (pkg === "special" && story.length < 10) return err("사연을 10자 이상 적어 주세요");
@@ -950,9 +953,9 @@ export async function onRequest({ request, env, params }) {
     const voter = validVoter(body.voter) ? body.voter : null;
     const owner = (await readSession(request, env)) || voter;
     const id = newOrderId(), amount = priceOf(pkg);
-    await db.prepare(`INSERT INTO orders (id, pkg, amount, rel, a_type, b_type, name_a, name_b, chars, story, email, kakao, reels, status, owner, voter, ip, created_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',?,?,?,?)`)
-      .bind(id, pkg, amount, body.rel, body.a, body.b, nameA, nameB, JSON.stringify(chars), story, email, clean(body.kakao, 30), body.reels ? 1 : 0, owner, voter, ip, Date.now()).run();
+    await db.prepare(`INSERT INTO orders (id, pkg, amount, rel, a_type, b_type, name_a, name_b, chars, story, email, kakao, insta, reels, status, owner, voter, ip, created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,'pending',?,?,?,?)`)
+      .bind(id, pkg, amount, body.rel, body.a, body.b, nameA, nameB, JSON.stringify(chars), story, email, clean(body.kakao, 30), insta, owner, voter, ip, Date.now()).run();
     return json({ orderId: id, amount, orderName: `${body.a}×${body.b} 궁합 영상 (${PRODUCTS[pkg].name.split(" · ")[0]})`, email });
   }
   if (path === "order/confirm" && method === "POST") {

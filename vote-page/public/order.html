@@ -183,7 +183,7 @@ const HSF=[["tied","만두머리"],["long","긴 생머리"],["short","단발"]];
 const HSM=[["short","옆가르마"],["spiky","삐죽머리"],["basic","짧은 머리"],["dandy","덮은 머리"],["long","장발"],["tied","포마드"]];
 const hsOf=(g)=> g==="남"?HSM:HSF;
 const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
-const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드를 장면에 넣어 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","맞춤 제작이라 대본 미리보기나 완성 후 수정은 하지 않아요. 주문서에 적어 주신 내용 그대로 만들어 드려요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
+const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드를 장면에 넣어 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","맞춤 제작이라 대본 미리보기나 완성 후 수정은 하지 않아요. 주문서에 적어 주신 내용 그대로 만들어 드려요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
 const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="10" fill="#c9f0dc" stroke="#1a1a1a" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const NOPE = `<svg width="16" height="16" viewBox="0 0 24 24" role="img" aria-label="미포함" style="flex:none"><circle cx="12" cy="12" r="10" fill="#eef3f6" stroke="#b9c3ca" stroke-width="2"/><path d="M8 12h8" stroke="#66717a" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 const LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><rect x="5" y="10" width="14" height="10" rx="3" fill="#1a1a1a"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="#1a1a1a" stroke-width="2.4"/></svg>`;
@@ -197,7 +197,7 @@ const FOOTER = `<footer class="biz"><nav aria-label="정책"><a href="/terms">�
 // ---------- 상태 ----------
 const blankChar = (g)=>({g, hair:g==="여"?"tied":"short", hc:0, skin:0, cl:g==="여"?0:3, gl:false, feat:"", top:"tee", bottom:g==="여"?"skirt":"pants", bc:g==="여"?4:0, hat:"none", scarf:false});
 const fillChar = (c)=>({...blankChar(c.g||"여"), ...c});
-const init = ()=>({step:"home", pkg:"special", rel:"커플", a:"ENFP", b:"ISTJ", slot:"a", nameA:"", nameB:"", chars:{a:blankChar("여"), b:blankChar("남")}, story:"", email:"", kakao:"", reels:false, terms:false, faq:0});
+const init = ()=>({step:"home", pkg:"special", rel:"커플", a:"ENFP", b:"ISTJ", slot:"a", nameA:"", nameB:"", chars:{a:blankChar("여"), b:blankChar("남")}, story:"", email:"", insta:"", reels:false, terms:false, faq:0});
 let S = init();
 try { const saved = JSON.parse(sessionStorage.getItem("wf_order")||"null"); if(saved) S = {...S, ...saved}; } catch(e){}
 S.chars = {a: fillChar(S.chars.a||{}), b: fillChar(S.chars.b||{})};
@@ -211,6 +211,7 @@ const josa = (w, a, b)=>{ const c=w.charCodeAt(w.length-1)-0xac00; return c>=0&&
 const nm = (k)=> (k==="a"?S.nameA:S.nameB).trim() || k.toUpperCase();
 const pairTitle = ()=> `${S.a} × ${S.b} ${S.rel}${josa(S.rel,"이라면?","라면?")}`;
 const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+(hsOf(c.g).find(h=>h[0]===c.hair)||["",""])[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" "+TOPS.find(x=>x[0]===c.top)[1]+" · "+BC[c.bc][0]+" "+BOTS.find(x=>x[0]===c.bottom)[1]+(c.hat!=="none"?" · "+HATS.find(x=>x[0]===c.hat)[1]:"")+(c.scarf?" · 목도리":"")+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
+const instaOk = ()=> /^@?[A-Za-z0-9._]{1,30}$/.test(String(S.insta||"").trim());
 const emailOk = ()=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.email.trim());
 function dueLabel(day){ const d = new Date(day+"T00:00:00+09:00"); return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`; }
 function dueGuess(){ const t = new Date(Date.now()+9*3600e3+CFG.days*86400e3).toISOString().slice(0,10); return dueLabel(t); }
@@ -366,16 +367,17 @@ function renderS4(){
     <label class="lbl" for="emI">이메일 <span style="color:#d4163b">(필수)</span></label>
     <input class="inp" id="emI" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="you@example.com" value="${esc(S.email)}">
     <p class="hint" style="margin-top:6px">다운로드 링크와 진행 소식을 보내 드려요</p>
-    <label class="lbl" for="kkI" style="margin-top:16px">카카오톡 ID <span style="color:#55606a">(선택)</span></label>
-    <input class="inp" id="kkI" maxlength="30" placeholder="남기면 카톡으로도 알려 드려요" value="${esc(S.kakao)}">
+    <label class="lbl" for="igI" style="margin-top:16px">인스타그램 아이디 <span style="color:#d4163b">(필수)</span></label>
+    <div style="position:relative"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:800;color:#55606a">@</span><input class="inp" id="igI" maxlength="31" autocapitalize="off" autocorrect="off" placeholder="woong.if" value="${esc(S.insta)}" style="padding-left:32px"></div>
+    <p class="hint" style="margin-top:6px">사연에서 궁금한 게 있으면 인스타 DM으로 여쭤볼게요</p>
     <div class="checks">
       <button type="button" class="ck${S.terms?" on":""}" id="ckT"><span class="box"></span><span class="bdg req">필수</span><span><a href="/terms" target="_blank">이용약관</a> · <a href="/refund" target="_blank">환불정책</a> · <a href="/privacy" target="_blank">개인정보 수집·이용</a>에 동의해요</span></button>
     </div>
     <p class="hint">완성 영상은 주문한 분에게만 보내 드리고, 다른 곳에 올리지 않아요.</p></div>${FOOTER}`;
-  const upd = ()=>{ const ok=emailOk()&&S.terms, b=$("#nx"); b.disabled=!ok; b.textContent = ok?"다음":(emailOk()?"필수 약관에 동의해 주세요":"이메일을 확인해 주세요"); $("#emI").classList.toggle("bad", !emailOk()&&S.email.length>3); };
+  const upd = ()=>{ const ok=emailOk()&&instaOk()&&S.terms, b=$("#nx"); b.disabled=!ok; b.textContent = ok?"다음":!emailOk()?"이메일을 확인해 주세요":!instaOk()?"인스타 아이디를 적어 주세요":"필수 약관에 동의해 주세요"; $("#emI").classList.toggle("bad", !emailOk()&&S.email.length>3); $("#igI").classList.toggle("bad", !instaOk()&&S.insta.length>0); };
   bar(pxBox()+`<button class="cta" id="nx">다음</button>`);
   $("#emI").oninput = (e)=>{ S.email=e.target.value.slice(0,80); save(); upd(); };
-  $("#kkI").oninput = (e)=>{ S.kakao=e.target.value.slice(0,30); save(); };
+  $("#igI").oninput = (e)=>{ S.insta=e.target.value.replace(/\s/g,"").slice(0,31); save(); upd(); };
   $("#ckT").onclick = (e)=>{ if(e.target.tagName==="A") return; S.terms=!S.terms; save(); $("#ckT").classList.toggle("on",S.terms); upd(); };
   upd();
 }
@@ -405,7 +407,7 @@ function renderS5(){
   const row=(a,b)=>`<div class="row"><span>${a}</span><span>${b}</span></div>`;
   $("#app").innerHTML = fhead("주문 확인", "이대로<br>주문할까요?") + `<div class="body">
     <div class="sum">${row("관계",esc(S.rel))}${row("두 사람",`${esc(nA)} ${S.a} × ${esc(nB)} ${S.b}`)}${row("캐릭터 A",esc(csum("a")))}${row("캐릭터 B",esc(csum("b")))}
-      ${sp()?row("사연",`${S.story.trim().length}자 · 장면에 반영`):""}${row("받을 이메일",esc(S.email))}${row("카톡 ID",esc(S.kakao.trim()||"안 남김"))}
+      ${sp()?row("사연",`${S.story.trim().length}자 · 장면에 반영`):""}${row("받을 이메일",esc(S.email))}${row("인스타",esc("@"+S.insta.replace(/^@+/,"")))}
       <div style="margin-top:14px;font-size:13px;font-weight:800">상품</div>
       <div class="seg" role="group" aria-label="상품"><button type="button" class="${!sp()?"on":""}" data-pkg="basic">기본 · 우리 조합편</button><button type="button" class="${sp()?"on":""}" data-pkg="special">스페셜 · 우리 이야기편</button></div>
       <div class="total"><b>결제 금액</b><strong>${won(pay())}</strong></div>
@@ -429,7 +431,7 @@ function renderS5(){
 async function payNow(){
   const b=$("#nx"); b.disabled=true; b.innerHTML=`<span class="spin"></span> 결제창 여는 중`;
   try{
-    const o = await api("order/create", {pkg:S.pkg, rel:S.rel, a:S.a, b:S.b, nameA:S.nameA.trim()||"A", nameB:S.nameB.trim()||"B", chars:S.chars, story:S.story, email:S.email.trim(), kakao:S.kakao, terms:S.terms});
+    const o = await api("order/create", {pkg:S.pkg, rel:S.rel, a:S.a, b:S.b, nameA:S.nameA.trim()||"A", nameB:S.nameB.trim()||"B", chars:S.chars, story:S.story, email:S.email.trim(), insta:S.insta, terms:S.terms});
     if(o.amount !== pay()){ await widgets.setAmount({currency:"KRW", value:o.amount}); }
     await widgets.requestPayment({orderId:o.orderId, orderName:o.orderName, successUrl:location.origin+"/order?pay=success", failUrl:location.origin+"/order?pay=fail", customerEmail:o.email, customerName:(S.nameA.trim()||"주문자").slice(0,20)});
   }catch(e){

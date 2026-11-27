@@ -214,7 +214,7 @@ function renderOrders(){
     return `<div class="card" data-oid="${esc(o.id)}">
     <div class="txt"><b>${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}</b></div>
     <div class="sub">${esc(o.id)} · ${esc(o.product)} · ${Number(o.amount).toLocaleString()}원 · ${esc(o.method||"")} · 결제 ${when(o.paidAt)} · <b>${o.due?md(o.due)+"까지":""}</b></div>
-    <div class="sub">상태 <b>${OST[o.status]}</b> · ✉️ ${esc(o.email)}${o.kakao?` · 카톡 ${esc(o.kakao)}`:""}</div>
+    <div class="sub">상태 <b>${OST[o.status]}</b> · ✉️ ${esc(o.email)}${o.insta?` · 📷 <a href="https://www.instagram.com/${esc(o.insta)}/" target="_blank">@${esc(o.insta)}</a>`:""}${o.kakao?` · 카톡 ${esc(o.kakao)}`:""}</div>
     <div class="sub">A ${esc(o.nameA)}: ${chs(o.chars.a)}<br>B ${esc(o.nameB)}: ${chs(o.chars.b)}</div>
     ${o.story?`<div class="txt" style="white-space:pre-wrap;background:#fff8dc;border-radius:8px;padding:8px;margin-top:6px">${esc(o.story)}</div>`:""}
     ${o.status==="canceled"?`<div class="sub">취소: ${esc(o.cancelReason||"")}</div>`:`
