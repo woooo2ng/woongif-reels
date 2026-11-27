@@ -82,6 +82,32 @@ function hairESTJ(h, m) {   // 턱선 단발
   const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(0.95, 0.2, 0.42); bang.position.set(0, 0.385, 0.145); h.add(bang);
   const bob = new THREE.Mesh(new THREE.SphereGeometry(0.268, 40, 24, Math.PI * 0.82, Math.PI * 1.36, 0, Math.PI * 0.78), m); bob.position.y = 0.25; bob.scale.set(1.06, 1, 1.02); h.add(bob);
 }
+function hairMale(h, m, style) {   // 남자 머리: 궁합편 남자들 (INTJ 옆가르마 · ENTP 삐죽머리 · ISTP 기본) + 덮은머리·장발·꽁지머리
+  if (style === "basic") { const cap = new THREE.Mesh(new THREE.SphereGeometry(0.265, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.26; cap.rotation.x = -0.35; h.add(cap); return; }
+  if (style === "spiky") {
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.265, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.26; cap.rotation.x = -0.35; h.add(cap);
+    for (let i = 0; i < 4; i++) { const s = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.16, 5), m); s.position.set(-0.12 + i * 0.08, 0.5, 0.06); s.rotation.z = (i - 1.5) * -0.35; s.rotation.x = 0.3; h.add(s); }
+    return;
+  }
+  if (style === "dandy") {
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.27, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.12; h.add(cap);
+    const bk = new THREE.Mesh(new THREE.SphereGeometry(0.268, 40, 24, Math.PI, Math.PI, 0, Math.PI * 0.62), m); bk.position.y = 0.25; h.add(bk);
+    const bang = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); bang.scale.set(1.12, 0.3, 0.5); bang.position.set(0, 0.38, 0.13); h.add(bang);
+    return;
+  }
+  if (style === "tied") {   // 포마드(올린 앞머리)
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.265, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.26; cap.rotation.x = -0.3; h.add(cap);
+    const bk = new THREE.Mesh(new THREE.SphereGeometry(0.264, 40, 24, Math.PI, Math.PI, 0, Math.PI * 0.55), m); bk.position.y = 0.25; h.add(bk);
+    const q = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 16), m); q.scale.set(1.0, 0.42, 0.62); q.position.set(0.02, 0.5, 0.08); q.rotation.x = -0.35; q.rotation.z = 0.12; h.add(q);
+    return;
+  }
+  if (style === "long") {   // 장발: 옆머리가 턱까지
+    hairINTJ(h, m, "long");
+    for (const sx of [-1, 1]) { const sd = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.2, 8, 20), m); sd.position.set(sx * 0.235, 0.2, 0.0); h.add(sd); }
+    return;
+  }
+  hairINTJ(h, m, style);
+}
 function hairINTJ(h, m, style) {   // 남자: 옆가르마 (+ 긴 머리 / 묶은 머리)
   const cap = new THREE.Mesh(new THREE.SphereGeometry(0.262, 40, 20, 0, Math.PI * 2, 0, Math.PI * 0.5), m); cap.position.y = 0.25; cap.rotation.x = -0.3; h.add(cap);
   const bk = new THREE.Mesh(new THREE.SphereGeometry(0.264, 40, 24, Math.PI, Math.PI, 0, Math.PI * (style === "long" ? 0.8 : 0.6)), m); bk.position.y = 0.25; h.add(bk);
@@ -140,7 +166,7 @@ export function person(c) {
     if (c.hair === "long") hairINFP(h, m); else if (c.hair === "short") hairESTJ(h, m); else hairENFP(h, m);
   } else {
     bigEyes(h, { brow: 0x1d1d26 });
-    hairINTJ(h, m, c.hair);
+    hairMale(h, m, c.hair);
     if (top === "tee") { const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), lamb(0xffffff)); col.position.set(0, 0.62, 0.15); u.hip.add(col); }
   }
   if (c.gl) glasses(h);

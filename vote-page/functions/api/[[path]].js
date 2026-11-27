@@ -65,7 +65,7 @@ function newOrderId() {
   const r = [...crypto.getRandomValues(new Uint8Array(4))].map((b) => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("");
   return `WF-${d}-${r}`;
 }
-const CHAR_RULE = { g: ["여", "남"], hair: ["short", "long", "tied"], hc: 5, skin: 3, cl: 8 };
+const CHAR_RULE = { g: ["여", "남"], hair: ["short", "long", "tied", "spiky", "basic", "dandy"], hc: 5, skin: 3, cl: 8 };
 function cleanChar(c) {
   c = c || {};
   const n = (v, max) => { v = Math.floor(Number(v)); return v >= 0 && v < max ? v : 0; };

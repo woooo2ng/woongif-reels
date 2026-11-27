@@ -106,7 +106,7 @@ a{color:inherit}
 .cnt{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:700;color:var(--sub)}
 .ta{background:#fff;border:2px solid var(--ink);border-radius:20px;padding:14px 14px 10px}
 .ta textarea{width:100%;border:none;outline:none;resize:none;font-size:15px;line-height:1.6;background:transparent}
-.sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sug span{height:32px;padding:0 12px;border-radius:16px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
+.sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sug button{cursor:pointer;color:var(--ink);height:32px;padding:0 12px;border-radius:16px;border:1.5px solid rgba(26,26,26,.25);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
 .ylist{list-style:none;margin:16px 0 0;padding:12px 14px;background:#fff6cc;border:2px solid var(--ink);border-radius:16px;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.5;font-weight:700}
 .ylist li,.wlist li{display:flex;gap:8px;align-items:flex-start}
 .skip{border:2px dashed rgba(26,26,26,.35);border-radius:22px;background:#fff;padding:20px 18px;text-align:center}
@@ -174,7 +174,9 @@ const TOPS=[["tee","티셔츠"],["hood","후드티"],["shirt","셔츠·넥타이
 const BOTS=[["skirt","치마"],["pants","바지"],["shorts","반바지"]];
 const BC=[["남색","#2c3040"],["검정","#1f1f24"],["베이지","#d9c3a0"],["청","#5b7fb8"],["노랑","#fff0a8"],["분홍","#ffd1e3"]];
 const HATS=[["none","없음"],["cap","캡모자"],["beanie","비니"]];
-const HS=[["tied","만두머리"],["long","긴 머리"],["short","짧은 머리"]];
+const HSF=[["tied","만두머리"],["long","긴 생머리"],["short","단발"]];
+const HSM=[["short","옆가르마"],["spiky","삐죽머리"],["basic","짧은 머리"],["dandy","덮은 머리"],["long","장발"],["tied","포마드"]];
+const hsOf=(g)=> g==="남"?HSM:HSF;
 const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
 const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드를 장면에 넣어 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","맞춤 제작이라 대본 미리보기나 완성 후 수정은 하지 않아요. 주문서에 적어 주신 내용 그대로 만들어 드려요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
 const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="10" fill="#c9f0dc" stroke="#1a1a1a" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -203,7 +205,7 @@ const pay = ()=> CFG.products[S.pkg].pay;
 const josa = (w, a, b)=>{ const c=w.charCodeAt(w.length-1)-0xac00; return c>=0&&c<=11171&&c%28 ? a : b; };
 const nm = (k)=> (k==="a"?S.nameA:S.nameB).trim() || k.toUpperCase();
 const pairTitle = ()=> `${S.a} × ${S.b} ${S.rel}${josa(S.rel,"이라면?","라면?")}`;
-const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+HS.find(h=>h[0]===c.hair)[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" "+TOPS.find(x=>x[0]===c.top)[1]+" · "+BC[c.bc][0]+" "+BOTS.find(x=>x[0]===c.bottom)[1]+(c.hat!=="none"?" · "+HATS.find(x=>x[0]===c.hat)[1]:"")+(c.scarf?" · 목도리":"")+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
+const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+(hsOf(c.g).find(h=>h[0]===c.hair)||["",""])[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" "+TOPS.find(x=>x[0]===c.top)[1]+" · "+BC[c.bc][0]+" "+BOTS.find(x=>x[0]===c.bottom)[1]+(c.hat!=="none"?" · "+HATS.find(x=>x[0]===c.hat)[1]:"")+(c.scarf?" · 목도리":"")+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
 const emailOk = ()=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.email.trim());
 function dueLabel(day){ const d = new Date(day+"T00:00:00+09:00"); return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`; }
 function dueGuess(){ const t = new Date(Date.now()+9*3600e3+CFG.days*86400e3).toISOString().slice(0,10); return dueLabel(t); }
@@ -308,7 +310,7 @@ function renderS2(){
       <div class="fl"><label class="lbl" for="nmI">${k.toUpperCase()}를 부를 이름</label><input class="inp" id="nmI" maxlength="8" placeholder="예: 도토리" value="${esc(k==="a"?S.nameA:S.nameB)}"></div>
       <div class="fl"><div class="lh">MBTI</div><div class="tiles" role="group" aria-label="MBTI 16유형">${TYPES.map(t=>{const A=S.a===t,B=S.b===t,m=A||B;return `<button type="button" class="tile${m?" m":""}" style="background:${G[grp(t)]}" data-t="${t}">${t}${m?`<em>${A&&B?"A·B":A?"A":"B"}</em>`:""}</button>`;}).join("")}</div></div>
       <div class="fl"><div class="lh">성별</div><div class="chips">${chip(c.g==="여","여자",'data-g="여"')}${chip(c.g==="남","남자",'data-g="남"')}</div></div>
-      <div class="fl"><div class="lh">머리 스타일</div><div class="chips">${HS.map(([h,l])=>chip(c.hair===h,l,`data-hair="${h}"`)).join("")}</div></div>
+      <div class="fl"><div class="lh">머리 스타일</div><div class="chips">${hsOf(c.g).map(([h,l])=>chip(c.hair===h,l,`data-hair="${h}"`)).join("")}</div></div>
       <div class="fl"><div class="lh">머리 색<span>${HC[c.hc][0]}</span></div><div class="sws">${sws(HC,"hc","")}</div></div>
       <div class="fl"><div class="lh">피부 톤<span>${SK[c.skin][0]}</span></div><div class="sws">${sws(SK,"skin","sk")}</div></div>
       <div class="fl dress"><div class="lh" style="font-size:15px">옷 입히기 👕</div></div>
@@ -341,15 +343,16 @@ function renderS2(){
 }
 
 function renderS3(){
-  $("#app").innerHTML = fhead("사연 쓰기", "우리만 아는<br>이야기가 있나요?") + `<div class="body">
-    <label class="lbl" for="stI">사연 · 에피소드 · 말버릇</label>
-    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="처음 만난 날, 자주 싸우는 이유, 서로 부르는 애칭…">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
-    <div style="margin-top:14px;font-size:13px;font-weight:800">이런 걸 적어 주면 좋아요</div>
-    <div class="sug"><span>처음 만난 날</span><span>서로 부르는 애칭</span><span>한 명의 말버릇</span><span>크게 싸웠던 일</span><span>둘만 웃는 장면</span></div>
+  $("#app").innerHTML = fhead("사연 쓰기", "두 사람 이야기를<br>들려주세요") + `<div class="body">
+    <label class="lbl" for="stI">영상에 넣고 싶은 우리 이야기</label>
+    <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="예) 처음 만난 날 비가 와서 우산 하나를 같이 썼어요. 도토리는 길치라 맨날 반대로 가고, 감자는 '아 진짜?'를 입에 달고 살아요. 둘 다 떡볶이를 엄청 좋아해요.">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
+    <div style="margin-top:14px;font-size:13px;font-weight:800">뭘 써야 할지 모르겠다면 <span style="font-weight:600;color:#55606a">눌러서 시작해 보세요</span></div>
+    <div class="sug">${["처음 만난 날","서로 부르는 별명","자주 하는 말버릇","둘만 아는 웃긴 순간","같이 자주 가는 곳","좋아하는 음식"].map(t=>`<button type="button" data-sug="${t}">+ ${t}</button>`).join("")}</div>
     <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
-    <p class="hint">실명·전화번호 같은 개인정보는 빼고 써 주세요.</p></div>${FOOTER}`;
+    <p class="hint">멋진 문장 아니어도 괜찮아요. 생각나는 대로 짧게 써 주세요. 실명·전화번호 같은 개인정보는 빼 주세요.</p></div>${FOOTER}`;
   const ok = ()=> S.story.trim().length>=10;
   bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
+  document.querySelectorAll("[data-sug]").forEach(b=>b.onclick=()=>{ const ta=$("#stI"); const add=(ta.value.trim()?"\n":"")+b.dataset.sug+": "; ta.value=(ta.value.trimEnd()+add).slice(0,500); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); ta.dispatchEvent(new Event("input")); });
   $("#stI").oninput = (e)=>{ S.story=e.target.value.slice(0,500); $("#stN").textContent=S.story.length; save(); const b=$("#nx"); b.disabled=!ok(); b.textContent=ok()?"다음":"10자 이상 적어 주세요"; };
 }
 
