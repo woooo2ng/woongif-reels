@@ -175,13 +175,22 @@ function livingRoom(scene,o={}){
   for(let i=0;i<14;i++){const s=new THREE.Mesh(new THREE.PlaneGeometry(0.18,7),lamb(0xe9d6bd));s.position.set(-6.4+i*1.0,3.5,-3.09);g.add(s)}
   // 벽난로
   const fp=new THREE.Group();fp.position.set(-2.4,0,-2.9);g.add(fp);
-  const fb=new THREE.Mesh(new THREE.BoxGeometry(2.4,2.0,0.7),lamb(0xb05a48));fb.position.y=1.0;fp.add(fb);
-  const op=new THREE.Mesh(new THREE.BoxGeometry(1.2,1.0,0.1),basic(0x2a1612));op.position.set(0,0.62,0.33);fp.add(op);
-  const fire=glowSprite('rgba(255,150,60,1)',1.6);fire.position.set(0,0.5,0.45);fp.add(fire);
-  const flames=[];for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.45,6),basic([0xffb347,0xff7a3a,0xffd36b][i]));f.position.set(-0.25+i*0.25,0.35,0.36);fp.add(f);flames.push(f)}
-  const mantel=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.16,0.9),lamb(0xf2ebe0));mantel.position.y=2.05;fp.add(mantel);
-  for(let i=0;i<3;i++){const st=new THREE.Group();st.position.set(-0.8+i*0.8,1.7,0.5);fp.add(st);const sk=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.45,0.08),lamb([0xd8343c,0x2f8a4f,0xd8343c][i]));st.add(sk);const ft=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.12,0.09),lamb([0xd8343c,0x2f8a4f,0xd8343c][i]));ft.position.set(0.06,-0.2,0);st.add(ft);const cf=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.1,0.1),lamb(WHITE));cf.position.y=0.2;st.add(cf)}
-  const gar=[];for(let i=0;i<12;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),basic([0xff4d5e,0xffd84d,0x5fd38a,0x5fb0ff][i%4]));b.position.set(-1.3+i*0.24,2.0-Math.sin(i/11*Math.PI)*0.18,0.48);fp.add(b);gar.push(b)}
+  // 벽난로: 산타가 드나들 수 있게 실제로 뚫린 입구(1.5×1.4)
+  const brick=lamb(0xb05a48);
+  for(const sx of[-1,1]){const pl=new THREE.Mesh(new THREE.BoxGeometry(0.45,2.0,0.8),brick);pl.position.set(sx*0.975,1.0,0);fp.add(pl)}
+  const lin=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.6,0.8),brick);lin.position.set(0,1.7,0);fp.add(lin);
+  const back=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.4,0.1),basic(0x2a1612));back.position.set(0,0.7,-0.36);fp.add(back);
+  for(const sx of[-1,1]){const iw=new THREE.Mesh(new THREE.BoxGeometry(0.02,1.4,0.7),basic(0x3a2018));iw.position.set(sx*0.74,0.7,0);fp.add(iw)}
+  const ceil=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.02,0.7),basic(0x1a0e0a));ceil.position.set(0,1.39,0);fp.add(ceil);
+  const breast=new THREE.Mesh(new THREE.BoxGeometry(1.9,5.0,0.8),brick);breast.position.set(0,4.6,-0.02);fp.add(breast);
+  const hearth=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.08,1.2),lamb(0x8a4a3a));hearth.position.set(0,0.04,0.2);fp.add(hearth);
+  const logs=new THREE.Group();logs.position.set(0,0.14,-0.05);fp.add(logs);
+  for(const [x,r] of[[-0.15,0.4],[0.15,-0.4]]){const lg=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.6,6),lamb(0x5a3a22));lg.rotation.set(0,r,Math.PI/2);lg.position.x=x;logs.add(lg)}
+  const fire=glowSprite('rgba(255,150,60,1)',1.6);fire.position.set(0,0.5,0.2);fp.add(fire);
+  const flames=[];for(let i=0;i<3;i++){const f=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.45,6),basic([0xffb347,0xff7a3a,0xffd36b][i]));f.position.set(-0.25+i*0.25,0.35,-0.05);fp.add(f);flames.push(f)}
+  const mantel=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.16,1.0),lamb(0xf2ebe0));mantel.position.y=2.05;fp.add(mantel);
+  for(let i=0;i<3;i++){const st=new THREE.Group();st.position.set(-0.8+i*0.8,1.7,0.52);fp.add(st);const sk=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.45,0.08),lamb([0xd8343c,0x2f8a4f,0xd8343c][i]));st.add(sk);const ft=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.12,0.09),lamb([0xd8343c,0x2f8a4f,0xd8343c][i]));ft.position.set(0.06,-0.2,0);st.add(ft);const cf=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.1,0.1),lamb(WHITE));cf.position.y=0.2;st.add(cf)}
+  const gar=[];for(let i=0;i<12;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),basic([0xff4d5e,0xffd84d,0x5fd38a,0x5fb0ff][i%4]));b.position.set(-1.3+i*0.24,2.0-Math.sin(i/11*Math.PI)*0.18,0.53);fp.add(b);gar.push(b)}
   // 트리 + 선물
   const tree=xmasTree(1.0,{seed:9});tree.position.set(2.8,0,-2.0);g.add(tree);
   // 소파 + TV
@@ -206,7 +215,7 @@ function livingRoom(scene,o={}){
   for(const [w2,h2,x,y] of[[0.08,1.6,-4.6,3.0],[1.8,0.08,-4.6,3.0]]){const f=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),basic(0xf2ebe0));f.position.set(x,y,-3.07);g.add(f)}
   return {g,fp,fire,flames,gar,tree,sofa,tv,tvg,door,winMat,scr};
 }
-function updRoom(R,t){R.flames.forEach((f,i)=>{f.scale.set(1,0.8+0.35*Math.abs(Math.sin(t*9+i*2)),1)});R.fire.scale.setScalar(1.5+Math.sin(t*7)*0.12);twinkle(R.gar,t);twinkle(R.tree.userData.orn,t,1);R.tvg.material.opacity=0.6+0.2*Math.sin(t*5)}
+function updRoom(R,t){if(R.fireOff){R.flames.forEach(f=>f.visible=false);R.fire.visible=false}R.flames.forEach((f,i)=>{f.scale.set(1,0.8+0.35*Math.abs(Math.sin(t*9+i*2)),1)});R.fire.scale.setScalar(1.5+Math.sin(t*7)*0.12);twinkle(R.gar,t);twinkle(R.tree.userData.orn,t,1);R.tvg.material.opacity=0.6+0.2*Math.sin(t*5)}
 // 북극 작업장
 function workshop(){const g=new THREE.Group();
   const wall=new THREE.Mesh(new THREE.BoxGeometry(7,3.4,4),lamb(0x9a5a3a));wall.position.y=1.7;g.add(wall);

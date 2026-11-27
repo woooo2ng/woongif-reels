@@ -246,10 +246,14 @@ D.append(e + 0.7)
 # 4 굴뚝에 걸림 → 거실에서 아이와 마주침
 X += [(4, wind(1.2, 0.02), 0.0)]
 M['stuck'] = 0.35; X += [(4, thud(0.35), M['stuck']), (4, click(0.15), M['stuck'])]
-M['m_down'] = 1.2; X += [(4, tension(2.4, 0.045), 0.9), (4, scrape(1.2, 0.06), M['m_down'])]
-M['land'] = 2.5; X += [(4, thud(0.3), M['land'])]
-M['eye'] = 2.75; X += [(4, crackle(16, 0.022), M['eye'])]
-e = place(4, 'k1', 4.6)
+M['m_down'] = 1.2; X += [(4, tension(3.4, 0.045), 0.9), (4, scrape(1.6, 0.07), M['m_down']), (4, crackle(1.0, 0.02), 0.95)]
+M['fo'] = 1.85; X += [(4, bp(rs.standard_normal(int(0.6*SR)), 2500, 9000) * np.linspace(1, 0, int(0.6*SR)) * 0.12, M['fo'])]  # 불 꺼지는 '치익'
+M['land'] = 2.6; X += [(4, thud(0.3), M['land'])]
+M['crawl'] = 2.85; X += [(4, steps(4, 0.18, 0.08), M['crawl'])]
+M['stand'] = 3.65
+M['dust'] = 3.95; X += [(4, click(0.1), M['dust']), (4, click(0.1), M['dust'] + 0.18), (4, click(0.1), M['dust'] + 0.36)]
+M['eye'] = 4.45
+e = place(4, 'k1', 6.25)
 M['k1e'] = e
 e = place(4, 's3', e + 0.75)
 M['walk'] = e + 0.3; X += [(4, steps(6, 0.28, 0.12), M['walk'])]

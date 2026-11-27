@@ -268,7 +268,7 @@ S[4]=()=>{
   const osa=makeSanta();ou.add(osa);osa.position.set(0.9,0,1.9);osa.rotation.y=0.25;
   const ob=bubT(osa,'후…',{y:2.6,size:0.0024});const kb=bubT(kid,'후…',{y:1.9,x:0.75,size:0.003});
   const breath=[];for(let i=0;i<6;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,6),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7}));ou.add(m);breath.push(m)}
-  const ST=MK('stuck'),DN=MK('m_down'),LD=MK('land'),EY=MK('eye'),WK=MK('walk'),STP=MK('stop'),CH=MK('m_chip');
+  const ST=MK('stuck'),DN=MK('m_down'),LD=MK('land'),EY=MK('eye'),FO=MK('fo'),CR=MK('crawl'),SD=MK('stand'),DU=MK('dust'),WK=MK('walk'),STP=MK('stop'),CH=MK('m_chip');
   const K1=ln(4,'k1'),S3=ln(4,'s3'),S4=ln(4,'s4'),K2=ln(4,'k2'),N6=ln(4,'n6');
   const SPLIT=N6.t0+wt6();function wt6(){return 2.6}
   const ck=chip('대화 <b>4마디</b> · 둘 다 <b>안도</b>');
@@ -287,19 +287,23 @@ S[4]=()=>{
     const lookS=t>EY&&t<K2.t0;ku.head.rotation.y=lookS?ease((t-EY)/0.25)*0.9:0;
     if(t>STP&&t<K2.t0)ku.head.rotation.y=0;  // 산타가 문 앞에선 다시 화면
     resetP(sa);const u=sa.userData;eyesK(sa,0.7);
-    const fpx=-2.4,fpz=-2.4;
-    if(t<LD){const k=clamp01((t-DN)/(LD-DN));sa.position.set(fpx,2.0-k*2.0,fpz-0.1);sa.rotation.y=0.6;u.arms.forEach(a=>{a.rotation.x=-2.9})}
-    else if(t<WK){sa.position.set(fpx,0,fpz+0.4);sa.rotation.y=0.75;const k=ease((t-LD)/0.3);if(t<LD+0.35){u.hip.position.y=0.8-0.25*(1-k)}
-      u.arms.forEach(a=>a.rotation.x=-1.0);if(t>S3.t1+0.1){u.arms.forEach(a=>a.rotation.x=-1.0*(1-ease((t-S3.t1-0.1)/0.3)))}}
-    else if(t<STP){const d=(t-WK)/(STP-WK);const p0=new THREE.Vector3(fpx,0,fpz+0.4),p1=new THREE.Vector3(5.4,0,0.6);sa.position.lerpVectors(p0,p1,ease(d));sa.rotation.y=Math.atan2(p1.x-p0.x,p1.z-p0.z);walkPose(sa,(t-WK)*7,0.4)}
+    const fpx=-2.4,fpz=-2.9,SX=fpx+0.15,SZ=-1.75;
+    R.fireOff=t>FO;
+    if(t<LD){const k=clamp01((t-(LD-0.55))/0.55);sa.position.set(fpx,1.6-ease(k)*1.6,fpz);sa.rotation.y=0;u.arms.forEach(a=>{a.rotation.x=-2.9});sa.visible=t>LD-0.55}
+    else if(t<CR){sa.position.set(fpx,0,fpz);sa.rotation.y=0;u.hip.position.y=0.5;u.hip.rotation.x=0.75;u.legs.forEach(l=>l.rotation.x=-0.9);u.arms.forEach(a=>a.rotation.x=-0.9)}
+    else if(t<SD){const k=ease((t-CR)/(SD-CR));sa.position.set(fpx+(SX-fpx)*k,0,fpz+(SZ-fpz)*k);sa.rotation.y=0.1*k;u.hip.position.y=0.5;u.hip.rotation.x=0.75;
+      const ph=(t-CR)*9;u.legs[0].rotation.x=-0.9+Math.sin(ph)*0.3;u.legs[1].rotation.x=-0.9-Math.sin(ph)*0.3;u.arms[0].rotation.x=-0.9-Math.sin(ph)*0.4;u.arms[1].rotation.x=-0.9+Math.sin(ph)*0.4}
+    else if(t<WK){sa.position.set(SX,0,SZ);sa.rotation.y=0.35;const k=ease((t-SD)/0.3);u.hip.position.y=0.5+0.3*k;u.hip.rotation.x=0.75*(1-k);u.legs.forEach(l=>l.rotation.x=-0.9*(1-k));
+      if(t>DU&&t<DU+0.5){const pk=Math.sin((t-DU)*25);u.arms[0].rotation.x=-0.4+pk*0.25;u.arms[1].rotation.x=-0.4-pk*0.25;u.arms[0].rotation.z=0.3;u.arms[1].rotation.z=-0.3}
+      if(t>S3.t0-0.1&&t<S3.t1+0.4)u.head.rotation.x=0.15}
+    else if(t<STP){const d=(t-WK)/(STP-WK);const p0=new THREE.Vector3(SX,0,SZ),p1=new THREE.Vector3(5.4,0,0.6);sa.position.lerpVectors(p0,p1,ease(d));sa.rotation.y=Math.atan2(p1.x-p0.x,p1.z-p0.z);walkPose(sa,(t-WK)*7,0.4)}
     else{sa.position.set(5.4,0,0.6);const k=ease((t-STP)/0.35);sa.rotation.y=Math.PI/2*(1-k)+(-Math.PI/2-0.25)*k;if(t>CH-0.3){const d=t-CH+0.3;sa.visible=d<0.4;sa.position.x=5.4+d*2}}
-    if(t<STP||t<CH-0.3)sa.visible=true;
+    if(t>=LD&&t<CH-0.3)sa.visible=true;
     talkBeard(sa,t,speaking(4,'s3',t)||speaking(4,'s4',t));
     showB(sbub,t,EY+0.15,K1.t0-0.1);
-    // 상자: 굴뚝에서 같이 → 트리 옆
-    if(t<WK){box.position.set(sa.position.x,t<LD?sa.position.y+2.4:1.05,sa.position.z+0.45);if(t>S3.t1){const k=ease((t-S3.t1)/0.3);box.position.set(fpx+(1.5-fpx)*0+(-1.2-fpx)*0*k,1.05-1.05*k,fpz+0.85)}}
-    else box.position.set(fpx,0,fpz+0.85);
-    soot.forEach((q,i)=>{const d=t-LD;q.m.visible=d>0&&d<1.2;if(q.m.visible){q.m.position.set(fpx+q.vx*d,0.3+q.vy*d,fpz+0.4+q.vz*d);q.m.material.opacity=0.6*(1-d/1.2);q.m.scale.setScalar(1+d*1.5)}});
+    // 상자: 기어 나오면서 앞으로 밀어냄 → 그 자리에 둠
+    {const k=ease((t-CR)/(SD-CR));box.visible=t>LD;box.position.set(fpx+0.35*k,0,fpz+0.2+(SZ+0.75-fpz-0.2)*k);box.rotation.y=0.3*k}
+    soot.forEach((q,i)=>{const t0=i<7?FO:LD;const d=t-t0;q.m.visible=d>0&&d<1.3;if(q.m.visible){q.m.position.set(fpx+q.vx*d*0.6,0.3+q.vy*d,fpz+0.4+q.vz*d);q.m.material.opacity=0.6*(1-d/1.3);q.m.scale.setScalar(1+d*1.6)}});
     // 분할 화면(문 밖 산타 / 소파 아이)
     resetP(osa);eyesK(osa,0.4);osa.userData.hip.position.y=0.8-0.05*Math.sin(clamp01((t-SPLIT)/0.8)*Math.PI);osa.userData.head.rotation.x=-0.15;
     showB(ob,t,SPLIT+0.3);showB(kb,t,SPLIT+0.5);
@@ -310,11 +314,11 @@ S[4]=()=>{
     renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);
     if(t<DN){bgEl.style.background='linear-gradient(#16204a,#33468a 55%,#8aa2d8)';cam.position.set(100+1.8,4.4,6.4);cam.lookAt(100+0.0,3.6,0)}
     else{bgEl.style.background='linear-gradient(#3a2a2a,#5a3e36 55%,#7a5444)';
-      if(t<EY){cam.position.set(1.8,3.0,7.6);cam.lookAt(-1.0,1.6,-0.6)}
+      if(t<EY){cam.position.set(-1.3,1.9,2.6);cam.lookAt(-2.3,1.15,-2.5)}
       else if(t<EY+0.9){cam.position.set(-0.7,1.75,0.9);cam.lookAt(0.8,1.45,2.15)}           // 아이 얼굴
-      else if(t<K1.t0-0.1){cam.position.set(-0.6,2.4,0.5);cam.lookAt(fpx,2.05,fpz+0.4)}   // 산타 얼굴
+      else if(t<K1.t0-0.1){cam.position.set(-0.4,2.35,0.9);cam.lookAt(SX,2.05,SZ)}   // 산타 얼굴
       else if(t<K1.t1+0.3){cam.position.set(-0.7,1.75,0.9);cam.lookAt(0.8,1.45,2.15)}
-      else if(t<WK){cam.position.set(-0.7,2.4,0.3);cam.lookAt(fpx,2.0,fpz+0.4)}
+      else if(t<WK){cam.position.set(-0.4,2.35,0.9);cam.lookAt(SX,2.0,SZ)}
       else if(t<STP){cam.position.set(1.2,4.4,9.6);cam.lookAt(1.6,1.4,0)}
       else if(t<S4.t1+0.05){cam.position.set(1.6,2.6,3.4);cam.lookAt(5.4,2.0,0.6)}
       else if(t<SPLIT){cam.position.set(0.3,1.95,0.6);cam.lookAt(0.8,1.5,2.15);if(t>K2.t1+0.3){cam.position.set(1.0,4.2,9.0);cam.lookAt(1.5,1.5,0)}}
