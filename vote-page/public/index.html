@@ -432,7 +432,7 @@ function renderVote(){
   v.innerHTML = `<header class="hd">${brandHTML()}<div id="notice"></div>
     <div style="margin-top:12px"><span class="tag">만약에 신청소</span></div>
     <div class="out ttl">다음 편, 뭐 볼래?</div>
-    ${ORDER_OPEN?`<a class="ostrip" href="/order${myType()?`?a=${myType()}`:""}"><span>🎬</span><b>우리 둘 커플도 영상으로 받아 볼래?</b><i>→</i></a>`:""}
+    ${ORDER_OPEN?`<a class="ostrip" href="/order${myType()?`?a=${myType()}`:""}"><span>🎬</span><b>우리 커플 궁합도 영상으로 받아 볼래?</b><i>→</i></a>`:""}
     <div class="seg">${segs.map(([k,l])=>`<button data-v="${k}" class="${S.vtab===k?"on":""}">${l}</button>`).join("")}</div></header>
     <div id="vbody"><div class="pad"><div class="skel"></div></div></div>`;
   bindBrand(); renderNotice();
