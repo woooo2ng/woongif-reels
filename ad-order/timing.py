@@ -1,7 +1,7 @@
 import json, os, shutil, bisect
 V=[3.29,2.35,3.98,2.31,2.51,5.30]
 VS=[(0.0,3.29),(3.85,6.20),(6.57,10.55),(11.05,13.36),(13.56,16.07),(16.62,21.92)]
-EXTRA=[0.4,1.0,1.3,0.5,1.6,0.6]
+EXTRA=[0.4,1.0,1.3,1.3,3.6,0.6]
 LEAD,TAIL=0.25,0.45
 D=[round((v+LEAD+TAIL+e)*30)/30 for v,e in zip(V,EXTRA)]
 m=json.load(open('raw/marks.json')); F=m['frames']

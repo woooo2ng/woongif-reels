@@ -55,8 +55,11 @@ for tt in T['keys']:
 for si in (1, 2, 3): put(ping(0.08), starts[si] + 0.05)   # STEP 칩 팝
 # 4: 비 → 우산 펼침 → 하트
 put(raintex(D[4] + 0.1, 0.04), starts[4])
-put(umbrella_open(), starts[4] + 1.9)
-put(sparkle(0.07), starts[4] + 2.6); put(pop_(0.2), starts[4] + 2.6)
+put(pop_(0.15), starts[4] + 0.2)                 # 아 비 온다…
+put(pop_(0.15), starts[4] + 1.95)                # 같이 쓸래요?
+put(umbrella_open(), starts[4] + 2.9)
+put(pop_(0.18), starts[4] + 3.6)                 # …네!
+put(sparkle(0.07), starts[4] + 4.4); put(pop_(0.2), starts[4] + 4.4)
 # 5: 카드 팝 + 질문
 put(pop_(0.25), starts[5] + 0.05); put(ping(0.12), starts[5] + 0.1)
 Q = LEAD + T['V'][5] * 0.47; put(sparkle(0.06), starts[5] + Q)

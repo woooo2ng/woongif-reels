@@ -57,7 +57,9 @@ async def main():
             await pg.locator(sel).first.click()
             for ch in text:
                 marks.setdefault('keys',[]).append(round(time.time()-t0,3))
-                await pg.keyboard.type(ch); await pg.wait_for_timeout(delay)
+                if ch=='\n': await pg.keyboard.press('Enter')
+                else: await pg.keyboard.type(ch)
+                await pg.wait_for_timeout(delay)
         async def scroll_to(sel):
             await pg.locator(sel).first.evaluate("e=>{const r=e.getBoundingClientRect();window.scrollBy({top:r.top/2-340,behavior:'smooth'})}")
             await pg.wait_for_timeout(750)
@@ -84,7 +86,7 @@ async def main():
         await pg.evaluate("window.scrollTo({top:0,behavior:'smooth'})"); await pg.wait_for_timeout(700)
         mark("story")
         await tap('#nx', 700)
-        await typ('#stI', '처음 만난 날 비가 와서 우산 하나를 같이 썼어요', 75)
+        await typ('#stI', '처음 만난 날 비가 와서 우산 하나를 같이 썼어요\n웅이가 "같이 쓸래요?" 하고 먼저 말 걸었어요', 60)
         await pg.wait_for_timeout(900)
         mark("end")
         await cdp.send("Page.stopScreencast")
