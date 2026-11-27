@@ -194,7 +194,8 @@ function renderReplies(){
 let orders = [], oFilter = "open";
 const OST = {pending:"결제 전", paid:"접수", script:"대본 확인", making:"제작 중", done:"완성", canceled:"취소됨"};
 const CH = {hc:["검정","갈색","밝은 갈색","금발","핑크"], skin:["밝은","중간","어두운"], cl:["분홍","노랑","민트","파랑","보라","주황","연두","회색"], hair:{short:"짧은 머리(단발)",long:"긴 머리",tied:"만두머리"}};
-const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} 옷${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
+const TOPN={tee:"티셔츠",hood:"후드티",shirt:"셔츠·넥타이"}, BOTN={skirt:"치마",pants:"바지",shorts:"반바지"}, BCN=["남색","검정","베이지","청","노랑","분홍"], HATN={none:"",cap:"캡모자",beanie:"비니"};
+const chs = (c)=> c ? `${c.g==="남"?"남자":"여자"} · ${CH.hair[c.hair]} · 머리 ${CH.hc[c.hc]} · 피부 ${CH.skin[c.skin]} · ${CH.cl[c.cl]} ${TOPN[c.top]||"옷"}${c.bottom?` · ${BCN[c.bc]||""} ${BOTN[c.bottom]}`:""}${c.hat&&c.hat!=="none"?" · "+HATN[c.hat]:""}${c.scarf?" · 목도리":""}${c.gl?" · 안경":""}${c.feat?` · "${esc(c.feat)}"`:""}` : "";
 async function loadOrders(){
   const d = await api("admin/orders"); orders = d.orders;
   $("#otest").innerHTML = d.test ? `<span class="badge" style="background:#ffd84d;color:#1a1a1a">테스트 결제 모드</span>` : "";
@@ -209,7 +210,7 @@ function renderOrders(){
   const list = oFilter==="all" ? orders : oFilter==="open" ? open : orders.filter(o=>o.status===oFilter);
   const when=(t)=>t?new Date(t).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
   $("#orders").innerHTML = list.length ? list.map(o=>{
-    const steps = o.pkg==="special" ? ["paid","script","making","done"] : ["paid","making","done"];
+    const steps = ["paid","making","done"];
     return `<div class="card" data-oid="${esc(o.id)}">
     <div class="txt"><b>${esc(o.nameA)} ${o.a} × ${esc(o.nameB)} ${o.b} · ${esc(o.rel)}</b></div>
     <div class="sub">${esc(o.id)} · ${esc(o.product)} · ${Number(o.amount).toLocaleString()}원 · ${esc(o.method||"")} · 결제 ${when(o.paidAt)} · <b>${o.due?md(o.due)+"까지":""}</b></div>
@@ -218,7 +219,6 @@ function renderOrders(){
     ${o.story?`<div class="txt" style="white-space:pre-wrap;background:#fff8dc;border-radius:8px;padding:8px;margin-top:6px">${esc(o.story)}</div>`:""}
     ${o.status==="canceled"?`<div class="sub">취소: ${esc(o.cancelReason||"")}</div>`:`
     <div class="row" style="margin-top:8px">${steps.map(k=>`<button data-ost="${k}" style="${o.status===k?"background:#fff0a8;font-weight:800":""}">${OST[k]}</button>`).join("")}</div>
-    ${o.pkg==="special"?`<input data-oscript placeholder="대본 미리보기 링크 (구글 문서 등)" value="${esc(o.script||"")}" style="width:100%;margin-top:6px">`:""}
     <input data-olink placeholder="완성 영상 다운로드 링크" value="${esc(o.link||"")}" style="width:100%;margin-top:6px">
     <textarea data-onote placeholder="메모 (나만 보임)" style="width:100%;margin-top:6px;min-height:40px">${esc(o.note||"")}</textarea>
     <div class="row" style="margin-top:6px"><button class="pri" data-osave>저장</button><button class="no" data-orefund>환불</button></div>`}</div>`; }).join("") : `<p class="empty">주문이 없어요</p>`;

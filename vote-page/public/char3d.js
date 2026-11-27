@@ -4,6 +4,7 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.m
 // 주문서 선택지 → 릴스 색 (순서는 order.html의 HC·SK·CL과 같아야 해요)
 export const HAIR = [0x2a2220, 0x4a3426, 0x8a5a36, 0xd9b264, 0xe7a0b8];
 export const SKIN = [0xffe3cf, 0xf1c6a2, 0xd09a72];   // 궁합편 매끈한 피치 피부(밝은 톤 = 궁합편 그대로)
+export const BOTTOM = [0x2c3040, 0x1f1f24, 0xd9c3a0, 0x5b7fb8, 0xfff0a8, 0xffd1e3];   // 남색·검정·베이지·청·노랑·분홍
 export const SHIRT = [0xff9ec4, 0xffc94d, 0x8cc9a0, 0x6c8ebf, 0xa58cd0, 0xe39a6b, 0x90b86c, 0xb8bec6];
 
 const matCache = {};
@@ -92,26 +93,60 @@ function glasses(h) {
   for (const sx of [-1, 1]) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.011, 8, 24), gm); ring.position.set(sx * 0.095, 0.25, 0.258); h.add(ring); }
   const br = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.011, 0.011), gm); br.position.set(0, 0.26, 0.262); h.add(br);
 }
+// ---------- 옷 입히기 ----------
+function hood(u, col) {   // 후드티: 등 뒤 후드 + 앞 주머니 + 끈
+  const dk = new THREE.Color(col).multiplyScalar(0.88).getHex();
+  const hd = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 16), lamb(dk)); hd.scale.set(1.25, 0.75, 0.7); hd.position.set(0, 0.66, -0.15); u.hip.add(hd);
+  const pk = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.13, 0.02), lamb(dk)); pk.position.set(0, 0.12, 0.17); u.hip.add(pk);
+  for (const sx of [-1, 1]) { const st = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.16, 0.02), lamb(0xffffff)); st.position.set(sx * 0.06, 0.52, 0.17); u.hip.add(st); }
+}
+function shirtTie(u, col) {   // 셔츠: 흰 깃 + 넥타이
+  const c = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), lamb(0xffffff)); c.position.set(0, 0.62, 0.15); u.hip.add(c);
+  const tie = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.34, 0.02), lamb(new THREE.Color(col).multiplyScalar(0.6).getHex())); tie.position.set(0, 0.42, 0.17); u.hip.add(tie);
+}
+function cap(h, col) {
+  const m = smooth(col);
+  const top = new THREE.Mesh(new THREE.SphereGeometry(0.275, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.5), m); top.position.y = 0.3; top.rotation.x = -0.12; h.add(top);
+  const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.025, 24), m); brim.scale.set(1, 1, 0.75); brim.position.set(0, 0.33, 0.24); brim.rotation.x = 0.12; h.add(brim);
+}
+function beanie(h, col) {
+  const m = smooth(col);
+  const top = new THREE.Mesh(new THREE.SphereGeometry(0.28, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.5), m); top.position.y = 0.3; top.scale.y = 1.05; h.add(top);
+  const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.04, 10, 32), smooth(new THREE.Color(col).multiplyScalar(0.85).getHex())); cuff.rotation.x = Math.PI / 2; cuff.position.y = 0.31; h.add(cuff);
+  const pom = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 12), smooth(0xffffff)); pom.position.y = 0.6; h.add(pom);
+}
+function scarf(u) {
+  const m = lamb(0xe8505b);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.06, 10, 24), m); ring.rotation.x = Math.PI / 2; ring.position.y = 0.66; u.hip.add(ring);
+  const tail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.26, 0.05), m); tail.position.set(0.1, 0.5, 0.18); tail.rotation.z = 0.15; u.hip.add(tail);
+}
 export function person(c) {
   const female = c.g === "여";
   const skin = SKIN[c.skin] ?? SKIN[0], hair = HAIR[c.hc] ?? HAIR[0], shirt = SHIRT[c.cl] ?? SHIRT[0];
-  const p = makePerson({ shirt, pants: female ? skin : 0x2c3040, skin, hair });
+  const bottom = c.bottom || (female ? "skirt" : "pants"), bcol = BOTTOM[c.bc ?? (female ? 4 : 0)] ?? BOTTOM[0];
+  const p = makePerson({ shirt, pants: bottom === "pants" ? bcol : skin, skin, hair });
   const u = p.userData, h = u.head;
   h.children[0].material = skinMat(skin); u.arms.forEach((a) => (a.children[1].material = lamb(skin)));
   h.children[1].visible = false; hideDefaultFace(h);
   const m = smooth(hair);
+  if (female) u.hip.children[0].scale.x = 0.9;
+  if (bottom === "skirt") { const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.36, 0.36, 16), lamb(bcol)); sk.position.y = -0.14; u.hip.add(sk); }
+  if (bottom === "shorts") u.legs.forEach((l) => { const sh = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.3, 0.25), lamb(bcol)); sh.position.y = -0.14; l.add(sh); });
+  const top = c.top || "tee";
+  if (top === "hood") hood(u, shirt);
+  else if (top === "shirt") shirtTie(u, shirt);
   if (female) {
-    u.hip.children[0].scale.x = 0.9; u.legs.forEach((l) => (l.children[0].material = lamb(skin)));
-    const sk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.36, 0.36, 16), lamb(lighten(shirt, 0.5))); sk.position.y = -0.14; u.hip.add(sk);
     bigEyes(h, { lash: true });
     if (c.hair === "long") hairINFP(h, m); else if (c.hair === "short") hairESTJ(h, m); else hairENFP(h, m);
-    p.scale.setScalar(0.8); h.scale.setScalar(1.4); h.position.y = 0.62;
   } else {
     bigEyes(h, { brow: 0x1d1d26 });
     hairINTJ(h, m, c.hair);
-    const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), lamb(0xffffff)); col.position.set(0, 0.62, 0.15); u.hip.add(col);
+    if (top === "tee") { const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), lamb(0xffffff)); col.position.set(0, 0.62, 0.15); u.hip.add(col); }
   }
   if (c.gl) glasses(h);
+  if (c.hat === "cap") cap(h, shirt); else if (c.hat === "beanie") beanie(h, shirt);
+  if (c.scarf) scarf(u);
+  if (female) { p.scale.setScalar(0.8); h.scale.setScalar(1.4); h.position.y = 0.62; }
   return p;
 }
 

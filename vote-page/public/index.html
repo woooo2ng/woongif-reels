@@ -939,7 +939,7 @@ async function loadOrders(){
   if(!d.orders.length){ w.hidden=true; return; }
   w.hidden=false;
   box.innerHTML = d.orders.map(o=>{
-    const steps = o.pkg==="special" ? ["paid","script","making","done"] : ["paid","making","done"];
+    const steps = ["paid","making","done"];
     const ci = steps.indexOf(o.status);
     const track = o.status==="canceled" ? "" : `<div class="otrack">${steps.map((k,i)=>`<div class="${i<ci?"dn":i===ci?"cu":""}"><i></i>${OST[k]}</div>`).join("")}</div>`;
     return `<div class="ocard"><div class="oh"><span class="badge o-${o.status}">${OST[o.status]||o.status}</span><span class="oid">${esc(o.id)}</span></div>

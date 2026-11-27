@@ -63,4 +63,4 @@ npx wrangler pages dev
 - 가격은 `functions/api/[[path]].js`의 `PRODUCTS`에서만 바꿔요. 오픈 할인은 `sale: 9900`처럼 넣으면 화면에 '오픈 기념' 뱃지와 할인가가 떠요.
 - 결제: 토스페이먼츠 결제위젯. Cloudflare 환경 변수 `TOSS_CLIENT_KEY`(결제위젯 연동 키 test_gck…/live_gck…)와 `TOSS_SECRET_KEY`(시크릿 키, **Secret**으로) 둘 다 넣으면 그 키로, 없으면 토스 문서용 테스트 키로 돌아가요(돈 안 나감).
 - 흐름: 주문서 → `order/create`(결제 전 pending) → 토스 결제창 → `/order?pay=success` → `order/confirm`(서버에서 금액 확인 후 승인) → 접수.
-- 상태: 접수(paid) → 대본 확인(script, 스페셜만) → 제작 중(making) → 완성(done, 다운로드 링크). 접수 상태에서만 구매자가 직접 취소(자동 환불).
+- 상태: 접수(paid) → 제작 중(making) → 완성(done, 다운로드 링크). 접수 상태에서만 구매자가 직접 취소(자동 환불).

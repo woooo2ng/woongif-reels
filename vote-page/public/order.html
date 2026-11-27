@@ -87,7 +87,7 @@ a{color:inherit}
 .tabs button{flex:1;min-width:0;height:44px;border:none;border-radius:12px;background:transparent;font-size:15px;font-weight:900;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
 .tabs button.on{background:var(--yellow);color:var(--ink)}
 .card{margin-top:12px;background:#fff;border:2px solid var(--ink);border-radius:22px;padding:4px 16px 18px}
-.fl{margin-top:18px}.fl .lh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:13px;font-weight:800}.fl .lh span{font-size:12px;font-weight:700;color:var(--sub)}
+.fl{margin-top:18px}.fl.dress{margin-top:22px;padding-top:16px;border-top:1.5px dashed rgba(26,26,26,.2)}.fl .lh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:13px;font-weight:800}.fl .lh span{font-size:12px;font-weight:700;color:var(--sub)}
 .lbl{display:block;font-size:13px;font-weight:800;margin:0 0 8px}
 .inp{width:100%;height:50px;border-radius:14px;border:2px solid var(--ink);padding:0 14px;font-size:16px;background:#fff;outline:none}
 .inp:focus{box-shadow:0 0 0 3px rgba(255,216,77,.8)}
@@ -170,24 +170,30 @@ const grp = (t)=> t[1]==="N" ? (t[2]==="T"?"NT":"NF") : (t[3]==="J"?"SJ":"SP");
 const HC=[["검정","#2a2220"],["갈색","#4a3426"],["밝은 갈색","#8a5a36"],["금발","#d9b264"],["핑크","#e7a0b8"]];
 const SK=[["밝은 톤","#ffe3cf"],["중간 톤","#f1c6a2"],["어두운 톤","#d09a72"]];
 const CL=[["분홍","#ff9ec4"],["노랑","#ffc94d"],["민트","#8cc9a0"],["파랑","#6c8ebf"],["보라","#a58cd0"],["주황","#e39a6b"],["연두","#90b86c"],["회색","#b8bec6"]];
+const TOPS=[["tee","티셔츠"],["hood","후드티"],["shirt","셔츠·넥타이"]];
+const BOTS=[["skirt","치마"],["pants","바지"],["shorts","반바지"]];
+const BC=[["남색","#2c3040"],["검정","#1f1f24"],["베이지","#d9c3a0"],["청","#5b7fb8"],["노랑","#fff0a8"],["분홍","#ffd1e3"]];
+const HATS=[["none","없음"],["cap","캡모자"],["beanie","비니"]];
 const HS=[["tied","만두머리"],["long","긴 머리"],["short","짧은 머리"]];
 const RELS=[["커플","연애 중인 두 사람"],["부부","함께 사는 두 사람"],["가족","엄마와 딸, 형제·자매"],["친구","오래된 단짝"]];
-const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드 3~4장면을 넣고 제작 전에 대본을 먼저 보여 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","스페셜에 포함돼요. 제작 전 대본 미리보기에서 1회, 완성 후 자막·대사 작은 수정 1회를 요청할 수 있어요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
+const FAQ=[["기본과 스페셜은 뭐가 달라요?","둘 다 50초가 넘는 풀버전이고 웅이프 릴스와 같은 퀄리티예요. 기본은 두 사람 MBTI·관계에 맞춘 웅이프식 궁합 상황에 이름을 넣어 만들고, 스페셜은 사연을 받아 실제 에피소드를 장면에 넣어 드려요."],["영상은 어떻게 받나요?","완성되면 주문서에 적은 이메일로 다운로드 링크를 보내 드려요. 카톡 ID를 남기면 카톡으로도 알려 드리고, 신청소 › 내 정보 › 내 주문에서도 바로 받을 수 있어요."],["언제 받을 수 있나요?","결제한 날부터 7일 이내에 보내 드려요. 예상 전달일은 결제 완료 화면과 내 주문에 표시돼요."],["수정할 수 있나요?","맞춤 제작이라 대본 미리보기나 완성 후 수정은 하지 않아요. 주문서에 적어 주신 내용 그대로 만들어 드려요."],["실제 얼굴이 나오나요?","아니요. 두 사람은 웅이프 스타일 3D 캐릭터로 나와요. 사진은 받지 않아요."],["환불은 어떻게 되나요?","제작이 시작되기 전(접수 상태)에는 내 주문에서 바로 취소하고 전액 환불받을 수 있어요. 맞춤 제작이 시작된 뒤에는 단순 변심 환불이 어려워요. 자세한 내용은 환불·배송 정책을 확인해 주세요."],["다른 사람도 우리 영상을 보게 되나요?","아니요. 완성 영상은 주문한 분에게만 보내 드리고, 웅이프 계정이나 다른 곳에 올리지 않아요."]];
 const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="10" fill="#c9f0dc" stroke="#1a1a1a" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const NOPE = `<svg width="16" height="16" viewBox="0 0 24 24" role="img" aria-label="미포함" style="flex:none"><circle cx="12" cy="12" r="10" fill="#eef3f6" stroke="#b9c3ca" stroke-width="2"/><path d="M8 12h8" stroke="#66717a" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 const LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:none"><rect x="5" y="10" width="14" height="10" rx="3" fill="#1a1a1a"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="#1a1a1a" stroke-width="2.4"/></svg>`;
 const BACK = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const FEATS = ["50초+ 풀버전 · 장면 8~10개","MBTI·관계 맞춤 궁합 상황","두 사람 이름을 자막·말풍선에","사연 속 실제 에피소드 3~4장면","제작 전 대본 미리보기 + 1회 수정","완성 후 자막·대사 수정 1회"];
+const FEATS = ["50초+ 풀버전 · 장면 4개 이상","MBTI·관계 맞춤 궁합 상황","두 사람 이름을 자막·말풍선에","사연 속 실제 에피소드를 장면으로"];
 const FOOTER = `<footer class="biz"><nav aria-label="정책"><a href="/terms">이용약관</a><a href="/refund">환불·배송 정책</a><a href="/privacy">개인정보처리방침</a></nav>
 <div>상호 도파민펫 · 대표자 현지웅</div><div>사업자등록번호 404-15-02863 · 통신판매업 신고 진행 중</div>
 <div>주소 부산광역시 연제구 고분로 270, 103동 1004호 (수영강푸르지오아파트)</div><div>전화 010-9950-6291 · 이메일 ddd12340@naver.com</div>
 <div style="margin-top:6px">© 웅이프(@woong.if). 결제는 토스페이먼츠가 처리해요.</div></footer>`;
 
 // ---------- 상태 ----------
-const blankChar = (g)=>({g, hair:g==="여"?"tied":"short", hc:0, skin:0, cl:g==="여"?4:3, gl:false, feat:""});
+const blankChar = (g)=>({g, hair:g==="여"?"tied":"short", hc:0, skin:0, cl:g==="여"?0:3, gl:false, feat:"", top:"tee", bottom:g==="여"?"skirt":"pants", bc:g==="여"?4:0, hat:"none", scarf:false});
+const fillChar = (c)=>({...blankChar(c.g||"여"), ...c});
 const init = ()=>({step:"home", pkg:"special", rel:"커플", a:"ENFP", b:"ISTJ", slot:"a", nameA:"", nameB:"", chars:{a:blankChar("여"), b:blankChar("남")}, story:"", email:"", kakao:"", reels:false, terms:false, faq:0});
 let S = init();
 try { const saved = JSON.parse(sessionStorage.getItem("wf_order")||"null"); if(saved) S = {...S, ...saved}; } catch(e){}
+S.chars = {a: fillChar(S.chars.a||{}), b: fillChar(S.chars.b||{})};
 const save = ()=>{ try{ sessionStorage.setItem("wf_order", JSON.stringify(S)); }catch(e){} };
 let CFG = {products:{basic:{price:14900,pay:14900,sale:null},special:{price:29900,pay:29900,sale:null}}, test:true, days:7};
 let DONE = null, PAYERR = null;
@@ -197,7 +203,7 @@ const pay = ()=> CFG.products[S.pkg].pay;
 const josa = (w, a, b)=>{ const c=w.charCodeAt(w.length-1)-0xac00; return c>=0&&c<=11171&&c%28 ? a : b; };
 const nm = (k)=> (k==="a"?S.nameA:S.nameB).trim() || k.toUpperCase();
 const pairTitle = ()=> `${S.a} × ${S.b} ${S.rel}${josa(S.rel,"이라면?","라면?")}`;
-const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+HS.find(h=>h[0]===c.hair)[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" 옷"+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
+const csum = (k)=>{ const c=S.chars[k]; return (c.g==="남"?"남자":"여자")+" · "+HS.find(h=>h[0]===c.hair)[1]+" · "+HC[c.hc][0]+" · "+CL[c.cl][0]+" "+TOPS.find(x=>x[0]===c.top)[1]+" · "+BC[c.bc][0]+" "+BOTS.find(x=>x[0]===c.bottom)[1]+(c.hat!=="none"?" · "+HATS.find(x=>x[0]===c.hat)[1]:"")+(c.scarf?" · 목도리":"")+(c.gl?" · 안경":"")+(sp()&&c.feat.trim()?` · "${c.feat.trim()}"`:""); };
 const emailOk = ()=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.email.trim());
 function dueLabel(day){ const d = new Date(day+"T00:00:00+09:00"); return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`; }
 function dueGuess(){ const t = new Date(Date.now()+9*3600e3+CFG.days*86400e3).toISOString().slice(0,10); return dueLabel(t); }
@@ -251,7 +257,7 @@ function bar(html){ $("#bar").innerHTML = html ? `<div>${html}</div>` : ""; $("#
 function pxBox(){ return `<div class="px"><small>${sp()?"스페셜 영상":"기본 영상"}</small><b>${won(pay())}</b></div>`; }
 
 function prodCard(k){
-  const p = CFG.products[k], on = S.pkg===k, inc = k==="special" ? [1,1,1,1,1,1] : [1,1,1,0,0,0];
+  const p = CFG.products[k], on = S.pkg===k, inc = k==="special" ? [1,1,1,1] : [1,1,1,0];
   return `<button type="button" class="prod${on?" on":""}" data-pkg="${k}" aria-pressed="${on}">
     <span class="bd">${k==="special"?`<span class="rec">추천</span>`:""}${p.sale?`<span class="salebd">오픈 기념</span>`:""}</span>
     <span class="nm"><span class="radio"><i></i></span>${k==="special"?"스페셜":"기본"}</span>
@@ -305,8 +311,13 @@ function renderS2(){
       <div class="fl"><div class="lh">머리 스타일</div><div class="chips">${HS.map(([h,l])=>chip(c.hair===h,l,`data-hair="${h}"`)).join("")}</div></div>
       <div class="fl"><div class="lh">머리 색<span>${HC[c.hc][0]}</span></div><div class="sws">${sws(HC,"hc","")}</div></div>
       <div class="fl"><div class="lh">피부 톤<span>${SK[c.skin][0]}</span></div><div class="sws">${sws(SK,"skin","sk")}</div></div>
-      <div class="fl"><div class="lh">옷 색<span>${CL[c.cl][0]}</span></div><div class="sws">${sws(CL,"cl","cl")}</div></div>
-      <div class="fl"><div class="lh">안경</div><div class="chips">${chip(!c.gl,"안경 없음",'data-gl="0"')}${chip(c.gl,"안경 있음",'data-gl="1"')}</div></div>
+      <div class="fl dress"><div class="lh" style="font-size:15px">옷 입히기 👕</div></div>
+      <div class="fl"><div class="lh">상의</div><div class="chips">${TOPS.map(([v,l])=>chip(c.top===v,l,`data-top="${v}"`)).join("")}</div></div>
+      <div class="fl"><div class="lh">상의 색<span>${CL[c.cl][0]}</span></div><div class="sws">${sws(CL,"cl","cl")}</div></div>
+      <div class="fl"><div class="lh">하의</div><div class="chips">${BOTS.map(([v,l])=>chip(c.bottom===v,l,`data-bot="${v}"`)).join("")}</div></div>
+      <div class="fl"><div class="lh">하의 색<span>${BC[c.bc][0]}</span></div><div class="sws">${sws(BC,"bc","cl")}</div></div>
+      <div class="fl"><div class="lh">모자</div><div class="chips">${HATS.map(([v,l])=>chip(c.hat===v,l,`data-hat="${v}"`)).join("")}</div></div>
+      <div class="fl"><div class="lh">소품 <span>눌러서 입히기 · 벗기기</span></div><div class="chips">${chip(c.gl,"👓 안경",'data-tg="gl"')}${chip(c.scarf,"🧣 목도리",'data-tg="scarf"')}</div></div>
       ${sp()?`<div class="fl" style="padding-top:16px;border-top:1.5px dashed rgba(26,26,26,.2)"><label class="lbl" for="ftI">특징 한 줄 <span style="color:#55606a">(선택)</span></label><input class="inp" id="ftI" maxlength="30" placeholder="예: 항상 모자 씀, 키 차이 많이 남" value="${esc(c.feat)}"><div class="cnt"><span>스페셜은 이 특징도 캐릭터에 반영해요</span><span id="ftN">${c.feat.length} / 30</span></div></div>`:""}
     </div>
     <p class="hint">이름은 자막·말풍선에 나와요. 위 캐릭터를 눌러도 A·B가 바뀌어요.</p>
@@ -316,10 +327,13 @@ function renderS2(){
   const re = ()=>{ save(); const y=window.scrollY; render(); window.scrollTo(0,y); };
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{ S.slot=b.dataset.slot; re(); });
   document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ S[S.slot]=b.dataset.t; re(); });
-  document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ c.g=b.dataset.g; re(); });
+  document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ if(c.g===b.dataset.g) return; c.g=b.dataset.g; c.hair=c.g==="여"?"tied":"short"; c.bottom=c.g==="여"?"skirt":"pants"; c.bc=c.g==="여"?4:0; re(); });
   document.querySelectorAll("[data-hair]").forEach(b=>b.onclick=()=>{ c.hair=b.dataset.hair; re(); });
   document.querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>{ c[b.dataset.sw]=+b.dataset.i; re(); });
-  document.querySelectorAll("[data-gl]").forEach(b=>b.onclick=()=>{ c.gl=b.dataset.gl==="1"; re(); });
+  document.querySelectorAll("[data-top]").forEach(b=>b.onclick=()=>{ c.top=b.dataset.top; re(); });
+  document.querySelectorAll("[data-bot]").forEach(b=>b.onclick=()=>{ c.bottom=b.dataset.bot; re(); });
+  document.querySelectorAll("[data-hat]").forEach(b=>b.onclick=()=>{ c.hat=b.dataset.hat; re(); });
+  document.querySelectorAll("[data-tg]").forEach(b=>b.onclick=()=>{ c[b.dataset.tg]=!c[b.dataset.tg]; re(); });
   $("#nmI").oninput = (e)=>{ S[k==="a"?"nameA":"nameB"] = e.target.value.slice(0,8); save();
     document.querySelectorAll(`.fig[data-slot="${k}"] .lab`).forEach(l=>l.innerHTML=`<em>${k.toUpperCase()}</em>${esc(nm(k))} · ${S[k]}`);
     document.querySelectorAll(`.tabs [data-slot="${k}"]`).forEach(l=>l.textContent=`${k.toUpperCase()} · ${nm(k)} ${S[k]}`); };
@@ -332,7 +346,7 @@ function renderS3(){
     <div class="ta"><textarea id="stI" maxlength="500" rows="9" placeholder="처음 만난 날, 자주 싸우는 이유, 서로 부르는 애칭…">${esc(S.story)}</textarea><div style="display:flex;justify-content:flex-end;font-size:12px;font-weight:800;color:#55606a"><span id="stN">${S.story.length}</span>&nbsp;/ 500</div></div>
     <div style="margin-top:14px;font-size:13px;font-weight:800">이런 걸 적어 주면 좋아요</div>
     <div class="sug"><span>처음 만난 날</span><span>서로 부르는 애칭</span><span>한 명의 말버릇</span><span>크게 싸웠던 일</span><span>둘만 웃는 장면</span></div>
-    <ul class="ylist"><li>${CHECK}이 중 3~4장면을 골라 영상에 넣어요</li><li>${CHECK}제작 전에 대본을 먼저 보여 드려요 (1회 수정)</li></ul>
+    <ul class="ylist"><li>${CHECK}적어 주신 에피소드를 골라 장면으로 넣어요</li><li>${CHECK}대본 미리보기·수정 없이 바로 만들어요</li></ul>
     <p class="hint">실명·전화번호 같은 개인정보는 빼고 써 주세요.</p></div>${FOOTER}`;
   const ok = ()=> S.story.trim().length>=10;
   bar(pxBox()+`<button class="cta" id="nx" ${ok()?"":"disabled"}>${ok()?"다음":"10자 이상 적어 주세요"}</button>`);
@@ -383,13 +397,13 @@ function renderS5(){
   const row=(a,b)=>`<div class="row"><span>${a}</span><span>${b}</span></div>`;
   $("#app").innerHTML = fhead("주문 확인", "이대로<br>주문할까요?") + `<div class="body">
     <div class="sum">${row("관계",esc(S.rel))}${row("두 사람",`${esc(nA)} ${S.a} × ${esc(nB)} ${S.b}`)}${row("캐릭터 A",esc(csum("a")))}${row("캐릭터 B",esc(csum("b")))}
-      ${sp()?row("사연",`${S.story.trim().length}자 · 3~4장면 반영`):""}${row("받을 이메일",esc(S.email))}${row("카톡 ID",esc(S.kakao.trim()||"안 남김"))}
+      ${sp()?row("사연",`${S.story.trim().length}자 · 장면에 반영`):""}${row("받을 이메일",esc(S.email))}${row("카톡 ID",esc(S.kakao.trim()||"안 남김"))}
       <div style="margin-top:14px;font-size:13px;font-weight:800">상품</div>
       <div class="seg" role="group" aria-label="상품"><button type="button" class="${!sp()?"on":""}" data-pkg="basic">기본 · 우리 조합편</button><button type="button" class="${sp()?"on":""}" data-pkg="special">스페셜 · 우리 이야기편</button></div>
       <div class="total"><b>결제 금액</b><strong>${won(pay())}</strong></div>
-      <div style="text-align:right;font-size:12px;color:#55606a;margin-top:2px">${sp()?"50초+ · 사연 3~4장면 · 대본 미리보기":"50초+ · 장면 8~10개 · 이름 자막"} · 부가세 포함</div></div>
+      <div style="text-align:right;font-size:12px;color:#55606a;margin-top:2px">${sp()?"50초+ · 장면 4개 이상 · 사연 반영":"50초+ · 장면 4개 이상 · 이름 자막"} · 부가세 포함</div></div>
     <ul class="wlist"><li>${LOCK}결제는 토스페이먼츠가 안전하게 처리해요</li><li>${CHECK}결제 후 ${CFG.days}일 이내 · ${dueGuess()}까지 링크로 전달</li>
-      ${sp()?`<li>${CHECK}제작 전에 대본 미리보기를 이메일로 보내 드려요 (1회 수정)</li>`:""}<li>${CHECK}제작 시작 전(접수 상태)에는 전액 환불돼요</li></ul>
+      <li>${CHECK}제작 시작 전(접수 상태)에는 전액 환불돼요</li></ul>
     ${CFG.test?`<div class="testbar">지금은 <b>테스트 결제</b>예요. 결제해도 실제로 돈이 나가지 않아요.</div>`:""}
     <div style="margin-top:22px;font-size:13px;font-weight:800">결제 수단</div>
     <div class="widget"><div id="payment-method"></div><div id="agreement"></div></div>
@@ -427,7 +441,7 @@ function renderDone(){
     <div class="row"><span>결제 금액</span><span>${won(o.amount)}</span></div>
     <div class="row" style="border-bottom:none"><span>받을 이메일</span><span>${esc(o.email)}</span></div>
     <div class="due"><span>예상 전달일</span><b>${dueLabel(o.due)}까지</b></div></div>
-    <p class="hint">${o.pkg==="special"?"스페셜은 제작 전에 대본 미리보기를 먼저 보내 드려요. ":""}제작이 시작되기 전까지는 내 주문에서 취소할 수 있어요. 궁금한 건 ddd12340@naver.com으로 보내 주세요.</p>
+    <p class="hint">제작이 시작되기 전까지는 내 주문에서 취소할 수 있어요. 궁금한 건 ddd12340@naver.com으로 보내 주세요.</p>
     <a class="btnfull" href="/#me">내 주문에서 진행 상황 확인</a><a class="btnfull w" href="/#pair">궁합 투표 구경하러 가기</a></div>${FOOTER}`;
   bar("");
 }

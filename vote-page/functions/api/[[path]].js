@@ -74,6 +74,9 @@ function cleanChar(c) {
     hair: CHAR_RULE.hair.includes(c.hair) ? c.hair : "short",
     hc: n(c.hc, CHAR_RULE.hc), skin: n(c.skin, CHAR_RULE.skin), cl: n(c.cl, CHAR_RULE.cl),
     gl: !!c.gl, feat: clean(c.feat, 30),
+    top: ["tee", "hood", "shirt"].includes(c.top) ? c.top : "tee",
+    bottom: ["skirt", "pants", "shorts"].includes(c.bottom) ? c.bottom : (c.g === "남" ? "pants" : "skirt"),
+    bc: n(c.bc, 6), hat: ["none", "cap", "beanie"].includes(c.hat) ? c.hat : "none", scarf: !!c.scarf,
   };
 }
 function orderRow(o, full) {
