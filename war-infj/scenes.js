@@ -189,7 +189,7 @@ S[1]=()=>{
     renderer.setViewport(0,0,1080,960);renderer.setScissor(0,0,1080,960);renderer.setClearColor(0x2a2638,1);
     hemi.intensity=0.75;sun.intensity=0.6;
     [G,EG].forEach(p=>{p.userData.mask.visible=false;tired(p,true)});
-    top.forEach(b=>b.visible=false);talk(EG,1,t,['e2']);talk(G,1,t,['g2']);
+    top.forEach(b=>b.visible=false);talk(EG,1,t,['e3']);talk(G,1,t,['g3']);
     setCam(C,lerp3([0,2.05,4.4],[0,2.0,3.9],k),[0,2.3,0],36);
     renderer.render(scene,C);
     renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.setClearColor(0x000000,0);
