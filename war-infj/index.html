@@ -509,6 +509,17 @@ function maskK(p,k){const m=p.userData.mask;m.visible=k>0.02;const e=ease(k);
   m.position.set(0,MASK_OFF[1]+(MASK_ON[1]-MASK_OFF[1])*e,MASK_OFF[2]+(MASK_ON[2]-MASK_OFF[2])*e);m.scale.set(0.4+0.6*e,(0.4+0.6*e)*1.1,1)}
 function putOn(p,t,t0,dur=0.35){const k=clamp01((t-t0)/dur);maskK(p,k);const a=p.userData.arms[1];const up=Math.sin(Math.PI*clamp01((t-t0+0.15)/(dur+0.3)));
   if(t>t0-0.15&&t<t0+dur+0.15){a.rotation.x=-2.0*up;a.rotation.z=0.5*up}return k}
+// 주머니에서 가면 꺼내 쓰기: t0~t0+T (손 넣기 → 꺼내며 펴기 → 얼굴로) 후 쓰고 팔 내림
+function pocketPull(p,t,t0,T=1.0){const u=p.userData,a=u.arms[1];
+  if(!u.hm){u.hm=maskMesh(u.mask.userData.kind);u.hm.position.set(0,-0.68,0.1);a.add(u.hm)}
+  const hm=u.hm,x=(t-t0)/T;
+  if(x<0){maskK(p,0);hm.visible=false;return}
+  if(x>=1){maskK(p,1);hm.visible=false;const d=clamp01((t-t0-T)/0.3);if(d<1){a.rotation.x=-2.3*(1-ease(d));a.rotation.z=0.45*(1-ease(d))}return}
+  maskK(p,0);
+  if(x<0.3){const k=ease(x/0.3);a.rotation.x=0.18*k;a.rotation.z=-0.12*k;a.position.y=0.6-0.06*k;hm.visible=false}
+  else if(x<0.55){const k=ease((x-0.3)/0.25);a.position.y=0.54+0.06*k;a.rotation.x=0.18-0.6*k;a.rotation.z=-0.12+0.12*k;hm.visible=true;const s=0.25+0.75*pop(k);hm.scale.set(s,s*1.1,1)}
+  else{const k=ease((x-0.55)/0.45);a.position.y=0.6;a.rotation.x=-0.42-1.88*k;a.rotation.z=0.45*k;hm.visible=true;hm.scale.set(1,1.1,1)}
+  hm.rotation.set(-a.rotation.x,0,-a.rotation.z)}
 function maskBelt(p,n,seed=3){const r=rng(seed),K=['smile','tough','polite','casual','smile','polite','casual'];const g=new THREE.Group();
   for(let i=0;i<n;i++){const a=-1.35+2.7*i/(n-1);const m=maskMesh(K[i%K.length],0.075);m.position.set(Math.sin(a)*0.29,0.02+(i%2)*0.04,Math.cos(a)*0.19);m.rotation.y=a;m.rotation.z=(r()-0.5)*0.5;g.add(m)}
   p.userData.hip.add(g);p.userData.belt=g;return g}
@@ -568,11 +579,11 @@ S[0]=()=>{
     const turn=ease((t-ST)/0.4);G.rotation.y=Math.PI-0.55*turn;EG.rotation.y=0.55*turn;
     if(t>WK&&t<ST){walkPose(G,(t-WK)*4.2,0.4);walkPose(EG,(t-WK)*4.2+1,0.4)}
     // 품에 손
-    if(t>RC-0.1&&t<MK){const k=ease((t-RC+0.1)/0.3);[G,EG].forEach(p=>{const a=p.userData.arms[1];a.rotation.x=-1.1*k;a.rotation.z=0.95*k})}
-    putOn(G,t,MK);putOn(EG,t,MK);
+    [G,EG].forEach(p=>p.userData.arms[1].position.y=0.6);
+    pocketPull(G,t,ST+0.05,MK-ST-0.05);pocketPull(EG,t,ST+0.1,MK-ST-0.1);
     const smile=t>MK+0.2;[G,EG].forEach(p=>{setBrow(p,smile?0.1:-0.22)});
-    al.forEach(q=>{standPose(q.p);const tt=n2+0.3+q.d*1.2;if(t<tt)aim(q.p);else{noRifle(q.p)}putOn(q.p,t,tt,0.25);if(t<tt)maskK(q.p,0)});
-    fo.forEach(q=>{standPose(q.p);const tt=n2+0.3+q.d*1.2;if(t<tt)aim(q.p);else{noRifle(q.p)}putOn(q.p,t,tt,0.25);if(t<tt)maskK(q.p,0)});
+    al.forEach(q=>{standPose(q.p);q.p.userData.arms[1].position.y=0.6;const tt=n2+0.3+q.d*1.2;if(t<tt-0.8)aim(q.p);else noRifle(q.p);pocketPull(q.p,t,tt-0.8,0.8)});
+    fo.forEach(q=>{standPose(q.p);q.p.userData.arms[1].position.y=0.6;const tt=n2+0.3+q.d*1.2;if(t<tt-0.8)aim(q.p);else noRifle(q.p);pocketPull(q.p,t,tt-0.8,0.8)});
     if(t>g1&&t<n2){const w=Math.sin((t-g1)*9)*0.5+0.5;G.userData.arms[0].rotation.x=-2.6;G.userData.arms[0].rotation.z=-0.6-0.4*w}
     if(t>e1&&t<g1){EG.userData.arms[0].rotation.x=-1.0;EG.userData.arms[0].rotation.z=-0.7;EG.userData.hip.rotation.x=0.18}
     show(b1,t,e1,g1+0.4);show(b2,t,g1,n2+0.2);
