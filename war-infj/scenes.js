@@ -207,46 +207,50 @@ S[2]=()=>{
   for(let i=0;i<12;i++)tree(scene,(i-5.5)*4.5+r(),-14-r()*5,1.1,0x76a866);
   for(let i=0;i<6;i++){const h=new THREE.Mesh(new THREE.ConeGeometry(9+r()*6,5+r()*5,6),lamb(pick(r,[0x86a874,0x7d9f6c,0x93b07e])));h.position.set((i-2.5)*14+r()*4,0,-36-r()*8);scene.add(h)}
   const P=infjS(r,ALLY);P.position.set(0,0,0.3);scene.add(P);wear(P,'tough');maskBelt(P,5,4);
-  const F=infjS(r,FOE);F.position.set(0.15,0,-2.7);scene.add(F);wear(F,'tough');const FB=maskBelt(F,7,9);
-  const G=infjG(r,GEN);G.position.set(-3.5,0,1.3);scene.add(G);wear(G,'smile');
-  const B=infjS(r,ALLY);B.position.set(3.5,0,1.1);scene.add(B);wear(B,'casual');
+  const F=infjS(r,FOE);F.position.set(0.15,0,-2.7);scene.add(F);wear(F,'tough');const FB=maskBelt(F,7,9);FB.children.forEach(m=>m.scale.multiplyScalar(1.4));
+  const G=infjG(r,GEN);G.position.set(3.6,0,1.4);scene.add(G);wear(G,'smile');
+  const B=infjS(r,ALLY);B.position.set(-3.6,0,1.3);scene.add(B);wear(B,'casual');
+  const KL={tough:['센 척','#ffd9d2','#7a1f12'],polite:['공손','#dcecff','#173a6b'],casual:['편한','#fff2b8','#5a4500']};
+  const lb=makeBubble('센 척',{bg:KL.tough[1],fg:KL.tough[2],fs:64,size:0.0024});lb.center.set(0,0.5);lb.position.set(0.32,1.55,0.1);lb.material.depthTest=false;lb.renderOrder=11;P.add(lb);let lbk='';
   // 줄지어 선 다른 병사들(와이드용)
   const extras=[];for(let i=0;i<10;i++){const ally=i<5;const p=infjS(r,ally?ALLY:FOE);const x=(i%5<2?-1:1)*(2.6+(i%5)*1.5);p.position.set(x,0,ally?0.3:-2.7);p.rotation.y=ally?Math.PI:0;scene.add(p);wear(p,'tough');maskBelt(p,4+(i%4),20+i);aim(p);extras.push(p)}
   const fx=[];for(let i=0;i<5;i++){const gl=glowSprite('rgba(255,190,120,1)',4);gl.position.set((i-2)*9+r()*3,1.5,-20-r()*8);scene.add(gl);fx.push({gl,ph:r()})}
   const E=EV(2),s1=at(2,'s1'),SW1=E.sw1,SW2=E.sw2,AL=E.all,BW=E.bow,FZ=E.freeze,BL=E.belt,f1=at(2,'f1'),n4=at(2,'n4');
-  const b1=bubS(P,'덤벼!!',{size:0.0024,y:2.25}),b2=bubS(P,'충성!',{size:0.0024,y:2.25}),b3=bubS(P,'야 밥 뭐냐',{size:0.0024,y:2.25}),b4=bubS(P,'아 네 감사합니다~',{size:0.0022,y:2.25});
-  const bg=bubS(G,'…?',{size:0.0024,y:2.6}),bb=bubS(B,'…?',{size:0.0024,y:2.3}),b5=bubF(F,'…아. 저도 그거 알아요',{size:0.0019,y:2.25});
+  const b1=bubS(P,'덤벼!!',{size:0.003,y:2.2}),b2=bubS(P,'충성!',{size:0.003,y:2.2}),b3=bubS(P,'야 밥 뭐냐',{size:0.003,y:2.2}),b4=bubS(P,'아 네 감사합니다~',{size:0.0022,y:2.2});
+  const bg=bubS(G,'…?',{size:0.003,y:2.5}),bb=bubS(B,'…?',{size:0.003,y:2.25}),b5=bubF(F,'…아. 저도 그거 알아요',{size:0.0019,y:2.25});
   const ch=chip('가면 교체 1초에 4회');ch.style.opacity=0;const ch2=chip('적군과 처음 통한 순간');ch2.style.opacity=0;
   const C=cam(50);const K=['tough','polite','casual'];
   return t=>{
     [P,F,G,B].forEach(p=>{standPose(p);p.userData.hip.rotation.set(0,0,0)});
-    extras.forEach(p=>{standPose(p);aim(p);p.visible=!(t>=BW&&t<BL-0.2&&p.position.x>0)});
-    // 장군·동기 등장
-    const gk=ease((t-SW1+0.6)/0.8),bk=ease((t-SW2+0.6)/0.8);
-    G.position.x=-3.5+2.3*gk;B.position.x=3.5-2.2*bk;if(gk>0&&gk<1)walkPose(G,t*7,0.4);if(bk>0&&bk<1)walkPose(B,t*7,0.4);
-    G.rotation.y=gk<1?Math.PI/2:faceAt(G.position,P.position);B.rotation.y=bk<1?-Math.PI/2:faceAt(B.position,P.position);
-    // 병사 P
-    let ry=Math.PI,kind='tough';
-    if(t<SW1){aim(P);kind='tough'}
-    else if(t<SW2){noRifle(P);ry=faceAt(P.position,G.position);kind='polite';salute(P,clamp01((t-SW1-0.1)/0.2))}
-    else if(t<AL){noRifle(P);ry=faceAt(P.position,B.position);kind='casual';P.userData.arms[1].rotation.x=-1.1;P.userData.arms[1].rotation.z=-0.4}
-    else if(t<BW){noRifle(P);const sp=(t-AL);ry=Math.PI+sp*16;kind=K[Math.floor(sp/0.12)%3];P.userData.hip.position.y=0.8+Math.abs(Math.sin(sp*20))*0.05}
-    else{noRifle(P);ry=0;kind='polite';const bw=ease((t-BW)/0.25)*(t<FZ+0.6?1:1-ease((t-FZ-0.6)/0.4));P.userData.hip.rotation.x=1.15*bw;P.userData.arms.forEach(a=>a.rotation.x=0.1)}
-    // P는 적을 볼 때 -z(=Math.PI)... 인사는 적(F) 방향
-    if(t>=BW)ry=faceAt(P.position,F.position);
-    P.rotation.y=ry;setMask(P.userData.mask,kind);
+    extras.forEach(p=>{standPose(p);aim(p);p.visible=t>=n4});
+    // 장군(화면 왼쪽 뒤)·동기(화면 오른쪽 뒤) 등장
+    const gk=ease((t-SW1+0.7)/0.8),bk=ease((t-SW2+0.7)/0.8);
+    G.position.set(3.6-2.6*gk,0,1.4);B.position.set(-3.6+2.6*bk,0,1.3);if(gk>0&&gk<1)walkPose(G,t*7,0.4);if(bk>0&&bk<1)walkPose(B,t*7,0.4);
+    G.rotation.y=gk<1?-Math.PI/2:faceAt(G.position,P.position);B.rotation.y=bk<1?Math.PI/2:faceAt(B.position,P.position);
+    // 병사 P: 몸은 적(카메라) 쪽 그대로, 고개만 돌림 (-: 장군 쪽, +: 동기 쪽)
+    P.rotation.y=Math.PI;let hy=0,kind='tough';const hd=P.userData.head;
+    if(t<SW1){aim(P)}
+    else if(t<SW2){noRifle(P);hy=-0.85;kind='polite';salute(P,clamp01((t-SW1-0.1)/0.2))}
+    else if(t<AL){noRifle(P);hy=0.85;kind='casual';P.userData.arms[0].rotation.x=-1.0;P.userData.arms[0].rotation.z=0.5}
+    else if(t<BW){noRifle(P);const ph=Math.floor((t-AL)/0.13)%3;hy=[-0.85,0.85,0][ph];kind=['polite','casual','tough'][ph];P.userData.hip.position.y=0.8+Math.abs(Math.sin((t-AL)*24))*0.04}
+    else{noRifle(P);kind='polite';const bw=ease((t-BW)/0.25)*(t<FZ+0.6?1:1-ease((t-FZ-0.6)/0.4));P.userData.hip.rotation.x=1.15*bw;P.userData.arms.forEach(a=>a.rotation.x=0.1)}
+    hd.rotation.y=hy;P.userData.hip.rotation.y=hy*0.25;setMask(P.userData.mask,kind);
+    if(kind!==lbk){setBubble(lb,KL[kind][0],{bg:KL[kind][1],fg:KL[kind][2],fs:64,size:0.0024});lbk=kind}
+    lb.position.x=hy<0?-0.32:0.32;lb.center.set(hy<0?1:0,0.5);lb.visible=t>s1-0.1&&t<BW;
     if(t<BW)aim(F);else noRifle(F);F.rotation.y=0;
-    if(t>BL){const k=ease((t-BL)/0.35);F.userData.arms.forEach((a,i)=>{a.rotation.x=-0.55*k;a.rotation.z=(i?-0.45:0.45)*k});F.userData.head.rotation.x=0.35*k}
-    FB.scale.setScalar(t>BL?1+0.35*Math.sin(Math.PI*clamp01((t-BL)/0.4)):1);
+    if(t>BL){const k=ease((t-BL)/0.35);F.userData.arms.forEach((a,i)=>{a.rotation.x=0.35*k;a.rotation.z=(i?-0.25:0.25)*k});F.userData.head.rotation.x=0.4*k}
+    FB.scale.setScalar(t>BL?1+0.25*Math.sin(Math.PI*clamp01((t-BL)/0.4)):1);
     show(b1,t,s1,SW1);show(b2,t,SW1+0.2,SW2);show(b3,t,SW2+0.2,AL);show(b4,t,BW+0.2,FZ+0.4);
     show(bg,t,AL+0.1,BW);show(bb,t,AL+0.25,BW);show(b5,t,f1,n4);
     chipShow(ch,t,AL,BW+0.4);chipShow(ch2,t,f1,n4);
     fx.forEach(q=>{const lt=(t*0.7+q.ph)%1;q.gl.material.opacity=t<BW?Math.max(0,1-lt*3):0});
     // 카메라
-    if(t<BW){const sh=t>AL?Math.sin(t*70)*0.03:0;const k=ease(Math.min(1,t/2));setCam(C,lerp3([1.5,2.2,-2.3],[1.2,2.1,-2.0],k).map((v,i)=>i==0?v+sh:v),[0,1.6,0.6],56)}
-    else if(t<BL-0.2){setCam(C,[7.6,2.4,-1.0],[0,1.05,-1.0],50)}
-    else if(t<n4){const k=ease((t-BL+0.2)/1.2);setCam(C,lerp3([0.9,1.3,-0.2],[0.8,1.25,-0.4],k),[0.15,1.0,-2.7],50)}
-    else{const k=ease((t-n4)/3.5);setCam(C,lerp3([5,4,4],[8,8,8]),[0,0.8,-1.2],50);setCam(C,lerp3([5,4,4],[8,7.5,8],k),[0,0.8,-1.2],50)}
+    F.visible=!(t<BW);
+    if(t<AL){const k=ease(Math.min(1,t/3));setCam(C,lerp3([0,2.9,-4.4],[0,2.8,-4.0],k),[0,1.45,0.8],50)}
+    else if(t<BW){const sh=Math.sin(t*70)*0.03;const k=ease((t-AL)/0.4);setCam(C,lerp3([0,2.8,-4.0],[sh,2.65,-3.5],k),[0,1.6,0.7],50)}
+    else if(t<BL-0.2){const k=ease((t-BW)/1.5);setCam(C,lerp3([2.1,1.7,-1.9],[1.9,1.6,-1.7],k),[0,1.0,0.1],50)}
+    else if(t<n4){F.visible=true;const k=ease((t-BL+0.2)/1.2);setCam(C,lerp3([0.55,1.3,-1.35],[0.5,1.28,-1.42],k),[0.15,0.8,-2.7],82)}
+    else{F.visible=true;const k=ease((t-n4)/3.5);setCam(C,lerp3([5,4,4],[8,7.5,8],k),[0,0.8,-1.2],50)}
     caption(2,t);renderer.render(scene,C);
   };
 };
